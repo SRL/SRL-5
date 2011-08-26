@@ -65,7 +65,7 @@ end;
 
 {*******************************************************************************
 function arnav_FixLock: Boolean;
-by: Nielsie95
+by: NCDS & Nielsie95
 Description: Moves the required items into line.
 *******************************************************************************}
 
