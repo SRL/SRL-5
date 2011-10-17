@@ -1,0 +1,136 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                  » QuickChat procedures                     --//
+//-----------------------------------------------------------------//
+// » function QCOpen: Boolean;                                     // by EvilChicken!
+// » procedure OpenQC;                                             // by EvilChicken!
+// » procedure CloseQC;                                            // by EvilChicken!
+// » procedure QCOpenMenu(Menu: string; SubMenus: array of Char);  // by EvilChicken!
+// » procedure QCSayLevel;                                         // by EvilChicken!
+
+{*******************************************************************************
+function QCOpen: Boolean;
+By: EvilChicken!
+Description: Returns true/false depending on if QuickChat window is open.
+*******************************************************************************}
+function QCOpen: Boolean;
+begin
+  Result := (GetColor(37, 352) = 14869218) and LoggedIn;
+end;
+
+{*******************************************************************************
+procedure OpenQC;
+By: EvilChicken!
+Description: Opens QuickChat window if it isn't open.
+*******************************************************************************}
+procedure OpenQC;
+begin
+  if not LoggedIn or QCOpen then exit;
+  while CountColor(16711680, 6, 460, 512, 474) > 14 do
+    TypeByte(08);
+  if random(2) = 0 then
+    TypeByte(13)
+  else
+    MouseBox(12, 462, 72, 471, 1);
+  Wait(150 + random(85));
+end;
+
+{*******************************************************************************
+procedure CloseQC;
+By: EvilChicken!
+Description: Closes QuickChat window if it is open.
+*******************************************************************************}
+procedure CloseQC;
+begin
+  if (not LoggedIn) or (not QCOpen) then exit;
+  if random(2) = 0 then MouseBox(9, 348, 20, 358, 1) else
+    TypeByte(27);
+  Wait(150 + random(85));
+end;
+
+{*******************************************************************************
+procedure QCOpenTab(Tab: string; SubTabs: array of Char);
+By: EvilChicken!
+Description: Opens QuckChat, clicks 'Menu' menu, then uses 'SubMenus' chars to
+open submenus. 'Menu' options: 'general', 'trade', 'skill', group', 'clan'.
+Use: QCOpenMeny('Trade', ['a', 'b', 'c']);
+*******************************************************************************}
+procedure QCOpenMenu(Menu: string; SubMenus: array of Char);
+var
+  I: Integer;
+begin
+  if not LoggedIn then Exit;
+  if QCOpen then
+  begin
+    CloseQC;
+    Wait(500 + random(1500));
+  end;
+  OpenQC;
+  case LowerCase(Menu) of
+    'general': if random(2) = 0 then
+      MouseBox(12, 363, 98, 373, 1) else TypeByte(GetKeyCode('g'));
+    'trade', 'items': if random(2) = 0 then
+      MouseBox(12, 377, 115, 385, 1) else TypeByte(GetKeyCode('t'));
+    'skill', 'skills': if random(2) = 0 then
+      MouseBox(12, 392, 113, 402, 1) else TypeByte(GetKeyCode('s'));
+    'group', 'event', 'events', 'group events': if random(2) = 0 then
+      MouseBox(12, 407, 110, 412, 1) else TypeByte(GetKeyCode('e'));
+    'clan', 'clans': if random(2) = 0 then
+      MouseBox(12, 420, 115, 429, 1) else TypeByte(GetKeyCode('c'));
+  else
+    begin
+      srl_Warn('QCOpenMenu', Menu + ' is an invalid QC menu ', warn_AllVersions);
+      Exit;
+    end;
+  end;
+  Wait(350 + random(250));
+  if GetArrayLength(SubMenus) > 0 then
+    for I := 0 to High(SubMenus) do
+    begin
+      TypeByte(GetKeyCode(SubMenus[i]));
+      Wait(1350 + random(500));
+    end;
+end;
+
+{*******************************************************************************
+procedure QCSayLevel(Which: string);
+By: EvilChicken!
+Description: Says 'Which' skill level using Quick Chat.
+*******************************************************************************}
+procedure QCSayLevel(Which: string);
+var
+  Skill: Char;
+begin
+  case LowerCase(Which) of
+    'agility', 'agil': Skill := 'a';
+    'attack', 'atk': Skill := 'z';
+    'construction', 'con': Skill := 'c';
+    'cooking', 'cook': Skill := 'v';
+    'crafting': Skill := 'x';
+    'defence', 'def': Skill := 'd';
+    'farming', 'farm': Skill := 'f';
+    'firemaking', 'fm': Skill := 'p';
+    'fishing': Skill := 'w';
+    'fletching', 'fletch': Skill := 'e';
+    'herblore', 'herb': Skill := 'h';
+    'hitpoints', 'hp': Skill := 'l';
+    'hunting', 'hunter': Skill := 'u';
+    'magic', 'mage': Skill := 'm';
+    'mining': Skill := 'i';
+    'prayer', 'pray': Skill := 'y';
+    'range', 'ranged': Skill := 'r';
+    'runecrafting', 'rc': Skill := 'n';
+    'slayer': Skill := 's';
+    'smith', 'smithing': Skill := 'b';
+    'strength', 'str': Skill := 'g';
+    'summoning', 'sum': Skill := 'o';
+    'thieving', 'thief': Skill := 't';
+    'woodcutting', 'wc': Skill := 'j';
+  else
+    begin
+      srl_Warn('QCSayLevel', Which + ' is an invalid skill ', warn_AllVersions);
+      Exit;
+    end;
+  end;
+  QCOpenMenu('skills', [Skill, '2']);
+end;

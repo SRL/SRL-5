@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                    Fletching routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupFletching;                                     // by SRL
+
+{*******************************************************************************
+procedure SetupFletching;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupFletching;
+begin
+end;

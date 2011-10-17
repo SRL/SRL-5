@@ -1,0 +1,169 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                      DungeonWalk                            --//
+//-----------------------------------------------------------------//
+// * procedure DetectDungeonPoints(R, SD, ED: Integer);            // by ???
+// * function GetBestDegree(Degree: Integer): Integer;             // by ???
+// * function DungeonWalkEx(Dir, Radius, MaxOff: Integer; Click: Boolean): Boolean; // by ???
+// * function DungeonWalk(Dir, mRadius, MaxOff: Integer): Boolean; // by ???
+// * function DungeonDirExists(Dir, Radius, MaxOff: Integer): Boolean; // by ???
+
+type
+  Dungeon = record
+    StartD: Integer;
+    endD: Integer;
+end;
+
+var
+   Dungeons: array of Dungeon;
+
+{*******************************************************************************
+procedure DetectDungeonPoints(R, SD, ED: Integer);
+By: ???
+Description:
+*******************************************************************************}
+procedure DetectDungeonPoints(R, SD, ED: Integer);
+var
+   I, L, J, c: Integer;
+   Scan, t: TPoint;
+   bCon: Boolean;
+begin
+  SetArrayLength(Dungeons, 0);
+  I := SD;
+  repeat
+    I := I + 1;
+    Scan.x := Round(r * Sin(I * Pi / 180)) + 648;
+    Scan.y := Round(-r * Cos(I * Pi / 180)) + 80;
+    if GetColor(Scan.x, Scan.y) <> 0 then
+    begin
+      L := I;
+      repeat
+        bCon := False;
+        I := I + 1;
+        Scan.x := Round(r * Sin((I)* Pi / 180)) + 648;
+        Scan.y := Round(-r * Cos((I)* Pi / 180)) + 80;
+        if (GetColor(Scan.x, Scan.y) = 0) or ((I - L) > 20) then
+        begin
+          c := 0;
+          for J := R - 5 downto 0 do
+          begin
+            t.x := Round(J * Sin (((I + L) Div 2)* Pi / 180)) + 648;
+            t.y := Round(-J * Cos(((I + L) Div 2)* Pi / 180)) + 80;
+            if GetColor(t.x, t.y) <> 0 then
+              Continue
+            else
+            begin
+              c := c + 1;
+              if c > 10 then
+              begin
+//                writeln(inttostr(c));
+                bCon := True;
+                Break;
+              end;
+            end;
+          end;
+          if bCon then Break;
+          //if I - L < 10 then Break;
+          SetArrayLength(Dungeons, GetArrayLength(Dungeons) + 1);
+          Dungeons[GetArrayLength(Dungeons) - 1].StartD := L;
+          Dungeons[GetArrayLength(Dungeons) - 1].endD := I;
+         Break;
+        end;
+      until I > ED;
+    end;
+  until I > ED;
+end;
+
+{*******************************************************************************
+function GetBestDegree(Degree: Integer): Integer;
+By: ???
+Description:
+*******************************************************************************}
+function GetBestDegree(Degree: Integer): Integer;
+var
+   I, C, OffSet: Integer;
+begin
+  OffSet := 1000;
+  for I := 0 to GetArrayLength(Dungeons) - 1 do
+    for C := Dungeons[I].StartD to Dungeons[I].endD do
+    begin
+      if iAbs(Degree - C) < OffSet then
+      begin
+        Result := C;
+        OffSet := iAbs(Degree - C);
+      end;
+    end;
+end;
+
+{*******************************************************************************
+function DungeonWalkEx(Dir, Radius, MaxOff: Integer; Click: Boolean): Boolean;
+By: ???
+Description:
+*******************************************************************************}
+function DungeonWalkEx(Dir, Radius, MaxOff: Integer; Click: Boolean): Boolean;
+var
+   J, sD, eD: Integer;
+   p: TPoint;
+   D: Extended;
+begin
+  Dir := Round(Dir + rs_GetCompassAngleDegrees);
+  if Dir > 360 then
+    Dir := Dir - 360;
+  SetArrayLength(Dungeons, 0);
+  D := MaxOff;
+  J := - 1;
+  sD := iabs(Dir - 90);
+  eD := iabs(Dir + 90);
+  DetectDungeonPoints(Radius, sd, ed);
+  J := GetBestDegree(Dir);
+  p.x := Round( Radius * Sin((J)* Pi / 180)) + 648;
+  p.y := Round(-Radius * Cos((J)* Pi / 180)) + 80;
+  
+  
+  if iAbs(J - Dir) < MaxOff then
+  begin
+    Result := True;
+    if Click then
+    begin
+      Mouse(p.x, p.y, 2, 2, True);
+      FFlag(0);
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function DungeonWalk(Dir, mRadius, MaxOff: Integer): Boolean;
+By: ???
+Description:
+*******************************************************************************}
+function DungeonWalk(Dir, mRadius, MaxOff: Integer): Boolean;
+var
+   I: Integer;
+begin
+  for I := mRadius downto 30 do
+    if DungeonWalkEx(Dir, I, MaxOff, True) then
+    begin
+      writeln(inttostr(i));
+      Result := True;
+      Exit;
+    end;
+end;
+
+{*******************************************************************************
+function DungeonDirExists(Dir, Radius, MaxOff: Integer): Boolean;
+By: ???
+Description:
+*******************************************************************************}
+function DungeonDirExists(Dir, Radius, MaxOff: Integer): Boolean;
+var
+   I: Integer;
+begin
+  DetectDungeonPoints(Radius, 0, 360);
+  for I := 0 to Length(Dungeons) - 1 do
+    if iAbs(((Dungeons[I].StartD + Dungeons[I].endD) Shr 1) - Dir) < MaxOff then
+    begin
+      writeln('Found at ' + inttostr(((Dungeons[I].StartD + Dungeons[I].endD) Shr 1)));
+      Result := True;
+      Exit;
+    end;
+end;

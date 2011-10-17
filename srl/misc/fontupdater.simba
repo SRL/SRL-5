@@ -1,0 +1,106 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » Font updating routines                      --//
+//-----------------------------------------------------------------//
+// * function srl_FontsUp2date: array of Boolean;                 // by Markus
+// * procedure srl_UpdateFonts(Fonts: array of Boolean);          // by Markus
+
+{*******************************************************************************
+function srl_FontsUp2date: array of Boolean;
+by: Markus
+Description: Checks if all fonts are up to date. Returns a boolean array with outdated fonts
+*******************************************************************************}
+function srl_FontsUp2date: array of Boolean;
+var
+  Area51Array, CountArray, FontsArray : TIntegerArray;
+  I, B, Width, Heigth : Integer;
+  Hoi: LongWord;
+begin
+  FontsArray  := [NPCChars, SmallChars, StatChars, UpChars, FriendChars, LoginChars];
+  Area51Array := [ 1258,   889,   637, 1597,  873, 1982];
+  CountArray  := [ 8568,  5616,  3360, 6528, 4158, 9072];
+  Result      := [False, False, False, False, False, False];
+  Hoi := GetTargetDC;
+  for i := 0 to High(FontsArray) do
+  begin
+    try
+      B := CreateBitmapMaskFromText('QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm', FontsArray[i]);
+      GetBitmapSize(B, Width, Heigth);
+      SetTargetBitmap(B);
+      if (CountColor(16777215, 0, 0, Width, Heigth) <> Area51Array[I]) or
+        ((Width * Heigth) <> CountArray[i]) then
+        Result[i] := True;
+      FreeBitmap(B);
+    except
+      Result[i] := True;
+    end;
+  end;
+  SetTargetDc(Hoi);
+end;
+
+{*******************************************************************************
+procedure srl_UpdateFonts(Fonts: array of Boolean);
+by: Markus
+Description: Updates all outdated fonts (as said in the Fonts array) in SCAR.
+*******************************************************************************}
+procedure srl_UpdateFonts(Fonts: array of Boolean);
+var
+  FontDirs, FileList: TStringArray;
+  i, j, FontFile, HTTPC: integer;
+  s: string;
+begin
+  FontDirs := ['CharsNPC', 'SmallChars', 'StatChars', 'UpChars', 'FriendChars',
+    'LoginChars'];
+  {for i := 0 to High(FontsDirs) do
+    if (not(DirectoryExists(FontPath+FontDirs[i]+'/'))) then
+      Fonts[i] := True; //Just a failsafe }
+  for i := 0 to High(FontDirs) do
+    if (Fonts[i] = True) then
+      s := s + ' ' + FontDirs[i];
+  if (s = '') then
+  begin
+    //result := true;
+    Exit;
+  end;
+  WriteLn('Updating the fonts:' + s);
+  WriteLn('Please allow SCAR to connect to googlecode.com');
+  HTTPC := InitializeHTTPClient(True, True);
+  //SetHTTPUserAgent(HTTPC, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; nl; rv:1.9.1) Gecko/20090624 Firefox/3.5'#13#10);
+  for i := 0 to High(FontDirs) do
+  begin
+    if Fonts[i] = true then
+    begin
+      WriteLn('Updating font ' + FontDirs[i]);
+      s := GetPage('http://game-ronts.googlecode.com/svn/trunk/RS/' +
+        FontDirs[i] + '/');
+      s := Between('<ul>', '</ul>', s);
+      if (trim(s) = '') then
+      begin
+        WriteLn('Could not update the fonts or corrupt font list. Please allow access next time, or try again later');
+        WriteLn('Updater quit.');
+        Exit;
+      end;
+      FileList := srl_Explode(s, '<li>');
+      for j := 0 to High(FileList) do
+      begin
+        s := Between('<a href="', '>', FileList[j]);
+        Delete(s, Length(s), 1);
+        if Pos('.bmp', s) = 0 then
+          continue;
+        Status('[Font Updater]:  Updating ' + FontDirs[i] + ' ' + s);
+        FontFile := RewriteFile(FontPath + FontDirs[i] + '/' + s, False);
+        s := GetPage('http://game-ronts.googlecode.com/svn/trunk/RS/' + FontDirs[i] + '/' + s);
+        if (s = '') then
+        begin
+          WriteLn('Downloading of ' + FileList[j] + ' failed. Skipping rest of File List.');
+          Break;
+        end;
+        WriteFileString(FontFile, s);
+        CloseFile(FontFile);
+      end;
+    end;
+  end;
+  WriteLn('All fonts are succesfully updated!');
+  WriteLn('Please restart SCAR or go to "Tools | Reload Standard Fonts"');
+  TerminateScript;
+end;

@@ -1,0 +1,1808 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » User Manager Routines                       --//
+//-----------------------------------------------------------------//
+// * procedure LoadCheckListForm;                                  // by Sumilion
+// * procedure ShowCheckListFormModal;                             // by Sumilion
+// * procedure ShowCheckListForm;                                  // by Sumilion
+// * procedure SavePlayers(Create: Boolean);                       // by Starblaster100
+// * procedure LoadPlayers(SetPlayers: Boolean);                   // by Starblaster100
+// * procedure SwitchInTabArray(NewPlace, OldPlace: Integer; var V: array of TTabSheet); // by Sumilion
+// * procedure SwitchInEditArray(NewPlace, OldPlace: Integer; var V: array of TEdit); // by Sumilion
+// * procedure SwitchInComboArray(NewPlace, OldPlace: Integer; var V: array of TComboBox); // by Sumilion
+// * procedure OnSRLPFMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); // by Sumilion
+// * procedure OnSRLPFDragDrop(Sender, Source: TObject; X, Y: Integer); // by Sumilion
+// * procedure OnSRLPFDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); // by Sumilion
+// * procedure DeleteInEditArray(SpotToDelete: Integer; var V: array of TEdit); // by Sumilion
+// * procedure DeleteInEditArrayOfArray(SpotToDelete: Integer; var V: array of array of TEdit); // by Sumilion
+// * procedure DeleteInEditArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TEdit); // by Sumilion
+// * procedure DeleteInComboArray(SpotToDelete: Integer; var V: array of TComboBox); // by Sumilion
+// * procedure DeleteInComboArrayOfArray(SpotToDelete: Integer; var V: array of array of TComboBox); // by Sumilion
+// * procedure DeleteInComboArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TComboBox); // by Sumilion
+// * procedure DeleteInTabArray(SpotToDelete: Integer; var V: array of TTabSheet); // by Sumilion
+// * procedure DeleteInTabArrayOfArray(SpotToDelete: Integer; var V: array of array of TTabSheet); // by Sumilion
+// * procedure DeleteInPageControlArray(SpotToDelete: Integer; var V: array of TPageControl); // by Sumilion
+// * procedure SetLabelsParent(Parent: Integer);                   // by Sumilion
+// * procedure DeletePlayerInTab(ArmyNumber, PlayerNumber, NextPlayerTab: Integer); // by Sumilion
+// * procedure ClearPlayerInTab(ArmyNumber, PlayerNumber: Integer); // by Sumilion
+// * procedure AddPlayerInTab(ArmyNumber: Integer);                // by Sumilion
+// * procedure AddArmy;                                            // by Sumilion
+// * procedure DeleteArmy(ArmyNumber, NextArmyTab: Integer);       // by Sumilion
+// * procedure RenameArmy(ArmyNumber: Integer);                    // by Sumilion
+// * procedure ExportPlayerData;                                   // by Starblaster100 / Sumilion
+// * procedure ImportPlayerData;                                   // by Starblaster100 / Sumilion
+// * procedure OnSRLPFMainMenuClick(Sender: TObject);              // by Sumilion
+// * procedure OnSRLPFClick(Sender: TObject);                      // by Sumilion/Richard/ZephyrsFury
+// * procedure OnSRLPFShow(Sender: TObject);                       // by Sumilion
+// * procedure SRLPFMenuClick(Sender: TObject);                    // by Sumilion
+// * procedure SetSRLPlayerFormArrays;                             // by Sumilion
+// * procedure FillSRLPlayerFormTab(ArmyNumber, TabNumber: Integer); // by Sumilion
+// * procedure LoadSRLPlayerForm;                                  // by Sumilion/Richard/ZephyrsFury
+// * procedure ShowSRLPFFormModal;                                 // by Sumilion
+// * procedure SRLPlayerForm(ShowForm: Boolean; Booleans, Integers, Strings, Extendeds: TStringArray); // by Sumilion
+
+var
+  // Main form components
+  srl_PlayerForm : TForm;
+  srlpf_PreviousTabIndex, srlpf_Width, HowManyArmies, ActiveArmy: Integer;
+  srlpf_TerminateWhenDone, srlpf_SaveWhenDone: Boolean;
+  srlpf_ArmyPageControl : TPageControl;
+  srlpf_PlayerPageControl : array of TPageControl;
+  ArmyPages : array of TTabSheet;
+  ArmyNames : TStringArray;
+  PlayerPages : array of array of TTabSheet;
+  // Menu items
+  srlpf_ArmyPopUpMenu, srlpf_PlayerPopUpMenu: TPopupMenu;
+  srlpf_MainMenu: TMainMenu;
+  mItem: array of array of TMenuItem;
+  apop, ppop: array of TMenuItem;
+  // All labels
+  arBooleanLabels, arIntegerLabels,
+  arStringLabels, arExtendedLabels, labels: array of TLabel;
+  // All changeable settings
+  arUserNameEdits, arPasswordEdits, arNickEdits, arPinEdits, arBoxRewardsEdits : array of array of TEdit;
+  arActiveComboBoxes : array of array of TComboBox;
+  arBooleanComboBoxes : array of array of array of TComboBox;
+  arIntegerEdits, arStringEdits, arExtendedEdits : array of array of array of TEdit;
+  // All buttons on the form
+  pcontrol, control: array of TButton;
+  // Arrays of variable settings
+  srlpf_Booleans, srlpf_Integers, srlpf_Strings, srlpf_Extendeds: TStringArray;
+  // CheckList form vars
+  CheckListForm : TForm;
+  SRLPFCheckListBox: TCheckListBox;
+  CheckListButton: TButton;
+  // Other
+  srlpf_SavePath: string;
+
+procedure SetSRLPlayerFormArrays; forward;
+procedure FillSRLPlayerFormTab(ArmyNumber, TabNumber: Integer); forward;
+procedure OnSRLPFShow(Sender: TObject); forward;
+procedure DeletePlayerInTab(ArmyNumber, PlayerNumber, NextPlayerTab: Integer); forward;
+procedure OnSRLPFClick(Sender: TObject); forward;
+
+{*******************************************************************************
+procedure LoadCheckListForm;
+By: Sumilion
+Description: Initializes the check list form needed for Users.scar
+*******************************************************************************}
+procedure LoadCheckListForm;
+var
+  ArmyIndex: Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+
+  CheckListForm.Position := poDesktopCenter;
+  CheckListForm.Width := 200;
+  CheckListForm.Height := 135;
+  CheckListForm.Color := clBtnFace;
+  CheckListForm.Font.Color := clWindowText;
+  CheckListForm.Font.Height := -11;
+  CheckListForm.Font.Name := 'MS Sans Serif';
+  CheckListForm.Font.Style := [];
+  CheckListForm.Visible := False;
+  CheckListForm.PixelsPerInch := 96;
+  CheckListForm.BorderIcons := [biSystemMenu];
+  CheckListForm.BorderStyle := bsSingle;
+
+  SRLPFCheckListBox.Parent := CheckListForm;
+  SRLPFCheckListBox.Width := CheckListForm.Width;
+  SRLPFCheckListBox.Height := CheckListForm.Height - 65;
+  SRLPFCheckListBox.Align := alTop;
+  SRLPFCheckListBox.ItemHeight := 13;
+
+  CheckListButton.Parent := CheckListForm;
+  CheckListButton.Left := 70;
+  CheckListButton.Top := 80;
+  CheckListButton.Width := 50;
+  CheckListButton.Height := 20;
+  CheckListButton.OnClick := @OnSRLPFClick;
+end;
+
+{*******************************************************************************
+procedure ShowCheckListFormModal;
+By: Sumilion
+Description: Showes the form.
+*******************************************************************************}
+procedure ShowCheckListFormModal;
+begin
+  CheckListForm.ShowModal;
+end;
+
+{*******************************************************************************
+procedure ShowCheckListForm;
+By: Sumilion
+Description: Safely initializes and shows the form
+*******************************************************************************}
+procedure ShowCheckListForm;
+var
+  v: TVariantArray;
+begin
+  V := [];
+  ThreadSafeCall('LoadCheckListForm', V);
+  V := [];
+  ThreadSafeCall('ShowCheckListFormModal', V);
+end;
+
+{*******************************************************************************
+procedure SavePlayers;
+By: Starblaster100
+Description: Saves the players to a file / creates a file when needed.
+*******************************************************************************}
+procedure SavePlayers;
+var
+  ArmyIndex, i, j, k: Integer;
+Begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+  WriteINI('General', 'HowManyArmies', IntToStr(Length(ArmyPages)), srlpf_SavePath);
+  WriteINI('General', 'ActiveArmy', IntToStr(ArmyIndex), srlpf_SavePath);
+  for i := 0 to GetArrayLength(ArmyPages) - 1 do
+  begin
+    WriteINI('ArmyPages', 'Name[' +IntToStr(i)+ ']', ArmyPages[i].Caption, srlpf_SavePath);
+    WriteINI('ArmyPages', 'Number[' +IntToStr(i)+ ']', IntToStr(Length(PlayerPages[i])), srlpf_SavePath);
+  end;
+  for k := 0 to Length(ArmyPages) - 1 do
+  begin
+    for i := 0 to Length(PlayerPages[k]) - 1 do
+    begin
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'Username', arUserNameEdits[k][i].Text, srlpf_SavePath);
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'Password', arPasswordEdits[k][i].Text, srlpf_SavePath);
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'Nickname', arNickEdits[k][i].Text, srlpf_SavePath);
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'Active', arActiveComboBoxes[k][i].Text, srlpf_SavePath);
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'Pin', arPinEdits[k][i].Text, srlpf_SavePath);
+      WriteINI(IntToStr(k) +',' +IntToStr(i), 'BoxRewards', Replace(arBoxRewardsEdits[k][i].Text, ' ', ''), srlpf_SavePath);
+      for j := 0 to Length(srlpf_Booleans) - 1 do
+        WriteINI(IntToStr(k) +',' +IntToStr(i), 'Booleans[' +IntToStr(j)+ ']', arBooleanComboBoxes[k][j][i].Text, srlpf_SavePath);
+      for j := 0 to Length(srlpf_Integers) - 1 do
+        WriteINI(IntToStr(k) +',' +IntToStr(i), 'Integers[' +IntToStr(j)+ ']', arIntegerEdits[k][j][i].Text, srlpf_SavePath);
+      for j := 0 to Length(srlpf_Strings) - 1 do
+        WriteINI(IntToStr(k) +',' +IntToStr(i), 'Strings[' +IntToStr(j)+ ']', arStringEdits[k][j][i].Text, srlpf_SavePath);
+      for j := 0 to Length(srlpf_Extendeds) - 1 do
+        WriteINI(IntToStr(k) +',' +IntToStr(i), 'Extendeds[' +IntToStr(k)+ ']', arExtendedEdits[k][j][i].Text, srlpf_SavePath);
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure arPinEditsPress(Sender : TEdit; var Key : Char);
+By: Cazax
+Description: Detects if user press non numerical keys to remove them
+             from the Pin Edit
+*******************************************************************************
+procedure arPinEditsPress(Sender: TObject; var Key: Char);
+begin
+  If Key = '' Then
+    Exit;
+  Case Key Of
+    #48..#57: If Length(arPinEdits[EditK][EditI].Text) = 4 Then Key := #0;
+  Else
+    Key := #0;
+  End;
+end;}
+
+{*******************************************************************************
+procedure LoadPlayers(SetPlayers: Boolean);
+By: Starblaster100
+Description: Loads the players from a file
+*******************************************************************************}
+procedure LoadPlayers(SetPlayers: Boolean);
+var
+  ArmyIndex, i, j, k: Integer;
+Begin
+  HowManyArmies := StrToIntDef(ReadINI('General', 'HowManyArmies', srlpf_SavePath), 1);
+  ArmyIndex := StrToIntDef(ReadINI('General', 'ActiveArmy', srlpf_SavePath), 0);
+  ActiveArmy := ArmyIndex;
+  SetLength(ArmyPages, HowManyArmies);
+  SetLength(ArmyNames, HowManyArmies);
+  for i := 0 to HowManyArmies - 1 do
+    ArmyNames[i] := ReadINI('ArmyPages', 'Name[' +IntToStr(i)+ ']', srlpf_SavePath);
+
+  if(SetPlayers)then
+  begin
+    HowManyPlayers := StrToIntDef(ReadINI('ArmyPages', 'Number[' +IntToStr(ArmyIndex)+ ']', srlpf_SavePath), 1);
+    NumberOfPlayers(HowManyPlayers);
+
+    for i := 0 to HowManyPlayers - 1 do
+    begin
+      Players[i].Name := ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Username', srlpf_SavePath);
+      Players[i].Pass := ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Password', srlpf_SavePath);
+      Players[i].Nick := ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Nickname', srlpf_SavePath);
+      Players[i].Active := StrToBoolDef(ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Active', srlpf_SavePath), True);
+      Players[i].Pin := ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Pin', srlpf_SavePath);
+      Players[i].BoxRewards := srl_Explode(ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'BoxRewards', srlpf_SavePath), ',');
+
+      for j := 0 to Length(srlpf_Booleans) - 1 do
+        Players[i].Booleans[j] := StrToBoolDef(ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Booleans[' +IntToStr(j)+ ']', srlpf_SavePath), True);
+
+      for j := 0 to Length(srlpf_Integers) - 1 do
+        Players[i].Integers[j] := StrToIntDef(ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Integers[' +IntToStr(j)+ ']', srlpf_SavePath), 0);
+
+      for j := 0 to Length(srlpf_Strings) - 1 do
+        Players[i].Strings[j] := ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Strings[' +IntToStr(j)+ ']', srlpf_SavePath);
+
+      for j := 0 to Length(srlpf_Extendeds) - 1 do
+        Players[i].Extendeds[j] := StrToFloatDef(ReadINI(IntToStr(ArmyIndex) +',' +IntToStr(i), 'Extendeds[' +IntToStr(j)+ ']', srlpf_SavePath), 0.0);
+    end;
+  end else
+  begin
+    SetLength(PlayerPages, HowManyArmies);
+    for i := 0 to HowManyArmies - 1 do
+    begin
+      HowManyPlayers := StrToIntDef(ReadINI('ArmyPages', 'Number[' +IntToStr(i)+ ']', srlpf_SavePath), 1);
+      SetLength(PlayerPages[i], HowManyPlayers);
+    end;
+    SetSRLPlayerFormArrays;
+
+    for k := 0 to HowManyArmies - 1 do
+    begin
+      HowManyPlayers := StrToIntDef(ReadINI('ArmyPages', 'Number[' +IntToStr(k)+ ']', srlpf_SavePath), 1);
+      for i := 0 to HowManyPlayers - 1 do
+      begin
+        arUserNameEdits[k][i] := TEdit.Create(srl_PlayerForm);
+        arPasswordEdits[k][i] := TEdit.Create(srl_PlayerForm);
+        arPasswordEdits[k][i].PasswordChar := '*';
+        arNickEdits[k][i] := TEdit.Create(srl_PlayerForm);
+        arActiveComboBoxes[k][i] := TComboBox.Create(srl_PlayerForm);
+        arPinEdits[k][i] := TEdit.Create(srl_PlayerForm);
+        arBoxRewardsEdits[k][i] := TEdit.Create(srl_PlayerForm);
+
+        arUserNameEdits[k][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Username', srlpf_SavePath);
+        arPassWordEdits[k][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Password', srlpf_SavePath);
+        arNickEdits[k][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Nickname', srlpf_SavePath);
+        arActiveComboBoxes[k][i].Text := BoolToStr(StrToBoolDef(ReadINI(IntToStr(k) +',' +IntToStr(i), 'Active', srlpf_SavePath), True));
+        arPinEdits[k][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Pin', srlpf_SavePath);
+        arBoxRewardsEdits[k][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'BoxRewards', srlpf_SavePath);
+
+        for j := 0 to Length(srlpf_Booleans) - 1 do
+        begin
+          arBooleanComboBoxes[k][j][i] := TComboBox.Create(srl_PlayerForm);
+          arBooleanComboBoxes[k][j][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Booleans[' +IntToStr(j)+ ']', srlpf_SavePath);
+        end;
+
+        for j := 0 to Length(srlpf_Integers) - 1 do
+        begin
+          arIntegerEdits[k][j][i] := TEdit.Create(srl_PlayerForm);
+          arIntegerEdits[k][j][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Integers[' +IntToStr(j)+ ']', srlpf_SavePath);
+        end;
+
+        for j := 0 to Length(srlpf_Strings) - 1 do
+        begin
+          arStringEdits[k][j][i] := TEdit.Create(srl_PlayerForm);
+          arStringEdits[k][j][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Strings[' +IntToStr(j)+ ']', srlpf_SavePath);
+        end;
+
+        for j := 0 to Length(srlpf_Extendeds) - 1 do
+        begin
+          arExtendedEdits[k][j][i] := TEdit.Create(srl_PlayerForm);
+          arExtendedEdits[k][j][i].Text := ReadINI(IntToStr(k) +',' +IntToStr(i), 'Extendeds[' +IntToStr(j)+ ']', srlpf_SavePath);
+        end;
+
+      end;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure SwitchInTabArray(NewPlace, OldPlace: Integer; var V: array of TTabSheet);
+By: Sumilion
+Description: Switches values in a TTabSheet array
+*******************************************************************************}
+procedure SwitchInTabArray(NewPlace, OldPlace: Integer; var V: array of TTabSheet);
+var
+  k: Integer;
+  TempVarArray, TempAffectedArray: array of TTabSheet;
+begin
+  SetLength(TempVarArray, Length(V));
+  SetLength(TempAffectedArray, 1 + (iAbs(OldPlace - NewPlace)));
+  for k := 0 to Length(V) - 1 do
+    TempVarArray[k] := V[k];
+  TempVarArray[NewPlace] := V[OldPlace];
+  if(OldPlace > NewPlace)then
+  begin
+    for k := NewPlace to OldPlace - 1 do
+      TempAffectedArray[k - NewPlace] := V[k];
+    for k := NewPlace + 1 to OldPlace do
+      TempVarArray[k] := TempAffectedArray[k - (NewPlace + 1)];
+  end else
+  begin
+    for k := OldPlace + 1 to NewPlace do
+      TempAffectedArray[k - (OldPlace + 1)] := V[k];
+    for k := OldPlace to NewPlace - 1 do
+      TempVarArray[k] := TempAffectedArray[k - OldPlace];
+  end;
+
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure SwitchInEditArray(NewPlace, OldPlace: Integer; var V: array of TEdit);
+By: Sumilion
+Description: Switches values in a TEdit array
+*******************************************************************************}
+procedure SwitchInEditArray(NewPlace, OldPlace: Integer; var V: array of TEdit);
+var
+  k: Integer;
+  TempVarArray, TempAffectedArray: array of TEdit;
+begin
+  SetLength(TempVarArray, Length(V));
+  SetLength(TempAffectedArray, 1 + (iAbs(OldPlace - NewPlace)));
+  for k := 0 to Length(V) - 1 do
+    TempVarArray[k] := V[k];
+  TempVarArray[NewPlace] := V[OldPlace];
+  if(OldPlace > NewPlace)then
+  begin
+    for k := NewPlace to OldPlace - 1 do
+      TempAffectedArray[k - NewPlace] := V[k];
+    for k := NewPlace + 1 to OldPlace do
+      TempVarArray[k] := TempAffectedArray[k - (NewPlace + 1)];
+  end else
+  begin
+    for k := OldPlace + 1 to NewPlace do
+      TempAffectedArray[k - (OldPlace + 1)] := V[k];
+    for k := OldPlace to NewPlace - 1 do
+      TempVarArray[k] := TempAffectedArray[k - OldPlace];
+  end;
+
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure SwitchInComboArray(NewPlace, OldPlace: Integer; var V: array of TComboBox);
+By: Sumilion
+Description: Switches values in a TComboBox array
+*******************************************************************************}
+procedure SwitchInComboArray(NewPlace, OldPlace: Integer; var V: array of TComboBox);
+var
+  k: Integer;
+  TempVarArray, TempAffectedArray: array of TComboBox;
+begin
+  SetLength(TempVarArray, Length(V));
+  SetLength(TempAffectedArray, 1 + (iAbs(OldPlace - NewPlace)));
+  for k := 0 to Length(V) - 1 do
+    TempVarArray[k] := V[k];
+  TempVarArray[NewPlace] := V[OldPlace];
+  if(OldPlace > NewPlace)then
+  begin
+    for k := NewPlace to OldPlace - 1 do
+      TempAffectedArray[k - NewPlace] := V[k];
+    for k := NewPlace + 1 to OldPlace do
+      TempVarArray[k] := TempAffectedArray[k - (NewPlace + 1)];
+  end else
+  begin
+    for k := OldPlace + 1 to NewPlace do
+      TempAffectedArray[k - (OldPlace + 1)] := V[k];
+    for k := OldPlace to NewPlace - 1 do
+      TempVarArray[k] := TempAffectedArray[k - OldPlace];
+  end;
+
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure OnSRLPFMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+By: Sumilion
+Description: Form action on Mouse click
+*******************************************************************************}
+procedure OnSRLPFMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  i, ArmyIndex: Integer;
+  MousePosPoint: TPoint;
+  RightClick: Boolean;
+begin
+  RightClick := Button;
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+  case Sender of
+    srlpf_PlayerPageControl[ArmyIndex]:
+    begin
+      if(RightClick)then
+      begin
+        srlpf_PlayerPageControl[ArmyIndex].ActivePageIndex := srlpf_PlayerPageControl[ArmyIndex].TabIndexAtClientPos(point(x,y));
+        MousePosPoint := srlpf_PlayerPageControl[ArmyIndex].ClientToScreen(IntToPoint(x, y));
+        srlpf_PlayerPopUpMenu.Popup(MousePosPoint.x, MousePosPoint.y);
+      end;
+      if(ssCtrl in Shift)and(not RightClick)then
+      begin
+        srlpf_PlayerPageControl[ArmyIndex].BeginDrag(False);
+        srlpf_PreviousTabIndex := srlpf_PlayerPageControl[ArmyIndex].ActivePage.PageIndex;
+      end;
+    end;
+    srlpf_ArmyPageControl:
+    begin
+      if(RightClick)then
+      begin
+        srlpf_ArmyPageControl.ActivePageIndex := srlpf_ArmyPageControl.TabIndexAtClientPos(point(x,y));
+        MousePosPoint := srlpf_ArmyPageControl.ClientToScreen(IntToPoint(x, y));
+        srlpf_ArmyPopUpMenu.Popup(MousePosPoint.x, MousePosPoint.y);
+      end;
+    end;
+  end;
+  for i := 0 to Length(PlayerPages[ArmyIndex]) - 1 do
+  begin
+    if(arUserNameEdits[ArmyIndex][i].Text <> '')then
+      PlayerPages[ArmyIndex][i].Caption := arUserNameEdits[ArmyIndex][i].Text
+    else
+      PlayerPages[ArmyIndex][i].Caption := 'Player ' + IntToStr(i);
+  end;
+end;
+
+{*******************************************************************************
+procedure OnSRLPFDragDrop(Sender, Source: TObject; X, Y: Integer);
+By: Sumilion
+Description: Form action on drag drop
+*******************************************************************************}
+procedure OnSRLPFDragDrop(Sender, Source: TObject; X, Y: Integer);
+var
+   i, ArmyIndex, PlayerIndex : Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePage.PageIndex;
+
+  srlpf_PlayerPageControl[ArmyIndex].ActivePage.PageIndex := srlpf_PlayerPageControl[ArmyIndex].TabIndexAtClientPos(point(x,y));
+
+  PlayerIndex := srlpf_PlayerPageControl[ArmyIndex].ActivePage.PageIndex;
+
+  SwitchInTabArray(PlayerIndex, srlpf_PreviousTabIndex, PlayerPages[ArmyIndex]);
+
+  SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arUserNameEdits[ArmyIndex]);
+  SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arPasswordEdits[ArmyIndex]);
+  SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arNickEdits[ArmyIndex]);
+  SwitchInComboArray(PlayerIndex, srlpf_PreviousTabIndex, arActiveComboBoxes[ArmyIndex]);
+  SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arPinEdits[ArmyIndex]);
+  SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arBoxRewardsEdits[ArmyIndex]);
+
+  for i := 0 to Length(srlpf_Booleans) - 1 do
+    SwitchInComboArray(PlayerIndex, srlpf_PreviousTabIndex, arBooleanComboBoxes[ArmyIndex][i]);
+
+  for i := 0 to Length(srlpf_Integers) - 1 do
+    SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arIntegerEdits[ArmyIndex][i]);
+
+  for i := 0 to Length(srlpf_Strings) - 1 do
+    SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arStringEdits[ArmyIndex][i]);
+
+  for i := 0 to Length(srlpf_Extendeds) - 1 do
+    SwitchInEditArray(PlayerIndex, srlpf_PreviousTabIndex, arExtendedEdits[ArmyIndex][i]);
+
+  for i := 0 to srlpf_PlayerPageControl[ArmyIndex].PageCount - 1 do
+    if(arUserNameEdits[ArmyIndex][i].Text <> '')then
+      PlayerPages[ArmyIndex][i].Caption := arUserNameEdits[ArmyIndex][i].Text
+    else
+      PlayerPages[ArmyIndex][i].Caption := 'Player ' + IntToStr(i);
+end;
+
+{*******************************************************************************
+procedure OnSRLPFDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+By: Sumilion
+Description: Form action on drag over
+*******************************************************************************}
+procedure OnSRLPFDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  Accept := (Sender is TPageControl);
+end;
+
+{*******************************************************************************
+procedure DeleteInEditArray(SpotToDelete: Integer; var V: array of TEdit);
+By: Sumilion
+Description: Deletes a value in a TEdit array
+*******************************************************************************}
+procedure DeleteInEditArray(SpotToDelete: Integer; var V: array of TEdit);
+var
+  k, l: Integer;
+  TempVarArray: array of TEdit;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInEditArrayOfArray(SpotToDelete: Integer; var V: array of array of TEdit);
+By: Sumilion
+Description: Deletes a value in a TEdit array
+*******************************************************************************}
+procedure DeleteInEditArrayOfArray(SpotToDelete: Integer; var V: array of array of TEdit);
+var
+  k, l: Integer;
+  TempVarArray: array of array of TEdit;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInEditArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TEdit);
+By: Sumilion
+Description: Deletes a value in a TEdit array
+*******************************************************************************}
+procedure DeleteInEditArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TEdit);
+var
+  k, l: Integer;
+  TempVarArray: array of array of array of TEdit;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInComboArray(SpotToDelete: Integer; var V: array of TComboBox);
+By: Sumilion
+Description: Deletes a value in a TComboBox array
+*******************************************************************************}
+procedure DeleteInComboArray(SpotToDelete: Integer; var V: array of TComboBox);
+var
+  k, l: Integer;
+  TempVarArray: array of TComboBox;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInComboArrayOfArray(SpotToDelete: Integer; var V: array of array of TComboBox);
+By: Sumilion
+Description: Deletes a value in a TComboBox array
+*******************************************************************************}
+procedure DeleteInComboArrayOfArray(SpotToDelete: Integer; var V: array of array of TComboBox);
+var
+  k, l: Integer;
+  TempVarArray: array of array of TComboBox;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInComboArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TComboBox);
+By: Sumilion
+Description: Deletes a value in a TComboBox array
+*******************************************************************************}
+procedure DeleteInComboArrayOfArrayOfArray(SpotToDelete: Integer; var V: array of array of array of TComboBox);
+var
+  k, l: Integer;
+  TempVarArray: array of array of array of TComboBox;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInTabArray(SpotToDelete: Integer; var V: array of TTabSheet);
+By: Sumilion
+Description: Deletes a value in a TTabSheet array
+*******************************************************************************}
+procedure DeleteInTabArray(SpotToDelete: Integer; var V: array of TTabSheet);
+var
+  k, l: Integer;
+  TempVarArray: array of TTabSheet;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInTabArrayOfArray(SpotToDelete: Integer; var V: array of array of TTabSheet);
+By: Sumilion
+Description: Deletes a value in a TTabSheet array
+*******************************************************************************}
+procedure DeleteInTabArrayOfArray(SpotToDelete: Integer; var V: array of array of TTabSheet);
+var
+  k, l: Integer;
+  TempVarArray: array of array of TTabSheet;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure DeleteInPageControlArray(SpotToDelete: Integer; var V: array of TPageControl);
+By: Sumilion
+Description: Deletes a value in a TTabSheet array
+*******************************************************************************}
+procedure DeleteInPageControlArray(SpotToDelete: Integer; var V: array of TPageControl);
+var
+  k, l: Integer;
+  TempVarArray: array of TPageControl;
+begin
+  SetLength(TempVarArray, Length(V) - 1);
+  for k := 0 to Length(V) - 1 do
+  begin
+    if not(k = SpotToDelete)then
+    begin
+      TempVarArray[l] := V[k];
+      l := l + 1;
+    end;
+  end;
+  V := TempVarArray;
+end;
+
+{*******************************************************************************
+procedure SetLabelsParent(Parent: Integer);
+By: Sumilion
+Description: Sets all labels to the desired parent
+*******************************************************************************}
+procedure SetLabelsParent(Army, Tab: Integer);
+var
+  i: Integer;
+begin
+  labels[0].Parent := PlayerPages[Army][Tab];
+  labels[1].Parent := PlayerPages[Army][Tab];
+  labels[2].Parent := PlayerPages[Army][Tab];
+  labels[3].Parent := PlayerPages[Army][Tab];
+  labels[4].Parent := PlayerPages[Army][Tab];
+  labels[5].Parent := PlayerPages[Army][Tab];
+
+  for i := 0 to Length(srlpf_Booleans) - 1 do
+    arBooleanLabels[i].Parent := PlayerPages[Army][Tab];
+
+  for i := 0 to Length(srlpf_Integers) - 1 do
+    arIntegerLabels[i].Parent := PlayerPages[Army][Tab];
+
+  for i := 0 to Length(srlpf_Strings) - 1 do
+    arStringLabels[i].Parent := PlayerPages[Army][Tab];
+
+  for i := 0 to Length(srlpf_Extendeds) - 1 do
+    arExtendedLabels[i].Parent := PlayerPages[Army][Tab];
+end;
+
+{*******************************************************************************
+procedure DeletePlayerInTab(ArmyNumber, PlayerNumber, NextPlayerTab: Integer);
+By: Sumilion
+Description: Deletes a player in a desired tab and goes to the next desired tab.
+*******************************************************************************}
+procedure DeletePlayerInTab(ArmyNumber, PlayerNumber, NextPlayerTab: Integer);
+var
+  i, d, ArmyIndex: Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+
+  if(srlpf_PlayerPageControl[ArmyIndex].PageCount = 1)then
+    Exit;
+
+  if(NextPlayerTab < 0)then
+    NextPlayerTab := 0;
+  for i := PlayerNumber + 1 to Length(PlayerPages[ArmyNumber]) - 1 do
+  begin
+    arUserNameEdits[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+    arPasswordEdits[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+    arNickEdits[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+    arActiveComboBoxes[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+    arPinEdits[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+    arBoxRewardsEdits[ArmyNumber][i].Parent := PlayerPages[ArmyNumber][i - 1];
+
+    for d := 0 to Length(srlpf_Booleans) - 1 do
+      arBooleanComboBoxes[ArmyNumber][d][i].Parent := PlayerPages[ArmyNumber][i - 1];
+
+    for d := 0 to Length(srlpf_Integers) - 1 do
+      arIntegerEdits[ArmyNumber][d][i].Parent := PlayerPages[ArmyNumber][i - 1];
+
+    for d := 0 to Length(srlpf_Strings) - 1 do
+      arStringEdits[ArmyNumber][d][i].Parent := PlayerPages[ArmyNumber][i - 1];
+
+    for d := 0 to Length(srlpf_Extendeds) - 1 do
+      arExtendedEdits[ArmyNumber][d][i].Parent := PlayerPages[ArmyNumber][i - 1];
+
+  end;
+
+  PlayerPages[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1].Free;
+
+  SetLength(PlayerPages[ArmyNumber], srlpf_PlayerPageControl[ArmyNumber].PageCount);
+
+  DeleteInEditArray(PlayerNumber, arUserNameEdits[ArmyNumber]);
+  DeleteInEditArray(PlayerNumber, arPasswordEdits[ArmyNumber]);
+  DeleteInEditArray(PlayerNumber, arNickEdits[ArmyNumber]);
+  DeleteInComboArray(PlayerNumber, arActiveComboBoxes[ArmyNumber]);
+  DeleteInEditArray(PlayerNumber, arPinEdits[ArmyNumber]);
+  DeleteInEditArray(PlayerNumber, arBoxRewardsEdits[ArmyNumber]);
+  for d := 0 to Length(srlpf_Booleans) - 1 do
+    DeleteInComboArray(PlayerNumber, arBooleanComboBoxes[ArmyNumber][d]);
+
+  for d := 0 to Length(srlpf_Integers) - 1 do
+    DeleteInEditArray(PlayerNumber, arIntegerEdits[ArmyNumber][d]);
+
+  for d := 0 to Length(srlpf_Strings) - 1 do
+    DeleteInEditArray(PlayerNumber, arStringEdits[ArmyNumber][d]);
+
+  for d := 0 to Length(srlpf_Extendeds) - 1 do
+    DeleteInEditArray(PlayerNumber, arExtendedEdits[ArmyNumber][d]);
+
+  srlpf_ArmyPageControl.ActivePageIndex := ArmyIndex;
+  srlpf_PlayerPageControl[ArmyIndex].ActivePageIndex := NextPlayerTab;
+  if(srlpf_PlayerPageControl[ArmyIndex].PageCount = 1)then
+    srlpf_PlayerPageControl[ArmyIndex].ActivePageIndex := 0;
+end;
+
+{*******************************************************************************
+procedure ClearPlayerInTab(ArmyNumber, PlayerNumber: Integer);
+By: Sumilion
+Description: Clears player settings in tab
+*******************************************************************************}
+procedure ClearPlayerInTab(ArmyNumber, PlayerNumber: Integer);
+var
+  i: Integer;
+begin
+  arUserNameEdits[ArmyNumber][PlayerNumber].Text := '';
+  arPasswordEdits[ArmyNumber][PlayerNumber].Text := '';
+  arNickEdits[ArmyNumber][PlayerNumber].Text := '';
+  arActiveComboBoxes[ArmyNumber][PlayerNumber].Text := 'True';
+  arPinEdits[ArmyNumber][PlayerNumber].Text := '';
+  arBoxRewardsEdits[ArmyNumber][PlayerNumber].Text := '';
+
+  for i := 0 to Length(arBooleanComboBoxes[ArmyNumber]) - 1 do
+    arBooleanComboBoxes[ArmyNumber][i][PlayerNumber].Text := 'False';
+
+  for i := 0 to Length(arIntegerEdits[ArmyNumber]) - 1 do
+    arIntegerEdits[ArmyNumber][i][PlayerNumber].Text := '';
+
+  for i := 0 to Length(arStringEdits[ArmyNumber]) - 1 do
+    arStringEdits[ArmyNumber][i][PlayerNumber].Text := '';
+
+  for i := 0 to Length(arExtendedEdits[ArmyNumber]) - 1 do
+    arExtendedEdits[ArmyNumber][i][PlayerNumber].Text := '';
+
+  PlayerPages[ArmyNumber][PlayerNumber].Caption := 'Player ' + IntToStr(PlayerNumber);
+end;
+
+{*******************************************************************************
+procedure AddPlayerInTab(ArmyNumber: Integer);
+By: Sumilion
+Description: Deletes a player in a desired tab and goes to the next desired tab.
+*******************************************************************************}
+procedure AddPlayerInTab(ArmyNumber: Integer);
+var
+  i: Integer;
+begin
+  SetLength(PlayerPages[ArmyNumber], Length(PlayerPages[ArmyNumber]) + 1);
+  SetSRLPlayerFormArrays;
+
+  arUserNameEdits[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+  arPasswordEdits[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+  arNickEdits[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+  arActiveComboBoxes[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TComboBox.Create(srl_PlayerForm);
+  arActiveComboBoxes[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1].Text := 'True';
+  arPinEdits[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+  arBoxRewardsEdits[ArmyNumber][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arBooleanComboBoxes[ArmyNumber]) - 1 do
+    arBooleanComboBoxes[ArmyNumber][i][Length(PlayerPages[ArmyNumber]) - 1] := TComboBox.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arIntegerEdits[ArmyNumber]) - 1 do
+    arIntegerEdits[ArmyNumber][i][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arStringEdits[ArmyNumber]) - 1 do
+    arStringEdits[ArmyNumber][i][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arExtendedEdits[ArmyNumber]) - 1 do
+    arExtendedEdits[ArmyNumber][i][Length(PlayerPages[ArmyNumber]) - 1] := TEdit.Create(srl_PlayerForm);
+
+  FillSRLPlayerFormTab(ArmyNumber, Length(PlayerPages[ArmyNumber]) - 1);
+  if(ArmyNumber = srlpf_ArmyPageControl.ActivePageIndex)then
+    srlpf_PlayerPageControl[ArmyNumber].ActivePageIndex := Length(PlayerPages[ArmyNumber]) - 1;
+end;
+
+{*******************************************************************************
+procedure AddArmy;
+By: Sumilion
+Description: Adds an army to the form
+*******************************************************************************}
+procedure AddArmy;
+var
+  i: Integer;
+begin
+  SetLength(ArmyPages, Length(ArmyPages) + 1);
+  SetLength(srlpf_PlayerPageControl, Length(ArmyPages));
+
+  ArmyPages[Length(ArmyPages) - 1] := TTabSheet.Create(srl_PlayerForm);
+  ArmyPages[Length(ArmyPages) - 1].Caption := 'Army ' + IntToStr(Length(ArmyPages) - 1);
+  ArmyPages[Length(ArmyPages) - 1].PageControl := srlpf_ArmyPageControl;
+  ArmyPages[Length(ArmyPages) - 1].OnShow := @OnSRLPFShow;
+
+  srlpf_PlayerPageControl[Length(ArmyPages) - 1] := TPageControl.Create(srl_PlayerForm);
+  with srlpf_PlayerPageControl[Length(ArmyPages) - 1] do
+  begin
+    Parent := ArmyPages[Length(ArmyPages) - 1];
+    Width := ArmyPages[Length(ArmyPages) - 1].Width;
+    Height := ArmyPages[Length(ArmyPages) - 1].Height;
+    Align := alBottom;
+    OnMouseDown := @OnSRLPFMouseDown;
+    OnDragDrop := @OnSRLPFDragDrop;
+    OnDragOver := @OnSRLPFDragOver;
+  end;
+
+  SetLength(PlayerPages, Length(ArmyPages));
+  SetLength(PlayerPages[Length(ArmyPages) - 1], 1);
+  SetSRLPlayerFormArrays;
+
+  arUserNameEdits[Length(ArmyPages) - 1][0] := TEdit.Create(srl_PlayerForm);
+  arPasswordEdits[Length(ArmyPages) - 1][0] := TEdit.Create(srl_PlayerForm);
+  arNickEdits[Length(ArmyPages) - 1][0] := TEdit.Create(srl_PlayerForm);
+  arActiveComboBoxes[Length(ArmyPages) - 1][0] := TComboBox.Create(srl_PlayerForm);
+  arActiveComboBoxes[Length(ArmyPages) - 1][0].Text := 'True';
+  arPinEdits[Length(ArmyPages) - 1][0] := TEdit.Create(srl_PlayerForm);
+  arBoxRewardsEdits[Length(ArmyPages) - 1][0] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arBooleanComboBoxes[Length(ArmyPages) - 1]) - 1 do
+    arBooleanComboBoxes[Length(ArmyPages) - 1][i][0] := TComboBox.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arIntegerEdits[Length(ArmyPages) - 1]) - 1 do
+    arIntegerEdits[Length(ArmyPages) - 1][i][0] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arStringEdits[Length(ArmyPages) - 1]) - 1 do
+    arStringEdits[Length(ArmyPages) - 1][i][0] := TEdit.Create(srl_PlayerForm);
+
+  for i := 0 to Length(arExtendedEdits[Length(ArmyPages) - 1]) - 1 do
+    arExtendedEdits[Length(ArmyPages) - 1][i][0] := TEdit.Create(srl_PlayerForm);
+
+  FillSRLPlayerFormTab(Length(ArmyPages) - 1, 0);
+
+  srlpf_ArmyPageControl.ActivePageIndex := Length(ArmyPages) - 1;
+end;
+
+{*******************************************************************************
+procedure DeleteArmy(ArmyNumber, NextArmyTab: Integer);
+By: Sumilion
+Description: Deletes an army in the form
+*******************************************************************************}
+procedure DeleteArmy(ArmyNumber, NextArmyTab: Integer);
+var
+  i, j: Integer;
+begin
+  if(NextArmyTab < 0)then
+    NextArmyTab := 0;
+  if(srlpf_ArmyPageControl.PageCount = 1)then
+    Exit;
+  if Armynumber > 0 then
+    srlpf_ArmyPageControl.ActivePageIndex := NextArmyTab
+  else
+    srlpf_ArmyPageControl.ActivePageIndex := 0;
+  if((srlpf_ArmyPageControl.PageCount - 1) > ArmyNumber)then
+    j := ArmyNumber + 1
+  else
+    j := ArmyNumber - 1;
+
+  for i := ArmyNumber + 1 to Length(ArmyPages) - 1 do
+  begin
+    srlpf_PlayerPageControl[i].Parent := ArmyPages[i - 1];
+    ArmyPages[i - 1].Caption := ArmyPages[i].Caption;
+  end;
+
+  srlpf_PlayerPageControl[ArmyNumber].Free;
+  ArmyPages[Length(ArmyPages) - 1].Free;
+  SetLength(ArmyPages, Length(ArmyPages) - 1);
+
+  DeleteInEditArrayOfArray(ArmyNumber, arUserNameEdits);
+  DeleteInEditArrayOfArray(ArmyNumber, arPasswordEdits);
+  DeleteInEditArrayOfArray(ArmyNumber, arNickEdits);
+  DeleteInComboArrayOfArray(ArmyNumber, arActiveComboBoxes);
+  DeleteInEditArrayOfArray(ArmyNumber, arPinEdits);
+  DeleteInEditArrayOfArray(ArmyNumber, arBoxRewardsEdits);
+  DeleteInComboArrayOfArrayOfArray(ArmyNumber, arBooleanComboBoxes);
+  DeleteInEditArrayOfArrayOfArray(ArmyNumber, arIntegerEdits);
+  DeleteInEditArrayOfArrayOfArray(ArmyNumber, arStringEdits);
+  DeleteInEditArrayOfArrayOfArray(ArmyNumber, arExtendedEdits);
+  DeleteInTabArrayOfArray(ArmyNumber, PlayerPages);
+  DeleteInPageControlArray(ArmyNumber, srlpf_PlayerPageControl);
+
+  srlpf_ArmyPageControl.ActivePageIndex := NextArmyTab;
+  //srlpf_PlayerPageControl[NextArmyTab].ActivePageIndex := 0;
+
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    if(Pos('Army', ArmyPages[i].Caption) = 1)then
+      ArmyPages[i].Caption := 'Army ' + IntToStr(i);
+  end;
+end;
+
+{*******************************************************************************
+procedure RenameArmy(ArmyNumber: Integer);
+By: Sumilion
+Description: Renames an army's name
+*******************************************************************************}
+procedure RenameArmy(ArmyNumber: Integer);
+var
+  ArmyName: string;
+begin
+  ArmyName := Readln('New army name for : ' + ArmyPages[ArmyNumber].Caption +
+                     Chr(13) + '(Leave blank for default)');
+  if(ArmyName = '')then
+    ArmyPages[ArmyNumber].Caption := 'Army ' + IntToStr(ArmyNumber)
+  else
+    ArmyPages[ArmyNumber].Caption := ArmyName;
+end;
+
+{*******************************************************************************
+procedure ExportPlayerData;
+By: Starblaster100 / Sumilion
+Description: Turns the info input into the forms into a copy and pasteable
+DeclarePlayers procedure
+*******************************************************************************}
+procedure ExportPlayerData;
+var
+  i, j, ArmyIndex: Integer;
+  TempString: string;
+  OpenDialog1 : TSaveDialog;
+  a: TStringList;
+begin
+  OpenDialog1 := TSaveDialog.Create(srl_PlayerForm);
+  a := TStringList.Create;
+
+  with OpenDialog1 do
+  begin
+    InitialDir := ScriptPath;
+    Filter := 'SCAR Scripts (*.scar)|*.scar|';
+    if(Execute)then
+    begin
+      if(ExtractFileExt(FileName) = '')then
+        TempString := FileName + '.scar'
+      else
+        TempString := FileName;
+    end else
+    begin
+      a.Free;
+      Free;
+      Exit;
+    end;
+    Free;
+  end;
+
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+
+  a.Text := a.Text + 'procedure DeclarePlayers;' + Chr(13);
+  a.Text := a.Text + 'begin' + Chr(13);
+  a.Text := a.Text + '  NumberOfPlayers(' +IntToStr(Length(PlayerPages[ArmyIndex]))+ ');' + Chr(13);
+  a.Text := a.Text + '  HowManyBooleans := ' +IntToStr(Length(srlpf_Booleans))+ ';' + Chr(13);
+
+  for i := 0 to Length(PlayerPages[ArmyIndex])-1 do
+  begin
+    a.Text := a.Text + Chr(13);
+    if(arUserNameEdits[ArmyIndex][i].Text = '')then
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Name := '''';' + Chr(13)
+    else
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Name := ''' + arUserNameEdits[ArmyIndex][i].Text + ''';' + Chr(13);
+
+    if(arPasswordEdits[ArmyIndex][i].Text = '')then
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Pass := '''';' + Chr(13)
+    else
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Pass := ''' + arPasswordEdits[ArmyIndex][i].Text + ''';' + Chr(13);
+
+    if(arNickEdits[ArmyIndex][i].Text = '')then
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Nick := '''';' + Chr(13)
+    else
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Nick := ''' + arNickEdits[ArmyIndex][i].Text + ''';' + Chr(13);
+
+    a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Active := ' + arActiveComboBoxes[ArmyIndex][i].Text + ';' + Chr(13);
+
+    if(arPinEdits[ArmyIndex][i].Text = '')then
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Pin := '''';' + Chr(13)
+    else
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].Pin := ''' + arPinEdits[ArmyIndex][i].Text + ''';' + Chr(13);
+
+    if(arBoxRewardsEdits[ArmyIndex][i].Text = '')then
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].BoxRewards := '''';' + Chr(13)
+    else
+      a.Text := a.Text + '  Players[' +IntToStr(i)+ '].BoxRewards := ''' + arBoxRewardsEdits[ArmyIndex][i].Text + ''';' + Chr(13);
+
+    for j := 0 to Length(srlpf_Booleans) - 1 do
+      a.Text := a.Text + '  Players[' + IntToStr(i) + '].Booleans[' + IntToStr(j) + '] := ' + arBooleanComboBoxes[ArmyIndex][j][i].Text + ';' + Chr(13);
+
+    for j := 0 to Length(srlpf_Integers) - 1 do
+      if(arIntegerEdits[ArmyIndex][j][i].Text = '')then
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Integers[' + IntToStr(j) + '] := 0;' + Chr(13)
+      else
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Integers[' + IntToStr(j) + '] := ' + arIntegerEdits[ArmyIndex][j][i].Text + ';' + Chr(13);
+
+    for j := 0 to Length(srlpf_Strings) - 1 do
+      if(arStringEdits[ArmyIndex][j][i].Text = '')then
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Strings[' + IntToStr(j) + '] := '''';' + Chr(13)
+      else
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Strings[' + IntToStr(j) + '] := ''' + arStringEdits[ArmyIndex][j][i].Text + ''';' + Chr(13);
+
+    for j := 0 to Length(srlpf_Extendeds) - 1 do
+      if(arExtendedEdits[ArmyIndex][j][i].Text = '')then
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Extendeds[' + IntToStr(j) + '] := 0.0;' + Chr(13)
+      else
+        a.Text := a.Text + '  Players[' + IntToStr(i) + '].Extendeds[' + IntToStr(j) + '] := ' + arExtendedEdits[ArmyIndex][j][i].Text + ';' + Chr(13);
+  end;
+  a.Text := a.Text + 'end;' + Chr(13);
+  try
+    a.SaveToFile(tempstring);
+  except
+    a.Free;
+    Writeln('File not found!');
+    Exit;
+  end;
+end;
+
+{*******************************************************************************
+procedure ImportPlayerData;
+By: Starblaster100 / Sumilion
+Description: Inputs information from the DeclarePlayers procedure into the form
+*******************************************************************************}
+procedure ImportPlayerData;
+var
+  i, j, ArmyIndex: Integer;
+  DeclarePlayers, TempString: string;
+  OpenDialog1 : TOpenDialog;
+  a: TStringList;
+begin
+  OpenDialog1 := TOpenDialog.Create(srl_PlayerForm);
+  a := TStringList.Create;
+  with OpenDialog1 do
+  begin
+    InitialDir := ScriptPath;
+    Options := [ofFileMustExist, ofReadOnly];
+    Filter := 'SCAR Scripts (*.scar)|*.scar|' +
+              'Text Files (*.txt)|*.txt|' +
+              'All Files|*|';
+    if(Execute)then
+      TempString := FileName
+    else
+    begin
+      a.Free;
+      Free;
+      Exit;
+    end;
+    Free;
+  end;
+  try
+    a.LoadFromFile(tempstring);
+  except
+    a.Free;
+    Writeln('File not found!');
+    Exit;
+  end;
+  DeclarePlayers := LowerCase(a.Text);
+  AddArmy;
+  a.Free;
+  HowManyPlayers := StrToIntDef(Between('numberofplayers(', ');', DeclarePlayers), 0);
+  if(HowManyPlayers = 0)then
+    HowManyPlayers := StrToIntDef(Between('howmanyplayers := ', ';', DeclarePlayers), 1);
+  ArmyIndex := srlpf_ArmyPageControl.PageCount - 1;
+  for i := 0 to HowManyPlayers - 2 do
+    AddPlayerInTab(ArmyIndex);
+  for i := 0 to HowManyPlayers - 1 do
+  begin
+    arUserNameEdits[ArmyIndex][i].Text := Between('players[' + IntToStr(i) + '].name := ''', ''';', DeclarePlayers);
+    arPassWordEdits[ArmyIndex][i].Text := Between('players[' + IntToStr(i) + '].pass := ''', ''';', DeclarePlayers);
+    arNickEdits[ArmyIndex][i].Text := Between('players[' + IntToStr(i) + '].nick := ''', ''';', DeclarePlayers);
+    arActiveComboBoxes[ArmyIndex][i].Text := Between('players[' + IntToStr(i) + '].active := ', ';', DeclarePlayers);
+    arPinEdits[ArmyIndex][i].Text := Between('players[' + IntToStr(i) + '].pin := ''', ''';', DeclarePlayers);
+    arBoxRewardsEdits[ArmyIndex][i].Text := Replace(Between('players[' + IntToStr(i) + '].boxrewards := ''', ''';', DeclarePlayers), ' ', '');
+    for j := 0 to Length(srlpf_Booleans) - 1 do
+      arBooleanComboBoxes[ArmyIndex][j][i].Text := Between('players[' + IntToStr(i) + '].booleans[' +IntToStr(j)+ '] := ', ';', DeclarePlayers);
+    for j := 0 to Length(srlpf_Integers) - 1 do
+      arIntegerEdits[ArmyIndex][j][i].Text := Between('players[' + IntToStr(i) + '].integers[' +IntToStr(j)+ '] := ', ';', DeclarePlayers);
+    for j := 0 to Length(srlpf_Strings) - 1 do
+      arStringEdits[ArmyIndex][j][i].Text := Between('players[' + IntToStr(i) + '].strings[' +IntToStr(j)+ '] := ''', ''';', DeclarePlayers);
+    for j := 0 to Length(srlpf_Extendeds) - 1 do
+      arExtendedEdits[ArmyIndex][j][i].Text := Between('players[' + IntToStr(i) + '].extendeds[' +IntToStr(j)+ '] := ', ';', DeclarePlayers);
+    if(arUserNameEdits[ArmyIndex][i].Text <> '')then
+      PlayerPages[ArmyIndex][i].Caption := arUserNameEdits[ArmyIndex][i].Text
+    else
+      PlayerPages[ArmyIndex][i].Caption := 'Player ' + IntToStr(i);
+  end;
+end;
+
+{*******************************************************************************
+procedure OnSRLPFMainMenuClick(Sender: TObject);
+By: Sumilion
+Description: Form actions on the MainMenu items
+*******************************************************************************}
+procedure OnSRLPFMainMenuClick(Sender: TObject);
+var
+  i, j, ArmyIndex: Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePage.PageIndex;
+  case Sender of
+    mItem[1][1]: AddPlayerInTab(ArmyIndex);
+    mItem[1][2]:
+    begin
+      CheckListForm := CreateForm;
+      SRLPFCheckListBox := TCheckListBox.Create(CheckListForm);
+      SRLPFCheckListBox.Parent := CheckListForm;
+      CheckListButton := TButton.Create(CheckListForm);
+      CheckListButton.Caption := 'Delete';
+      CheckListForm.Caption := 'Delete Players :';
+      for i := 0 to srlpf_PlayerPageControl[ArmyIndex].PageCount - 1 do
+      begin
+        SRLPFCheckListBox.Items.Add(PlayerPages[ArmyIndex][i].Caption);
+      end;
+      ShowCheckListForm;
+      for i := SRLPFCheckListBox.Items.Count - 1 downto 0 do
+      begin
+        if(SRLPFCheckListBox.Checked[i])then
+          if(srlpf_PlayerPageControl[ArmyIndex].PageCount > 1)then
+            if(i = ArmyIndex)then
+              DeletePlayerInTab(ArmyIndex, i, i - 1)
+            else
+              DeletePlayerInTab(ArmyIndex, i, ArmyIndex);
+      end;
+      FreeForm(CheckListForm);
+    end;
+    mItem[1][3]:
+    begin
+      CheckListForm := CreateForm;
+      SRLPFCheckListBox := TCheckListBox.Create(CheckListForm);
+      SRLPFCheckListBox.Parent := CheckListForm;
+      CheckListButton := TButton.Create(CheckListForm);
+      CheckListButton.Caption := 'Clear';
+      CheckListForm.Caption := 'Clear Players :';
+      for i := 0 to srlpf_PlayerPageControl[ArmyIndex].PageCount - 1 do
+      begin
+        SRLPFCheckListBox.Items.Add(PlayerPages[ArmyIndex][i].Caption);
+      end;
+      ShowCheckListForm;
+      for i := SRLPFCheckListBox.Items.Count - 1 downto 0 do
+      begin
+        if(SRLPFCheckListBox.Checked[i])then
+          ClearPlayerInTab(ArmyIndex, i);
+      end;
+      FreeForm(CheckListForm);
+    end;
+    mItem[2][1]: AddArmy;
+    mItem[2][2]:
+    begin
+      CheckListForm := CreateForm;
+      SRLPFCheckListBox := TCheckListBox.Create(CheckListForm);
+      SRLPFCheckListBox.Parent := CheckListForm;
+      CheckListButton := TButton.Create(CheckListForm);
+      CheckListButton.Caption := 'Delete';
+      CheckListForm.Caption := 'Delete Armies :';
+      for i := 0 to srlpf_ArmyPageControl.PageCount - 1 do
+      begin
+        SRLPFCheckListBox.Items.Add(ArmyPages[i].Caption);
+      end;
+      ShowCheckListForm;
+      for i := SRLPFCheckListBox.Items.Count - 1 downto 0 do
+      begin
+        if(SRLPFCheckListBox.Checked[i])then
+          if(srlpf_ArmyPageControl.PageCount > 1)then
+            DeleteArmy(i, i - 1);
+      end;
+      FreeForm(CheckListForm);
+    end;
+    mItem[2][3]:
+    begin
+      CheckListForm := CreateForm;
+      SRLPFCheckListBox := TCheckListBox.Create(CheckListForm);
+      SRLPFCheckListBox.Parent := CheckListForm;
+      CheckListButton := TButton.Create(CheckListForm);
+      CheckListButton.Caption := 'Clear';
+      CheckListForm.Caption := 'Clear Armies :';
+      for i := 0 to srlpf_ArmyPageControl.PageCount - 1 do
+      begin
+        SRLPFCheckListBox.Items.Add(ArmyPages[i].Caption);
+      end;
+      ShowCheckListForm;
+      for i := SRLPFCheckListBox.Items.Count - 1 downto 0 do
+      begin
+        if(SRLPFCheckListBox.Checked[i])then
+          for j := 0 to srlpf_PlayerPageControl[i].PageCount - 1 do
+            ClearPlayerInTab(i, j);
+      end;
+      FreeForm(CheckListForm);
+    end;
+    mItem[2][4]: RenameArmy(ArmyIndex);
+    mItem[3][1]: srl_PlayerForm.ModalResult := mrOk;
+    mItem[3][2]:
+    begin
+      srl_PlayerForm.ModalResult := mrOk;
+      srlpf_TerminateWhenDone := True;
+    end;
+    mItem[3][3]:
+    begin
+      srlpf_SaveWhenDone := False;
+      srl_PlayerForm.ModalResult := mrOk;
+    end;
+    mItem[3][4]:
+    begin
+      srlpf_SaveWhenDone := False;
+      srl_PlayerForm.ModalResult := mrOk;
+      srlpf_TerminateWhenDone := True;
+    end;
+    mItem[0][2]: ExportPlayerData;
+    mItem[0][1]: ImportPlayerData;
+  end;
+end;
+
+{*******************************************************************************
+procedure OnSRLPFClick(Sender: TObject);
+By: Sumilion || edited by Richard and ZephyrsFury
+Description: Form action on a click on a button
+*******************************************************************************}
+procedure OnSRLPFClick(Sender: TObject);
+var
+  c, i, ArmyIndex: Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePage.PageIndex;
+  case Sender of
+    pcontrol[0]:
+    begin
+      srlpf_PlayerPageControl[ArmyIndex].ActivePage := srlpf_PlayerPageControl[ArmyIndex].FindNextPage(srlpf_PlayerPageControl[ArmyIndex].ActivePage,
+        False, True);
+    end;
+    pcontrol[2]:
+    begin
+      c := srlpf_PlayerPageControl[ArmyIndex].ActivePageIndex;
+
+      DeletePlayerInTab(ArmyIndex, c, c - 1);
+    end;
+    pcontrol[1]: AddPlayerInTab(ArmyIndex);
+    pcontrol[3]: srlpf_PlayerPageControl[ArmyIndex].ActivePage := srlpf_PlayerPageControl[ArmyIndex].FindNextPage(srlpf_PlayerPageControl[ArmyIndex].ActivePage, True, True);
+    CheckListButton: CheckListForm.ModalResult := mrOk;
+    control[0]: begin
+                  srl_PlayerForm.ModalResult := mrOk;   //Start
+                  srlpf_TerminateWhenDone := False;
+                  srlpf_SaveWhenDone := False;
+                end;
+    control[1]: Begin
+                  srl_PlayerForm.ModalResult := mrOk;   //Exit
+                  srlpf_TerminateWhenDone := True;
+                  srlpf_SaveWhenDone := False;
+                end;
+    control[2]: begin
+                  srl_PlayerForm.ModalResult := mrOk;   //Start and Save
+                  srlpf_TerminateWhenDone := False;
+                  srlpf_SaveWhenDone := True;
+                end;
+    control[3]: begin
+                  srl_PlayerForm.ModalResult := mrOk;   //Exit and Save
+                  srlpf_TerminateWhenDone := True;
+                  srlpf_SaveWhenDone := True;
+                end;
+  end;
+  for i := c to Length(PlayerPages[ArmyIndex]) - 1 do
+    if(arUserNameEdits[ArmyIndex][i].Text <> '')then
+      PlayerPages[ArmyIndex][i].Caption := arUserNameEdits[ArmyIndex][i].Text
+    else
+      PlayerPages[ArmyIndex][i].Caption := 'Player ' + IntToStr(i);
+end;
+
+{*******************************************************************************
+procedure OnSRLPFShow(Sender: TObject);
+By: Sumilion
+Description: Form action on a Tab show
+*******************************************************************************}
+procedure OnSRLPFShow(Sender: TObject);
+var
+  i, j: Integer;
+begin
+  for i := 0 to Length(ArmyPages) - 1 do
+    if(ArmyPages[i] = Sender)then
+    begin
+      SetLabelsParent(i, srlpf_PlayerPageControl[i].ActivePageIndex);
+      Exit;
+    end;
+  i := srlpf_ArmyPageControl.ActivePageIndex;
+  for j := 0 to Length(PlayerPages[i]) - 1 do
+    if(PlayerPages[i][j] = Sender)then
+    begin
+      SetLabelsParent(i, j);
+      Exit;
+    end;
+end;
+
+{*******************************************************************************
+procedure SRLPFMenuClick(Sender: TObject);
+By: Sumilion
+Description: Form action on Menu click
+*******************************************************************************}
+procedure SRLPFMenuClick(Sender: TObject);
+var
+  c, ArmyIndex, PlayerIndex: Integer;
+begin
+  ArmyIndex := srlpf_ArmyPageControl.ActivePageIndex;
+  PlayerIndex := srlpf_PlayerPageControl[ArmyIndex].ActivePageIndex;
+  case Sender of
+    apop[0]: AddArmy;
+
+    apop[1]:
+    begin
+      c := srlpf_ArmyPageControl.ActivePageIndex;
+      DeleteArmy(c, c - 1);
+    end;
+
+    apop[2]: RenameArmy(srlpf_ArmyPageControl.ActivePageIndex);
+
+    apop[3]:
+    begin
+      for c := 0 to srlpf_PlayerPageControl[ArmyIndex].PageCount - 1 do
+        ClearPlayerInTab(ArmyIndex, c);
+    end;
+
+    ppop[0]: AddPlayerInTab(ArmyIndex);
+
+    ppop[1]:
+    begin
+      DeletePlayerInTab(ArmyIndex, PlayerIndex, PlayerIndex - 1);
+      for c := PlayerIndex to Length(PlayerPages[ArmyIndex]) - 1 do
+        if(arUserNameEdits[ArmyIndex][c].Text <> '')then
+          PlayerPages[ArmyIndex][c].Caption := arUserNameEdits[ArmyIndex][c].Text
+        else
+          PlayerPages[ArmyIndex][c].Caption := 'Player ' + IntToStr(c);
+    end;
+    ppop[2]: ClearPlayerInTab(ArmyIndex, PlayerIndex);
+  end;
+end;
+
+{*******************************************************************************
+procedure SetSRLPlayerFormArrays;
+By: Sumilion
+Description: Sets the arrays for the form
+*******************************************************************************}
+procedure SetSRLPlayerFormArrays;
+var
+  i, j: Integer;
+begin
+  SetLength(srlpf_PlayerPageControl, Length(ArmyPages));
+  SetLength(arUserNameEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arUserNameEdits[i], Length(PlayerPages[i]));
+  SetLength(arPasswordEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arPasswordEdits[i], Length(PlayerPages[i]));
+  SetLength(arNickEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arNickEdits[i], Length(PlayerPages[i]));
+  SetLength(arActiveComboBoxes, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arActiveComboBoxes[i], Length(PlayerPages[i]));
+  SetLength(arPinEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arPinEdits[i], Length(PlayerPages[i]));
+  SetLength(arBoxRewardsEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+    SetLength(arBoxRewardsEdits[i], Length(PlayerPages[i]));
+  SetLength(arBooleanLabels, Length(srlpf_Booleans));
+  SetLength(arBooleanComboBoxes, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    SetLength(arBooleanComboBoxes[i], Length(srlpf_Booleans));
+    for j := 0 to Length(arBooleanComboBoxes[i]) - 1 do
+      SetLength(arBooleanComboBoxes[i][j], Length(PlayerPages[i]));
+  end;
+  SetLength(arIntegerLabels, Length(srlpf_Integers));
+  SetLength(arIntegerEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    SetLength(arIntegerEdits[i], Length(srlpf_Integers));
+    for j := 0 to Length(arIntegerEdits[i]) - 1 do
+      SetLength(arIntegerEdits[i][j], Length(PlayerPages[i]));
+  end;
+  SetLength(arStringLabels, Length(srlpf_Strings));
+  SetLength(arStringEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    SetLength(arStringEdits[i], Length(srlpf_Strings));
+    for j := 0 to Length(arStringEdits[i]) - 1 do
+      SetLength(arStringEdits[i][j], Length(PlayerPages[i]));
+  end;
+  SetLength(arExtendedLabels, Length(srlpf_Extendeds));
+  SetLength(arExtendedEdits, Length(ArmyPages));
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    SetLength(arExtendedEdits[i], Length(srlpf_Extendeds));
+    for j := 0 to Length(arExtendedEdits[i]) - 1 do
+      SetLength(arExtendedEdits[i][j], Length(PlayerPages[i]));
+  end;
+end;
+
+{*******************************************************************************
+procedure FillSRLPlayerFormTab(ArmyNumber, TabNumber: Integer);
+By: Sumilion
+Description: Fills the tabs with components
+*******************************************************************************}
+procedure FillSRLPlayerFormTab(ArmyNumber, TabNumber: Integer);
+var
+  a, b: Integer;
+begin
+  b := 0;
+  PlayerPages[ArmyNumber][TabNumber] := TTabSheet.Create(srl_PlayerForm);
+  with PlayerPages[ArmyNumber][TabNumber] do
+  begin
+    if(arUserNameEdits[ArmyNumber][TabNumber].Text <> '')then
+      Caption := arUserNameEdits[ArmyNumber][TabNumber].Text
+    else
+      Caption := 'Player ' + IntToStr(TabNumber);
+    PageControl := srlpf_PlayerPageControl[ArmyNumber];
+    Parent := srlpf_PlayerPageControl[ArmyNumber];
+    OnMouseDown := @OnSRLPFMouseDown;
+    OnShow := @OnSRLPFShow;
+  end;
+  with arUserNameEdits[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 53,121,21);
+    OnMouseDown := @OnSRLPFMouseDown;
+  end;
+  with arPasswordEdits[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 83,121,21);
+    OnMouseDown := @OnSRLPFMouseDown;
+  end;
+  with arNickEdits[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2),113,121,21);
+    OnMouseDown := @OnSRLPFMouseDown;
+  end;
+  with arActiveComboBoxes[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2),143,121,21);
+    OnClick := @OnSRLPFClick;
+    Items.Add('True');
+    Items.Add('False');
+  end;
+  with arPinEdits[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2),173,121,21);
+    OnMouseDown := @OnSRLPFMouseDown;
+  end;
+  with arBoxRewardsEdits[ArmyNumber][TabNumber] do
+  begin
+    Parent := PlayerPages[ArmyNumber][TabNumber];
+    SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2),203,121,21);
+    OnMouseDown := @OnSRLPFMouseDown;
+  end;
+  for a := 0 to Length(srlpf_Booleans) - 1 do
+  begin
+    b := b + 1;
+    with arBooleanLabels[a] do
+    begin
+      Left := (srl_PlayerForm.Width div 2) - 75 - (srlpf_Width div 2);
+      Top := 206 + (b * 30);
+      if(srlpf_Booleans[a] = '')then
+        Caption := 'Boolean[' + IntToStr(a) + ']'
+      else
+        Caption := srlpf_Booleans[a];
+    end;
+    with arBooleanComboBoxes[ArmyNumber][a][TabNumber] do
+    begin
+      Parent := PlayerPages[ArmyNumber][TabNumber];
+      Setbounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 203 + (b * 30),121,21);
+      OnClick := @OnSRLPFClick;
+      if(Text = '')then
+        Text := 'False';
+      Items.Add('True');
+      Items.Add('False');
+    end;
+  end;
+  for a := 0 to Length(srlpf_Integers) - 1 do
+  begin
+    b := b + 1;
+    with arIntegerLabels[a] do
+    begin
+      Left := (srl_PlayerForm.Width div 2) - 75 - (srlpf_Width div 2);
+      Top := 206 + (b * 30);
+      if(srlpf_Integers[a] = '')then
+        Caption := 'Integer[' + IntToStr(a) + ']'
+      else
+        Caption := srlpf_Integers[a];
+    end;
+    with arIntegerEdits[ArmyNumber][a][TabNumber] do
+    begin
+      Parent := PlayerPages[ArmyNumber][TabNumber];
+      SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 203 + (b * 30), 121,21);
+      OnMouseDown := @OnSRLPFMouseDown;
+    end;
+  end;
+  for a := 0 to Length(srlpf_Strings) - 1 do
+  begin
+    b := b + 1;
+    with arStringLabels[a] do
+    begin
+      Left := (srl_PlayerForm.Width div 2) - 75 - (srlpf_Width div 2);
+      Top := 206 + (b * 30);
+      if(srlpf_Strings[a] = '')then
+        Caption := 'String[' + IntToStr(a) + ']'
+      else
+        Caption := srlpf_Strings[a];
+    end;
+    with arStringEdits[ArmyNumber][a][TabNumber] do
+    begin
+      Parent := PlayerPages[ArmyNumber][TabNumber];
+      SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 203 + (b * 30), 121,21);
+      OnMouseDown := @OnSRLPFMouseDown;
+    end;
+  end;
+  for a := 0 to Length(srlpf_Extendeds) - 1 do
+  begin
+    b := b + 1;
+    with arExtendedLabels[a] do
+    begin
+      Left := (srl_PlayerForm.Width div 2) - 75 - (srlpf_Width div 2);
+      Top := 206 + (b * 30);
+      if(srlpf_Extendeds[a] = '')then
+        Caption := 'Extended[' + IntToStr(a) + ']'
+      else
+        Caption := srlpf_Extendeds[a];
+    end;
+    with arExtendedEdits[ArmyNumber][a][TabNumber] do
+    begin
+      Parent := PlayerPages[ArmyNumber][TabNumber];
+      SetBounds((srl_PlayerForm.Width div 2) - 64 + (srlpf_Width div 2), 203 + (b * 30), 121,21);
+      OnMouseDown := @OnSRLPFMouseDown;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure LoadSRLPlayerForm;
+By: Sumilion || edited by Richard and ZephyrsFury
+Description: Loads the main SRL player form
+*******************************************************************************}
+procedure LoadSRLPlayerForm;
+var
+  i, j, ArmyIndex, e: Integer;
+  mname: array of TStringArray;
+  names: TStringArray;
+  num, num2: Tintegerarray;
+begin
+  srl_PlayerForm := CreateForm;
+  srl_PlayerForm.Position := poDesktopCenter;
+  srl_PlayerForm.Width := 243;
+  srl_PlayerForm.Height := 385 + (Length(srlpf_Booleans) * 30) + (Length(srlpf_Integers) * 30) +  (Length(srlpf_Strings) * 30) +(Length(srlpf_Extendeds) * 30);
+  srl_PlayerForm.Caption := 'SRL Playerform';
+  srl_PlayerForm.Color := clWhite;
+  srl_PlayerForm.BorderIcons := [biSystemMenu];
+  srl_PlayerForm.BorderStyle := bsSingle;
+
+  srlpf_MainMenu := TMainMenu.Create(srl_PlayerForm);
+  SetArrayLength(mname, 4);
+  mname[0] := ['File', 'Import Players','Export Players'];
+  mname[1] := ['Player Control','Add Player','Delete Players','Clear Players'];
+  mname[2] := ['Army Control','Add Army','Delete Armies','Clear Armies','Rename Army'];
+  mname[3] := ['Exit','Save and Start','Save and Exit','Start','Exit'];
+  SetArrayLength(mItem, GetArrayLength(mName));
+  for i := 0 to high(mItem) do
+  begin
+    SetArrayLength(mItem[i], GetArrayLength(mName[i]));
+    for e := 0 to high(mItem[i]) do
+    begin
+      mItem[i][e] := TMenuItem.Create(srl_PlayerForm);
+      mItem[i][e].Caption := mName[i][e];
+      mItem[i][e].OnClick := @OnSRLPFMainMenuClick;
+      if e = 0 then
+        srlpf_MainMenu.Items.add(mItem[i][e])
+      else
+        srlpf_MainMenu.Items.Items[i].add(mItem[i][e]);
+    end;
+  end;
+  srlpf_Width := 58;
+  for i := 0 to Length(srlpf_Booleans) - 1 do
+  begin
+    arBooleanLabels[i] := TLabel.Create(srl_PlayerForm);
+    arBooleanLabels[i].Caption := srlpf_Booleans[i];
+    srlpf_Width := Max(srlpf_Width, arBooleanLabels[i].Width);
+  end;
+  for i := 0 to Length(srlpf_Integers) - 1 do
+  begin
+    arIntegerLabels[i] := TLabel.Create(srl_PlayerForm);
+    arIntegerLabels[i].Caption := srlpf_Integers[i];
+    srlpf_Width := Max(srlpf_Width, arIntegerLabels[i].Width);
+  end;
+  for i := 0 to Length(srlpf_Strings) - 1 do
+  begin
+    arStringLabels[i] := TLabel.Create(srl_PlayerForm);
+    arStringLabels[i].Caption := srlpf_Strings[i];
+    srlpf_Width := Max(srlpf_Width, arStringLabels[i].Width);
+  end;
+  for i := 0 to Length(srlpf_Extendeds) - 1 do
+  begin
+    arExtendedLabels[i] := TLabel.Create(srl_PlayerForm);
+    arExtendedLabels[i].Caption := srlpf_Extendeds[i];
+    srlpf_Width := Max(srlpf_Width, arExtendedLabels[i].Width);
+  end;
+  srl_PlayerForm.Width := srl_PlayerForm.Width + srlpf_Width;
+
+  srlpf_ArmyPageControl := TPageControl.Create(srl_PlayerForm);
+  srlpf_ArmyPageControl.Parent := srl_PlayerForm;
+  srlpf_ArmyPageControl.SetBounds(0,0,srl_PlayerForm.Width,305 + (Length(srlpf_Booleans) * 30) + (Length(srlpf_Integers) * 30) +(Length(srlpf_Strings) * 30) +(Length(srlpf_Extendeds) * 30));
+  srlpf_ArmyPageControl.OnMouseDown := @OnSRLPFMouseDown;
+  for i := 0 to Length(ArmyPages) - 1 do
+  begin
+    ArmyPages[i] := TTabSheet.Create(srl_PlayerForm);
+    if(ArmyNames[i] <> '')then
+      ArmyPages[i].Caption := ArmyNames[i]
+    else
+      ArmyPages[i].Caption := 'Army ' + IntToStr(i);
+    ArmyPages[i].PageControl := srlpf_ArmyPageControl;
+    ArmyPages[i].OnShow := @OnSRLPFShow;
+  end;
+  srlpf_ArmyPageControl.ActivePageIndex := ActiveArmy;
+  ArmyIndex := ActiveArmy;
+
+  SetSRLPlayerFormArrays;
+
+  for i := 0 to Length(srlpf_PlayerPageControl) - 1 do
+  begin
+    srlpf_PlayerPageControl[i] := TPageControl.Create(srl_PlayerForm);
+    srlpf_PlayerPageControl[i].Parent := ArmyPages[i];
+    srlpf_PlayerPageControl[i].Width := ArmyPages[i].Width;
+    srlpf_PlayerPageControl[i].Height := ArmyPages[i].Height;
+    srlpf_PlayerPageControl[i].Align := alBottom;
+    srlpf_PlayerPageControl[i].OnMouseDown := @OnSRLPFMouseDown;
+    srlpf_PlayerPageControl[i].OnDragDrop := @OnSRLPFDragDrop;
+    srlpf_PlayerPageControl[i].OnDragOver := @OnSRLPFDragOver;
+  end;
+  for j := 0 to Length(PlayerPages) - 1 do
+    for i := 0 to Length(PlayerPages[j]) - 1 do
+      FillSRLPlayerFormTab(j, i);
+  names := ['Username','Password', 'Nickname','Active','Bank Pin','Box Rewards'];
+  SetArrayLength(labels, 6)
+  for i := 0 to high(labels) do
+  begin
+    labels[i] := TLabel.Create(srl_PlayerForm);
+    labels[i].parent := srl_PlayerForm;
+    labels[i].Left := (srl_PlayerForm.Width div 2) - 75 - (srlpf_Width div 2);
+    labels[i].Top := 56 + (i * 30);
+    labels[i].Caption := names[i];
+  end;
+  srlpf_ArmyPopUpMenu := TPopupMenu.Create(srlpf_ArmyPageControl);
+  names := ['Add Army','Delete Army','Rename Army','Clear Army'];
+  SetArrayLength(aPop, GetArrayLength(names));
+  for i := 0 to high(aPop) do
+  begin
+    apop[i] := TMenuItem.Create(srl_PlayerForm);
+    apop[i].OnClick := @SRLPFMenuClick;
+    apop[i].Caption := names[i];
+    srlpf_ArmyPopUpMenu.Items.Add(apop[i]);
+  end;
+  srlpf_PlayerPopUpMenu := TPopupMenu.Create(srl_PlayerForm);
+  names := ['Add Player','Delete Player','Clear Player'];
+  SetArrayLength(pPop, GetArrayLength(names));
+  for i := 0 to high(pPop) do
+  begin
+    ppop[i] := TMenuItem.Create(srl_PlayerForm);
+    ppop[i].OnClick := @SRLPFMenuClick;
+    ppop[i].Caption := names[i];
+    srlpf_PlayerPopUpMenu.Items.Add(ppop[i]);
+  end;
+  num := [- 109, -80, -5, 70];
+  num2 := [29,75,75,29];
+  names := ['<----','Add Player','Delete Player','---->'];
+  SetArrayLength(pcontrol, GetArrayLength(names));
+  for i := 0 to high(names) do
+  begin
+    pControl[i] := TButton.Create(srl_PlayerForm);
+    pcontrol[i].Parent := srl_PlayerForm;
+    pcontrol[i].SetBounds((srl_PlayerForm.Width div 2) + num[i], 60,num2[i],25);
+    pcontrol[i].Caption := names[i];
+    pcontrol[i].OnClick := @OnSRLPFClick;
+  end;
+  num := [-130, 70, -90, -10];
+  num2 := [40,40,80,80];
+  names := ['Start','Exit','Start and Save','Exit and Save'];
+  SetArrayLength(control, GetArrayLength(names));
+  for i := 0 to high(names) do
+  begin
+    Control[i] := TButton.Create(srl_PlayerForm);
+    control[i].Parent := srl_PlayerForm;
+    control[i].SetBounds((srl_PlayerForm.Width div 2) + num[i],310 + (Length(srlpf_Booleans) * 30) +(Length(srlpf_Integers) * 30) +(Length(srlpf_Strings) * 30) +(Length(srlpf_Extendeds) * 30),num2[i],25);
+    control[i].Caption := names[i];
+    control[i].OnClick := @OnSRLPFClick;
+  end;
+end;
+
+{*******************************************************************************
+procedure ShowSRLPFFormModal;
+By: Sumilion
+Description: Shows the form
+*******************************************************************************}
+procedure ShowSRLPFFormModal;
+begin
+  srl_PlayerForm.ShowModal;
+end;
+
+{*******************************************************************************
+procedure SRLPlayerForm(ShowForm: Boolean; Booleans, Integers, Strings, Extendeds: TStringArray);
+By: Sumilion
+Description: Main function, sets and loads values needed for player settings and the form.
+*******************************************************************************}
+procedure SRLPlayerForm(ShowForm: Boolean; Booleans, Integers, Strings, Extendeds: TStringArray);
+var
+  V: TVariantArray;
+begin
+  srlpf_SavePath := AppPath + 'Chars.INI';
+  srlpf_Booleans  := Booleans;
+  srlpf_Integers  := Integers;
+  srlpf_Strings   := Strings;
+  srlpf_Extendeds := Extendeds;
+  LoadPlayers(False);
+  if(ShowForm)then
+  begin
+    srlpf_SaveWhenDone := True;
+    V := [];
+    ThreadSafeCall('LoadSRLPlayerForm', V);
+    V := [];
+    ThreadSafeCall('ShowSRLPFFormModal', V);
+    if(srlpf_SaveWhenDone)then
+      SavePlayers;
+    if(srlpf_TerminateWhenDone)then
+      TerminateScript;
+  end;
+  LoadPlayers(True);
+end;

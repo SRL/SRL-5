@@ -1,0 +1,307 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » GlobalStats Routines                        --//
+//-----------------------------------------------------------------//
+// * procedure SetLastCommitVars;                      // by Dankness
+// * procedure SendSRLReport;                          // by Dankness
+// * procedure SetUpSRLReport;                         // by Dankness
+
+{ type SRLReport;
+  Description: Stores Stats downloaded from MYSQL Database }
+type
+  SRLReport = record
+    Version: string;
+    Worked: Integer;
+    Banked: Integer;
+    Logs: Integer;
+    Plants: Integer;
+    Lamps: Integer;
+    Fights: Integer;
+    Boxes : Integer;
+    Frogs : Integer;
+    Talks: Integer;
+    Deaths: Integer;
+    Certers: Integer;
+    Sandwiches: Integer;
+    Ricks: Integer;
+    Dwarfs: Integer;
+    Caps: Integer;
+    Oldmen: Integer;
+    Trades: Integer;
+    Mods: Integer;
+    Mimes: Integer;
+    Mazes: Integer;
+    ScapeRunes: Integer;
+    EntsAvoided: Integer;
+    Whirlpools: Integer;
+    RodsFound: Integer;
+    AxeAttaches: Integer;
+    Birdsnest: Integer;
+    PickAxeAttached: Integer;
+    Jekylls: Integer;
+    SGuard: Integer;
+    Leos: Integer;
+    Mollys: Integer;
+  end;
+
+{var LastMins2: Integer;
+  Description: Last Mins from ST }
+var
+  LastMins2: Integer;
+
+{var ScriptID: String;
+  Description: ID# for Script }
+var
+  ScriptID: String;
+
+{var SRLClient: Integer;
+  Description: HTTP Client Handle for Stat retrieval }
+var
+  SRLClient: Integer;
+
+{ var LastScriptReport: SRLReport;
+  Description: Holds data from the last report }
+var
+  LastScriptReport : SRLReport;
+
+{ var ReportVars : array[0..20] of Integer;
+  Description: Stores Custom Varables}
+var
+ ReportVars : array[0..20] of Integer;
+
+var
+  SRLID, SRLPassword: string;
+
+{ var Plants, Lamps, NOLamps, Fights, Talks, Deaths,  Certers, NOCerters, Sandwiches, NOSandwiches, NOForester, Ricks, Dwarfs, Caps, Oldmen, Trades, NOTrades, Mods, Mimes, Mazes, ScapeRunes, EntsAvoided, Whirlpools, RodsFound, AxeAttaches, Birdsnest, PickAxeAttached, Jekylls, SGuard, Frogs, NOFrogs, Newboxes, NONewboxes: Integer;
+  Description: Random Handler Counters. }
+  
+{var
+  Plants, Lamps, NOLamps, Fights, Talks, Deaths, Certers, NOCerters,
+    Sandwiches, NOSandwiches, NOForester, Ricks, Dwarfs, Caps, Oldmen,
+    Trades, NOTrades, Mods, Mimes, Mazes, ScapeRunes, EntsAvoided,
+    Whirlpools, RodsFound, AxeAttaches, Birdsnest, PickAxeAttached, Jekylls,
+    SGuard, Frogs, NOFrogs, Newboxes, NONewboxes, Demons, NoDemons, Quizs,
+    NoQuizs, Pinball, NoPinball, BobIsland, Leos, NoLeos,
+    Foresters, Mollys, NoMollys, Pillories, NoPillories, NoMaze: Integer;  }
+
+{ var Banks: Integer;
+  Description: Number of succesful banking operations performed. }
+var
+  Banks: Integer; // Number of succesful banks performed.
+
+const
+  rand_Leo = 0;
+  rand_Forester = 1;
+  rand_Maze = 2;
+  rand_PrisonPete = 3;
+  rand_ScapeRune = 4;
+  rand_Demon = 5;
+  rand_Quiz = 6;
+  rand_Mordaut = 7;
+  rand_Molly = 8;
+  rand_Pinball = 9;
+  rand_Sandwich = 10;
+  rand_BeeKeeper = 11;
+  rand_Pillory = 12;
+  rand_CapnArnav = 13;
+  rand_Abyss = 14;
+  rand_Certer = 15;
+  rand_Mime = 16;
+  rand_Frog = 17;
+
+  rand_Trade = 18;
+  rand_Mod = 19;
+  rand_Fight = 20;
+  rand_Lamp = 21;
+  rand_BirdNest = 22;
+  rand_Death = 23;
+  rand_RewardBox = 24;
+
+var
+  RandSolved, RandFailed: array [0..24] of Integer;
+
+{*******************************************************************************
+procedure SetLastCommitVars;
+By: Dankness
+Description: Stores the last committed stats
+*******************************************************************************}
+procedure SetLastCommitVars;
+var II : Integer;
+begin
+  LastScriptReport.Banked     := Banks;
+  LastScriptReport.Logs       := SRL_Logs;
+  LastScriptReport.Boxes      := 0;//NewBoxes;
+  LastScriptReport.Frogs      := RandSolved[rand_Frog];
+  LastScriptReport.Plants     := 0;
+  LastScriptReport.Lamps      := 0;
+  LastScriptReport.Fights     := RandSolved[rand_Fight];
+  LastScriptReport.Talks      := 0;
+  LastScriptReport.Deaths     := RandSolved[rand_Death];
+  LastScriptReport.Certers    := RandSolved[rand_Certer];
+  LastScriptReport.Sandwiches := RandSolved[rand_Sandwich];
+  LastScriptReport.Ricks      := 0;
+  LastScriptReport.Dwarfs     := 0;
+  LastScriptReport.Caps       := 0;
+  LastScriptReport.Oldmen     := 0;
+  LastScriptReport.Trades     := RandSolved[rand_Trade];
+  LastScriptReport.Mods       := RandSolved[rand_Mod];
+  LastScriptReport.Mazes      := RandSolved[rand_Maze];
+  LastScriptReport.ScapeRunes := RandSolved[rand_ScapeRune];
+  LastScriptReport.EntsAvoided:= 0;
+  LastScriptReport.Whirlpools := 0;
+  LastScriptReport.RodsFound  := 0;
+  LastScriptReport.AxeAttaches:= 0;
+  LastScriptReport.Birdsnest  := 0;
+  LastScriptReport.Jekylls    := 0;
+  LastScriptReport.SGuard     := 0;
+  LastScriptReport.PickAxeAttached := 0;
+  LastScriptReport.Leos       := RandSolved[rand_Leo];
+  LastScriptReport.Mollys     := RandSolved[rand_Molly];
+
+  for II := 0 to 20 do
+    ReportVars[II] := 0;
+end;
+
+{*******************************************************************************
+procedure SendSRLReport;
+By: Dankness
+Description: Sends Current Stats to web server
+*******************************************************************************}
+procedure SendSRLReport;
+var
+    I : Integer;
+    S : String;
+    M, Worked : Integer;
+begin
+ if ( SRLID <> '' ) and ( SRLPassword <> '' ) then
+ begin
+   SRLClient := InitializeHTTPClient ( false, false );
+   Wait ( 10 );
+   M         := ( GetTimeRunning  ) div 1000 div 60;
+   Worked    := M - LastMins2;
+
+   ClearPostData   ( SRLClient );
+   Wait ( 10 );
+   AddPostVariable ( SRLClient, 'id', SRLID );
+   AddPostVariable ( SRLClient, 'pass', SRLPassword );
+
+   if ( ScriptID <> '' ) then
+   begin
+     AddPostVariable ( SRLClient, 'script', ScriptID );
+
+     try
+       for I := 0 to 20 do
+       begin
+         if ReportVars[I] > 0 then
+         begin
+           S := 'var' + IntToStr ( I + 1 );
+           AddPostVariable ( SRLClient, S, IntToStr ( ReportVars[I] ));
+         end;
+       end;
+     except
+     end;
+   end;
+   
+   try
+     if Worked - LastScriptReport.Worked < 5 then
+     begin
+       FreeHTTPClient( SRLClient );
+       exit;
+     end;
+     if Worked - LastScriptReport.Worked > 30 then
+     begin
+       worked := lastscriptreport.worked;
+     end;
+   except end;
+   try
+     if ( Worked - LastScriptReport.Worked > 0 ) then
+       AddPostVariable ( SRLClient, 'Worked', IntToStr ( Worked - LastScriptReport.Worked ));
+     if ( Banks - LastScriptReport.Banked > 0 ) then
+       AddPostVariable ( SRLClient, 'Banked', IntToStr ( Banks - LastScriptReport.Banked ));
+     if ( 0 - LastScriptReport.Boxes > 0 ) then
+       AddPostVariable ( SRLClient, 'Boxes', IntToStr ( 0 - LastScriptReport.Boxes));
+     if ( RandSolved[rand_Frog] - LastScriptReport.Frogs > 0 ) then
+       AddPostVariable ( SRLClient, 'Frogs', IntToStr ( RandSolved[rand_Frog] - LastScriptReport.Frogs ));
+     if ( SRL_Logs - LastScriptReport.Logs > 0 ) then
+       AddPostVariable ( SRLClient, 'Logged', IntToStr ( SRL_Logs - LastScriptReport.Logs ));
+     if ( 0 - LastScriptReport.Plants > 0 ) then
+       AddPostVariable ( SRLClient, 'Plants', IntToStr ( 0 - LastScriptReport.Plants ));
+     if (RandSolved[rand_Lamp] - LastScriptReport.Lamps > 0 ) then
+       AddPostVariable ( SRLClient, 'Lamps', IntToStr ( RandSolved[rand_Lamp] - LastScriptReport.Lamps ));
+     if ( RandSolved[rand_Fight] - LastScriptReport.Fights > 0 ) then
+       AddPostVariable ( SRLClient, 'Fights', IntToStr ( RandSolved[rand_Fight] - LastScriptReport.Fights ));
+     if ( 0 - LastScriptReport.Talks > 0 ) then
+       AddPostVariable ( SRLClient, 'Talks', IntToStr ( 0 - LastScriptReport.Talks ));
+     if ( RandSolved[rand_Death] - LastScriptReport.Deaths > 0 ) then
+       AddPostVariable ( SRLClient, 'Deaths', IntToStr ( RandSolved[rand_Death] - LastScriptReport.Deaths ));
+     if ( RandSolved[rand_Certer] - LastScriptReport.Certers > 0 ) then
+       AddPostVariable ( SRLClient, 'Certers', IntToStr ( RandSolved[rand_Certer] - LastScriptReport.Certers ));
+     if ( RandSolved[rand_Sandwich] - LastScriptReport.Sandwiches > 0 ) then
+       AddPostVariable ( SRLClient, 'Sandwiches', IntToStr ( RandSolved[rand_Sandwich] - LastScriptReport.Sandwiches ));
+     if ( 0 - LastScriptReport.Ricks > 0 ) then
+       AddPostVariable ( SRLClient, 'Ricks', IntToStr ( 0 - LastScriptReport.Ricks ));
+     if ( 0 - LastScriptReport.Dwarfs > 0 ) then
+       AddPostVariable ( SRLClient, 'Dwarfs', IntToStr ( 0 - LastScriptReport.Dwarfs ));
+     if ( 0 - LastScriptReport.Caps > 0 ) then
+       AddPostVariable ( SRLClient, 'Caps', IntToStr ( 0 - LastScriptReport.Caps ));
+     if ( 0 - LastScriptReport.Oldmen > 0 ) then
+       AddPostVariable ( SRLClient, 'Oldmen', IntToStr ( 0 - LastScriptReport.Oldmen ));
+     if ( RandSolved[rand_Trade] - LastScriptReport.Trades > 0 ) then
+       AddPostVariable ( SRLClient, 'Trades', IntToStr ( RandSolved[rand_Trade] - LastScriptReport.Trades ));
+     if ( RandSolved[rand_Mod] - LastScriptReport.Mods > 0 ) then
+       AddPostVariable ( SRLClient, 'Mods', IntToStr ( RandSolved[rand_Mod] - LastScriptReport.Mods ));
+     if ( RandSolved[rand_Mime] - LastScriptReport.Mimes > 0 ) then
+       AddPostVariable ( SRLClient, 'Mimes', IntToStr ( RandSolved[rand_Mime] - LastScriptReport.Mimes ));
+     if ( RandSolved[rand_Maze] - LastScriptReport.Mazes > 0 ) then
+       AddPostVariable ( SRLClient, 'Mazes', IntToStr ( RandSolved[rand_Maze] - LastScriptReport.Mazes ));
+     if ( RandSolved[rand_Leo] - LastScriptReport.Leos > 0 ) then
+       AddPostVariable ( SRLClient, 'Leos', IntToStr ( RandSolved[rand_Leo] - LastScriptReport.Leos ));
+     if ( RandSolved[rand_ScapeRune] - LastScriptReport.ScapeRunes > 0 ) then
+       AddPostVariable ( SRLClient, 'ScapeRunes', IntToStr ( RandSolved[rand_ScapeRune] - LastScriptReport.ScapeRunes ));
+     if ( 0 - LastScriptReport.EntsAvoided > 0 ) then
+       AddPostVariable ( SRLClient, 'EntsAvoided', IntToStr ( 0 - LastScriptReport.EntsAvoided ));
+     if ( 0 - LastScriptReport.Whirlpools > 0 ) then
+       AddPostVariable ( SRLClient, 'Whirlpools', IntToStr ( 0 - LastScriptReport.Whirlpools ));
+     if ( 0 - LastScriptReport.RodsFound > 0 ) then
+       AddPostVariable ( SRLClient, 'RodsFound', IntToStr ( 0 - LastScriptReport.RodsFound ));
+     if ( 0 - LastScriptReport.AxeAttaches > 0 ) then
+       AddPostVariable ( SRLClient, 'AxeAttaches', IntToStr ( 0 - LastScriptReport.AxeAttaches ));
+     if ( 0 - LastScriptReport.Birdsnest > 0 ) then
+       AddPostVariable ( SRLClient, 'Birdsnest', IntToStr ( 0 - LastScriptReport.Birdsnest ));
+     if ( 0 - LastScriptReport.PickAxeAttached > 0 ) then
+       AddPostVariable ( SRLClient, 'PickAxeAttached', IntToStr ( 0 - LastScriptReport.PickAxeAttached ));
+     if ( 0 - LastScriptReport.Jekylls > 0 ) then
+       AddPostVariable ( SRLClient, 'Jekylls', IntToStr ( 0 - LastScriptReport.Jekylls ));
+     if ( 0 - LastScriptReport.SGuard > 0 ) then
+       AddPostVariable ( SRLClient, 'SGuard', IntToStr ( 0 - LastScriptReport.SGuard ));
+
+     S := PostHTTPPageEx  ( SRLClient, 'http://www.stats.srl-forums.com/Stat.php' );
+
+     if ( Length ( S ) > 32 ) then
+       if ( S[32] = ':' ) then
+       begin
+         WriteLn ( S );
+         SRLID := '';
+       end;
+     Wait ( 10 );
+   WriteLn ( S );
+   except
+   end;
+   FreeHTTPClient( SRLClient );
+   LastMins2 := M;
+
+   SetLastCommitVars;
+   Wait ( 10 );
+   if (SRL_Procs[srl_OnSendStats] <> nil) then
+     SRL_Procs[srl_OnSendStats]();
+ end;
+end;
+
+{*******************************************************************************
+procedure SetUpSRLReport;
+By: Dankness
+Description:
+*******************************************************************************}
+procedure SetUpSRLReport;
+begin
+end;

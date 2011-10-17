@@ -1,0 +1,290 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                    WizzyPlugin routines                     --//
+//-----------------------------------------------------------------//
+//-- By: Boreas, Nielsie95, MastaRaymond, Killerdou and Wizzup?  --//
+//-----------------------------------------------------------------//
+
+// * procedure tSwap(var a, b: TPoint);
+// * procedure tpaSwap(var a, b: TPointArray);
+// * procedure SwapE(var a, b: Extended);
+// * procedure RAaSTPAEx(var a: TPointArray; const w, h: Integer);
+// * procedure RAaSTPA(var a: TPointArray; const Dist: Integer);
+// * function NearbyPointInArrayEx(const P: TPoint; w, h:Integer; a: TPointArray): Boolean;
+// * function NearbyPointInArray(const P: TPoint; Dist:Integer; a: TPointArray): Boolean;
+// * function ReArrangeandShortenArrayEx(a: TPointArray; w, h: Integer): TPointArray;
+// * function ReArrangeandShortenArray(a: TPointArray; Dist: Integer): TPointArray;
+// * function TPAtoATPAEx(TPA: TPointArray; w, h: Integer): T2DPointArray;
+// * function TPAtoATPA(TPA: TPointArray; Dist: Integer): T2DPointArray;
+// * procedure SortTPAFrom(var a: TPointArray; const From: TPoint);
+// * procedure SortATPAFrom(var a: T2DPointArray; const From: TPoint);
+// * procedure SortATPAFromFirstPoint(var a: T2DPointArray; const From: TPoint);
+// * procedure InvertTPA(var a: TPointArray);
+// * procedure InvertATPA(var a: T2DPointArray);
+// * function MiddleTPAEx(TPA: TPointArray; var x, y: Integer): Boolean;
+// * function MiddleTPA(tpa: TPointArray): TPoint;
+// * procedure SortATPASize(var a: T2DPointArray; const BigFirst: Boolean);
+// * procedure SortATPAFromSize(var a: T2DPointArray; const Size: Integer; CloseFirst: Boolean);
+// * function CombineTPA(Ar1, Ar2: TPointArray): TPointArray;
+// * function CombineIntArray(Ar1, Ar2: TIntegerArray): TIntegerArray;
+// * function InIntArrayEx(a: TIntegerArray; var Where: Integer; const Number: Integer): Boolean;
+// * function InIntArray(a: TIntegerArray; Number: Integer): Boolean;
+// * procedure ClearSameIntegers(var a: TIntegerArray);
+// * procedure ClearSameIntegersAndTPA(var a: TIntegerArray; var p: TPointArray);
+// * function SplitTPAEx(arr: TPointArray; w, h: Integer): T2DPointArray;
+// * function SplitTPA(arr: TPointArray; Dist: Integer): T2DPointArray;
+// * procedure FilterPointsPie(var Points: TPointArray; const SD, ED, MinR, MaxR: Extended; Mx, My: Integer);
+// * function RemoveDistTPointArray(x, y, dist: Integer; ThePoints: TPointArray; RemoveHigher: Boolean): TPointArray;
+// * function GetTPABounds(TPA: TPointArray): TBox;
+// * function FindTPAinTPA(SearchTPA, TotalTPA: TPointArray; var Matches: TPointArray): Boolean;
+// * function FindTextTPAinTPA(Height : integer; SearchTPA, TotalTPA: TPointArray; var Matches: TPointArray): Boolean;
+// * function FindGapsTPA(TPA: TPointArray; MinPixels: Integer): T2DPointArray;
+// * Function CreateTPAFromBMP(BmpDC: HDC): TPointArray;
+// * procedure SortCircleWise(var tpa: TPointArray; const mx, my, StartDegree, EndDegree: Integer; SortUp: Boolean);
+// * procedure LinearSort(var tpa: TPointArray; const mx, my, Deg: Integer; SortUp: Boolean);
+// * Function MergeATPA(ATPA : T2DPointArray)  : TPointArray;
+
+{*******************************************************************************
+procedure tSwap(var a, b: TPoint);
+Description: Swaps the two TPoints.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure tpaSwap(var a, b: TPointArray);
+Description: Swaps the two TPointArrays.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SwapE(var a, b: Extended);
+Description: Swaps the two Extended values.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure RAaSTPAEx(var a: TPointArray; const w, h: Integer);
+Description: Leaves one point per box with side lengths W and H to the TPA.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure RAaSTPA(var a: TPointArray; const Dist: Integer);
+Description: Leaves one point per box with the side length Dist.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function NearbyPointInArrayEx(const P: TPoint; w, h:Integer; a: TPointArray): Boolean;
+Description: Returns true if the point P is near a point in the TPA a with the
+max X and Y distances W and H.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function NearbyPointInArray(const P: TPoint; Dist:Integer; a: TPointArray): Boolean;
+Description: Returns true if the point P is near a point in the TPA a with the
+max distance Dist.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function ReArrangeandShortenArrayEx(a: TPointArray; w, h: Integer): TPointArray;
+Description: Results the TPointArray a with one point per box with side lengths
+W and H left.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function ReArrangeandShortenArray(a: TPointArray; Dist: Integer): TPointArray;
+Description: Results the TPointArray a with one point per box with side length
+Dist left.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function TPAtoATPAEx(TPA: TPointArray; w, h: Integer): T2DPointArray;
+Description: Splits the TPA to boxes with sidelengths W and H and results
+them as a T2DPointArray.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function TPAtoATPA(TPA: TPointArray; Dist: Integer): T2DPointArray;
+Description: Splits the TPA to boxes with sidelength Dist and results
+them as a T2DPointArray.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SortTPAFrom(var a: TPointArray; const From: TPoint);
+Description: Sorts the TPointArray a from the point From.
+Closest one to the point is [0], second closest is [1] etc.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SortATPAFrom(var a: T2DPointArray; const From: TPoint);
+Description: Sorts the T2DPointArray a from the point From.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SortATPAFromFirstPoint(var a: T2DPointArray; const From: TPoint);
+Description: Sorts the T2DPointArray a from the point From.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure InvertTPA(var a: TPointArray);
+Description: Inverts / Reverts the TPointArray a.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure InvertATPA(var a: T2DPointArray);
+Description: Inverts / Reverts the T2DPointArray a.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function MiddleTPAEx(TPA: TPointArray; var x, y: Integer): Boolean;
+Description: Stores the coordinates of the middle of the TPointArray a to X & Y.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function MiddleTPA(tpa: TPointArray): TPoint;
+Description: Returns the middle of the TPointArray tpa.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SortATPASize(var a: T2DPointArray; const BigFirst: Boolean);
+Description: Sorts the T2DPointArray a from either largest or smallest, by the
+amount of points in the TPAs.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function CombineTPA(Ar1, Ar2: TPointArray): TPointArray;
+Description: Combines the TPointArrays Ar1 and Ar2, and results the combination.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function CombineIntArray(Ar1, Ar2: TIntegerArray): TIntegerArray;
+Description: Combines the TIntegerArrays Ar1 and Ar2, and results the
+combination.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function InIntArrayEx(a: TIntegerArray; var Where: Integer; const Number: Integer): Boolean;
+Description: Returns true if the integer Number was found in the integer array
+a, and stores the index to Where.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function InIntArray(a: TIntegerArray; Number: Integer): Boolean;
+Description: Returns true if the integer Number was found in the integer array a.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure ClearSameIntegers(var a: TIntegerArray);
+Description: Clears the duplicates in the integer array a.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure ClearSameIntegersAndTPA(var a: TIntegerArray; var p: TPointArray);
+Description: Clears the duplicates in the integer array a and the TPointArray p.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function SplitTPAEx(arr: TPointArray; w, h: Integer): T2DPointArray;
+Description: Splits the points with max X and Y distances W and H to their
+own TPointArrays.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function SplitTPA(arr: TPointArray; Dist: Integer): T2DPointArray;
+Description: Splits the points with max distance Dist to their own TPointArrays.
+Dist 1 puts the points that are next to eachother to their own arrays.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure FilterPointsPie(var Points: TPointArray; const SD, ED, MinR, MaxR: Extended; Mx, My: Integer);
+Description: Removes the points in the TPointArray Points that are not within
+the degrees SD (StartDegree) and ED (EndDegree) and the distances
+MinR (MinRadius) and MaxR (MaxRadius) from the origin (Mx, My).
+*******************************************************************************}
+
+
+{*******************************************************************************
+function RemoveDistTPointArray(x, y, dist: Integer; ThePoints: TPointArray; RemoveHigher: Boolean): TPointArray;
+Description: Removes the points that are inside or outside the distance Dist
+from the point (x, y) from the TPointArray ThePoints.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function GetTPABounds(TPA: TPointArray): TBox;
+Description: Returns the boundaries of the TPA as a TBox.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function FindTPAinTPA(SearchTPA, TotalTPA: TPointArray; var Matches: TPointArray): Boolean;
+Description: Looks for the TPA SearchTPA in the TPA TotalTPA and returns
+the matched points to the TPA Matches. Returns true if there were atleast one
+match(es).
+*******************************************************************************}
+
+
+{*******************************************************************************
+function FindTextTPAinTPA(Height: Integer; SearchTPA, TotalTPA: TPointArray; var Matches: TPointArray): Boolean;
+Description: Read the description of FindTPAinTPA. Additional Height parameter.
+*******************************************************************************}
+
+
+{*******************************************************************************
+function FindGapsTPA(TPA: TPointArray; MinPixels: Integer): T2DPointArray;
+Description: Finds the possible gaps in the TPointArray TPA and results the
+gaps as a T2DPointArray. Considers as a gap if the gap length is >= MinPixels.
+Only horizontal, sorry folks.
+*******************************************************************************}
+
+
+{*******************************************************************************
+Function CreateTPAFromBMP(BmpDC: HDC): TPointArray;
+Description: Creates a TPointArray of the bitmap dc BmpDC.
+Use GetBitmapDC to get the dc.
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure SortCircleWise(var tpa: TPointArray; mx, my, Deg: Integer; SortUp: Boolean);
+Description: Sorts all points in tpa by distance from degree (Deg) and distance from
+mx and my. Sortup will return closest distance to mx and my first.
+Distance will be sorted first (RadialWalk style).
+*******************************************************************************}
+
+
+{*******************************************************************************
+procedure LinearSort(var tpa: TPointArray; mx, my, Deg: Integer; SortUp: Boolean);
+Description: Sorts all points in tpa by distance from degree (Deg) and distance from
+mx and my. Sortup will return closest distance to mx and my first.
+Degree will be sorted first (LinearWalk style).
+*******************************************************************************}
+
+
+{*******************************************************************************
+Function MergeATPA(ATPA: T2DPointArray): TPointArray;
+Description: Merges the TPointArrays of the T2DPointArray ATPA in to one TPA.
+*******************************************************************************}

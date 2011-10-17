@@ -1,0 +1,151 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                    Runecrafting routines                    --//
+//-----------------------------------------------------------------//
+// * function  EnterRCAltar : Boolean;                             // * by n3ss3s
+// * procedure ClickPouch(Pouch, Option: String; Tol: Integer;);   // * by Wizzup?
+// * function  FindTalismanInInventory(TalismanName: String): Boolean; // * by Nielsie95
+// * procedure ClickTalisman;                                      // * by Pyro
+// * procedure SetUpRuneCrafting;                                  // * by Wizzup? & Bebemycat2
+
+{*******************************************************************************
+function EnterRCAltar: Boolean;
+By: n3ss3s
+Description: Enters a RuneCrafting altar.
+Must wear a Tiara or have a talisman "in use" to work.
+*******************************************************************************}
+function EnterRCAltar: Boolean;
+var
+  TPAA: T2DPointArray;
+  CTS, L, I, X, Y: Integer;
+  TPA: TPointArray;
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.4, 0.4);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, 5725540, MSX1, MSY1, MSX2, MSY2, 20);
+  TPAA := TPAToATPAEx(TPA, 100, 150);
+  SortATPAFromSize(TPAA, 8000, True);
+  L := High(TPAA);
+  ColorToleranceSpeed(CTS);
+  for I := 0 to L do
+  begin
+    MiddleTPAEx(TPAA[i], X, Y);
+    MMouse(X, Y, 3, 3);
+    if IsUpText('ysterio') then
+    begin
+      GetMousePos(X, Y);
+      Mouse(X, Y, 0, 0, True);
+      Wait(100 + Random(25));
+      Flag;
+      Result := True;
+      Break;
+    end;
+  end;
+  SetColorSpeed2Modifiers(0.2, 0.2);
+end;
+
+{*******************************************************************************
+procedure ClickPouch(Pouch, Option: String; Tol: Integer);
+By: Psychor & Wizzup?
+Description: Click Pouch
+*******************************************************************************}
+procedure ClickPouch(Pouch, Option: string);
+var
+  x, y, i, PouchMark, Current, dtm: Integer;
+  b: Boolean;
+begin
+  MarkTime(PouchMark);
+  Current := InvCount;
+  case LowerCase(Pouch) of
+    'small': dtm := DTMFromString('78DA639CC0C0C050CB00068C108AA13A37844' +
+                  '18711C2FF0F048C5D40460DAA1A180BC6679C0D24EA08A8E90512' +
+                  '4D04D4CC2042CD242091875F0D0001860BD2');
+    'medium': dtm := DTMFromString('78DA63DCC3C0C050CB00068C108AA120D9874' +
+                   '18711C2FF0F048C5B808C6A543530168CCF78940835DB81440B01' +
+                   '35078950B31748E4E257030066E70CB2');
+    'large': dtm := DTMFromString('78DA637CCAC0C050C700068C108AA138CD8F4' +
+                  '18711C2FF0F048CB7818C5A543530168CCFF80948D41350F30048' +
+                  'B41150F39608352037E7E1570300EC760DC0');
+{    'giant': dtm := BitmapFromString(28, 2, 'z78DA8D90310EC3300C' +
+                   '03BF644B14198F4E64FFFF49759B0C2DD202D57080040E27B2458' +
+                   '2721243E486A9C61EE527CFCC2F563A760E56741E31D1C8E8003D' +
+                   '046309A04486F95CD7E9C7DABB37A5BA40AED458D1B4E1D365CDE' +
+                   '5C5A23CA77EB8EDCCF02FFCC7FCFCF4EEF9EAE1B23DF96E2BA4F7' +
+                   'CB76D726BB7B5A9AEA78004B274944');   }
+    else Exit;
+  end;
+  if FindDTM(dtm, x, y, MIX1, MIY1, MIX2, MIY2)then
+  begin
+    i := coordstoitem(x, y);
+    b := True;
+    case LowerCase(Option) of
+      'fill': MouseItem(i, True); //Mouse(x, y, 2, 2, True);
+      'empty': begin
+                 MouseItem(i, False); //Mouse(x, y, 2, 2, False);
+                 Wait(400 + Random(50));
+                 ChooseOption('mpty');
+               end;
+      'check': begin
+                 MouseItem(i, False); //Mouse(x, y, 2, 2, False);
+                 Wait(400 + Random(50));
+                 ChooseOption('heck');
+               end;
+      else b := False;
+    end;
+  end;
+  FreeDTM(dtm);
+  if (not b) then Exit;
+  while (Current = InvCount) do
+  begin
+    Wait(100 + Random(50));
+    if (TimeFromMark(PouchMark) > 2500) then
+      Exit;
+  end;
+end;
+
+{*******************************************************************************
+function FindTalismanInInventory(TalismanName: string; tol: Integer; Var Dx, Dy: Integer): Boolean;
+By: Nielsie95
+Description: Returns true if the specifyed talisman is in inventory
+air - mind - water - earth - fire - body - cosmic - chaos - nature - law - death
+*******************************************************************************}
+function FindTalismanInInventory(TalismanName: string; tol: Integer; var Dx, Dy: Integer): Boolean;
+var
+  s: TStringArray;
+  i: Integer;
+begin
+  GameTab(tab_Inv);
+  TalismanName := LowerCase(TalismanName);
+  s := ['air', 'mind', 'water', 'fire', 'earth', 'law', 'nature', 'chaos', 'death', 'body', 'cosmic'];
+  for i := 0 to 10 do
+    if (TalismanName = s[i]) then
+    begin
+      Result := FindTransparentBitmapTolerance(srl_GetBitmap(bmp_Talis_Air + i), dx, dy, clBlack, MIX1, MIY1, MIX2, MIY2, tol);
+      Break;
+    end;
+end;
+
+{*******************************************************************************
+function ClickTalisman(Talisman: string): Boolean;
+By: n3ss3s
+Description: Clicks the talisman Talisman in your inventory.
+*******************************************************************************}
+function ClickTalisman(Talisman: string; Tol: Integer): Boolean;
+var
+   X, Y: Integer;
+begin
+  Result := FindTalismanInInventory(LowerCase(Talisman), Tol, X, Y);
+  If Result then
+    Mouse(X, Y, 2, 2, True);
+end;
+
+{*******************************************************************************
+procedure SetUpRuneCrafting;
+By: Wizzup? & Bebemycat2
+Description: SetUp RuneCrafting
+*******************************************************************************}
+procedure SetUpRuneCrafting;
+begin
+  srl_LoadBitmapRange(18, 41);
+end;

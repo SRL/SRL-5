@@ -1,0 +1,303 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//-----------------------------------------------------------------//
+// * function FindDraynorRoadColor(var RoadColor : Integer; RX1, RY1, RX2, RY2: Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function FindDraynorLadderColor(var LadderColor : Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function FindDraynorHouseColor(var HouseColor : Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function IsRoad(RX1, RY1, RX2, RY2: Integer): Boolean;        // by WT-Fakawi and modified by Ron
+// * function FindDraynorWaterColor(var WaterColor : Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function WaterFound(WX1, WY1, WX2, WY2: Integer): Boolean;    // by WT-Fakawi and modified by Ron
+// * function FindDraynorRockColor(var RockColor : Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function RockFound(var RockColor : Integer; WX1, WY1, WX2, WY2: Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function FindDraynorDoorColor(var DoorColor : Integer): Boolean; // by WT-Fakawi and modified by Ron
+// * function FindDraynorColors(var RoadColor, WaterColor, BankColor, RockColor, DoorColor, LadderColor, HouseColor : Integer; DraynorMiscColor : Boolean) : Boolean; // by WT-Fakawi and fixed by Ron
+
+{*******************************************************************************
+ * Draynor Color Finding Procedures.
+ * Instructions: Stand at SouthMost Bankslot, Face North as much as possible.
+ * by WT-Fakawi and modified a lot by Ron
+*******************************************************************************}
+
+{*******************************************************************************
+function FindDraynorRoadColor(var RoadColor : Integer; RX1, RY1, RX2, RY2: Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Draynor Road Color
+*******************************************************************************}
+function FindDraynorRoadColor(var RoadColor : Integer; RX1, RY1, RX2, RY2: Integer): Boolean;
+var
+  c, TX, TY, DraynorRoad: Integer;
+begin
+  DraynorRoad := BitmapFromString(8, 8, 'z78DA333333753575351' +
+    'B2507880400265E5801');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(DraynorRoad, TX, TY, clBlack, RX1, RY1, RX2, RY2, c) then
+    begin
+      RoadColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('RoadColor Found');
+      break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: RoadColor NOT Found');
+  FreeBitmap(DraynorRoad);
+end;
+
+{*******************************************************************************
+function FindDraynorLadderColor(var LadderColor : Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Draynor Road Color
+*******************************************************************************}
+function FindDraynorLadderColor(var LadderColor : Integer): Boolean;
+var
+  c, TX, TY, DraynorLadder: Integer;
+begin
+  DraynorLadder := BitmapFromString(6, 3, 'z78DA33B53032363031258634' +
+    '363432B0C442126D0200A38E15C5');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(DraynorLadder, TX, TY, clBlack, 636, 39, 648, 49, c) then
+    begin
+      LadderColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('LadderColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: LadderColor NOT Found');
+  FreeBitmap(DraynorLadder);
+end;
+
+{*******************************************************************************
+function FindDraynorHouseColor(var HouseColor : Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Draynor House Color
+*******************************************************************************}
+function FindDraynorHouseColor(var HouseColor : Integer): Boolean;
+var
+  c, TX, TY, DraynorHouse: Integer;
+begin
+  DraynorHouse := BitmapFromString(5, 5, 'z78DA337536B63432301D6424006825' +
+    '1FD7');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransParentBitmapTolerance(DraynorHouse, TX, TY, clBlack, 616, 17, 625, 22, c) then
+    begin
+      HouseColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('HouseColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: HouseColor NOT Found');
+  FreeBitmap(DraynorHouse);
+end;
+
+{*******************************************************************************
+function IsRoad(RX1, RY1, RX2, RY2: Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Road Bitmap inside given coordinates.
+*******************************************************************************}
+function IsRoad(RX1, RY1, RX2, RY2: Integer): Boolean;
+var
+  c, TX, TY, Road: Integer;
+begin
+  Road := BitmapFromString(8, 8, 'z78DA333333753575351' +
+    'B2507880400265E5801');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(Road, TX, TY, clBlack, RX1, RY1, RX2, RY2, c) then
+    begin
+      Result := True;
+      WriteLn('RoadColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: RoadColor NOT Found');
+  FreeBitmap(Road);
+end;
+
+{*******************************************************************************
+function FindDraynorWaterColor(var WaterColor : Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Find Draynor Water Color.
+*******************************************************************************}
+function FindDraynorWaterColor(var WaterColor : Integer): Boolean;
+var
+  c, TX, TY, FaladorWater: Integer;
+begin
+  FaladorWater := BitmapFromString(6, 6, 'z78DA33733677B' +
+    '174351B7624000B723409');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(FaladorWater, TX, TY, clBlack, MMCX - 75, MMCY + 20, MMCX -
+      20, MMCY + 30, c) then
+    begin
+      WaterColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('WaterColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: WaterColor NOT Found');
+  FreeBitmap(FaladorWater);
+end;
+
+{*******************************************************************************
+function WaterFound(WX1, WY1, WX2, WY2: Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Water Color at given coordinates.
+*******************************************************************************}
+function WaterFound(WX1, WY1, WX2, WY2: Integer): Boolean;
+var
+  ZX, ZY: Integer;
+begin
+  Result := FindColor(ZX, ZY, WaterColor, WX1, WY1, WX2, WY2);
+end;
+
+{*******************************************************************************
+function FindDraynorRockColor(var RockColor : Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Find Draynor Rock Color.
+*******************************************************************************}
+function FindDraynorRockColor(var RockColor : Integer): Boolean;
+var
+  Rock, c, TX, TY: Integer;
+begin
+  Rock := BitmapFromString(3, 4, 'z78DA33B534713635373732333' +
+    '573C5459A62A88188208B03003D320FBD');
+  while (c < 85) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(Rock, TX, TY, clBlack, 644, 119, 655, 128, c) then
+    begin
+      RockColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('RockColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: RockColor NOT Found');
+  FreeBitmap(Rock);
+end;
+
+{*******************************************************************************
+function RockFound(var RockColor : Integer; WX1, WY1, WX2, WY2: Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Finds Rock Color inside given coordinates.
+*******************************************************************************}
+function RockFound(var RockColor : Integer; WX1, WY1, WX2, WY2: Integer): Boolean;
+var
+  ZX, ZY: Integer;
+begin
+  Result := FindColor(ZX, ZY, RockColor, WX1, WY1, WX2, WY2);
+end;
+
+{*******************************************************************************
+function FindDraynorDoorColor(var DoorColor : Integer): Boolean;
+By: WT-Fakawi and modified by Ron
+Description: Find Draynor Door Color. (Red: 230-245)
+*******************************************************************************}
+function FindDraynorDoorColor(var DoorColor : Integer): Boolean;
+var
+  c, TX, TY, DraynorDoor: Integer;
+begin
+  DraynorDoor := BitmapFromString(4, 4, 'z78DA7375360002570CD2C' +
+    '4C2C4D1C890721200DDB11451');
+  while (c < 65) do
+  begin
+    c := c + 5;
+    if FindTransparentBitmapTolerance(DraynorDoor, TX, TY, clBlack, 620, 42, 645, 622, c) then
+    begin
+      DoorColor := GetColor(TX, TY);
+      Result := True;
+      WriteLn('DoorColor Found');
+      Break;
+    end;
+  end;
+  if not(Result) then
+    WriteLn('ERROR: DoorColor NOT Found');
+  FreeBitmap(DraynorDoor);
+end;
+
+{*******************************************************************************
+function FindDraynorColors(var RoadColor, WaterColor, BankColor, RockColor, DoorColor, LadderColor, HouseColor : Integer; DraynorMiscColor : Boolean) : Boolean;
+By: WT-Fakawi and fixed by Ron
+Description: Find All Draynor Colors.
+Instructions: Stand at lowest bankslot face North.
+*******************************************************************************}
+function FindDraynorColors(var RoadColor, WaterColor, BankColor, RockColor, DoorColor, LadderColor, HouseColor : Integer; DraynorMiscColor : Boolean) : Boolean;
+var
+  bx, by, c : Integer;
+begin
+  WriteLn('Finding RoadColor');
+  repeat
+    c := c + 1;
+    Wait(100);
+  until (c > 100) or (FindDraynorRoadColor(RoadColor, 588, 39, 617, 71));
+  WriteLn('RoadColor  = ' + IntToStr(RoadColor));
+  WriteLn('Finding WaterColor');
+  c := 0;
+  repeat
+    c := c + 1;
+    Wait(100);
+  until (c > 100) or (FindDraynorWaterColor(WaterColor));
+  WriteLn('WaterColor = ' + IntToStr(WaterColor));
+  WriteLn('Finding BankColor');
+  c := 0;
+  repeat
+    c := c + 1;
+    Wait(100);
+    BankColor := GetSymbolColor(bx, by, 'bank');
+  until (c > 100) or (BankColor <> 0);
+  WriteLn('BankColor  = ' + IntToStr(BankColor));
+  WriteLn('Finding RockColor');
+  c := 0;
+  repeat
+    c := c + 1;
+    Wait(100);
+  until (c > 100) or (FindDraynorRockColor(RockColor));
+  WriteLn('RockColor  = ' + IntToStr(RockColor));
+  if DraynorMiscColor then
+  begin
+    WriteLn('Finding LadderColor');
+    c := 0;
+    repeat
+      c := c + 1;
+      Wait(100);
+    until (c > 100) or (FindDraynorLadderColor(LadderColor));
+    WriteLn('LadderColor  = ' + IntToStr(LadderColor));
+    WriteLn('Finding HouseColor');
+    c := 0;
+    repeat
+      c := c + 1;
+      Wait(100);
+    until (c > 100) or (FindDraynorHouseColor(HouseColor));
+    WriteLn('HouseColor  = ' + IntToStr(HouseColor));
+    WriteLn('Finding DoorColor');
+    c := 0;
+    repeat
+      c := c + 1;
+      Wait(100);
+    until (c > 100) or (FindDraynorDoorColor(DoorColor));
+    WriteLn('DoorColor  = ' + IntToStr(DoorColor));
+  end;
+  if ((RoadColor = 0) or (WaterColor = 0) or (BankColor = 0) or (RockColor = 0))
+    then
+  begin
+    Result := False;
+    WriteLn('ERROR: Could not find colors!!! Please stand at lowest bank slot, align Minimap to North, or Restart Script/Change Worlds.');
+  end else
+    Result := True;
+end;

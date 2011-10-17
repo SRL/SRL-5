@@ -1,0 +1,28 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » AutoRespond Routines                        --//
+//-----------------------------------------------------------------//
+// * procedure SetupSRLAutoResponder;                              // by ???
+// * function Respond: Boolean;                                    // by ???
+
+var
+  UseAutoResponder: Boolean;
+  
+{*******************************************************************************
+procedure SetupSRLAutoResponder;
+By: ???
+Description:
+*******************************************************************************}
+procedure SetupSRLAutoResponder;
+begin
+end;
+
+{*******************************************************************************
+function Respond: Boolean;
+By: ???
+Description:
+*******************************************************************************}
+function Respond: Boolean;
+begin
+  Result := False;
+end;

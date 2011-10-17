@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                      Farming routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupFarming;                                       // by SRL
+
+{*******************************************************************************
+procedure SetupFarming;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupFarming;
+begin
+end;

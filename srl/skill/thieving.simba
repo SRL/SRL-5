@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                     Thieving routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupThieving;                                      // * SRL
+
+{*******************************************************************************
+procedure SetupThieving;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupThieving;
+begin
+end;

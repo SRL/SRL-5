@@ -1,0 +1,318 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » Friends Routines                            --//
+//-----------------------------------------------------------------//
+// * function NumberOfOnlineFriends: Integer;                      // by Wizzup?
+// * procedure AddFriend(Friend: string);                          // by Wizzup?
+// * procedure DeleteFriend(Friend: string);                       // by Wizzup?
+// * procedure AddIgnore(Friend: string);                          // by Wizzup?
+// * procedure DeleteIgnore(Friend: string);                       // by Wizzup?
+// * function GetFriendTexts: TStringArray;                        // by n3ss3s
+// * function FromFriend(Friend: string): string;                  // by n3ss3s
+// * function FromFriendMulti(Friend: string): TStringArray;       // by n3ss3s
+// * function GetChatterOfLine(Line: string): String;              // by n3ss3s
+// * function RespondToWith(rTo, rWith: string): Boolean;          // by n3ss3s
+// * function HasResponded(Friend: string): Boolean;               // by n3ss3s
+
+type
+  TFriends = record
+    Name: string;
+    World: string;
+    IsOnline: Boolean;
+    YourWorld: Boolean;
+  end;
+
+var
+  Friends: array[1..13] of TFriends;
+    
+{*******************************************************************************
+function FriendName(PlayerNumber: Integer): string;
+By: Wizzup? & N1ke!
+Description: Gets FriendsName and saves it to a string.
+*******************************************************************************}
+function FriendName(PlayerNumber: Integer): string;
+begin
+  Result := Trim(GetTextAtEx(557, 216 + (PlayerNumber * 15), 45, FriendChars, True, False, 0,
+    2, 16777215, 20, False, tr_NormalChars));
+end;
+
+{*******************************************************************************
+function FriendWorld(PlayerNumber: Integer; SameWorld: Boolean) : String;
+By: Wizzup? & N1ke!
+Description: Returns current world of a friend.
+*******************************************************************************}
+function FriendWorld(PlayerNumber: Integer) : string;
+var
+  I, X, Y : Integer;
+  Colors: TIntegerArray;
+begin
+  GameTab(Tab_Friends);
+
+  Colors := [65535, 65280];
+  for I:=0 to 1 do
+   if FindColor(X, Y, Colors[I], 629, 216+(PlayerNumber*15), 709, 226+(PlayerNumber*15)) then
+   begin
+     Result := GetNumbers(GetTextAtEx(X-1, Y-1, 0, FriendChars, True, False, 0, 2, Colors[I], 20, False, tr_NormalChars));
+     Exit;
+   end;
+  Result := 'Offline';
+end;
+
+{*******************************************************************************
+procedure GetFriends;
+By: Wizzup? & N1ke!
+Description: Returns first 13 friends World/Status/Name into the Friends Record.
+
+  TFriends = Record
+    Name: String;
+    World: String;
+    IsOnline: Boolean;
+    YourWorld: Boolean;
+
+*******************************************************************************}
+procedure GetFriends;
+var
+  I, C_World: Integer;
+begin
+  GameTab(tab_Friends);
+  Wait(500 + Random(250));
+  C_World := CurrentWorld;
+  for I := 1 to 13 do
+  begin
+    Friends[I].Name := FriendName(I);
+    Friends[I].World := FriendWorld(I);
+    Friends[I].IsOnline := (not Pos('Offline', Friends[I].World) > 0);
+    Friends[I].YourWorld := (C_World = StrToIntDef(Friends[I].World, -1));
+  end;
+end;
+
+{*******************************************************************************
+function FriendIsOnline(var iX, iY: Integer; Friend: string): Boolean;
+By: Wizzup? & N1ke!
+Description: Returns coordinate of Online friend, if Online.
+"Friend:String" May also be a part of the whole name, like Players[].Nick.
+*******************************************************************************}
+function FriendIsOnline(var iX, iY: Integer; Friend: string): Boolean;
+var
+   I : Integer;
+begin
+  GetFriends;
+  for I := 1 to 13 do
+  begin
+    if Pos(LowerCase(Friend), LowerCase(Friends[I].Name)) <> 0 then
+    begin
+      Result := True;
+      iX := 562 + Random(130);
+      iY := 216 + (15 * I)+ Random(10);
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function MessageFriendEx(Friend, TheMessage: string): Boolean;
+By: Wizzup?
+Description: If a certain friend is online, sends them a message.
+"Friend:String" May also be a part of the whole name, like Players[].Nick.
+*******************************************************************************}
+function MessageFriendEx(Friend, TheMessage: string): Boolean;
+var
+   iX, iY : Integer;
+begin
+  If FriendIsOnline(iX, iY, LowerCase(Friend)) then
+  begin
+    Result := True;
+    Mouse(iX, iY, 0, 0, True);
+    Wait(100 + Random(100))
+    TypeSend(TheMessage);
+  end else
+    SRL_Warn('MessageFriendEx', 'Friend is not online.', Warn_AllVersions);
+end;
+
+{*******************************************************************************
+function NumberOfOnlineFriends: Integer;
+By: Wizzup?
+Description: Returns # of friends online from 0-11.
+Is actually 1-12, but the array only goes from 0 to 11 at the moment.
+*******************************************************************************}
+function NumberOfOnlineFriends: Integer;
+var
+   I: Integer;
+begin
+  Result := 0;
+  GetFriends;
+  for I := 1 to 13 do
+    if Friends[I].IsOnline then
+      Result := Result + 1;
+end;
+
+{*******************************************************************************
+procedure AddFriend(Friend: string);
+By: Wizzup? & N1ke!
+Description: Add's 'Friend' to your friends list.
+*******************************************************************************}
+procedure AddFriend(Friend: string);
+begin
+  GameTab(Tab_Friends);
+  Wait(180+Random(100));
+  MouseBox(565, 433, 630, 459, 1);
+  Wait(100 + Random(100));
+  TypeSend(Friend);
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+procedure DeleteFriend(Friend: string);
+By: Wizzup? & N1ke!
+Description: Delete's 'Friend' from your friends list.
+*******************************************************************************}
+procedure DeleteFriend(Friend: string);
+begin
+  GameTab(Tab_Friends);
+  Wait(180+Random(100));
+  MouseBox(653, 433, 718, 459, 1);
+  Wait(100 + Random(100));
+  TypeSend(Friend);
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+procedure AddIgnore(Friend: string);
+By: Wizzup? & N1ke!
+Description: Add's 'Friend' to your ignore list.
+*******************************************************************************}
+procedure AddIgnore(Friend: string);
+begin
+  GameTab(tab_Ignore);
+  Wait(180+Random(100));
+  MouseBox(565, 433, 630, 459, 1);
+  Wait(100 + Random(100));
+  TypeSend(Friend);
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+procedure DeleteIgnore(Friend: string);
+By: Wizzup? & N1ke!
+Description: Deletes 'Friend' from Ignore list.
+*******************************************************************************}
+procedure DeleteIgnore(Friend: string);
+begin
+  GameTab(tab_Ignore);
+  Wait(180+Random(100));
+  MouseBox(653, 433, 718, 459, 1);
+  Wait(100 + Random(100));
+  TypeSend(Friend);
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+Function GetFriendTexts: TStringArray;
+By: n3ss3s
+Description: Returns all the friend chats, even the empty lines.
+  Result[0] is the first PM chatline counting from up to down.
+  Closest one to chatbox is Result[4]
+  There are total 5 PM chatlines visible once.
+*******************************************************************************}
+function GetFriendTexts: TStringArray;
+var
+  Sx, Sy, I: Integer;
+begin
+  sx := 4;
+  sy := 269;
+  SetArrayLength(Result, 5);
+  for I := 0 to 4 do
+  begin
+    Result[i] := GetTextAtEx(sx, sy + 13 * i, 0, Smallchars, false, false, 0, 0, 16776960, 70, false, tr_allchars);
+    //Writeln(Result[i]);
+  end;
+end;
+
+function GetChatterOfLine(Line: string): string; forward;
+
+{*******************************************************************************
+function FromFriend(Friend: string): string;
+By: n3ss3s
+Description: Returns the first occurence of text sent by friend Friend.
+*******************************************************************************}
+function FromFriend(Friend: string): string;
+var
+  GFT: TStringArray;
+  I: Integer;
+begin
+  GFT := GetFriendTexts;
+  for I := 0 to High(GFT) do
+    if GetChatterOfLine(GFT[i]) = Friend then
+    begin
+      Result := GFT[i];
+      Result := Copy(Result, Pos(':', Result), Length(Result));
+      Exit;
+    end;
+end;
+
+{*******************************************************************************
+function FromFriendMulti(Friend: string): TStringArray;
+By: n3ss3s
+Description: Returns all the occurences of text sent by friend Friend.
+*******************************************************************************}
+function FromFriendMulti(Friend: string): TStringArray;
+var
+  GFT: TStringArray;
+  I: Integer;
+begin
+  GFT := GetFriendTexts;
+  for I := 0 to High(GFT) do
+    if (GetChatterOfLine(GFT[i]) = Friend) then
+    begin
+      Result[i] := GFT[i];
+      Result[i] := Copy(Result[i], Pos(':', Result[i]), Length(Result[i]));
+    end;
+end;
+
+{*******************************************************************************
+function GetChatterOfLine(Line: string): string;
+By: n3ss3s
+Description: Returns the friend who sent the text Line.
+*******************************************************************************}
+function GetChatterOfLine(Line: string): string;
+Var
+  A, B: string;
+begin
+  A := Copy(Line, 1, Pos(':', Line));
+  B := Copy(Line, 1, Pos(' ', A));
+  Result := Replace(A, B, '');
+  Result := Replace(Result, ':', '');
+end;
+
+{*******************************************************************************
+function RespondToWith(rTo, rWith: string): Boolean;
+By: n3ss3s
+Description: Returns true if could respond to message rTo with rWith.
+*******************************************************************************}
+function RespondToWith(rTo, rWith: string): Boolean;
+var
+  GFT: TStringArray;
+  I: Integer;
+Begin
+  GFT := GetFriendTexts;
+  for I := 0 to High(GFT) do
+    if Pos(rTo, GFT[i]) > 0 then
+      Result := MessageFriendEx(GetChatterOfLine(GFT[i]), rWith);
+end;
+
+{*******************************************************************************
+function HasResponded(Friend: string): Boolean;
+By: n3ss3s
+Description: Returns true if friend Friend has responded to you.
+*******************************************************************************}
+function HasResponded(Friend: string): Boolean;
+var
+  GFT: TStringArray;
+  I: Integer;
+begin
+  GFT := GetFriendTexts;
+  Result := True;
+  for I := 0 to High(GFT) do
+    if (Pos('From '+Friend, GFT[i]) > 0) then
+      Exit;
+  Result := False;
+end;

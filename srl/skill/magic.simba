@@ -1,0 +1,875 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                        Magic routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupSpells;                                        // by N1ke!
+// * procedure DebugSpellVars(SpellMode: Integer);                 // by N1ke!
+// * function GetSpellInfo(Spell: string): TSpell;                 // by N1ke!
+// * function SpellIsSort(Spell: string): Integer;                 // by N1ke!
+// * function SpellsAvaible: TBooleanArray;                        // by N1ke!, modified by marpis, fix by Cigue
+// * procedure ClickSpellMode(Which: Integer);                     // by N1ke!
+// * procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean); // by N1ke!
+// * function BookSortedBy: Integer;                               // by N1ke!
+// * procedure SortBook(By: Integer);                              // by N1ke!
+// * function DefCastIs: Boolean;                                  // by N1ke!
+// * procedure ToggleDefCast(SetTo: Boolean);                      // by N1ke!
+// * procedure ScrollSpellBook(Up: Boolean);                       // by N1ke!
+// * function SpellAvailable(var Coords: TBox; Spell: string): Boolean; // by N1ke!
+// * function Cast(Spell: string; AutoCast: Boolean): Boolean;     // by N1ke!
+// * procedure SetupMagic;                                          // by SRL
+
+const
+  rune_Air    = 0;
+  rune_Body   = 1;
+  rune_Mind   = 2;
+  rune_Earth  = 3;
+  rune_Fire   = 4;
+  rune_Water  = 5;
+  rune_Chaos  = 6;
+  rune_Law    = 7;
+  rune_Cosmic = 8;
+  rune_Death  = 9;
+  rune_Nature = 10;
+  rune_Blood  = 11;
+  rune_Soul   = 12;
+  rune_Astral = 13;
+  rune_Count  = 14;
+
+{ type TSpell;
+  Description: Contains info about a certain spell. }
+type
+  TSpell = record
+    Name: string;
+    Level: Integer;
+    AutoCast: Boolean;
+    Exp: Extended;
+    RequiredRunes: array of Integer;
+    RequiredRuneAmount: array of Integer;
+  end;
+
+{ type SpellMode;
+  Description: An array of TSpell }
+  SpellMode = array of TSpell;
+
+
+
+var
+{ var SpellModes
+  Description: Stores all the spells, after using SetupSpells.
+               Use as SpellModes[SpellMode_Combat][I] example..}
+  SpellModes: array of SpellMode;
+
+{ var SpellSetUp
+  Description: Is set to true if the spells are setup}
+  SpellSetUp: Boolean;
+
+Const
+{ const TotalSpells
+  Description: Number of spells in your spellbook}
+  TotalSpells = 65;
+
+{ const SpellMode_
+  Description: consts for the in-game spellmodes
+               note: SpellMode_All stands for all of them}
+  SpellMode_Combat = 0;
+  SpellMode_Teleport = 1;
+  SpellMode_Misc = 2;
+  SpellMode_Skill = 3;
+  SpellMode_All = 10;
+
+{ const BookSort_
+  Description: consts for the in-game magic book sorts}
+  BookSort_Level = 0;
+  BookSort_Combat = 1;
+  BookSort_Teleport = 2;
+
+{*******************************************************************************
+procedure SetupSpells;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Sets the SpellModes var to match the runescape spells.
+*******************************************************************************}
+procedure SetupSpells;
+var
+  I, H: Integer;
+  Names: TstringArray;
+  Exps: TExtendedArray;
+  Levels, AutoCasts: TIntegerArray;
+  ReqRunes: array of TIntegerArray;
+  ReqRuneAmt: array of TIntegerArray;
+begin
+  SetArrayLength(SpellModes, 4);
+
+  {SpellMode_Combat}
+  Names := ['wind rush', 'wind strike', 'confuse', 'water strike', 'earth strike',
+            'weaken', 'fire strike', 'wind bolt', 'curse', 'bind',
+            'water bolt', 'earth bolt', 'fire bolt', 'crumble undead',
+            'wind blast', 'water blast', 'iban blast', 'snare',
+            'magic dart', 'earth blast', 'fire blast', 'saradomin strike',
+            'claws of guthix', 'flames of zamorak', 'wind wave',
+            'water wave', 'vulnerability', 'earth wave',
+            'enfeeble', 'fire wave', 'entangle', 'stun', 'charge',
+            'wind surge', 'teleport block', 'water surge', 'earth surge',
+            'fire surge'];
+
+  Levels := [1, 1, 3, 5, 9, 11, 13, 17, 19, 20, 23, 29, 35, 39,
+             41, 47, 50, 50, 50, 53, 59, 60, 60, 60, 62, 65,
+             66, 70, 73, 75, 79, 80, 80, 81, 85, 85, 90, 95];
+
+  Exps := [3.5, 5.5, 13, 7.5, 9.5, 21, 11.5, 13.5, 29, 30, 16.5, 19.5, 22.5, 24.5,
+           25.5, 28.5, 30, 60, 30, 31.5, 34.5, 35, 35, 35, 36, 37.5, 76,
+           40, 83, 42.5, 89, 90, 180, 75, 80, 80, 85, 90];
+
+  AutoCasts := [1, 2, 5, 8, 9, 17, 26, 28, 30, 31, 32, 34];
+
+  ReqRuneAmt := [
+                  TIntegerArray([1]), TIntegerArray([1, 1]), TIntegerArray([3, 2, 1]),
+                  TIntegerArray([1, 1, 1]), TIntegerArray([2, 1, 1]), TIntegerArray([3, 2, 1]),
+                  TIntegerArray([3, 2, 1]), TIntegerArray([2, 1]), TIntegerArray([2, 3, 1]),
+                  TIntegerArray([3, 3, 2]), TIntegerArray([2, 2, 1]), TIntegerArray([3, 2, 1]),
+                  TIntegerArray([4, 3, 1]), TIntegerArray([2, 2, 1]), TIntegerArray([3, 1]),
+                  TIntegerArray([3, 3, 1]), TIntegerArray([5, 1 {Iban Staff}]), TIntegerArray([4, 4, 3]),
+                  TIntegerArray([1, 4 {Slayer Staff}]), TIntegerArray([4, 3, 1]), TIntegerArray([5, 4, 1]),
+                  TIntegerArray([2, 2, 4 {Staff of Saradomin}]), TIntegerArray([1, 2, 4 {Staff of Guthx or Void Knight Mace}]),
+                  TIntegerArray([4, 2, 1 {Staff of Zamorak}]), TIntegerArray([5, 1]), TIntegerArray([7, 5, 1]),
+                  TIntegerArray([5, 5, 1]), TIntegerArray([7, 5, 1]), TIntegerArray([8, 8, 1]),
+                  TIntegerArray([7, 5, 1]), TIntegerArray([5, 5, 4]), TIntegerArray([12, 12, 1]),
+                  TIntegerArray([3, 3, 3]), TIntegerArray([7, 1, 1]), TIntegerArray([1, 1, 1]),
+                  TIntegerArray([10, 7, 1, 1]), TIntegerArray([10, 7, 1, 1]), TIntegerArray([10, 7, 1, 1])
+                ];
+
+  ReqRunes := [
+                TIntegerArray([rune_Air]), {}
+                TIntegerArray([rune_Air, rune_Mind]), {}
+                TIntegerArray([rune_Water, rune_Earth, rune_Body]), {}
+                TIntegerArray([rune_Water, rune_Air, rune_Mind]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Mind]), {}
+                TIntegerArray([rune_Water, rune_Earth, rune_Body]), {}
+                TIntegerArray([rune_Fire, rune_Air, rune_Mind]), {}
+                TIntegerArray([rune_Air, rune_Chaos]), {}
+                TIntegerArray([rune_Water, rune_Earth, rune_Body]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Nature]), {}
+                TIntegerArray([rune_Water, rune_Air, rune_Chaos]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Chaos]), {}
+                TIntegerArray([rune_Fire, rune_Air, rune_Chaos]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Chaos]), {}
+                TIntegerArray([rune_Air, rune_Death]), {}
+                TIntegerArray([rune_Water, rune_Air, rune_Death]), {}
+                TIntegerArray([rune_Fire, rune_Death {Iban Staff}]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Nature]), {}
+                TIntegerArray([rune_Death, rune_Mind {Slayer Staff}]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Death]), {}
+                TIntegerArray([rune_Fire, rune_Air, rune_Death]), {}
+                TIntegerArray([rune_Fire, rune_Blood, rune_Air {Staff of Saradomin}]), {}
+                TIntegerArray([rune_Fire, rune_Blood, rune_Air {Staff of Guthx or Void Knight Mace}]), {}
+                TIntegerArray([rune_Fire, rune_Blood, rune_Air {Staff of Zamorak}]), {}
+                TIntegerArray([rune_Air, rune_Blood]), {}
+                TIntegerArray([rune_Water, rune_Air, rune_Blood]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Soul]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Blood]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Soul]), {}
+                TIntegerArray([rune_Fire, rune_Air, rune_Blood]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Nature]), {}
+                TIntegerArray([rune_Earth, rune_Water, rune_Soul]), {}
+                TIntegerArray([rune_Fire, rune_Blood, rune_Air]), {}
+                TIntegerArray([rune_Air, rune_Blood, rune_Death]), {}
+                TIntegerArray([rune_Death, rune_Chaos, rune_Law]), {}
+                TIntegerArray([rune_Water, rune_Air, rune_Blood, rune_Death]), {}
+                TIntegerArray([rune_Earth, rune_Air, rune_Blood, rune_Death]), {}
+                TIntegerArray([rune_Fire, rune_Air, rune_Blood, rune_Death])
+              ];
+
+SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
+  H := High(Names);
+  for I:=0 to H do
+    with SpellModes[SpellMode_Combat][I] do
+    begin
+      Name := Names[I];
+      Level := Levels[I];
+      Exp := Exps[I];
+      AutoCast := (not InIntArray(AutoCasts, I));
+      RequiredRunes := ReqRunes[i];
+      RequiredRuneAmount := ReqRuneAmt[i];
+    end;
+
+
+  {SpellMode_Teleport}
+  Names := ['lumbridge home teleport', 'mobilising armies teleport',
+            'varrock teleport', 'lumbridge teleport',
+            'falador teleport', 'teleport to house',
+            'camelot teleport', 'ardougne teleport', 'watchtower teleport',
+            'trollheim teleport', 'teleport to ape atoll',
+            'teleother lumbridge', 'teleother falador',
+            'teleother camelot'];
+
+  Levels := [0, 10, 25, 31, 37, 40, 45, 51, 58, 61, 64, 74, 82, 90];
+
+  Exps := [0, 19, 35, 41, 48, 30, 55.5, 61, 68, 68, 74, 84, 92, 100];
+
+  ReqRuneAmt := [
+                  TIntegerArray([0 {lumbridge home tele}]), TIntegerArray([1, 1, 1]),
+                  TIntegerArray([1, 3, 1]), TIntegerArray([1, 3, 1]), TIntegerArray([1, 3, 1]),
+                  TIntegerArray([1, 1, 1]), TIntegerArray([5, 1]), TIntegerArray([2, 2]),
+                  TIntegerArray([2, 2]), TIntegerArray([2, 2]), TIntegerArray([2, 2, 2]),
+                  TIntegerArray([1, 1, 1]), TIntegerArray([1, 1, 1]), TIntegerArray([2, 1])
+                ];
+
+  ReqRunes := [
+                TIntegerArray([0 {lumbridge home tele}]),
+                TIntegerArray([rune_Law, rune_Air, rune_Water]),
+                TIntegerArray([rune_Fire, rune_Air, rune_Law]),
+                TIntegerArray([rune_Earth, rune_Air, rune_Law]),
+                TIntegerArray([rune_Water, rune_Air, rune_Law]),
+                TIntegerArray([rune_Air, rune_Earth, rune_Law]),
+                TIntegerArray([rune_Air, rune_Law]),
+                TIntegerArray([rune_Water, rune_Law]),
+                TIntegerArray([rune_Earth, rune_Law]),
+                TIntegerArray([rune_Fire, rune_Law]),
+                TIntegerArray([rune_Water, rune_Fire, rune_Law {Banana}]),
+                TIntegerArray([rune_Soul, rune_Law, rune_Earth]),
+                TIntegerArray([rune_Soul, rune_Law, rune_Water]),
+                TIntegerArray([rune_Soul, rune_Law])
+              ];
+
+  SetArrayLength(SpellModes[SpellMode_Teleport], GetArrayLength(Names));
+  H := High(Names);
+  for I:=0 to High(Names)do
+    with SpellModes[SpellMode_Teleport][I] do
+    begin
+      Name := Names[I];
+      Level := Levels[I];
+      Exp := Exps[I];
+      AutoCast := (not InIntArray(AutoCasts, I));
+      RequiredRunes := ReqRunes[i];
+      RequiredRuneAmount := ReqRuneAmt[i];
+    end;
+
+
+  {SpellMode_Misc}
+  Names := ['bones to bananas', 'low level alchemy', 'telekinetic grab',
+            'high level alchemy', 'bones to peaches'];
+
+  Levels := [15, 21, 33, 55, 60];
+
+  Exps := [25, 31, 43, 65, 35.5];
+
+  ReqRuneAmt := [
+                  TIntegerArray([2, 2, 1]), TIntegerArray([3, 1]), TIntegerArray([1, 1]),
+                  TIntegerArray([5, 1]), TIntegerArray([4, 4, 2])
+                ];
+
+  ReqRunes := [
+                TIntegerArray([rune_Earth, rune_Water, rune_Nature]),
+                TIntegerArray([rune_Fire, rune_Nature]),
+                TIntegerArray([rune_Air, rune_Law]),
+                TIntegerArray([rune_Fire, rune_Nature]),
+                TIntegerArray([rune_Water, rune_Earth, rune_Nature])
+              ];
+
+  SetArrayLength(SpellModes[SpellMode_Misc], GetArrayLength(Names));
+  H := High(Names);
+  for I:=0 to High(Names)do
+    with SpellModes[SpellMode_Misc][I] do
+    begin
+      Name := Names[I];
+      Level := Levels[I];
+      Exp := Exps[I];
+      AutoCast := (not InIntArray(AutoCasts, I));
+      RequiredRunes := ReqRunes[i];
+      RequiredRuneAmount := ReqRuneAmt[i];
+    end;
+
+
+  {SpellMode_Skill}
+  Names := ['enchant crossbow bolt', 'lvl-1 enchant', 'lvl-2 enchant',
+            'superheat item', 'lvl-3 enchant', 'charge water orb',
+            'lvl-4 enchant', 'charge earth orb', 'charge fire orb',
+            'charge air orb', 'lvl-5 enchant', 'lvl-6 enchant'];
+
+  Levels := [4, 7, 27, 43, 49, 56, 57, 60, 63, 66, 68, 87];
+
+  Exps := [0, 17.5, 37, 53, 59, 66, 67, 70, 73, 76, 78, 97];
+
+  ReqRuneAmt := [
+                  TIntegerArray([0 {enchant bolt}]), TIntegerArray([1, 1]), TIntegerArray([3, 1]),
+                  TIntegerArray([4, 1]), TIntegerArray([5, 1]), TIntegerArray([30, 3 {Orb}]),
+                  TIntegerArray([10, 1]), TIntegerArray([30, 3 {Orb}]), TIntegerArray([30, 3 {Orb}]),
+                  TIntegerArray([30, 3 {Orb}]), TIntegerArray([15, 15, 1]), TIntegerArray([20, 20, 1])
+                ];
+
+  ReqRunes := [
+                TIntegerArray([0 {enchant bolt}]),
+                TIntegerArray([rune_Water, rune_Cosmic]),
+                TIntegerArray([rune_Air, rune_Cosmic]),
+                TIntegerArray([rune_Fire, rune_Nature]),
+                TIntegerArray([rune_Fire, rune_Cosmic]),
+                TIntegerArray([rune_Water, rune_Cosmic]),
+                TIntegerArray([rune_Earth, rune_Cosmic]),
+                TIntegerArray([rune_Earth, rune_Cosmic]),
+                TIntegerArray([rune_Fire, rune_Cosmic]),
+                TIntegerArray([rune_Air, rune_Cosmic]),
+                TIntegerArray([rune_Water, rune_Earth, rune_Cosmic]),
+                TIntegerArray([rune_Earth, rune_Fire, rune_Cosmic])
+              ];
+
+  SetArrayLength(SpellModes[SpellMode_Skill], GetArrayLength(Names));
+  H := High(Names);
+  for I:=0 to High(Names) do
+    with SpellModes[SpellMode_Skill][I] do
+    begin
+      Name := Names[I];
+      Level := Levels[I];
+      Exp := Exps[I];
+      AutoCast := (not InIntArray(AutoCasts, I));
+      RequiredRunes := ReqRunes[i];
+      RequiredRuneAmount := ReqRuneAmt[i];
+    end;
+
+  SpellSetUp := True;
+end;
+
+{*******************************************************************************
+procedure DebugSpellVars(SpellMode: Integer);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Prints out the SpellModes var.
+Valid parameters are
+  SpellMode_Combat
+  SpellMode_Teleport
+  SpellMode_Misc
+  SpellMode_Skill
+  SpellMode_All
+
+for example, DebugSpellVars(SpellMode_Combat); would only
+print out the combat spells.
+*******************************************************************************}
+procedure DebugSpellVars(SpellMode: Integer);
+var
+  I, II, r, iii, Total: Integer;
+  S, Runes: TstringArray;
+  rsa: string;
+begin
+  if not SpellSetUp then
+    SetupSpells;
+
+  Runes := [
+            'Air Rune', 'Body Rune', 'Mind Rune', 'Earth Rune', 'Fire Rune', 'Water Rune',
+            'Chaos Rune', 'Law Rune', 'Cosmic Rune', 'Death Rune', 'Nature Rune',
+            'Blood Rune', 'Soul Rune', 'Astral Rune'
+           ];
+
+  if SpellMode = SpellMode_All then
+  begin
+    S := ['Combat', 'Teleport', 'Misc', 'Skill'];
+
+    for I := 0 to High(SpellModes) do
+    begin
+      Writeln('** Spellmode_' + S[I] + '**');
+      for II := 0 to High(SpellModes[I]) do
+      begin
+        rsa := '';
+
+        for iii := 0 to High(SpellModes[i][ii].RequiredRunes) do
+        begin
+          r := SpellModes[i][ii].RequiredRunes[iii];
+          s := [IntToStr(SpellModes[i][ii].RequiredRuneAmount[iii])+' '+Runes[r]+'(s);'];
+          rsa := rsa+' '+s[0];
+          if SpellModes[i][ii].Name = 'lumbridge home teleport' then
+            rsa := 'None;';
+          if SpellModes[i][ii].Name = 'enchant crossbow bolt' then
+            rsa := 'Depends on Bolt;';
+        end;
+
+        Writeln('Spell: ' + Padr(SpellModes[I][II].Name + ' ', 18) + ' - Level needed: ' + Padr(IntToStr(SpellModes[I][II].Level) + ' ', 2) + ' - EXP per cast: ' + Padr(FloatToStr(SpellModes[I][II].Exp) + ' ', 2) + ' - AutoCast: ' + Padr(BoolToStr(SpellModes[I][II].AutoCast) + ' ', 2) + ' - Runes: ' + rsa);
+        Inc(Total);
+      end;
+      Writeln('');
+    end;
+    Writeln('A total of ' + IntToStr(Total) + ' Spells.');
+    Exit;
+  end;
+
+  for I:=0 to High(SpellModes[SpellMode]) do
+  begin
+
+    rsa := '';
+    for ii := 0 to High(SpellModes[SpellMode][i].RequiredRunes) do
+    begin
+      r := SpellModes[SpellMode][i].RequiredRunes[ii];
+      s := [IntToStr(SpellModes[SpellMode][i].RequiredRuneAmount[ii])+' '+Runes[r]+'(s);'];
+      rsa := rsa+' '+s[0];
+      if SpellModes[SpellMode][i].Name = 'lumbridge home teleport' then
+        rsa := 'None;';
+      if SpellModes[SpellMode][i].Name = 'enchant crossbow bolt' then
+        rsa := 'Depends on Bolt;';
+    end;
+
+    Writeln('Spell: ' + Padr(SpellModes[SpellMode][I].Name + ' ', 18) +
+            ' - Level needed: ' + Padr(IntToStr(SpellModes[SpellMode][I].Level) +
+            ' ', 2) + ' - EXP per cast: ' + Padr(FloatToStr(SpellModes[SpellMode][I].Exp) +
+            ' ', 2) + ' - AutoCast: ' + Padr(BoolToStr(SpellModes[SpellMode][I].AutoCast) +
+            ' ', 2) + ' - Runes: ' + rsa);
+  end;
+end;
+
+{*******************************************************************************
+function GetSpellInfo(Spell: string): TSpell;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Gets a spells info from the SpellModes var and results
+in a TSpell type.
+*******************************************************************************}
+function GetSpellInfo(Spell: string): TSpell;
+var
+  I, II: Integer;
+begin
+  if not SpellSetUp then
+    SetupSpells;
+  for I := 0 to 3 do
+   for II := 0 to High(SpellModes[I])do
+     if (Lowercase(Spell) = SpellModes[I][II].Name) then
+     begin
+       Result := SpellModes[I][II];
+       Exit;
+     end;
+end;
+
+{*******************************************************************************
+function SpellIsSort(Spell: string): Integer;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Results what kind of sort the spell is..
+Example of use - if (SpellIsSort('water strike') = SpellMode_Combat)then
+*******************************************************************************}
+function SpellIsSort(Spell: string): Integer;
+var
+  II: Integer;
+begin
+  for Result:=0 to High(SpellModes)do
+   for II:=0 to High(SpellModes[Result])do
+     if (Lowercase(Spell) = SpellModes[Result][II].Name)then
+       Exit;
+end;
+
+{*******************************************************************************
+Function SpellsAvailable: TBooleanArray;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Results which sort of spells are available.
+  Result[0] = SpellMode_Combat
+  Result[1] = SpellMode_Teleport
+  Result[2] = SpellMode_Misc
+  Result[3] = SpellMode_Skill
+*******************************************************************************}
+function SpellsAvailable: TBooleanArray;
+var
+  I: Integer;
+begin
+  if not GameTab(Tab_Magic)then
+    Exit;
+  SetArrayLength(Result, 4);
+  for I := 0 to 3 do
+   if (GetColor(592+(I*20), 441) = 16711422) then //16777215 OLD COLOR
+     Result[I] := True;
+end;
+
+{*******************************************************************************
+procedure ClickSpellMode(Which: Integer);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Clicks the given parameter.
+Valid parameters are
+  SpellMode_Combat
+  SpellMode_Teleport
+  SpellMode_Misc
+  SpellMode_Skill
+*******************************************************************************}
+procedure ClickSpellMode(Which: Integer);
+begin
+  if not GameTab(Tab_Magic)then
+    Exit;
+  Mouse(583+(Which*21), 441, 12, 16, True);
+  Wait(70+Random(70));
+end;
+
+{*******************************************************************************
+Procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Sets the spellmodes on and off for each mode.
+*******************************************************************************}
+procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean);
+var
+  I: Integer;
+  BoolArr: array [0..1] of TBooleanArray;
+begin
+  BoolArr[0] := SpellsAvailable;
+  BoolArr[1] := [Combat, Teleport, Misc, Skill];
+
+  for I:=0 to High(BoolArr[0]) do
+   if not (BoolArr[0][I] = BoolArr[1][I]) then
+     ClickSpellMode(I);
+end;
+
+{*******************************************************************************
+function BookSortedBy: Integer;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Results how the book is sorted.
+Possible results are
+  BookSort_Level = 0
+  BookSort_Combat = 1
+  BookSort_Teleport = 2
+*******************************************************************************}
+function BookSortedBy: Integer;
+begin
+  Result := -1;
+  if not GameTab(Tab_Magic) then
+    Exit;
+  for Result := 0 to 2 do
+   if (GetColor(676+(Result*19), 441) = 16711422) then //16777215 OLD COLOR
+     Exit;
+end;
+
+{*******************************************************************************
+procedure SortBook(By: Integer);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Sorts the book from given parameter.
+Valid parameters are
+  BookSort_Level = 0
+  BookSort_Combat = 1
+  BookSort_Teleport = 2
+*******************************************************************************}
+procedure SortBook(By: Integer);
+begin
+  if (not GameTab(Tab_Magic)) or (BookSortedBy = By) then
+    Exit;
+  Mouse(676+(By*19), 441, 12, 16, True);
+end;
+
+{*******************************************************************************
+Function DefCastIs: Boolean;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Results if defensive casting is enabled.
+*******************************************************************************}
+function DefCastIs: Boolean;
+begin
+  if not Gametab(tab_Magic) then
+    Exit;
+  Result := (LoggedIn) and (GetColor(563, 441) = 16711422);
+end;
+
+{*******************************************************************************
+procedure ToggleDefCast(SetTo: Boolean);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Turns defensive casting on/off.
+*******************************************************************************}
+procedure ToggleDefCast(SetTo: Boolean);
+begin
+  if (not Gametab(tab_Magic)) or (DefCastIs = SetTo) then
+    Exit;
+
+  Mouse(556, 443, 12, 14, True);
+  Wait(70+Random(70));
+end;
+
+{*******************************************************************************
+procedure ScrollSpellBook(Up: Boolean);
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Scrolls the spellbook, up or down.
+*******************************************************************************}
+procedure ScrollSpellBook(Up: Boolean);
+var
+  iTime, X, Y: Integer;
+  SBox, CBox: TPoint;
+begin
+  if (not GameTab(tab_Magic))then
+    Exit;
+
+  if Up then
+  begin
+    CBox := Point(728, 223);
+    SBox := Point(722, 209);
+  end else
+  begin
+    CBox := Point(729, 415);
+    SBox := Point(723, 421);
+  end;
+
+  if not (GetColor(CBox.X, CBox.Y) = 2041131)then //2106924
+    Exit;
+
+  MMouse(SBox.X, SBox.Y, 8, 8);
+  GetMousePos(X, Y);
+  HoldMouse(X, Y, mouseaction(True));
+  iTime := GetSystemTime + 3000;
+  while (GetColor(CBox.X, CBox.Y) = 2041131) do
+  begin
+    Wait(140+Random(100));
+    if (GetSystemTime > iTime) then
+      Break;
+  end;
+  ReleaseMouse(X, Y, MouseAction(True));
+  Wait(200+Random(100));
+end;
+
+{*******************************************************************************
+function SpellAvailable(var Coords: TBox; Spell: string): Boolean;
+By: N1ke! modified by marpis, fixed by Cigue (8th July 2010)
+Rev: 40
+Date: 12 Sep 09
+Description: Results true if the given spell is available and can be
+casted. Also stores coords in a TBox var where the spell is located.
+Will work however the spells are sorted, visable or not(Will enable
+the spells sort if not enabled).
+*******************************************************************************}
+function SpellAvailable(var Coords: TBox; Spell: string): Boolean;
+var
+  t_spArr: TstringArray;
+  I, II, P, CTS, X, Y, T, Fail: Integer;
+  Lum, H, S, L: Extended;
+  CurSet: TBooleanArray;
+  colArr: TIntegerArray;
+  si: TSpell;
+  ss: string;
+  ScrollB: Boolean;
+begin
+  if not LoggedIn then
+    Exit;
+  if not SpellSetUp then
+    SetupSpells;
+
+  {
+  if (FindColor(X, Y, 2070783, MIX1, MIY1, MIX2, MIY2)) then
+  begin
+    MouseBox(MMX1, MMY1, MMX2, MMY2, 3);
+    Wait(100+Random(300));
+  end;
+  }
+
+  for I := 0 to 1 do
+  begin
+    case BookSortedBy of
+      BookSort_Level:
+        t_spArr := ['lumbridge home teleport', 'wind rush', 'wind strike', 'confuse', 'enchant crossbow bolt', 'water strike', 'lvl-1 enchant',
+          'earth strike', 'mobilising armies teleport', 'weaken', 'fire strike', 'bones to bananas', 'wind bolt', 'curse', 'bind', 'low level alchemy',
+          'water bolt', 'varrock teleport', 'lvl-2 enchant', 'earth bolt', 'lumbridge teleport', 'telekinetic grab',
+          'fire bolt', 'falador teleport', 'crumble undead', 'teleport to house', 'wind blast', 'superheat item', 'camelot teleport',
+          'water blast', 'lvl-3 enchant', 'iban blast', 'snare', 'magic dart', 'ardougne teleport', 'earth blast', 'high level alchemy',
+          'charge water orb', 'lvl-4 enchant', 'watchtower teleport', 'fire blast', 'charge earth orb', 'bones to peaches',
+          'saradomin strike', 'claws of guthix', 'flames of zamorak', 'trollheim teleport', 'wind wave', 'charge fire orb',
+          'teleport to ape atoll', 'water wave', 'charge air orb', 'vulnerability', 'lvl-5 enchant', 'earth wave', 'enfeeble',
+          'teleother lumbridge', 'fire wave', 'entangle', 'stun', 'charge', 'wind surge', 'teleother falador', 'teleport block', 'water surge',
+          'lvl-6 enchant', 'earth surge', 'teleother camelot', 'fire surge'];
+
+      BookSort_Combat:
+        t_spArr := ['wind rush', 'wind strike', 'water strike', 'earth strike', 'fire strike', 'confuse', 'weaken', 'curse', 'wind bolt', 'water bolt',
+          'earth bolt', 'fire bolt', 'bind', 'crumble undead', 'wind blast', 'water blast', 'earth blast', 'fire blast', 'iban blast',
+          'snare', 'magic dart', 'wind wave', 'water wave', 'earth wave', 'fire wave', 'saradomin strike', 'claws of guthix',
+          'flames of zamorak', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block', 'lvl-1 enchant',
+          'lvl-2 enchant', 'lvl-3 enchant', 'lvl-4 enchant', 'lvl-5 enchant', 'lvl-6 enchant', 'enchant crossbow bolt', 'superheat item', 'charge water orb',
+          'charge earth orb', 'charge fire orb', 'charge air orb', 'low level alchemy', 'high level alchemy', 'telekinetic grab', 'bones to bananas',
+          'bones to peaches', 'lumbridge home teleport', 'mobilising armies teleport', 'varrock teleport', 'lumbridge teleport', 'falador teleport',
+          'teleport to house', 'camelot teleport', 'ardougne teleport', 'watchtower teleport', 'trollheim teleport', 'teleport to ape atoll',
+          'teleother lumbridge', 'teleother falador', 'teleother camelot'];
+
+      BookSort_Teleport:
+        t_spArr := ['lumbridge home teleport', 'mobilising armies teleport', 'varrock teleport', 'lumbridge teleport', 'falador teleport',
+          'teleport to house', 'camelot teleport', 'ardougne teleport', 'watchtower teleport', 'trollheim teleport', 'teleport to ape atoll',
+          'teleother lumbridge', 'teleother falador', 'teleother camelot', 'low level alchemy', 'high level alchemy', 'telekinetic grab', 'bones to bananas',
+          'bones to peaches', 'lvl-1 enchant', 'lvl-2 enchant', 'lvl-3 enchant', 'lvl-4 enchant', 'lvl-5 enchant', 'lvl-6 enchant', 'enchant crossbow bolt', 'superheat item',
+          'charge water orb', 'charge earth orb', 'charge fire orb', 'charge air orb', 'wind strike', 'water strike', 'earth strike', 'fire strike', 'confuse',
+          'weaken', 'curse', 'wind bolt', 'water bolt', 'earth bolt', 'fire bolt', 'bind', 'crumble undead', 'wind blast', 'water blast', 'earth blast',
+          'fire blast', 'iban blast', 'snare', 'magic dart', 'wind wave', 'water wave', 'earth wave', 'fire wave', 'saradomin strike', 'claws of guthix',
+          'flames of zamorak', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block'];
+
+      else
+      begin
+        Inc(Fail);
+        MouseBox(MIX1, MIY2-30, MIX2, MIY2-20, 3);
+        Wait(200 + random(100));
+        if (Fail = 2) then
+        begin
+          SRL_Warn('Cast', 'Invalid BookSort', warn_AllVersions);
+          Exit;
+        end;
+      end;
+    end; // case
+
+    if (Fail = 0) then Break;
+  end; //for-loop
+
+
+  if not InStrArr(Spell, t_spArr, False)then
+  begin
+    srl_Warn('Cast', 'Incorrect spell', warn_AllVersions);
+    Exit;
+  end;
+
+  if not InIntArray([SpellMode_Combat, SpellMode_Teleport,
+                     SpellMode_Misc, SpellMode_Skill], SpellIsSort(Spell))then
+  begin
+    srl_Warn('Cast', 'Incorrect spellkind', warn_AllVersions);
+    Exit;
+  end;
+
+  if BookSortedBy = BookSort_Level then
+    SortBook(BookSort_Level);
+
+  CurSet := SpellsAvailable;
+  I := SpellIsSort(Spell);
+  if not CurSet[I] then
+  begin
+    CurSet[I] := True;
+    SetSpellMode(CurSet[SpellMode_Combat], CurSet[SpellMode_Teleport], CurSet[SpellMode_Misc], CurSet[SpellMode_Skill]);
+  end;
+
+  for I:=0 to 3 do
+   if not CurSet[I] then
+     for II:=0 to High(SpellModes[I])do
+      if InStrArrEx(SpellModes[I][II].Name, t_spArr, P)then
+        DeleteValueInStrArray(t_spArr, P);
+
+  if not InStrArrEx(Spell, t_spArr, P)then
+  begin
+    srl_Warn('Cast', 'Cast function error', warn_AllVersions);
+    Exit;
+  end;
+
+  if InStrArrEx('enchant crossbow bolt', t_spArr, II)then
+   if (P > II)then
+   begin
+     CTS := GetColorToleranceSpeed;
+     ColorToleranceSpeed(2);
+     SetColorSpeed2Modifiers(0.02, 0.70);
+     if (CountColorTolerance(1147846, MIX1, MIY1, MIX2, MIY2, 13) < 14) then
+       Dec(P);
+     ColorToleranceSpeed(CTS);
+     SetColorSpeed2Modifiers(0.2, 0.2);
+   end;
+
+  ScrollB := (GetColor(734, 207) = 5794936); // True if scrollbar is present
+
+  if (ScrollB) then
+  begin
+    Coords.X1 := P mod 6 * 24 + 565;
+    Coords.Y1 := P div 7 * 24 + 217;
+    Coords.X2 := Coords.X1 + 15;
+    Coords.Y2 := Coords.Y1 + 15;
+  end else
+  begin
+    Coords.X1 := P mod 7 * 24 + 562;
+    Coords.Y1 := P div 7 * 24 + 217;
+    Coords.X2 := Coords.X1 + 15;
+    Coords.Y2 := Coords.Y1 + 15;
+  end;
+
+  if (ScrollB)and(P > 53)then
+  begin
+    ScrollSpellBook(False);
+    Coords.Y1 := Coords.Y1 - 80;
+    Coords.Y2 := Coords.Y1 + 15;
+  end else
+    ScrollSpellBook(True);
+
+  si := GetSpellInfo(Spell);
+  ss := Copy(si.Name, 2, 3);
+  if (not (WaitUpText(ss, 500))) then
+    MouseBox(Coords.X1, Coords.Y1, Coords.X2, Coords.Y2, 3);
+  T := GetSystemTime + 2000;
+  while (GetSystemTime < T) do
+    if FindColor(X, Y, 2070783, MIX1, MIY1, MIX2, MIY2) then
+      Break;
+
+  colArr := GetColors(TPAFromBox(Coords));
+  ClearSameIntegers(colArr);
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.72, 1.05);
+  for II := 0 to High(colArr) do
+  begin
+    if (SimilarColors(colArr[II], 3292228, 3)) then Continue;
+    ColorToHSL(colArr[II], H, S, L);
+    Lum := MaxE(Lum, L);
+  end;
+  SetColorSpeed2Modifiers(0.2, 0.2);
+  ColorToleranceSpeed(CTS);
+  Result := (Lum > 40.0);
+end;
+
+{*******************************************************************************
+Function Cast(Spell: string; AutoCast: Boolean): Boolean;
+By: N1ke!
+Rev: 39
+Date: 12 Sep 09
+Description: Results true if the spell given is clicked.
+if Autocast is true, it'll toggle the spell to autocast.
+Will work however the spells are sorted, visable or not(Will enable
+the spells sort if not enabled).
+*******************************************************************************}
+function Cast(Spell: string; AutoCast: Boolean): Boolean;
+var
+  X, Y: Integer;
+  B: TBox;
+  SInfo: TSpell;
+begin
+  if not LoggedIn then
+    Exit;
+
+  SInfo := GetSpellInfo(Spell);
+  if AutoCast then
+   if not SInfo.AutoCast then
+   begin
+     srl_Warn('Cast', Spell + ' is not autocast-able', warn_AllVersions);
+     Exit;
+   end;
+
+  if not SpellAvailable(B, Spell) then
+    Exit;
+
+//  Mousebox(B.X1, B.Y1, B.X2, B.Y2, 3);
+  GetMousePos(X, Y);
+  if AutoCast then
+  begin
+    if not WaitUpText('Autocast', 120+Random(100)) then
+      Exit;
+
+    if not(CountColor(16711422, B.X1-10, B.Y1-10, B.X2+10, B.Y2+10) > 50) then
+    begin
+      Mouse(X, Y, 0, 0, True);
+      Result := True;
+    end;
+    Exit;
+  end;
+
+  Mouse(X, Y, 0, 0, not SInfo.AutoCast);
+  if SInfo.AutoCast then
+    Result := WaitOption('Cast', 120+Random(100))
+  else
+    Result := WaitUpText('Cast', 120+Random(100));
+end;
+
+{*******************************************************************************
+procedure SetupMagic;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupMagic;
+begin
+end;

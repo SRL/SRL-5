@@ -1,0 +1,218 @@
+//----------------------------------------------------------------------------//
+//--                    Scar Standard Resource Library                      --//
+//----------------------------------------------------------------------------//
+//-- by: Azeroth, Bebe, BenLand100, benleegt, Boreas, c0de, Cheesehunk      --//
+//--   Coh3n, dakota, Dankness, driger1592, EvilChicken!, Flyboy,           --//
+//--   Freddy1990, Hobbit, IceFire908, inferno, Kernel Klink, Knightstreak, --//
+//--   Krazy_Meerkat, Krichevskoy, Liquid, Lorax, lordsaturn, Mad Cow,      --//
+//--   marpis, Markus, masquerader, mastaraymond, moparisthebest,           --//
+//--   Mutant Squirrle, n3ss3s, N1ke, Naum, Nava2, nielsie95, phantombmx,   --//
+//--   pups, Pyro, RAM, Rasta Magician, realrune, Renax, Ron, RsN,          --//
+//--   SKy Scripter, solemn wishes, Spky, SRL, Starblaster100, Stupid3ooo,  --//
+//--   Sumilion, tarajunky, The Claw, The_Rs_Monkey, TRiLeZ, Wizzup?,       --//
+//--   WT-Fakawi, XxKanexX, Yakman, YoHoJo, ZephyrsFury, _ChArMz,           --//
+//--                                                                        --//
+//--                                ....... and the SRL Community.          --//
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+//--                         SRL Level 1 Includes                           --//
+//--                                                                        --//
+//--        Low Level SCAR Math, Mouse Movement and Color routines.         --//
+//----------------------------------------------------------------------------//
+{$IFDEF SMART}
+{$IFNDEF SRL_SMART}
+{.include SRL/SRL/misc/smart.simba}
+{$ENDIF}
+{$ENDIF}
+
+{.include SRL/SRL/core/defines.simba}
+{$ifdef Simba}
+{$i SRL/SRL/core/simba.simba}
+{$endif}
+{.include SRL/SRL/core/globals.simba}
+{.include SRL/SRL/core/math.simba}
+{.include SRL/SRL/core/mouse.simba}
+{.include SRL/SRL/core/color.simba}
+{.include SRL/SRL/core/players.simba}
+{.include SRL/SRL/core/overwrite.simba}
+
+//----------------------------------------------------------------------------//
+//--                         SRL Level 2 Includes                           --//
+//--                                                                        --//
+//--                     Interface and OCR routines.                        --//
+//----------------------------------------------------------------------------//
+
+{.include SRL/SRL/core/text.simba}
+{.include SRL/SRL/core/timing.simba}
+{.include SRL/SRL/core/SRLlog.simba}
+{.include SRL/SRL/core/chat.simba}
+{.include SRL/SRL/core/gametab.simba}
+
+//----------------------------------------------------------------------------//
+//--                         SRL Level 3 Includes                           --//
+//--                                                                        --//
+//--   MapWalking, AntiRandoms, Objects, Bank, Symbol and many more...      --//
+//----------------------------------------------------------------------------//
+
+{.include SRL/SRL/core/animation.simba}
+{.include SRL/SRL/core/flag.simba}
+{.include SRL/SRL/core/worldswitcher.simba}
+{.include SRL/SRL/core/login.simba}
+{.include SRL/SRL/core/autocolor.simba}
+{.include SRL/SRL/core/mapwalk.simba}
+{.include SRL/SRL/core/object.simba}
+{.include SRL/SRL/core/bitmaps.simba}
+{.include SRL/SRL/core/amount.simba}
+{.include SRL/SRL/core/inventory.simba}
+{.include SRL/SRL/core/bank.simba}
+{.include SRL/SRL/core/symbol.simba}
+{.include SRL/SRL/core/rc.simba}
+{.include SRL/SRL/core/globalstats.simba}
+{.include SRL/SRL/core/cautorespond.simba}
+{.include SRL/SRL/core/antiban.simba}
+{.include SRL/SRL/core/antirandoms/common.simba}
+{.include SRL/SRL/core/antirandoms/certer.simba}
+{.include SRL/SRL/core/antirandoms/demon.simba}
+{.include SRL/SRL/core/antirandoms/forester.simba}
+{.include SRL/SRL/core/antirandoms/quiz.simba}
+{.include SRL/SRL/core/antirandoms/sandwich.simba}
+{.include SRL/SRL/core/antirandoms/evilbob.simba}
+{.include SRL/SRL/core/antirandoms/leo.simba}
+{.include SRL/SRL/core/antirandoms/frog.simba}
+{.include SRL/SRL/core/antirandoms/molly.simba}
+{.include SRL/SRL/core/antirandoms/pillory.simba}
+{.include SRL/SRL/core/antirandoms/pinball.simba}
+{.include SRL/SRL/core/antirandoms/maze.simba}
+{.include SRL/SRL/core/antirandoms/capnarnav.simba}
+{.include SRL/SRL/core/antirandoms/beekeeper.simba}
+{.include SRL/SRL/core/antirandoms/abyss.simba}
+{.include SRL/SRL/core/antirandoms/mordaut.simba}
+{.include SRL/SRL/core/antirandoms/prisonpete.simba}
+{.include SRL/SRL/core/antirandoms/mime.simba}
+{.include SRL/SRL/core/antirandoms/antirandoms.simba}
+{.include SRL/SRL/core/antirandoms/randomtool.simba}
+{$IFDEF LoadExtraFonts}
+{.include SRL/SRL/misc/fontupdater.simba}
+{$ENDIF}
+
+{$DEFINE SRL_OPENDEV}
+{*******************************************************************************
+procedure  FreeSRL;
+by: SRL Dev Team
+Description: Tries to free all the variables it allocated during runtime.
+*******************************************************************************}
+procedure FreeSRL;
+begin
+  FreeSRLBitmaps;
+  FreeSRLFonts;
+  FreeSRLLog;
+end;
+
+{*******************************************************************************
+procedure  SetupSRL;
+by: SRL Dev Team
+Last Edit: 22 June 2010 -- Nava2
+Description: Sets up all variables needed to run SRL.
+*******************************************************************************}
+
+procedure SetupSRL;
+var
+  t: Integer;
+begin
+  {$IFNDEF SMART}
+    {$IFDEF SIMBA}
+      if (not IsTargetValid) then
+        srl_Warn('SetUpSRL', 'Target client is not valid! ' +
+          'Drag the crosshairs over the target client.', warn_Terminate);
+    {$ENDIF}
+  {$ENDIF}
+  SetupBoxes; //Sets up box variables in globals.simba
+  t := GetTimeRunning;
+  MouseSpeed := 15;
+  {$IFDEF UseLaptopMouse}LMouse_MissChance := 75;{$ENDIF}
+  CheckHPFirst := True;
+  Reincarnate := False;
+  TalkAfterRandoms := False;
+  RoadColor := 0;
+  WaterColor := 0;
+  BankColor := 0;
+  LampSkill := 'mining';
+  SetUpSRLReport;
+  LoadCosineArrays;
+  SymbolAccuracy:= 0.8;
+  LoadSRLBitMaps;
+  LoadSRLFonts;
+  LoadTeleRandoms;
+  SolveSRLRandoms := True;
+  SetupSRLAutoResponder;
+  UseFindMod := True;
+  LogoutOnMod := True;
+  UseFindTrade := True;
+  UseAutoResponder := True;
+  Screenshots := False;
+  GraphicsSet := False;
+  AllowPVP    := False;
+  ScreenShots := True;
+  WarnSensitivity := -2;
+  SetupAutoColors;
+{$IFDEF SCAR325_UP}
+    rs_LoadUpChars(FontsPath + 'UpChars\');
+    NPCChars := LoadChars2(FontsPath + 'CharsNPC\');
+    UpChars := LoadChars2(FontsPath + 'UpChars\');
+    SmallChars := LoadChars2(FontsPath + 'SmallChars\');
+    StatChars := LoadChars2(FontsPath + 'StatChars\');
+    FriendChars := LoadChars2(FontsPath + 'FriendChars\');
+    BigChars := LoadChars2(FontsPath + 'BigChars\');
+    LoginChars := LoadChars2(FontsPath + 'LoginChars\');
+{$ENDIF}
+{$IFNDEF Simba}
+  {$IFDEF SCAR325_UP}
+    IncludePath := IncludesPath;
+    FontPath := FontsPath;
+  {$ELSE}
+    IncludePath := AppPath + 'Includes\';
+    FontPath := AppPath + 'Fonts\';
+  {$ENDIF}
+  XPChars := LoadChars2(FontsPath + 'XPChars\');
+{$ENDIF}
+{$IFDEF LoadExtraFonts}
+  srl_UpdateFonts(srl_FontsUp2date);
+{$ENDIF}
+{$IFDEF YourMom}
+  InitializeSRLLogFile;
+{$ENDIF}
+{$IFDEF SIMBA}
+  AddOnTerminate('FreeSRL');
+  SetSupressExceptions(true);
+{$ENDIF}
+  Writeln ('SRL Compiled in '+  IntToStr(GetTimeRunning - t) + ' msec');
+
+  {$IFDEF SRL_SMART}
+  if (Smart_Server = 0) then
+  begin
+    Smart_Server := RandomWorld(Smart_Members, False);
+    Smart_Signed := True;
+    Smart_SuperDetail := False;
+  end;
+  Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
+                 + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
+  SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
+{$IFDEF Simba}
+  SetTargetArray(SmartImageArray, 765,503);
+{$ELSE}
+  SetTargetDC(SmartGetDC);
+{$ENDIF}
+  repeat
+    Wait(100);
+    if (GetTimeRunning - t) > 120000 then
+      Break;
+  until(RSReady);
+  {$ELSE}
+  Smart_Server := 0;
+  Smart_Members := false;
+  Smart_Signed := True;
+  Smart_SuperDetail := false;
+  {$ENDIF}
+
+end;

@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » construction                                --//
+//-----------------------------------------------------------------//
+// * procedure SetupConstruction;                                  // by SRL
+
+{*******************************************************************************
+procedure SetupConstruction;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupConstruction;
+begin
+end;

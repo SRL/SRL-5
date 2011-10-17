@@ -1,0 +1,204 @@
+// -------------------------------------------------------------------------- //
+//--                 Scar Standard Resource Library              ------------ //
+//--                   » DDTM-Path Routines                      ------------ //
+//--------------------------------------------------------------------------- //
+// * procedure SetPathLength(PathLength: integer);                            // by WT-Fakawi
+// * procedure SetupPath;                                                     // by WT-Fakawi
+// * function SetPath(Number: Integer): Integer;                              // by WT-Fakawi
+// * function WalkPath(ThePath: Integer): Boolean;                            // by WT-Fakawi
+// * function FindPath(ThePath: Integer; Click: Boolean): Boolean;            // by WT-Fakawi
+// * procedure PathRecorder(StartPath: Integer);                              // by WT-Fakawi
+
+{ type TDTMPoints;
+  Description: Define Path structure. One Main Point ( any color ) and upto 10 SubPoint of the SAME color. }
+
+type
+  TDTMPoints = record
+    MainPoint: TPoint;
+    SubPoints: array[0..10] of TPoint;
+  end;
+
+{ var Path: array[0..50] of TDTMPoints;
+  Description: Predefines Type array Path. }
+
+var
+  Path: array of TDTMPoints;
+
+{*******************************************************************************
+procedure SetPathLength(PathLength: integer);
+By: WT-Fakawi
+Description:
+*******************************************************************************}
+procedure SetPathLength(PathLength: integer);
+begin
+  SetLength(Path, PathLength);
+end;
+
+{*******************************************************************************
+procedure SetupPath;
+By: WT-Fakawi
+Description:
+*******************************************************************************}
+procedure SetupPath;
+begin
+  SetPathLength(50);
+end;
+
+{*******************************************************************************
+function SetPath(Number: Integer): Integer;
+By: WT-Fakawi
+Description: Assembles DTM from Path. Inputs Path-Index, outputs DTM.
+Usage: TheDTM := SetPath(0); or FindDTMRotated(SetPath(4).....
+*******************************************************************************}
+function SetPath(Number: Integer): Integer;
+var
+  DTMSubPoints: array of TDTMPointDef;
+  DTMMainPoint: TDTMPointDef;
+  TempTDTM: TDTM;
+  NrofSubPoints, i: Integer;
+  TheDTM: Integer;
+begin
+  If Number > High(Path) Then
+  Begin
+    WriteLn('Paths.scar - Your index is too high.');
+    WriteLn('Are you sure you set the array length?');
+  End;
+  for i := 0 to 9 do // Calculate ArrayLength
+    if ((Path[Number].SubPoints[i].x = 0) and
+      (Path[Number].SubPoints[i].y = 0)) then
+    begin
+      NrofSubPoints := i;
+      Break;
+    end;
+
+  SetArrayLength(DTMSubPoints, NrofSubPoints);
+
+  DTMMainPoint.x := Path[Number].Mainpoint.x;
+  DTMMainPoint.y := Path[Number].Mainpoint.y;
+  DTMMainPoint.areasize := 1;
+  DTMMainPoint.areashape := 0;
+  DTMMainPoint.color := RoadColor;
+  DTMMainPoint.tolerance := 0;
+
+  for i := 0 to NrofSubPoints - 1 do
+  begin
+    DTMSubPoints[i].x := Path[Number].SubPoints[i].x;
+    DTMSubPoints[i].y := Path[Number].SubPoints[i].y;
+    DTMSubPoints[i].areasize := 1;
+    DTMSubPoints[i].areashape := 0;
+    DTMSubPoints[i].color := RoadColor;
+    DTMSubPoints[i].tolerance := 0;
+  end;
+
+  TempTDTM.MainPoint := DTMMainPoint;
+  TempTDTM.SubPoints := DTMSubPoints;
+  TheDTM := AddDTM(TempTDTM);
+  Result := TheDTM;
+end;
+
+{*******************************************************************************
+function WalkPath(ThePath: Integer): Boolean;
+By: WT-Fakawi
+Description: Simple Roadclicker, checks for RoadColor changes using FlagEx.
+Returns False if Path not found.
+Usage: WalkPath(1);
+*******************************************************************************}
+function WalkPath(ThePath: Integer): Boolean;
+var
+  WhichAngle: Extended;
+  TheDTM, x, y: Integer;
+begin
+  TheDTM := SetPath(ThePath);
+  if FindDtmRotated(TheDTM, x, y, MMX1, MMY1, MMX2, MMY2, Radians(-35), Radians(35), 0.05,
+    WhichAngle) then
+  begin
+    Mouse(x, y, 0, 0, True);
+    Wait(6000);
+    FlagEx(10, True);
+    Result := True;
+  end
+  else
+    Result := False;
+  FreeDTM(TheDTM);
+end;
+
+{*******************************************************************************
+function FindPath(ThePath: Integer; Click: Boolean): Boolean;
+By: WT-Fakawi
+Description: Returns True if Path was found.
+Usage:
+  repeat
+    WalkPath(1);
+  until FindPath(2, True);
+*******************************************************************************}
+function FindPath(ThePath: Integer; Click: Boolean): Boolean;
+var
+  WhichAngle: Extended;
+  TheDTM, x, y: Integer;
+begin
+  TheDTM := SetPath(ThePath);
+  if FindDtmRotated(TheDTM, x, y, MMX1, MMY1, MMX2, MMY2, Radians(-35), Radians(35), 0.05,
+    WhichAngle) then
+  begin
+    Result := True;
+    if Click then
+    begin
+      Mouse(x, y, 0, 0, True);
+      Wait(3000);
+      FlagEx(10, True);
+    end
+  end
+  else
+  begin
+    Result := False;
+  end;
+  FreeDTM(TheDTM);
+end;
+
+{*******************************************************************************
+procedure PathRecorder(StartPath: Integer);
+By: WT-Fakawi
+Description: Simple PathRecorder.
+Usage: Enter StartPath.
+  - Click RightMouse Button for SubPoints
+  - Now hover Mouse over MainPoint and hit Q
+  - Copy Debug printout to your script.
+  - Choose Subpoints carefully. Upto 9 clicks are allowed,
+    but 4 Subpoints should well be sufficiant.
+*******************************************************************************}
+procedure PathRecorder(StartPath: Integer);
+var
+  i, CurrentPath, SubPointCounter, x, y: Integer;
+begin
+  CurrentPath := StartPath;
+  repeat
+    Wait(100);
+    if IsMouseButtonDown(mouse_Right) then
+    begin
+      GetMousePos(x, y);
+      Path[CurrentPath].SubPoints[SubPointCounter].x := x;
+      Path[CurrentPath].SubPoints[SubPointCounter].y := y;
+      while (IsMouseButtonDown(mouse_Right)) do
+        Wait(16);
+      SubPointCounter := SubPointCounter + 1;
+    end;
+
+    if (IsKeyDown(GetKeyCode('q'))) then
+    begin
+      GetMousePos(x, y);
+      Path[CurrentPath].MainPoint.x := x;
+      Path[CurrentPath].MainPoint.y := y;
+      while (IsKeyDown(GetKeyCode('q'))) do
+        Wait(16);
+      writeln('Path[' + IntToStr(CurrentPath) + '].Mainpoint.x:=' + IntToStr(Path[CurrentPath].MainPoint.x) + ';');
+      writeln('Path[' + IntToStr(CurrentPath) + '].Mainpoint.y:=' + IntToStr(Path[CurrentPath].MainPoint.y) + ';');
+      for i := 0 to SubPointCounter - 1 do
+      begin
+        writeln('Path[' + IntToStr(CurrentPath) + '].Subpoints[' + IntToStr(i) + '].x:=' + IntToStr(Path[CurrentPath].Subpoints[i].x) + ';');
+        writeln('Path[' + IntToStr(CurrentPath) + '].Subpoints[' + IntToStr(i) + '].y:=' + IntToStr(Path[CurrentPath].Subpoints[i].y) + ';');
+      end;
+        SubPointCounter := 0;
+      CurrentPath := CurrentPath + 1;
+    end;
+  until False;
+end;

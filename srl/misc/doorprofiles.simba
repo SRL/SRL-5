@@ -1,0 +1,299 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » Door Routines                               --//
+//-----------------------------------------------------------------//
+// * function IsDropDot(Pt: TPoint): Boolean;                      // * by lordsaturn
+// * function FilterDropDots(P: TPointArray): TPointArray;         // * by lordsaturn
+// * function GetDoorPoints: T2DPointArray;                        // * by lordsaturn
+// * function GetDoorColors: TIntegerArray;                        // * by lordsaturn
+// * function GetDoorColor: integer;                               // * by lordsaturn
+// * function RearrangeTPA(TPA: TPointArray; sortX, up: Boolean): TPointArray; // * by lordsaturn
+// * function MiddleDoor(var P: TPointArray; var s: extended): TPoint; // * by lordsaturn
+// * function GetDoors: array of DoorProfile;                      // * by lordsaturn
+// * function GetDoorsIn(x1, y1, x2, y2: integer): array of DoorProfile; // * by lordsaturn
+// * procedure SortDoorsFrom(var d: array of DoorProfile; From: TPoint); // * by lordsaturn
+
+
+type
+  DoorProfile = record
+    Points: TPointArray;
+    MidPoint: TPoint;
+    PixelCount: Integer;
+    Slope: Extended;
+    Color: Integer;
+  end;
+
+{        3553023  789758
+3553023  2105598  395004  237
+789758   395004   237     206
+65536    217      188     65536
+         65536  65536           }
+
+
+{*******************************************************************************
+function IsDropDot(Pt: TPoint): Boolean;
+By: lordsaturn
+Description: Returns true if a point is in a drop dot.
+*******************************************************************************}
+function IsDropDot(Pt: TPoint): Boolean;
+var
+  x, y, Col: integer;
+begin
+  Col := GetColor(Pt.x, Pt.y);
+  if (Col = 206) or (Col = 217) or (Col = 237) then
+    if FindColor(x, y, Col, MMX1, MMY1, MMX2, MMY2) then
+      case Col of
+        206: Result := (GetColor(Pt.x-2, Pt.y) = 395004) or (GetColor(Pt.x-1, Pt.y) = 237);
+        217: Result := (GetColor(Pt.x, Pt.y-1) = 395004) or (GetColor(Pt.x+1, Pt.y-1) = 237);
+        237: Result := (((GetColor(Pt.x-1, Pt.y+1) = Col) or (GetColor(Pt.x+1, Pt.y-1) = Col)) and
+                       (GetColor(x, y+2) = srl_outline_black)) or ((GetColor(Pt.x-2, Pt.y-1) = 3553023) or
+                       (GetColor(x-1, y-2) = 3553023)) or (GetColor(Pt.x-1, Pt.y) = 395004);
+        else Exit;
+      end;
+end;
+
+
+{*******************************************************************************
+function FilterDropDots(P: TPointArray): TPointArray;
+By: lordsaturn
+Description: Returns a TPointArray filtered of drop dots.
+*******************************************************************************}
+function FilterDropDots(P: TPointArray): TPointArray;
+var
+  i, Hi, L: integer;
+begin
+  Hi := High(P);
+  if Hi < 0 then Exit;
+  SetLength(Result, Hi+1);
+  for i := 0 to Hi do
+    if (not(IsDropDot(P[i]))) and rs_OnMinimap(P[i].x, P[i].y)  and
+       (InRange(GetColor(P[i].x, P[i].y), 200, 254))then
+    begin
+      Result[L] := P[i];
+      Inc(L);
+    end;
+  SetLength(Result, L);
+end;
+
+{*******************************************************************************
+function GetDoorPoints: T2DPointArray;
+By: lordsaturn
+Description: Returns all door points on the minimap in a T2DPointArray.
+*******************************************************************************}
+function GetDoorPoints: T2DPointArray;
+var
+  CTS: integer;
+  P: TPointArray;
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorspeed2Modifiers(0.0, 0.0);
+  FindColorsTolerance(P, 227, MMX1, MMY1, MMX2, MMY2, 6);
+  SetColorspeed2Modifiers(0.2, 0.2);
+  ColorToleranceSpeed(CTS);
+  if Length(P) < 1 then Exit;
+  Result := SplitTPA(FilterDropDots(P), 6);
+  SortATPAFrom(Result, Point(MMCX, MMCY));
+end;
+
+{*******************************************************************************
+function GetDoorColors: TIntegerArray;
+By: lordsaturn
+Description: Returns all door colors on the minimap in an array.
+*******************************************************************************}
+function GetDoorColors: TIntegerArray;
+var
+  aP: T2DPointArray;
+  Hi, i, c: integer;
+begin
+  aP := GetDoorPoints;
+  Hi := High(aP);
+  if Hi < 0 then Exit;
+  for i := 0 to Hi do
+  begin
+    c := GetColor(aP[i][0].x, aP[i][0].y);
+    if InIntArray(Result, c) then Continue;
+    Result := CombineIntArray(Result, [c]);
+  end;
+end;
+
+{*******************************************************************************
+function GetDoorColor: integer;
+By: lordsaturn
+Description: Returns the first door color found from the center of the minimap.
+*******************************************************************************}
+function GetDoorColor: integer;
+var
+  a: TIntegerArray;
+begin
+  a := GetDoorColors;
+  if Length(a) < 1 then Exit;
+  Result := a[0];
+end;
+
+{*******************************************************************************
+function RearrangeTPA(TPA: TPointArray; sortX, up: Boolean): TPointArray;
+By: lordsaturn
+Description: Sorts a TPA according to params.
+*******************************************************************************}
+function RearrangeTPA(TPA: TPointArray; sortX, up: Boolean): TPointArray;
+var
+  i, Hi, j: integer;
+  ints, indexes: TIntegerArray;
+  P: TPointArray;
+begin
+  Hi := High(TPA);
+  SetLength(Result, Hi+1);
+  if Hi < 1 then
+  begin
+    Result := TPA;
+    Exit;
+  end;
+  P := TPA;
+  SetLength(ints, Hi+1);
+  SetLength(indexes, Hi+1);
+  for i := 0 to Hi do
+  begin
+    indexes[i] := -1;
+    if sortX then
+      ints[i] := P[i].x
+    else
+      ints[i] := P[i].y;
+  end;
+  QuickSort(ints);
+  for i := 0 to Hi do
+    for j := 0 to Hi do
+      if (sortX and (ints[i] = P[j].x)) or ((not(sortX)) and (ints[i] = P[j].y)) then
+        if not InIntArray(indexes, j) then
+        begin
+          if up then
+            Result[i] := P[j]
+          else
+            Result[Hi-i] := P[j];
+          Inc(i);
+          if i > Hi then Exit;
+          indexes[i] := j;
+          j := -1;
+        end;
+end;
+
+{*******************************************************************************
+function MiddleDoor(var P: TPointArray; var s: extended): TPoint;
+By: lordsaturn
+Description: Returns the slope and midpoint of a door.
+*******************************************************************************}
+function MiddleDoor(var P: TPointArray; var s: extended): TPoint;
+var
+  Hi, i, minX, maxX, minY, maxY: integer;
+  d, tD, PtX, PtY: extended;
+begin
+  Hi := High(P);
+  if Hi < 0 then Exit;
+  if Hi = 0 then
+  begin
+    Result := P[0];
+    s := 1;
+    Exit;
+  end;
+  RearrangeTPA(P, True, True);
+  minX := P[0].x;
+  maxX := P[Hi].x;
+  RearrangeTPA(P, False, True);
+  minY := P[0].y;
+  maxY := P[Hi].y;
+  SortTPAFrom(P, Point(minX, minY));
+  PtX := (minX+maxX)/2;
+  PtY := (minY+maxY)/2;
+  for i := 0 to Hi do
+  begin
+    tD := Sqrt(Sqr(P[i].x-PtX)+Sqr(P[i].y-PtY));
+    if (tD < d) or (i = 0) then
+    begin
+      Result := P[i];
+      d := tD;
+    end;
+  end;
+  try
+    s := (maxY-minY)/(maxX-minX);
+  except s := 150; end;
+end;
+
+{*******************************************************************************
+function GetDoors: array of DoorProfile;
+By: lordsaturn
+Description: Returns information about the doors on the minimap in an array of
+DoorProfile.
+*******************************************************************************}
+function GetDoors: array of DoorProfile;
+var
+  aP: T2DPointArray;
+  Hi, i, L, j: integer;
+begin
+  aP := GetDoorPoints;
+  SortATPAFrom(aP, Point(MMCX, MMCY));
+  Hi := High(aP);
+  if Hi < 0 then Exit;
+  SetLength(Result, Hi+1);
+  for i := 0 to Hi do
+  begin
+    Result[i].Midpoint := MiddleDoor(aP[i], Result[i].Slope);
+    Result[i].Points := aP[i];
+    L := Length(aP[i]);
+    Result[i].PixelCount := L;
+    for j := 0 to L-1 do
+    begin
+      Result[i].Color := GetColor(aP[i][j].x, aP[i][j].y);
+      if InRange(Result[i].Color, 200, 254) then Break;
+    end;
+    if j = L then Result[i].Color := 0;
+  end;
+end;
+
+{*******************************************************************************
+function GetDoorsIn(x1, y1, x2, y2: integer): array of DoorProfile;
+By: lordsaturn
+Description: Returns information about the doors on a portion of the minimap in
+an array of DoorProfile.
+*******************************************************************************}
+function GetDoorsIn(x1, y1, x2, y2: integer): array of DoorProfile;
+var
+  d: array of DoorProfile;
+  Hi, i, L: integer;
+begin
+  d := GetDoors;
+  Hi := High(d);
+  if Hi < 0 then Exit;
+  SetLength(Result, Hi+1);
+  for i := 0 to Hi do
+    if InRange(d[i].MidPoint.x, x1, x2) and InRange(d[i].MidPoint.y, y1, y2) then
+    begin
+      Result[L] := d[i];
+      Inc(L);
+    end;
+  SetLength(Result, L);
+end;
+
+{*******************************************************************************
+procedure SortDoorsFrom(var d: array of DoorProfile; From: TPoint);
+By: lordsaturn
+Description: Sorts an array of DoorProfile from a TPoint.
+*******************************************************************************}
+procedure SortDoorsFrom(var d: array of DoorProfile; From: TPoint);
+var
+  P: TPointArray;
+  clone: array of DoorProfile;
+  i, j, L: integer;
+begin
+  L := Length(d);
+  if L < 2 then Exit;
+  SetLength(clone, L);
+  clone := d;
+  SetLength(P, L);
+  for i := 0 to L-1 do
+    P[i] := clone[i].Midpoint;
+  SortTPAFrom(P, From);
+  for i := 0 to L-1 do
+    for j := 0 to L-1 do
+      if (P[i].x = clone[j].Midpoint.x) and (P[i].y = clone[j].Midpoint.y) then
+        d[i] := clone[j];
+end;

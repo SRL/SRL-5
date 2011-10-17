@@ -1,0 +1,117 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--               » SRL Log related functions                   --//
+//-----------------------------------------------------------------//
+// * function InitializeSRLLogFile : boolean;                      // by Markus
+// * procedure AddToSRLLog(s : string);                            // by Markus
+
+{ var SRLSavePath : string;
+  Description: The default path we save files too (screenshots, chatlogs). }
+var
+  SRLSavePath : string;
+
+{*******************************************************************************
+function InitializeSRLLogFile : boolean;
+By: Markus
+Description: Sets the SRLSavePath variable by looping through a few folders.
+Also intializes TheFile
+*******************************************************************************}
+function InitializeSRLLogFile : boolean;
+{$IFDEF YourMom}
+var
+  FolderArray: TStringArray;
+  BaseFileName: string;
+  i: integer;
+  TempFile: integer;
+begin
+  result := false;
+  FolderArray := [IncludePath +'SRL/logs/', AppPath+'SRLlogs/', ScriptPath, AppPath];
+  for i := 0 to high(FolderArray) do
+  begin
+    if (trim(FolderArray[i]) <> '') then
+    begin
+      if not (DirectoryExists(FolderArray[i])) then
+        if not CreateDirectory(FolderArray[i]) then
+          Continue;
+      SRLSavePath := FolderArray[i];
+      BaseFileName := SRLSavePath+'SRL log '+TheDate(3)+' ';
+      for i := 0 to 999 do
+      begin
+        if (not(FileExists(BaseFileName+inttostr(i)+'.txt'))) then
+        begin
+          try
+            TheFile := RewriteFile(BaseFileName+inttostr(i)+'.txt', false);
+            result := (TheFile >= 0);
+            if (result) then
+              exit
+            else
+              CloseFile(TheFile);
+          except end;
+        end else
+        begin
+          TempFile := OpenFile(BaseFileName+inttostr(i)+'.txt', true);
+          if (TempFile >= 0) then
+            if (FileSize(TempFile) = 0) then
+            begin
+              CloseFile(TempFile);
+              try
+                TheFile := RewriteFile(BaseFileName+inttostr(i)+'.txt', false);
+                result := (TheFile >= 0);
+                if (result) then
+                  exit
+                else
+                  CloseFile(TheFile);
+              except end;
+            end else
+              CloseFile(TempFile);
+        end;
+      end;
+    end;
+  end;
+end;
+{$ELSE}
+begin
+  Result := False;
+end;
+{$ENDIF}
+
+{*******************************************************************************
+procedure AddToSRLLog(s : string);
+By: Markus
+Description: Adds a line to the SRL Log file.
+*******************************************************************************}
+procedure AddToSRLLog(s : string);
+{$IFDEF YourMom}
+var
+  WriteString : string;
+begin
+  if (TheFile >= 0) then
+  begin
+    WriteString := TheTime+': '+s;
+    try
+      WriteFileString(TheFile, WriteString+#13#10);
+    except
+      srl_warn('AddToSRLLog', 'Could not write to logfile!', warn_AllVersions);
+    end;
+  end;
+end;
+{$ELSE}
+begin
+end;
+{$ENDIF}
+
+{*******************************************************************************
+procedure FreeSRLLog;
+By: Raymond
+Description: Frees the opened SRL logfile.
+*******************************************************************************}
+procedure FreeSRLLog;
+{$IFDEF YourMom}
+begin
+  if (TheFile >= 0 ) then
+    CloseFile(thefile)
+end;
+{$ELSE}
+begin
+end;
+{$ENDIF}

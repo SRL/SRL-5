@@ -1,0 +1,419 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                    NewAutColor.scar                         --//
+//-----------------------------------------------------------------//
+// * procedure NAC_GetAutoColorConstants;                          // by Wizzup?, Sumilion, XcanadamanX
+// * procedure NAC_LoadtColors;                                    // by Wizzup?, Sumilion, XcanadamanX
+// * procedure SetupNewAutoColor;                                  // by Wizzup?, Sumilion, XcanadamanX
+// * procedure NAC_SetGlobalColors;                                // by Wizzup?, Sumilion, XcanadamanX
+// * procedure SetAutoColorReference(Name: string; Color: Integer); // by Wizzup?, Sumilion, XcanadamanX
+// * function NAC_NTI(sName: string): Integer;                     // by Wizzup?, Sumilion, XcanadamanX
+// * function srl_AutoGetColor(Name: string): Integer;             // by Wizzup?, Sumilion, XcanadamanX
+// * function srl_AutoGetColors(Name: string): TIntegerarray;      // by Wizzup?, Sumilion, XcanadamanX
+// * function NAC_AutoColorMMObjectEx(Name: string; OverrideRefSet: Boolean; var Col: Integer; X1, Y1, X2, Y2, tol: Integer): Boolean; // by Wizzup?, Sumilion, XcanadamanX
+
+//{$DEFINE DEBUGNAC}
+
+{By:
+  Wizzup?, Sumilion, XcanadamanX
+
+Thanks to:
+  Tarajunky and Markus, because they found out about the
+  constant relation of certain RuneScape colors
+
+ The Type that is used is declared here
+
+note by Sumilion :
+  All colors in this list are from the same world. Might you find a
+  new color that fits in here aswell, and if you add it from your
+  world it will not work. What you should do then is get the constant
+  difference between your color and an item in this list (from your
+  world). then apply that difference to the color that is set in this
+  list. You will the have the color like it should be in the world
+  these colors were taken in at the time.}
+
+type
+   tAutoColor = record
+     Name: string;
+     Color: LongInt;
+     eColors: array of LongInt;
+     Constant: array of LongInt;
+   end;
+   
+var
+   srl_refColors: array of tAutoColor;
+   NAC_Colors: TIntegerarray;
+
+var
+   srl_refName: string;
+   srl_refColor: Integer;
+   NAC_RefSet: Boolean;
+
+const
+   ref_Bank = 1364725;//*
+   ref_Grey_Rock = 5133385;//*
+   ref_Anvil = 3293251;//*
+   ref_Magic_Shop = 1649659;//*
+   ref_Brown_Rock = 2510456;//*
+   ref_Clothes_Shop = 3446583;//*
+   ref_Quest = 14057067;//*
+   ref_Mining_Spot = 3105686;//*
+   ref_Plate_Shop = 7831168;//I'm not so sure if this one's correct..
+   ref_General_Store = 2718661;//*
+   ref_Transport = 944610;//*
+   ref_Green_Palm = 2911036;//*
+   ref_Fishing_Spot = 15757589;//*
+   ref_Farming_Spot = 6649465;//*
+   ref_Guide = 12958109;//*
+   ref_Cactus = 2911036; //*
+   ref_Cooking_Range = 540013;//*
+   ref_Green_Tree = 342541;//*
+   ref_Training_Dummy = 540013;//*
+
+{NewAutoColor.scar currently supports:
+
+grey rock
+brown rock
+bank symbol
+anvil symbol
+magic shop symbol
+clothes shop symbol
+quest symbol
+mining symbol
+plate symbol
+general store
+transport
+palm tree green(VEB is surrounded by them)
+fishing spot symbol
+farming spot symbol
+guide symbol
+cooking range
+green tree(the roundish green trees on the minimap)
+training dummy}
+
+{*******************************************************************************
+procedure NAC_GetAutoColorConstants;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+procedure NAC_GetAutoColorConstants;
+var
+   I, L, C: Integer;
+begin
+  L := High(srl_refColors);
+  for I := 0 to L do
+  begin
+    SetLength(srl_refColors[I].Constant, L + 1);
+    for C := 0 to L do
+    begin
+      if C = I then
+        Continue;
+      srl_refColors[I].Constant[C] := iAbs(srl_refColors[I].Color - srl_refColors[C].Color);
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure NAC_LoadtColors;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+procedure NAC_LoadtColors;
+var
+   Names: Tstringarray;
+   Colors: TIntegerarray;
+   eColors: array of TIntegerarray;
+   I: Integer;
+begin
+  SetLength(srl_refColors, 19);
+
+  Names := ['Bank', 'Grey Rock', 'Anvil', 'Magic Shop',
+            'Brown Rock', 'Clothes Shop', 'Quest',
+            'Mining Spot', 'Plate Shop', 'General Store',
+            'Transport', 'Green Palm', 'Fishing Spot',
+            'Farming Spot', 'Guide', 'Cactus', 'Cooking Range',
+            'Green Tree', 'Training Dummy'];
+  Colors := [ref_Bank, ref_Grey_Rock, ref_Anvil, ref_Magic_Shop,
+             ref_Brown_Rock, ref_Clothes_Shop, ref_Quest, ref_Mining_Spot,
+             ref_Plate_Shop, ref_General_Store, ref_Transport,
+             ref_Green_Palm, ref_Fishing_Spot, ref_Farming_Spot,
+             ref_Guide, ref_Cactus, ref_Cooking_Range, ref_Green_Tree,
+             ref_Training_Dummy];
+  eColors :=
+  [
+    TIntegerarray([10089719, 4694192]),//Bank
+    TIntegerarray([4934475]), // Grey Rock
+    TIntegerarray([]), //Anvil
+    TIntegerarray([]), //Magic Shop
+    TIntegerarray([2112097]), //Brown Rock
+    TIntegerarray([4030500]), //Clothes Shop
+    TIntegerarray([14979718]), //Quest
+    TIntegerarray([]), //Mining Spot
+    TIntegerarray([]), //Plate Shop
+    TIntegerarray([]), //General Store
+    TIntegerarray([1731291]), //Transport
+    TIntegerarray([]), //Green Palm
+    TIntegerarray([14238225, 16761379]), //Fishing Spot
+    TIntegerarray([]), //Farming Spot
+    TIntegerarray([]), //Guide
+    TIntegerarray([3236163]), //Cactus;
+    TIntegerarray([]), //Cooking Range;
+    TIntegerarray([]), //Green Tree;
+    TIntegerarray([]) //Training Dummy;
+  ];
+
+  for I := Low(srl_refColors) to High(srl_refColors) do
+  begin
+    srl_RefColors[I].Name := Names[I];
+    srl_RefColors[I].Color := Colors[I];
+    srl_RefColors[I].eColors := eColors[I];
+  end;
+end;
+
+{*******************************************************************************
+procedure SetupNewAutoColor;
+By: Wizzup?, Sumilion, XcanadamanX
+Description: Call this once to set up the auto color.
+*******************************************************************************}
+procedure SetupNewAutoColor;
+begin
+  NAC_RefSet := False;
+  NAC_LoadtColors;
+  NAC_GetAutoColorConstants;
+end;
+
+{*******************************************************************************
+procedure NAC_SetGlobalColors;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+procedure NAC_SetGlobalColors;
+var
+   I, L, C: Integer;
+begin
+  SetLength(NAC_Colors, Length(srl_refColors));
+  L := High(srl_refColors);
+  for I := 0 to L do
+    if Lowercase(srl_refName) = Lowercase(srl_refColors[I].Name) then
+    begin
+      C := I;
+      Break;
+    end;
+
+  if I = L + 1 then
+  begin
+    srl_Warn('newAutoColor' , srl_RefName + ' does not exist.', warn_AllVersions);
+    NAC_RefSet := False;
+    Exit;
+  end;
+
+  for I := 0 to L do
+    if srl_refColors[I].Color < srl_refColors[C].Color then
+      NAC_Colors[I] := iAbs(srl_refColor - srl_refColors[I].Constant[C])
+    else
+      NAC_Colors[I] := iAbs(srl_refColor + srl_refColors[I].Constant[C]);
+end;
+
+{ Once you have one of the listed colors,
+  you get the rest... for free!?
+  You only have to give this include the color
+  you currently have. eg:
+
+  SetAutoColorReference('Bank', MyGottenBankColor);}
+
+{*******************************************************************************
+procedure SetAutoColorReference(Name: string; Color: Integer);
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+procedure SetAutoColorReference(Name: string; Color: Integer);
+begin
+  if Length(srl_refColors) = 0 then
+  begin
+    SetupNewAutoColor;
+    srl_Warn('SetAutoColorReference', 'do not forget to call SetupNewAutoColor once.', warn_Warning);
+  end;
+  NAC_RefSet := True;
+  srl_refName := Lowercase(Name);
+  srl_refColor := Color;
+  NAC_SetGlobalColors;
+end;
+
+{*******************************************************************************
+function NAC_NTI(sName: string): Integer;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+function NAC_NTI(sName: string): Integer;  // NTI = Name to Index.
+var
+   I, L: Integer;
+begin
+  L := High(srl_refColors);
+  for I := 0 to L do
+  begin
+    if LowerCase(sName) = LowerCase(srl_refColors[I].Name) then
+    begin
+      Result := I;
+      Exit;
+    end;
+  end;
+  Result := -1;
+end;
+
+{if you have properly set the above function,
+you can now get all the other colors that are in the array!
+Yoepie! You only have to call srl_AutoGetColor('Name');
+eg:
+
+RockColor := srl_AutoGetColor('Grey Rock');
+PalmTree := srl_AutoGetColor('Green Palm');}
+
+{*******************************************************************************
+function srl_AutoGetColor(Name: string): Integer;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+function srl_AutoGetColor(Name: string): Integer;
+var
+   I: Integer;
+begin
+  if Length(srl_refColors) = 0 then
+  begin
+    SetupNewAutoColor;
+    srl_Warn('SetAutoColorReference', 'do not forget to call SetupNewAutoColor once.', warn_Warning);
+  end;
+  if not NAC_RefSet then
+  begin
+    srl_Warn('srl_AutoGetColor', 'No reference has been set yet.', warn_AllVersions);
+    Exit;
+  end;  I := NAC_NTI(Name);
+  if I > -1 then
+    Result := NAC_Colors[I]
+  else
+    srl_Warn('srl_AutoGetColor', Name + ' does not exist.', warn_AllVersions);
+end;
+
+{*******************************************************************************
+function srl_AutoGetColors(Name: string): TIntegerarray;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+function srl_AutoGetColors(Name: string): TIntegerarray;
+var
+   I, C: Integer;
+begin
+  SetLength(Result, 0);
+  if Length(srl_refColors) = 0 then
+  begin
+    SetupNewAutoColor;
+    srl_Warn('SetAutoColorReference', 'do not forget to call SetupNewAutoColor once.', warn_Warning);
+  end;
+  if not NAC_RefSet then
+  begin
+    srl_Warn('srl_AutoGetColor', 'No reference has been set yet.', warn_AllVersions);
+    Exit;
+  end;
+  I := NAC_NTI(Name);
+  if I > -1 then
+  begin
+    if Length(srl_refColors[I].eColors) = 0 then
+      Exit;
+    SetLength(Result, Length(srl_refColors[I].eColors) + 1);
+    Result[0] := NAC_Colors[I];
+    for C := Low(srl_refColors[I].eColors) to High(srl_refColors[I].eColors) do
+    begin
+      if srl_refColors[I].Color > srl_refColors[I].eColors[C] then
+        Result[C + 1] := Result[0] - iAbs(srl_refColors[I].Color - srl_refColors[I].eColors[C])
+      else
+        Result[C + 1] := Result[0] + iAbs(srl_refColors[I].Color - srl_refColors[I].eColors[C]);
+
+      {$IFDEF DEBUGNAC}WriteLn('Colors['+InttoStr(C + 1) + ']: ' + InttoStr(Result[C + 1]));{$ENDIF}
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function srl_AutoGetColorsMulti(Names: TStringArray): TIntegerarray;
+By: Shuttleu
+Description:
+*******************************************************************************}
+function srl_AutoGetColorsMulti(Names: TStringArray): TIntegerArray;
+var
+  i: Integer;
+begin
+  for i:=0 to High(Names) do
+  begin
+    SetLength(Result, Length(Result)+1);
+    Result[i]:= srl_AutoGetColor(Names[i]);
+  end;
+end;
+
+{*******************************************************************************
+function NAC_AutoColorMMObjectEx(Name: string; OverrideRefSet: Boolean; var Col: Integer; X1, Y1, X2, Y2, tol: Integer): Boolean;
+By: Wizzup?, Sumilion, XcanadamanX
+Description:
+*******************************************************************************}
+function NAC_AutoColorMMObjectEx(Name: string; OverrideRefSet: Boolean; var Col: Integer; X1, Y1, X2, Y2, tol: Integer): Boolean;
+var
+   Points, P: TPointarray;
+   C: TIntegerarray;
+   I, I2, L, CC, II: Integer;
+begin
+  Result := False;
+  Name := Lowercase(Name);
+  if not NAC_RefSet or OverrideRefSet then
+  begin
+    if Length(srl_refColors) = 0 then
+    begin
+      SetupNewAutoColor;
+      srl_Warn('SetAutoColorReference', 'do not forget to call SetupNewAutoColor once.', warn_AllVersions);
+    end;
+
+    I2 := NAC_NTI(Name);
+    if I2 = -1 then
+    begin
+      srl_Warn('NAC_AutoColorMMObjectEx', Name + ' does not exist.', warn_AllVersions);
+      Exit;
+    end;
+
+    if Length(srl_RefColors[I2].eColors) = 0 then
+      srl_Warn('NAC_AutoColorMMObjectEx', Name + ' has no extra dist.', warn_AllVersions);
+
+    FindColorstolerance(Points, srl_RefColors[I2].Color, X1, Y1, X2, Y2, tol);
+    for I := 0 to High(srl_refColors[I2].eColors) do
+    begin
+      SetLength(P, 0);
+      FindColorstolerance(P, srl_RefColors[I2].eColors[I], X1, Y1, X2, Y2, tol);
+      WriteLn(InttoStr(srl_RefColors[I2].eColors[I]) + ' has been found ' + InttoStr(Length(P)) + ' Times.');
+      Points := CombineTPA(Points, P);
+    end;
+
+    C := GetColors(Points);
+    WriteLn('Found ' + InttoStr(Length(C)) + ' colors');
+    ClearSameIntegers(C);
+    L := High(C);
+    for I := 0 to L do
+    begin
+      for II := 0 to L do
+      begin
+        if I = II then
+          Continue;
+        for CC := 0 to High(srl_refColors[I2].eColors) do
+        begin
+          if iAbs(C[I] - C[II]) = iAbs(srl_refColors[I2].Color - srl_refColors[I2].eColors[CC]) then
+          begin
+            Col := C[I];
+            Result := True;
+            Exit;
+          end;
+        end;
+      end;
+    end;
+  end else
+  begin
+    Col := srl_AutoGetColor(Name);
+    Result := FindColor(I, I2, srl_AutoGetColor(Name), X1, Y1, X2, Y2);
+    if not Result then
+      Col := 0;
+  end;
+end;

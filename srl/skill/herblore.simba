@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                     Herblore routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupHerblore;                                      // by SRL
+
+{*******************************************************************************
+procedure SetupHerblore;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupHerblore;
+begin
+end;

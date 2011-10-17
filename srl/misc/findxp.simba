@@ -1,0 +1,1085 @@
+// -------------------------------------------------------------------------- //
+//--                 Scar Standard Resource Library              ------------ //
+//--                     » XP Routines                           ------------ //
+//--------------------------------------------------------------------------- //
+// * function ConvertXpToLvl(xp:integer):integer;        // by Brak, Flyboy
+// * function ConvertLvlToXP(Level:Integer):Integer;     // by Ron
+// * function FindXP(Skill, sType: string): Extended;    // by Abyssal, Smartzkid and Bobarkinator, shortened by NaumanAkhlaQ
+
+{*******************************************************************************
+function ConvertXpToLvl(Xp: Integer): Integer;
+By: Brak, Flyboy
+Description: Returns skill level based on xp level
+*******************************************************************************}
+function ConvertXpToLvl(xp: Integer): Integer;
+var
+  level, exp: Integer;
+begin
+  for level := 1 to 99 do
+  begin
+    exp := exp + Trunc(level + 300 * Pow(2.0, level / 7.0));
+    if ((exp / 4) > xp) then
+    begin
+      Result := level;
+      Exit;
+    end;
+  end;
+  Result := 99;
+end;
+
+{*******************************************************************************
+function ConvertLvlToXP(Xp: Integer): Integer;
+By: Ron
+Description: Returns exp based on level
+*******************************************************************************}
+function ConvertLvlToXP(Level: Integer): Integer;
+var
+  i, exp: Integer;
+begin
+  for i := 1 to Level do
+    exp := exp + Trunc(i + 300 * Pow(2.0, i / 7.0));
+  Result := exp div 4;
+end;
+
+{*******************************************************************************
+function FindXP(Skill, sType: string): Extended;
+By: Abyssal, Smartzkid and Bobarkinator, shortened by NaumanAkhlaQ
+Description: Returns any XP for any item in any skill.
+ Confusing uses:
+   Take out any apostrophes.
+   Combo Runes - letter of altar + rune name. (a mist)
+   Smithing Items - letter of ore + name. (b dagger)
+   Fletch, Half Bow - half + bow name. (half oak longbow)
+   Tipped Bolts - tip name + 'tip' + metal. (opal tip bronze)
+   Prayer Bones - includes burying, gilded altar + burners & ecto.
+   Fighting & Ranging - if you are accurate.
+*******************************************************************************}
+function FindXP(Skill, sType: string): Extended;
+begin
+  Skill:= Trim(LowerCase(Skill));
+  sType:= Trim(LowerCase(sType));
+  case Skill of
+    'fighting', 'range':
+      case sType of
+        'rat'               : Result := 8;
+        'chicken'           : Result := 12;
+        'goblin'            : Result := 20;
+        'cow'               : Result := 32;
+        'monk'              : Result := 60;
+        'rock crab'         : Result := 200;
+        'zombie'            : Result := 96;
+        'guard'             : Result := 88;
+        'experiment'        : Result := 400;
+        'hobgoblin'         : Result := 116;
+        'hill giant'        : Result := 140;
+        'white knight'      : Result := 212;
+        'moss giant'        : Result := 240;
+        'magic axe'         : Result := 168;
+        'shadow warrior'    : Result := 268;
+        'earth warrior'     : Result := 240;
+        'ice giant'         : Result := 280;
+        'ice warrior'       : Result := 236;
+        'bandit'            : Result := 204;
+        'ogre'              : Result := 240;
+        'otherworldly being': Result := 264;
+        'mountain troll'    : Result := 360;
+        'dagannoth'         : Result := 280;
+        'green dragon'      : Result := 300;
+        'lesser demon'      : Result := 316;
+        'fire giant'        : Result := 444;
+        'greater demon'     : Result := 348;
+        'blue dragon'       : Result := 436;
+        'hellhound'         : Result := 464;
+        'monkey guard'      : Result := 520;
+        'black demon'       : Result := 628;
+    end;
+
+    'thieving':
+      case sType of  //THIEVING
+        'man'                      : Result := 8;  //PEOPLE
+        'farmer'                   : Result := 14.5;
+        'female ham follower'      : Result := 18.5;
+        'male ham follower'        : Result := 22.2;
+        'warrior'                  : Result := 26;
+        'rogue'                    : Result := 35.5;
+        'cave goblin'              : Result := 40;
+        'master farmer'            : Result := 43;
+        'guard'                    : Result := 46.8;
+        'fremennik'                : Result := 65;
+        'bearded pollivnian bandit': Result := 65;
+        'desert bandit'            : Result := 79.4;
+        'knight of ardougne'       : Result := 84.3;
+        'pollivian bandit'         : Result := 84.3;
+        'yanille watchman'         : Result := 137.5;
+        'menaphite thug'           : Result := 137.5;
+        'paladin'                  : Result := 151.8;
+        'gnome'                    : Result := 198.3;
+        'hero'                     : Result := 275.3;
+        'elf'                      : Result := 353.3;
+
+        'vegetable'        : Result := 10;  //STALLS
+        'cake'             : Result := 16;
+        'tea'              : Result := 16;
+        'crafting'         : Result := 10;
+        'monkey food'      : Result := 16;
+        'silk'             : Result := 24;
+        'wine'             : Result := 27;
+        'seed'             : Result := 10;
+        'fur'              : Result := 36;
+        'fish'             : Result := 42;
+        'crossbow'         : Result := 52;
+        'silver'           : Result := 54;
+        'magic'            : Result := 31;
+        'scimitar'         : Result := 160;
+        'spice'            : Result := 81.6;
+        'gem'              : Result := 16;
+
+        'gp 10'                     : Result := 7.5;  //CHESTS
+        'zogre coffin'              : Result := 27;
+        'nature rune'               : Result := 25;
+        'gp 50'                     : Result := 125;
+        'steel arrowheads'          : Result := 150;
+        'wall safe'                 : Result := 70;
+        'average dorgesh-kaan chest': Result := 200;
+        'bloods'                    : Result := 250;
+        'lathas tower'              : Result := 500;
+        'rich dorgesh-kaan chest'   : Result := 650;
+
+        'winter sqirk juice'   : Result := 350;  //MISC.
+        'spring sqirk juice'   : Result := 1350;
+        'autumn sqirk juice'   : Result := 2350;
+        'summer sqirk juice'   : Result := 3000;
+    end;
+
+
+    'magic': case sType of //  MAGIC
+        'wind strike'              : Result:=5.5;  //MODERN MAGICKS
+        'confuse'                  : Result:=13;
+        'enchant opal bolts'       : Result:=9;
+        'water strike'             : Result:=7.5;
+        'enchant lvl-1 jewelry'    : Result:=17.5;
+        'enchant sapphire bolts'   : Result:=17.6;
+        'earth strike'             : Result:=9.5;
+        'weaken'                   : Result:=21;
+        'fire strike'              : Result:=11.5;
+        'enchant jade bolts'       : Result:=19;
+        'bones to bannanas'        : Result:=25;
+        'wind bolt'                : Result:=13.5;
+        'curse'                    : Result:=29;
+        'bind'                     : Result:=30;
+        'low level alchemy'        : Result:=31;
+        'water bolt'               : Result:=16.5;
+        'enchant pearl bolts'      : Result:=29.5;
+        'varrock teleport'         : Result:=35;
+        'enchant lvl-2 jewelry'    : Result:=37;
+        'enchant emerald bolts'    : Result:=37;
+        'earth bolt'               : Result:=19.5;
+        'enchant red topaz bolts'  : Result:=33.5;
+        'lumbridge teleport'       : Result:=41;
+        'telekinetic grab'         : Result:=43;
+        'fire bolt'                : Result:=22.5;
+        'falador teleport'         : Result:=48;
+        'crumble undead'           : Result:=24.5;
+        'teleport to house'        : Result:=30;
+        'wind blast'               : Result:=22.5;
+        'superheat item'           : Result:=53;
+        'camelot teleport'         : Result:=55.5;
+        'water blast'              : Result:=28.5;
+        'enchant lvl-3 jewelry'    : Result:=59;
+        'enchant ruby bolts'       : Result:=59;
+        'iban blast'               : Result:=30;
+        'snare'                    : Result:=60;
+        'magic dart'               : Result:=30;
+        'ardougne teleport'        : Result:=61;
+        'earth blast'              : Result:=31.5;
+        'high level alchemy'       : Result:=65;
+        'charge water orb'         : Result:=66;
+        'enchant lvl-4 jewelry'    : Result:=67;
+        'enchant diamond bolts'    : Result:=67;
+        'watchtower teleport'      : Result:=68;
+        'fire blast'               : Result:=34.5;
+        'charge earth orb'         : Result:=70;
+        'bones to peaches'         : Result:=35.5;
+        'saradomin strike'         : Result:=35;
+        'claws of guthix'          : Result:=35;
+        'flames of zamorak'        : Result:=35;
+        'trollheim teleport'       : Result:=68;
+        'wind wave'                : Result:=36;
+        'charge fire orb'          : Result:=73;
+        'ape atoll teleport'       : Result:=74;
+        'water wave'               : Result:=37.5;
+        'charge air orb'           : Result:=76;
+        'vulnerability'            : Result:=76;
+        'enchant lvl-5 jewelry'    : Result:=78;
+        'enchant dragonstone bolts': Result:=78;
+        'earth wave'               : Result:=40;
+        'enfeeble'                 : Result:=83;
+        'teleother lumbridge'      : Result:=84;
+        'fire wave'                : Result:=42.5;
+        'entangle'                 : Result:=89;
+        'stun'                     : Result:=90;
+        'charge'                   : Result:=180;
+        'teleother falador'        : Result:=92;
+        'tele block'               : Result:=95;
+        'enchant lvl-6 jewelry'    : Result:=97;
+        'enchant onyx bolts'       : Result:=97;
+        'teleother camelot'        : Result:=100;
+
+        'smoke rush'           : Result:=30;  //ANCIENT MAGICKS
+        'shadow rush'          : Result:=31;
+        'paddewwa teleport'    : Result:=64;
+        'blood rush'           : Result:=33;
+        'ice rush'             : Result:=34;
+        'senntisten teleport'  : Result:=70;
+        'smoke burst'          : Result:=36;
+        'shadow burst'         : Result:=37;
+        'kharyrll teleport'    : Result:=76;
+        'blood burst'          : Result:=39;
+        'ice burst'            : Result:=40;
+        'lassar teleport'      : Result:=82;
+        'smoke blitz'          : Result:=42;
+        'shadow blitz'         : Result:=43;
+        'dareeyak teleport'    : Result:=88;
+        'blood blitz'          : Result:=45;
+        'ice blitz'            : Result:=46;
+        'carrallangar teleport': Result:=94;
+        'smoke barrage'        : Result:=48;
+        'shadow barrage'       : Result:=49;
+        'annakarl teleport'    : Result:=100;
+        'blood barrage'        : Result:=51;
+        'ice barrage'          : Result:=52;
+        'ghorrock teleport'    : Result:=106;
+
+        'bake pie'                : Result:=26; //LUNAR MAGICKS
+        'cure plant'              : Result:=26;
+        'npc contact'             : Result:=30;
+        'cure other'              : Result:=48;
+        'moonclan teleport'       : Result:=50;
+        'tele group moonclan'     : Result:=51;
+        'cure me'                 : Result:=46;
+        'waterbirth teleport'     : Result:=51;
+        'tele group waterbirth'   : Result:=53;
+        'cure group'              : Result:=59;
+        'barbarian teleport'      : Result:=53;
+        'tele group barbarian'    : Result:=55;
+        'superglass make'         : Result:=41;
+        'khazard teleport'        : Result:=54;
+        'tele group khazard'      : Result:=56;
+        'string jewellery'        : Result:=44;
+        'stat restore pot share'  : Result:=49;
+        'magic imbue'             : Result:=51;
+        'fertile soil'            : Result:=61;
+        'boost potion share'      : Result:=62;
+        'fishing guild teleport'  : Result:=65;
+        'tele group fishing guild': Result:=70;
+        'catherby teleport'       : Result:=78;
+        'tele group catherby'     : Result:=80;
+        'ice plateau teleport'    : Result:=96;
+        'tele group ice plateau'  : Result:=99;
+        'energy transfer'         : Result:=68;
+        'heal other'              : Result:=86;
+        'vengeance other'         : Result:=73;
+        'vengeance'               : Result:=75;
+        'heal group'              : Result:=124;
+    end;
+
+    'prayer': case sType of   // PRAYER
+        'normal bones'     : Result:= 4.5;     // NORMAL BURYING BONES
+        'burnt bones'      : Result:= 4.5;
+        'wolf bones'       : Result:= 4.5;
+        'monkey bones'     : Result:= 5;
+        'bat bones'        : Result:= 5.3;
+        'big bones'        : Result:= 15;
+        'jogre bones'      : Result:= 15;
+        'shaikahan bones'  : Result:= 25;
+        'baby dragon bones': Result:= 30;
+        'wyvern bones'     : Result:= 50;
+        'dragon bones'     : Result:= 72;
+        'dagannoth bones'  : Result:= 125;
+        'zogre bones'      : Result:= 22.5;
+        'fayrg bones'      : Result:= 84;
+        'raurg bones'      : Result:= 96;
+        'ourg bones'       : Result:= 140;
+
+        'g normal bones'     : Result:= 4.5 * 3.5;     // GILDED + BURNERS
+        'g burnt bones'      : Result:= 4.5 * 3.5;
+        'g wolf bones'       : Result:= 4.5 * 3.5;
+        'g monkey bones'     : Result:= 5 * 3.5;
+        'g bat bones'        : Result:= 5.3 * 3.5;
+        'g big bones'        : Result:= 15 * 3.5;
+        'g jogre bones'      : Result:= 15 * 3.5;
+        'g shaikahan bones'  : Result:= 25 * 3.5;
+        'g baby dragon bones': Result:= 30 * 3.5;
+        'g wyvern bones'     : Result:= 50 * 3.5;
+        'g dragon bones'     : Result:= 72 * 3.5;
+        'g dagannoth bones'  : Result:= 125 * 3.5;
+        'g zogre bones'      : Result:= 22.5 * 3.5;
+        'g fayrg bones'      : Result:= 84 * 3.5;
+        'g raurg bones'      : Result:= 96 * 3.5;
+        'g ourg bones'       : Result:= 140 * 3.5;
+
+        'e normal bones'     : Result:= 4.5 * 4;     // ECTOFUNTUS
+        'e burnt bones'      : Result:= 4.5 * 4;
+        'e wolf bones'       : Result:= 4.5 * 4;
+        'e monkey bones'     : Result:= 5 * 4;
+        'e bat bones'        : Result:= 5.3 * 4;
+        'e big bones'        : Result:= 15 * 4;
+        'e jogre bones'      : Result:= 15 * 4;
+        'e shaikahan bones'  : Result:= 25 * 4;
+        'e baby dragon bones': Result:= 30 * 4;
+        'e wyvern bones'     : Result:= 50 * 4;
+        'e dragon bones'     : Result:= 72 * 4;
+        'e dagannoth bones'  : Result:= 125 * 4;
+        'e zogre bones'      : Result:= 22.5 * 4;
+        'e fayrg bones'      : Result:= 84 * 4;
+        'e raurg bones'      : Result:= 96 * 4;
+        'e ourg bones'       : Result:= 140 * 4;
+    end;
+
+    'fishing': case sType of  // FISHING
+        'shrimp'         : Result:= 10;
+        'karambwanji'    : Result:= 5;
+        'sardine'        : Result:= 20;
+        'herring'        : Result:= 30;
+        'anchovies'      : Result:= 40;
+        'mackerel'       : Result:= 20;
+        'trout'          : Result:= 50;
+        'cod'            : Result:= 45;
+        'pike'           : Result:= 60;
+        'slimey eel'     : Result:= 65;
+        'salmon'         : Result:= 70;
+        'giant frogspawn': Result:= 75;
+        'tuna'           : Result:= 80;
+        'cave eel'       : Result:= 80;
+        'rainbow fish'   : Result:= 80;
+        'lobster'        : Result:= 90;
+        'bass'           : Result:= 100;
+        'swordfish'      : Result:= 100;
+        'lava eel'       : Result:= 60;
+        'monkfish'       : Result:= 120;
+        'karambwan'      : Result:= 105;
+        'shark'          : Result:= 110;
+        'sea turtle'     : Result:= 38;
+        'manta ray'      : Result:= 46;
+    end;
+
+    'fletching': case sType of // FLETCHING
+        'shortbow'       : Result:= 10;  // BOWS (FULL)
+        'longbow'        : Result:= 20;
+        'oak shortbow'   : Result:= 33;
+        'oak longbow'    : Result:= 50;
+        'willow shortbow': Result:= 66.6;
+        'willow longbow' : Result:= 83;
+        'maple shortbow' : Result:= 100;
+        'maple longbow'  : Result:= 116.6;
+        'yew shortbow'   : Result:= 133;
+        'yew longbow'    : Result:= 133;
+        'magic shortbow' : Result:= 166.6;
+        'magic longbow'  : Result:= 183;
+        'ogre bow'       : Result:= 90;
+
+        'half shortbow'       : Result:= 5;     // HALF BOWS
+        'half longbow'        : Result:= 10;
+        'half oak shortbow'   : Result:= 16.5;
+        'half oak longbow'    : Result:= 25;
+        'half willow shortbow': Result:= 33.3;
+        'half willow longbow' : Result:= 41.5;
+        'half maple shortbow' : Result:= 50;
+        'half maple longbow'  : Result:= 58.3;
+        'half yew shortbow'   : Result:= 66.5;
+        'half yew longbow'    : Result:= 75;
+        'half magic shortbow' : Result:= 83.3;
+        'half magic longbow'  : Result:= 91.5;
+        'half ogre bow'       : Result:= 45;
+
+        'bronze darts'      : Result:= 1.8;   // DARTS
+        'iron darts'        : Result:= 3.8;
+        'steel darts'       : Result:= 7.5;
+        'mithril darts'     : Result:= 11.2;
+        'adamant darts'     : Result:= 15;
+        'rune darts'        : Result:= 18.8;
+
+        'bronze arrows'    : Result:= 2.63;   // FULL ARROWS
+        'iron arrows'      : Result:= 3.83;
+        'steel arrows'     : Result:= 6.33;
+        'mithril arrows'   : Result:= 8.83;
+        'adamant arrows'   : Result:= 11;
+        'rune arrows'      : Result:= 15;
+
+        'arrowshaft'          : Result:= 5;      //PARTIAL ARROWS
+        'headless arrow'      : Result:= 1;
+        'bronze arrowheads'   : Result:= 1.3;
+        'iron arrowheads'     : Result:= 2.5;
+        'steel arrowheads'    : Result:= 5;
+        'mithril arrowheads'  : Result:= 7.5;
+        'adamant arrowheads'  : Result:= 10;
+        'rune arrowheads'     : Result:= 12.5;
+
+        'ogre arrowshafts'         : Result:= 1.6;  // OGRE ITEMS
+        'headless ogre arrows'     : Result:= 0.9;
+        'ogre arrowheads'          : Result:= 1;
+        'ogre arrows'              : Result:= 3.5;
+        'b brutal arrowheads'      : Result:= 1.4;
+        'i brutal arrowheads'      : Result:= 2.6;
+        's brutal arrowheads'      : Result:= 5.1;
+        'black brutal arrowheads'  : Result:= 6.4;
+        'mithril brutal arrowheads': Result:= 7.6;
+        'adamant brutal arrowheads': Result:= 10.1;
+        'rune brutal arrowheads'   : Result:= 12.6;
+
+        'bronze crossbow'       : Result:= 24;     // X BOWS
+        'blurite crossbow'      : Result:= 66;
+        'iron crossbow'         : Result:= 88;
+        'steel crossbow'        : Result:= 108;
+        'mithril crossbow'      : Result:= 128;
+        'adamantite crossbow'   : Result:= 164;
+        'runite crossbow'       : Result:= 200;
+
+        'wooden stock'    : Result:= 6;   // X BOW STOCKS
+        'oak stock'       : Result:= 18;
+        'willow stock'    : Result:= 22;
+        'teak stock'      : Result:= 27;
+        'maple stock'     : Result:= 32;
+        'mahogany stock'  : Result:= 41;
+        'yew stock'       : Result:= 50;
+
+        'bronze bolts'    : Result:= 5;     // X BOW BOLTS
+        'blurite bolts'   : Result:= 10;
+        'iron bolts'      : Result:= 15;
+        'steel bolts'     : Result:= 35;
+        'silver bolts'    : Result:= 25;
+        'mithril bolts'   : Result:= 50;
+        'adamantite bolts': Result:= 70;
+        'runite bolts'    : Result:= 100;
+
+        'opal tip bronze'          : Result:= 1.6;    //BOLTS (TIPPED)
+        'jade tip blurite'         : Result:= 2.4;
+        'pearl tip iron'           : Result:= 3.2;
+        'red topaz tip steel'      : Result:= 3.9;
+        'barb tip'                 : Result:= 9.5;
+        'sapphire tip mithril'     : Result:= 4.7;
+        'emerald tip mithril'      : Result:= 5.5;
+        'mithril grapple bolts'    : Result:= 11;
+        'ruby tip adamantite'      : Result:= 6.3;
+        'diamond tip adamantite'   : Result:= 7;
+        'dragonstone tip runite'   : Result:= 8.2;
+        'onyx tip runite'          : Result:= 9.4;
+
+        'opal tips'       : Result:= 1.6;   //MAKING BOLT TIPS
+        'jade tips'       : Result:= 2.4;
+        'pearl tips'      : Result:= 3.2;
+        'red topaz tips'  : Result:= 3.9;
+        'sapphire tips'   : Result:= 4.7;
+        'emerald tips'    : Result:= 5.5;
+        'ruby tips'       : Result:= 6.3;
+        'diamond tips'    : Result:= 7;
+        'dragonstone tips': Result:= 8.2;
+        'onyx tips'       : Result:= 9;
+    end;
+
+    'smithing': case sType of //SMITHING
+        'b bars'           : Result:=6.2;  //BRONZE
+        'b dagger'         : Result:=12.5;
+        'b hatchet'        : Result:=12.5;
+        'b mace'           : Result:=12.5;
+        'b medium helm'    : Result:=12.5;
+        'b crossbow bolts' : Result:=12.5;
+        'b short sword'    : Result:=12.5;
+        'b dart tips'      : Result:=12.5;
+        'b nails'          : Result:=12.5;
+        'b scimitar'       : Result:=25;
+        'b arrowheads'     : Result:=12.5;
+        'b longsword'      : Result:=25;
+        'b crossbow limbs' : Result:=12.5;
+        'b full helm'      : Result:=25;
+        'b throwing knives': Result:=12.5;
+
+        'i bars'           : Result:=12.5;  //IRON
+        'i dagger'         : Result:=25;
+        'i hatchet'        : Result:=25;
+        'i mace'           : Result:=25;
+        'i medium helm'    : Result:=25;
+        'i crossbow bolts' : Result:=25;
+        'i short sword'    : Result:=25;
+        'i dart tips'      : Result:=25;
+        'i nails'          : Result:=25;
+        'i scimitar'       : Result:=50;
+        'i arrowheads'     : Result:=25;
+        'i longsword'      : Result:=50;
+        'i crossbow limbs' : Result:=25;
+        'i full helm'      : Result:=50;
+        'i throwing knives': Result:=25;
+
+        's bars'           : Result:=17.5;  //STEEL
+        's dagger'         : Result:=37.5;
+        's hatchet'        : Result:=37.5;
+        's mace'           : Result:=37.5;
+        's medium helm'    : Result:=37.5;
+        's crossbow bolts' : Result:=37.5;
+        's short sword'    : Result:=37.5;
+        's dart tips'      : Result:=37.5;
+        's nails'          : Result:=37.5;
+        's scimitar'       : Result:=75;
+        's arrowheads'     : Result:=37.5;
+        's longsword'      : Result:=75;
+        's crossbow limbs' : Result:=37.5;
+        's full helm'      : Result:=75;
+        's throwing knives': Result:=37.5;
+
+        'm bars'           : Result:=30;  //MITHRIL
+        'm dagger'         : Result:=50;
+        'm hatchet'        : Result:=50;
+        'm mace'           : Result:=50;
+        'm medium helm'    : Result:=50;
+        'm crossbow bolts' : Result:=50;
+        'm short sword'    : Result:=50;
+        'm dart tips'      : Result:=50;
+        'm nails'          : Result:=50;
+        'm scimitar'       : Result:=100;
+        'm arrowheads'     : Result:=50;
+        'm longsword'      : Result:=100;
+        'm crossbow limbs' : Result:=50;
+        'm full helm'      : Result:=100;
+        'm throwing knives': Result:=50;
+
+        'a bars'           : Result:=37.5;  //ADAMANTITE
+        'a dagger'         : Result:=62.5;
+        'a hatchet'        : Result:=62.5;
+        'a mace'           : Result:=62.5;
+        'a medium helm'    : Result:=62.5;
+        'a crossbow bolts' : Result:=62.5;
+        'a short sword'    : Result:=62.5;
+        'a dart tips'      : Result:=62.5;
+        'a nails'          : Result:=62.5;
+        'a scimitar'       : Result:=125;
+        'a arrowheads'     : Result:=62.5;
+        'a longsword'      : Result:=125;
+        'a crossbow limbs' : Result:=62.5;
+        'a full helm'      : Result:=125;
+        'a throwing knives': Result:=62.5;
+
+        'r bars'           : Result:=50;  //RUNITE
+        'r dagger'         : Result:=75;
+        'r hatchet'        : Result:=75;
+        'r mace'           : Result:=75;
+        'r medium helm'    : Result:=75;
+        'r crossbow bolts' : Result:=75;
+        'r short sword'    : Result:=75;
+        'r dart tips'      : Result:=75;
+        'r nails'          : Result:=75;
+        'r scimitar'       : Result:=150;
+        'r arrowheads'     : Result:=75;
+        'r longsword'      : Result:=150;
+        'r crossbow limbs' : Result:=75;
+        'r full helm'      : Result:=150;
+        'r throwing knives': Result:=75;
+
+        'elemental bars'        : Result:=7.5;  //OTHER METALS
+        'elemental shield'      : Result:=20;
+        'silver bars'           : Result:=13.7;
+        'gold bars'             : Result:=22.5;
+        'gold(gauntlets)'       : Result:=56.2;
+        'golden bowl'           : Result:=30;
+        'gold helmet'           : Result:=30;
+        'dragon square sheild'  : Result:=75;
+        'lunar bar'             : Result:=7.5;
+        'lunar helmet'          : Result:=25;
+        'blurite bar'           : Result:=8;
+        'blurite bolts'         : Result:=17.5;
+        'blurite crossbow limbs': Result:=17.5;
+    end;
+
+
+    'herblore': case sType of  //HERBLORE
+        'guam leaf'    : Result:= 2.5;  //HERBS
+        'rogues purse' : Result:=2.5;
+        'snake weed'   : Result:=2.5;
+        'marrentill'   : Result:= 3.8;
+        'tarromin'     : Result:= 5;
+        'harralander'  : Result:= 6.3;
+        'ranarr weed'  : Result:= 7.5;
+        'toadflax'     : Result:= 8;
+        'irit leaf'    : Result:= 8.8;
+        'avantoe'      : Result:= 10;
+        'kwuarm'       : Result:= 11.3;
+        'snapdragon'   : Result:= 11.8;
+        'cadantine'    : Result:= 12.5;
+        'lantadyme'    : Result:= 13.1;
+        'dwarf weed'   : Result:= 13.8;
+        'torstol'      : Result:= 15;
+
+        'attack potin'              : Result:=25;  //POTIONS
+        'anti-poison potion'        : Result:=37.5;
+        'relicyms balm'             : Result:=40;
+        'strength potion'           : Result:=50;
+        'serum 207'                 : Result:=50;
+        'guam tar'                  : Result:=30;
+        'stat restore potion'       : Result:=62.5;
+        'energy potion'             : Result:=67.5;
+        'defence potion'            : Result:=75;
+        'marrentill tar'            : Result:=42.5;
+        'agility potion'            : Result:=80;
+        'combat potion'             : Result:=84;
+        'prayer potion'             : Result:=87.5;
+        'tarromin tar'              : Result:=55;
+        'harralander tar'           : Result:=72.5;
+        'super attack potion'       : Result:=100;
+        'super anti-poison potion'  : Result:=106.3;
+        'fishing potion'            : Result:=112.5;
+        'super energy potion'       : Result:=117.5;
+        'hunter potion'             : Result:=120;
+        'super strength potion'     : Result:=125;
+        'magic essence'             : Result:=130;
+        'weapon poison'             : Result:=137.5;
+        'super stat restore potion' : Result:=142.5;
+        'super defence potion'      : Result:=150;
+        'extra-strong antipoison'   : Result:=155;
+        'anti-firebreath potion'    : Result:=157.5;
+        'ranging potion'            : Result:=162.5;
+        'extra-strong weapon poison': Result:=165;
+        'magic potion'              : Result:=172.5;
+        'zamorak brew'              : Result:=175;
+        'super-strong anti-poison'  : Result:=177.5;
+        'saradomin brew'            : Result:=180;
+        'super-strong weapon poison': Result:=190;
+    end;
+
+    'hunter': case sType of  //HUNTER
+        'polar kebbit'         : Result:=30;  //TRACKING
+        'common kebbit'        : Result:=36;
+        'feldip weasel'        : Result:=48;
+        'desert devil'         : Result:=66;
+        'razor-backed kebbit'  : Result:=348;
+
+        'crimson swift'     : Result:=34;  //BIRD CATCHING
+        'golden warbler'    : Result:=47.6;
+        'copper longtail'   : Result:=61;
+        'cerulean twitch'   : Result:=64.6;
+        'tropical wagtail'  : Result:=95.2;
+
+        'ruby harvest'        : Result:=24;  //BUTTERFLY CATCHING
+        'sapphire glacialis'  : Result:=34;
+        'snowy knight'        : Result:=44;
+        'black warlock'       : Result:=45;
+
+        'wild kebbit'         : Result:=128;  //DEADFALL TRAPS
+        'barb-tailed kebbit'  : Result:=168;
+        'prickly kebbit'      : Result:=204;
+        'sabre-toothed kebbit': Result:=200;
+
+        'ferret'          : Result:=115.2;  //BOX TRAPS
+        'chinchompa'      : Result:=198.4;
+        'red chinchompa'  : Result:=265;
+
+        'swamp lizard'       : Result:=152;  //NET TRAPS
+        'orange salamander'  : Result:=224;
+        'red salamander'     : Result:=272;
+        'black salamander'   : Result:=304;
+
+        'spined larupia'      : Result:=180;  //PITFALLS
+        'horned graahk'       : Result:=240;
+        'sabre-toothed kyatt' : Result:=300;
+
+        'spotted kebbit'  : Result:=104;  //FALCONRY
+        'dark kebbit'     : Result:=132;
+        'dashing kebbit'  : Result:=156;
+
+        'white rabbit'    : Result:=144;  //RABITS
+
+        'imp-in-a-box'    : Result:=450;  //IMP BOX
+    end;
+
+    'mining': case sType of  //MINING
+        'clay'       : Result:=5;  //ORES
+        'essence'    : Result:=5;
+        'copper'     : Result:=17.5;
+        'tin'        : Result:=17.5;
+        'blurite'    : Result:=17.5;
+        'limestone'  : Result:=26.5;
+        'iron'       : Result:=35;
+        'silver'     : Result:=40;
+        'coal'       : Result:=50;
+        'sandstone'  : Result:=45;
+        'gold'       : Result:=65;
+        'gem rocks'  : Result:=65;
+        'granite'    : Result:=60;
+        'mithril'    : Result:=80;
+        'adamantite' : Result:=95;
+        'runite'     : Result:=120;
+    end;
+
+    'woodcutting': case sType of   // WOODCUTTING
+        'normal'       : Result:= 25;  // TREES
+        'achey'        : Result:= 25;
+        'oak'          : Result:= 37.5;
+        'willow'       : Result:= 67.5;
+        'teak'         : Result:= 85;
+        'maple'        : Result:= 100;
+        'hollow'       : Result:= 82.5;
+        'mahogany'     : Result:= 125;
+        'arctic pine'  : Result:= 40;
+        'yew'          : Result:= 175;
+        'ivy'          : Result:= 322.5;
+        'magic'        : Result:= 250;
+        'cursed magic' : Result:= 275;
+
+        'light jungle'       : Result:= 32;   //MISC.
+        'log canoe'          : Result:= 30;
+        'medium jungle'      : Result:= 55;
+        'dugout canoe'       : Result:= 60;
+        'dense jungle'       : Result:= 80;
+        'stable dugout canoe': Result:= 90;
+        'split log'          : Result:= 5;
+        'waka canoe'         : Result:= 150;
+    end;
+
+    'runecrafting': case sType of  // RuneCrafting
+        'air'    : Result:= 5;     // RUNES
+        'mind'   : Result:= 5.5;
+        'water'  : Result:= 6;
+        'earth'  : Result:= 6.5;
+        'fire'   : Result:= 7;
+        'body'   : Result:= 7.5;
+        'cosmic' : Result:= 8;
+        'chaos'  : Result:= 8.5;
+        'astral' : Result:= 8.7;
+        'nature' : Result:= 9;
+        'law'    : Result:= 9.5;
+        'death'  : Result:= 10;
+        'blood'  : Result:= 10.5;
+        'a mist' : Result:= 8;       // COMBO RUNES
+        'w mist' : Result:= 8.5;
+        'a dust' : Result:= 8.3;
+        'e dust' : Result:= 9;
+        'w mud'  : Result:= 9.3;
+        'e mud'  : Result:= 9.5;
+        'a smoke': Result:= 8.5;
+        'f smoke': Result:= 9.5;
+        'w steam': Result:= 9.3;
+        'f steam': Result:= 10;
+        'e lava' : Result:= 10;
+        'f lava' : Result:= 10.5;
+
+        'air tiara'     : Result:= 25;  // TIARAS
+        'mind tiara'    : Result:= 27.5;
+        'water tiara'   : Result:= 30;
+        'earth tiara'   : Result:= 32.5;
+        'fire tiara'    : Result:= 35;
+        'body tiara'    : Result:= 37.5;
+        'cosmic tiara'  : Result:= 40;
+        'chaos tiara'   : Result:= 42.5;
+        'nature tiara'  : Result:= 45;
+        'law tiara'     : Result:= 47.5;
+        'death tiara'   : Result:= 50;
+        'blood tiara'   : Result:= 52.5;
+        'soul tiara'    : Result:= 55;
+    end;
+
+
+    'agility': case sType of    // Agility
+        'gnome'       : Result:= 86.5;
+        'pyramid'     : Result:= 1014;
+        'pengiun'     : Result:= 540;
+        'barbarian'   : Result:= 153.2;
+        'ape atoll'   : Result:= 580;
+        'wilderness'  : Result:= 571.4;
+        'werewolf'    : Result:= 540;
+        'dorgesh-kaan': Result:= 2750;
+    end;
+
+    'farming': case sType of  //FARMING
+        'potato'    : Result:= 8;
+        'onion'     : Result:= 9.5;
+        'cabbage'   : Result:= 10;
+        'tomato'    : Result:= 12.5;
+        'sweetcorn' : Result:= 17;
+        'strawberry': Result:= 26;
+        'watermelon': Result:= 48.5;
+    end;
+
+    'firemaking': case sType of  //FIREMAKING
+        'normal logs'     : Result:= 40;
+        'oak logs'        : Result:= 60;
+        'willow logs'     : Result:= 90;
+        'teak logs'       : Result:= 105;
+        'arctic pine logs': Result:= 125;
+        'maple logs'      : Result:= 135;
+        'mahogany logs'   : Result:= 157.5;
+        'yew logs'        : Result:= 202.5;
+        'magic logs'      : Result:= 303.8;
+    end;
+
+    'crafting': case sType of  //CRAFTING
+        'gloves'                     : Result:= 13.8;  // Armour \\
+        'leather gloves'             : Result:= 13.8; //          \\
+        'boots'                      : Result:= 16.3;
+        'leather boots'              : Result:= 16.3;
+        'cowl'                       : Result:= 18.5;
+        'leather cowl'               : Result:= 18.5;
+        'body'                       : Result:= 25;
+        'soft body'                  : Result:= 25;
+        'soft leather body'          : Result:= 25;
+        'snail helmet'               : Result:= 32.5;
+        'crab helmet'                : Result:= 33;
+        'normal chaps'               : Result:= 27;
+        'leather chaps'              : Result:= 27;
+        'hard body'                  : Result:= 35;
+        'hard leather body'          : Result:= 35;
+        'spiked vembraces'           : Result:= 5.8;
+        'fremennik shield'           : Result:= 34;
+        'broodoo sheild'             : Result:= 100;
+        'coif'                       : Result:= 37;
+        'studded body'               : Result:= 40;
+        'yak-hide leg armour'        : Result:= 32;
+        'yak hide leg armour'        : Result:= 32;
+        'studded chaps'              : Result:= 42;
+        'snakeskin boots'            : Result:= 30;
+        'yak-hide body armour'       : Result:= 32;
+        'yak hide body armour'       : Result:= 32;
+        'snakeskin vambraces'        : Result:= 35;
+        'snakeskin bandana'          : Result:= 45;
+        'snakeskin chaps'            : Result:= 50;
+        'snakeskin body'             : Result:= 55;
+        'green dragonhide vambraces' : Result:= 62;
+        'green dragonhide chaps'     : Result:= 124;
+        'green dragonhide body'      : Result:= 186;
+        'blue dragonhide vambraces'  : Result:= 70;
+        'blue dragonhide chaps'      : Result:= 140;
+        'blue dragonhide body'       : Result:= 210;
+        'red dragonhide vambraces'   : Result:= 78;
+        'red dragonhide chaps'       : Result:= 156;
+        'red dragonhide body'        : Result:= 234;
+        'black dragonhide vambraces' : Result:= 86;
+        'black dragonhide chaps'     : Result:= 172;  //\\        //\\
+        'black dragonhide body'      : Result:= 258; //  \\armour//  \\
+
+        'cut opal'          : Result:= 15;   // Jewelery \\
+        'cut opal gems'     : Result:= 15;  //            \\
+        'cut opal gem'      : Result:= 15;
+        'gold ring'         : Result:= 15;
+        'gold necklace'     : Result:= 20;
+        'gold amulet'       : Result:= 30;
+        'gold ammy'         : Result:= 30;
+        'cut jade'          : Result:= 20;
+        'cut jade gems'     : Result:= 20;
+        'cut jade gem'      : Result:= 20;
+        'holy symbol'       : Result:= 50;
+        'cut red topaz gems': Result:= 25;
+        'cut red topaz'     : Result:= 25;
+        'cut red topaz gem' : Result:= 25;
+        'unholy symbol'     : Result:= 50;
+        'cut sapphire gems' : Result:= 50;
+        'cut sappy'         : Result:= 50;
+        'cut sapphire'      : Result:= 50;
+        'cut saphire gem'   : Result:= 50;
+        'sapphire ring'     : Result:= 40;
+        'sappy ring'        : Result:= 40;
+        'sappy necklace'    : Result:= 55;
+        'sapphire necklace' : Result:= 55;
+        'tiara'             : Result:= 52.5;
+        'sapphire amulet'   : Result:= 65;
+        'sappy amulet'      : Result:= 65;
+        'sapphire ammy'     : Result:= 65;
+        'sappy amulet'      : Result:= 65;
+        'cut emerald gems'  : Result:= 67;
+        'cut emerald'       : Result:= 67;
+        'cut emeralds'      : Result:= 67;
+        'cut emerald gem'   : Result:= 67;
+        'emerald ring'      : Result:= 55;
+        'emerald necklace'  : Result:= 60;
+        'emerald amulet'    : Result:= 70;
+        'emerald ammy'      : Result:= 70;
+        'cut ruby gems'     : Result:= 85;
+        'cut ruby'          : Result:= 85;
+        'cut rubies'        : Result:= 85;
+        'cut ruby gem'      : Result:= 85;
+        'ruby ring'         : Result:= 70;
+        'ruby necklace'     : Result:= 75;
+        'cut diamond gems'  : Result:= 107.5;
+        'cut diamond'       : Result:= 107.5;
+        'cut diamonds'      : Result:= 107.5;
+        'cut diamond gem'   : Result:= 107.5;
+        'diamond ring'      : Result:= 85;
+        'ruby amulet'       : Result:= 85;
+        'ruby ammy'         : Result:= 85;
+        'cut dragonstone gems' : Result:= 137.5;
+        'cut dragonstone gem'  : Result:= 137.5;
+        'cut dragonstones'  : Result:= 137.5;
+        'cut dragonstone'   : Result:= 137.5;
+        'dragonstone ring'  : Result:= 100;
+        'diamond necklace'  : Result:= 90;
+        'cut onyx gems'     : Result:= 167.5;
+        'cut onyx gem'      : Result:= 167.5;
+        'cut onyx'          : Result:= 167.5;
+        'cut onyxii'        : Result:= 167.5; // =D
+        'onyx ring'         : Result:= 115;
+        'diamond amulet'    : Result:= 100;
+        'diamond ammy'      : Result:= 100;
+        'dragonstone necklace' : Result:= 105;
+        'dragonstone amulet': Result:= 150;
+        'dragonstone ammy'  : Result:= 150;
+        'onyx necklace'     : Result:= 120;
+        'onyx amulet'       : Result:= 165;    //\\          //\\
+        'onyx ammy'         : Result:= 165;   //  \\Jewelery//  \\
+
+        'molten glass'          : Result:= 20;    // Glass \\
+        'beer glass'            : Result:= 17.5; //         \\
+        'candle lantern'        : Result:= 19;
+        'oil lamp'              : Result:= 25;
+        'vial'                  : Result:= 35;
+        'glass and vial'        : Result:= 55; // ????
+        'fishbowl'              : Result:= 42.5;
+        'glass orb'             : Result:= 42.5;
+        'glass and orb'         : Result:= 72.5;
+        'bullseye lantern lens' : Result:= 55;
+        'glass and lens'        : Result:= 75;
+        'light orb'             : Result:= 70;
+        'glass and light orb'   : Result:= 90;   //\\       //\\
+        'filament in light orb' : Result:= 104; //  \\Glass//  \\
+
+        'silver bolts'      : Result:= 50; //for 10;
+
+        'water battlestaff' : Result:= 100;      //staffs
+        'earth battlestaff' : Result:= 112.5;
+        'fire battlestaff'  : Result:= 125;
+        'air battlestaff'   : Result:= 137.5;
+
+        'ball of wool'          : Result:= 2.75;  //misc.
+        'wool'                  : Result:= 2.75;
+        'pie dish'              : Result:= 25;
+        'pot'                   : Result:= 12.6;
+        'bowl'                  : Result:= 33;
+        'flax bowstring'        : Result:= 15;
+        'flax'                  : Result:= 15;
+        'sinew crossbow string' : Result:= 15;
+        'sinew'                 : Result:= 15;
+        'magic string'          : Result:= 30;
+        'plantpot'              : Result:= 37.5;
+        'vegetable sack'        : Result:= 38;
+        'pot lid'               : Result:= 40;
+        'rope'                  : Result:= 25;
+        'fruit basket'          : Result:= 56;
+    end;
+
+    'cooking': case sType of  //COOKING
+        'sinew'          : Result:= 3;   // Meats \\
+        'raw meat'       : Result:= 30;
+        'meat'           : Result:= 30;
+        'shrimp'         : Result:= 30;
+        'raw shrimp'     : Result:= 30;
+        'chicken'        : Result:= 30;
+        'raw chicken'    : Result:= 30;
+        'anchovies'      : Result:= 30;
+        'raw anchovies'  : Result:= 30;
+        'sardine'        : Result:= 40;
+        'raw sardine'    : Result:= 40;
+        'karambwanji'    : Result:= 10;
+        'karambwan'      : Result:= 80;
+        'ugthanki kebab' : Result:= 80;
+        'kebab'          : Result:= 80;
+        'ugthanki'       : Result:= 80;
+        'herring'        : Result:= 50;
+        'mackerel'       : Result:= 60;
+        'thin snail'     : Result:= 70;
+        'trout'          : Result:= 70;
+        'spider'         : Result:= 80;
+        'lean snail'     : Result:= 80;
+        'cod'            : Result:= 75;
+        'pike'           : Result:= 80;
+        'crab meat'      : Result:= 100;
+        'crab'           : Result:= 100;
+        'fat snail'      : Result:= 95;
+        'salmon'         : Result:= 90;
+        'slimy eel'      : Result:= 95;
+        'tuna'           : Result:= 100;
+        'chompy'         : Result:= 140;
+        'fishcake'       : Result:= 100;
+        'rainbow fish'   : Result:= 110;
+        'cave eel'       : Result:= 115;
+        'lobster'        : Result:= 120;
+        'jubbly'         : Result:= 160;
+        'bass'           : Result:= 130;
+        'swordfish'      : Result:= 140;
+        'ooblie wrap'    : Result:= 30;
+        'lava eel'       : Result:= 30;
+        'karambwan'      : Result:= 190;
+        'monkfish'       : Result:= 150;
+        'shark'          : Result:= 210;
+        'sea turtle'     : Result:= 211.3;   //\\       //\\
+        'manta ray'      : Result:= 216.3;  //  \\Meats//  \\
+
+        'cider'          : Result:= 182;      //brewing
+        'dwarven stout'  : Result:= 215;
+        'asgarnian ale'  : Result:= 248;
+        'greenman''s ale': Result:= 281;
+        'wizard''s mind bomb' : Result:= 314;
+        'mind bomb'      : Result:= 314;
+        'dragon bitter'  : Result:= 347;
+        'moonlight mead' : Result:= 380;
+        'axeman''s folly': Result:= 413;
+        'chef''s delight': Result:= 446;
+        'slayer''s respite'   : Result:= 479;
+
+        'baked potato'     : Result:= 15; // Veggies
+        'spicy sauce'      : Result:= 25;
+        'scrambled egg'    : Result:= 50;
+        'sweetcorn'        : Result:= 104;
+        'buttered potato'  : Result:= 40;
+        'chilli-con-carne potato' : Result:= 15; //wish they'd make these names shorter =)
+        'fried onion'      : Result:= 60;
+        'fried mushroom'   : Result:= 60;
+        'cheesed potato'   : Result:= 40;
+        'tomato potato'    : Result:= 45;
+        'onion potato'     : Result:= 55;
+        'tuna potato'      : Result:= 10;
+
+        'toad crunchies'          : Result:= 100; //Gnomish foods
+        'spice crunchies'         : Result:= 100;
+        'worm crunchies'          : Result:= 100;
+        'choc chip crunchies'     : Result:= 100;
+        'fruit batta'             : Result:= 150;
+        'toad batta'              : Result:= 152;
+        'worm batta'              : Result:= 154;
+        'vegetable batta'         : Result:= 156;
+        'cheese and tomato batta' : Result:= 158;
+        'worm hole'               : Result:= 170;
+        'vegetable ball'          : Result:= 175;
+        'tangled toad legs'       : Result:= 185;
+        'chocolate bomb'          : Result:= 190;
+
+        'fruit blast'         : Result:= 50;  //Gnomish drinks
+        'pineapple punch'     : Result:= 70;
+        'wizard blizzard'     : Result:= 110;
+        'short green guy'     : Result:= 120;
+        'drunk dragon'        : Result:= 160;
+        'chocolate saturday'  : Result:= 170;
+        'blurberry special'   : Result:= 180;
+
+        'bread'               : Result:= 40;  //Other stuff
+        'redberry pie'        : Result:= 78;
+        'meat pie'            : Result:= 110;
+        'nettle tea'          : Result:= 52;
+        'cream'               : Result:= 18;
+        'stew'                : Result:= 117;
+        'mud pie'             : Result:= 128;
+        'apple pie'           : Result:= 130;
+        'garden pie'          : Result:= 138;
+        'plain pizza'         : Result:= 143;
+        'wine'                : Result:= 200;
+        'butter'              : Result:= 22.5;
+        'cake'                : Result:= 180;
+        'meat pizza'          : Result:= 169;
+        'fish pie'            : Result:= 164;
+        'butter to cheese'    : Result:= 23.5;
+        'milk to cheese'      : Result:= 64;
+        'chocolate cake'      : Result:= 210;
+        'anchovy pizza'       : Result:= 182;
+        'pitta bread'         : Result:= 40;
+        'curry'               : Result:= 280;
+        'pineapple pizza'     : Result:= 188;
+        'admiral pie'         : Result:= 210;
+        'wild pie'            : Result:= 240;
+        'summer pie'          : Result:= 260;
+    end;
+  end;
+end;

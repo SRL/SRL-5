@@ -1,0 +1,14 @@
+//-----------------------------------------------------------------//
+//--               Scar Standard Resource Library                --//
+//--                      Hunting routines                       --//
+//-----------------------------------------------------------------//
+// * procedure SetupHunting;                                       // by SRL
+
+{*******************************************************************************
+procedure SetupHunting;
+By: SRL
+Description: Declares Global Bitmaps.
+*******************************************************************************}
+procedure SetupHunting;
+begin
+end;
