@@ -8,12 +8,27 @@
 // * function Animating(B: TBox; Time, MinCount: Integer): Boolean; // * by marpis
 // * function IsMoving: Boolean;                                   // * by marpis
 
-{*******************************************************************************
-function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
-By: marpis
-Description: Calculates how many pixels change in boxes B during time T.
-Date: Nov. 29, 2009
-*******************************************************************************}
+(*
+PixelShiftMulti
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
+
+Calculates how many pixels change in boxes B during time T.
+
+.. note::
+
+	Author: marpis
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	PixelShiftArray := PixelShiftMulti(box, 5000);
+*)
 function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
 Var
   L, I: Integer;
@@ -38,12 +53,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function PixelShift(B: TBox; Time: Integer): Integer;
-By: marpis
-Description: Calculates how many pixels change in box B during time T.
-Date: Nov. 29, 2009
-*******************************************************************************}
+(*
+PixelShift
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function PixelShift(B: TBox; T: Integer): Integer;
+
+Calculates how many pixels change in boxes B during time T.
+
+.. note::
+
+	Author: marpis
+  Last Modified: Nov. 29, 2009
+
+Example:
+
+.. code-block:: pascal
+
+	Result := (PixelShift(box, 5000) > 2000);
+*)
 function PixelShift(B: TBox; Time: Integer): Integer;
 var
   TIA: TIntegerArray;
@@ -52,13 +82,27 @@ begin
   Result := TIA[0];
 end;
 
-{*******************************************************************************
-function AveragePixelShift(b: TBox; waitPerLoop, maxTime: integer): integer;
-By: Coh3n
-Description: Gets the average pixel shift every 'waitPerLoop' ms over the time
-             'maxTime'
-Date: Mar. 31st, 2011
-*******************************************************************************}
+(*
+AveragePixelShift
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function AveragePixelShift(B: TBox; waitPerloop, maxTime: Integer): Integer;
+
+Gets the average pixel shift every 'waitPerLoop' ms over the time 'maxTime'
+
+.. note::
+
+	Author: Coh3n
+  Last Modified: Mar. 31st, 2011
+
+Example:
+
+.. code-block:: pascal
+
+	Result := (AveragePixelShift(box, 500, 5000) > 2000);
+*)
 function AveragePixelShift(b: TBox; waitPerLoop, maxTime: integer): integer;
 var
   t: integer;
@@ -75,13 +119,30 @@ begin
   result := averageTIA(shifts);
 end;
 
-{*******************************************************************************
-function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
-By: marpis
-Description: Finds constant animation in boxes B during time T. If PixelShift
-             in box is smaller than MinCount, it's considered not animating.
-Date: Nov. 29, 2009
-*******************************************************************************}
+(*
+AnimatingMulti
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
+
+Finds constant animation in boxes B during time T. If PixelShift in box is
+smaller than MinCount, it's considered not animating.
+
+.. note::
+
+	Author: marpis
+  Last Modified: Nov. 29, 2009
+
+Example:
+
+.. code-block:: pascal
+
+  boolArray := AnimatingMulti(boxArray, 5000, 2000);
+	for i := 0 to High(boolArray) do
+    isAnimating := boolArray[i];
+*)
 function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
 var
   Shifts: TIntegerArray;
@@ -101,13 +162,28 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function Animating(B: TBox; Time, MinCount: Integer): Boolean;
-By: marpis
-Description: Finds constant animation in box B during time T. If PixelShift
-             in box B is smaller than MinCount, it's considered not animating.
-Date: Nov. 29, 2009
-*******************************************************************************}
+(*
+Animating
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function Animating(B: TBox; Time, MinCount: Integer): Boolean;
+
+Finds constant animation in boxes B during time T. If PixelShift in box is
+smaller than MinCount, it's considered not animating.
+
+.. note::
+
+	Author: marpis
+  Last Modified: Nov. 29, 2009
+
+Example:
+
+.. code-block:: pascal
+
+  playerAnimating := Animating(box, 5000, 2000);
+*)
 function Animating(B: TBox; Time, MinCount: Integer): Boolean;
 var
   TBA: TBooleanArray;
@@ -116,6 +192,27 @@ begin
   Result := TBA[0];
 end;
 
+(*
+IsMoving
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function IsMoving: Boolean;
+
+Results true if character is moving.
+
+.. note::
+
+	Author: marpis
+  Last Modified: Nov. 29, 2009
+
+Example:
+
+.. code-block:: pascal
+
+  PlayerMoving := IsMoving;
+*)
 {*******************************************************************************
 function IsMoving: Boolean;
 By: marpis
