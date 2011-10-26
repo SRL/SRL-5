@@ -27,22 +27,54 @@ const
     srl_MineRockColor      = 11;
     srl_TreeColor          = 12;
 
-{*******************************************************************************
-procedure SetupAutoColors;
-By: Nava2
-Description: Need to initialize the global vars Which store information
-*******************************************************************************}
+(*
+SetupAutoColors
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure SetupAutoColors;
+
+Need to initialize the global vars Which store information
+
+.. note::
+
+	Author: Nava2
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	SetupAutoColors;
+*)
 procedure SetupAutoColors;
 begin
   setLength(acArr, srl_AutoColorCount);
   setLength(isACLoaded, srl_AutoColorCount);
 end;
 
-{*******************************************************************************
-function LoadColorArray(Which: Integer): TIntegerArray;
-By: Coh3n
-Description: Returns a color array depending on the parameter Which.
-*******************************************************************************}
+(*
+LoadColorArray
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function LoadColorArray(Which: Integer): TIntegerArray;
+
+Returns a color array depending on the parameter Which.
+
+.. note::
+
+	Author: Coh3n
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	colArray := LoadColorArray(srl_VarrockRoadColor);
+*)
 function LoadColorArray(Which: Integer): TIntegerArray;
 begin
   case Which of
@@ -129,11 +161,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
-By: Nava2 & Coh3n
-Description: Finds the color on the minimap depending on the parameter which.
-*******************************************************************************}
+(*
+LoadAutoColor
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
+
+Finds the color on the minimap depending on the parameter which.
+
+.. note::
+
+	Author: Nava2 & Coh3n
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	foundColor := LoadAutoColor(srl_VarrockRoadColor, var_AutoColor);
+*)
 function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
 var
   X, Y, Z: Extended;
@@ -231,14 +279,30 @@ begin
   //srl_Warn('LoadAutoColor', 'Took: ' + IntToStr(GetTimeRunning - functTime) + 'ms ', warn_AllVersions);
 end;
 
-{*******************************************************************************
-function AutoColorEx(i: Integer): TAutoColorInfo;
-by: Nava2 and Coh3n
-Description: Check the isACLoaded boolean for the asked AC, if true, we know the
+(*
+AutoColorEx
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function AutoColorEx(i: Integer): TAutoColorInfo;
+
+Check the isACLoaded boolean for the asked AC, if true, we know the
              AutoColorInfo has been loaded, and we will not do it again.
              Otherwise, load the initial TAutoColorInfo from the stored array of
              colours.
-*******************************************************************************}
+
+.. note::
+
+	Author: Nava2 & Coh3n
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	var_AutoColor := AutoColorEx(srl_VarrockRoadColor);
+*)
 function AutoColorEx(which: Integer): TAutoColorInfo;
 begin
   if isACLoaded[which] then
@@ -254,11 +318,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function AutoColor(which: Integer): Integer;
-by: Coh3n
-Description: Returns the correct color based on the autocolor constant
-*******************************************************************************}
+(*
+AutoColor
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function AutoColor(i: Integer): Integer;
+
+Returns the correct color based on the autocolor constant
+
+.. note::
+
+	Author: Coh3n
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	Color := AutoColor(srl_VarrockRoadColor);
+*)
 function AutoColor(which: Integer): Integer;
 begin
   Result := AutoColorEx(which).Color;
