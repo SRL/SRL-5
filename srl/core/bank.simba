@@ -50,11 +50,27 @@ const
   Bank_WG = 'wgb'; // (Warrior guild bank)
   Bank_FG = 'fgb'; // (Fishing guild bank)
 
-{*******************************************************************************
-function BankScreen: Boolean;
-by: SRL Dev Team
-Description: Finds Bankscreen. Returns true if Found.
-*******************************************************************************}
+(*
+BankScreen
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankScreen: Boolean;
+
+Finds Bankscreen. Returns true if Found.
+
+.. note::
+
+	Author: SRL Dev Team
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	BankOpen := BankScreen;
+*)
 function BankScreen: Boolean;
 var
   c: Integer;
@@ -70,11 +86,27 @@ begin
   Result := FindTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', upchars, Nothing);
 end;
 
-{*******************************************************************************
-function DepositScreen: Boolean;
-by: Shuttleu
-Description: Returns true if deposit screen is Found.
-*******************************************************************************}
+(*
+DepositScreen
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function DepositScreen: Boolean;
+
+Returns true if deposit screen is Found.
+
+.. note::
+
+	Author: Shuttleu
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	BankOpen := (not DepositScreen);
+*)
 function DepositScreen: Boolean;
 var
   X, Y: Integer;
@@ -82,16 +114,55 @@ begin
   Result := FindText(x, y, 'Deposit Box', upchars, 92, 29, 396, 54);
 end;
 
-{*******************************************************************************
-function PinScreen: Boolean;
-by: NaumanAkhlaq
-Description: Finds Pin Screen. Returns true if Found.
-*******************************************************************************}
+(*
+PinScreen
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function PinScreen: Boolean;
+
+Finds Pin Screen. Returns true if Found.
+
+.. note::
+
+	Author: Naum
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if PinScreen then
+    InPin();
+*)
 function PinScreen : Boolean;
 begin
   Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpChars, Nothing);
 end;
 
+(*
+ClosePinScreen
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function ClosePinScreen: Boolean;
+
+Results true is PinScreen is not open.
+
+.. note::
+
+	Author: SRL
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if PinScreen then
+    Result := ClosePinScreen;
+*)
 function ClosePinScreen: Boolean;
 var
   Timer : Integer;
@@ -108,11 +179,28 @@ begin
   Result := not PinScreen;
 end;
 
-{*******************************************************************************
-function InPin(Pin: String): Boolean;
-by: ZephyrsFury and Nava2
-Description: Enters bank pin. Will try 3 times, returns true if bank is opened.
-*******************************************************************************}
+(*
+InPin
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function Inpin(Pin: string): Boolean;
+
+Enters bank pin. Will try 3 times, returns true if bank is opened.
+
+.. note::
+
+	Author: ZephyrsFury and Nava2
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if PinScreen then
+    InPin('1234');
+*)
 function InPin(Pin: string): Boolean;
 var
   Tx, Ty, X, Y, H, I, J, Tries, ColorCount : Integer;
@@ -205,12 +293,27 @@ begin
   Result := BankScreen;
 end;
 
-{*******************************************************************************
-function MSTPointToBankPoint(P: TPoint): TPoint;
-by: Wizzup
-Description: Converts a point on the Mainscreen to the point in the Bank.
-First Row and Col are (0,0).
-*******************************************************************************}
+(*
+MSTPointToBankPoint
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function MSTPointToBankPoint(P: TPoint): TPoint;
+
+Converts a point on the Mainscreen to the point in the Bank.
+
+.. note::
+
+	Author: Wizzup
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	ItemSlot := MSTPointToBankPoint(Point);
+*)
 function MSTPointToBankPoint(MSP: TPoint): TPoint;
 begin
   Result.X := (MSP.X - 38) div 44;
