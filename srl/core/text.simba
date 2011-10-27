@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //--               » Text Routines                               --//
 //-----------------------------------------------------------------//
 // * function srl_Explode(str, del: string): TStringArray;         // by mixster

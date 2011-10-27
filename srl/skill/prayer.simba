@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //--                       Prayer routines                       --//
 //-----------------------------------------------------------------//
 // * function GetPrayerCoords(Name: string; var Box: TBox; var Color: Integer): Boolean; // by Nielsie95

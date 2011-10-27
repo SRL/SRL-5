@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //--                Buying and Selling routines                  --//
 //-----------------------------------------------------------------//
 // * function ShopItemCoords(I: Integer): TPoint;                  // * by N1ke!

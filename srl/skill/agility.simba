@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //-----------------------------------------------------------------//
 // * function GetCourseXP(Course : String) : Extended;             // by Mad Cow, Hobbit & Simtoon
 // * procedure SetupAgility;                                       // by SRL

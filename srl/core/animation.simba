@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //--               » Animation Routines                          --//
 //-----------------------------------------------------------------//
 // * function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray; // * by marpis

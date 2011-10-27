@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               SRL Resource           Library                --//
+//--               SRL Resource Library                          --//
 //--               »» Molly Routines                             --//
 //-----------------------------------------------------------------//
 // * Function FindMollyDoor(DP : TPoint; SortBy : Integer) : Boolean;       // * by Naum
