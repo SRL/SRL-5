@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--               » Door Routines                               --//
 //-----------------------------------------------------------------//
 // * function IsDropDot(Pt: TPoint): Boolean;                      // * by lordsaturn

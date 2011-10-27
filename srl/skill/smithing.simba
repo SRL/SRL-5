@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--                     Smithing routines                       --//
 //-----------------------------------------------------------------//
 // * function FindFurnace(var X, Y: Integer): Boolean;             // * By n3ss3s

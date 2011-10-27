@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--               » Debug Routines                              --//
 //-----------------------------------------------------------------//
 // * procedure TakeScreenshotEx(Path: string; X1, Y1, X2, Y2: Integer); // by lordsaturn, Cazax, & EvilChickcen!

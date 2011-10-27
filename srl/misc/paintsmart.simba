@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--               � Smart Painting routines                     --//
 //-----------------------------------------------------------------//
 // Procedure ClearCanvas(canvas: TCanvas; w, h: integer);          //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--               » ObjectFinding Routines                      --//
 //-----------------------------------------------------------------//
 // * function FindAllObjsRecord(var Objects: TPointArray; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean; // By Sumilion

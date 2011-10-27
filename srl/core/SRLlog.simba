@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource           Library                --//
 //--               » SRL Log related functions                   --//
 //-----------------------------------------------------------------//
 // * function InitializeSRLLogFile : boolean;                      // by Markus
