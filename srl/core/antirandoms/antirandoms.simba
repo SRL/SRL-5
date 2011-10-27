@@ -638,12 +638,12 @@ begin
     Name := 'surprise exam';
     Music := ['school''s out'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @inMordaut;
     Texts := ['ordaut'];
     TextColors := [128];
     TextFonts := [NPCChars];
     TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := nil;
+    SolveRandom := @solveMordaut;
     RandIndex := rand_Mordaut;
   end;
 

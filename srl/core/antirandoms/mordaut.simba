@@ -28,7 +28,7 @@ Description: Finds if your in Mr.Mordaut random
 *******************************************************************************}
 function InMordaut: Boolean;
 Begin
-  Result := (CountColor(128, 258, 358, 352, 372) = 191);
+  Result := (CountColor(128, 258, 358, 352, 372) = 190);
 end;
 
 {*******************************************************************************
@@ -305,6 +305,8 @@ var
   HandDTM: Integer;
 begin
   if not InMordaut then Exit;
+  Players[CurrentPlayer].rand := 'Mordaut';
+  Logout; //Until solver is fixed.
 
   while ClickContinue(True, True) do
     Wait(100 + Random(50));
