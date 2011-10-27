@@ -320,47 +320,107 @@ begin
   Result.Y := (MSP.Y - 90) div 45;
 end;
 
-{*******************************************************************************
-function BankPointToBankIndex(P: TPoint): Integer;
-by: Wizzup?
-Description: Converts a Bank Point (Row,Col) to Bank Index (spot in bank).
-(0, 0) = 1
-*******************************************************************************}
+(*
+BankPointToBankIndex
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankPointToBankIndex(P: TPoint): Integer;
+
+Converts a Bank Point (Row,Col) to Bank Index (spot in bank). (0, 0) = 1
+
+.. note::
+
+	Author: Wizzup?
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	BankSlot := BankPointToBankIndex(itemPoint);
+*)
 function BankPointToBankIndex(P: TPoint): Integer;
 begin
   Result := P.Y * 10 + P.X + 1;
 end;
 
-{*******************************************************************************
-function BankIndexToBankPoint(ind: Integer): TPoint;
-by: Wizzup
-Description: Converts the Bank Index (spot in bank) to a Bank Point (Row,Col).
-1 = (0, 0)
-*******************************************************************************}
+(*
+BankIndexToBankPoint
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankIndexToBankPoint(ind: Integer): TPoint;
+
+Converts the Bank Index (spot in bank) to a Bank Point (Row,Col). 1 = (0, 0)
+
+.. note::
+
+	Author: Wizzup?
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	BankPoint := BankIndexToBankPoint(index);
+*)
 function BankIndexToBankPoint(Index: Integer): TPoint;
 begin
   Index := Index - 1;
   Result := Point((Index mod 10), Floor(Index div 10));
 end;
 
-{*******************************************************************************
-function BankIndexToMSPoint(Index: Integer): TPoint;
-by: Wizzup?
-Description: Converts the Bank Index (spot in bank) to a Mainscreen TPoint of
-the Index. (Top Left)
-*******************************************************************************}
+(*
+BankIndexToMSPoint
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankIndexToMSPoint(Index: Integer): TPoint;
+
+Converts the Bank Index (spot in bank) to a Mainscreen TPoint of the Index. (Top Left)
+
+.. note::
+
+	Author: Wizzup?
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	msPoint := BankIndexToMSPoint(index);
+*)
 function BankIndexToMSPoint(Index: Integer): TPoint;
 begin
   Index := Index - 1;
   Result := Point(38 + (Index mod 10) * 44, 90 + Floor(Index div 10) * 45);
 end;
 
-{*******************************************************************************
-function BankIndexToMSBox(ind:Integer): TBox;
-by: Wizzup
-Description: Converts the Bank Index (spot in bank) to a Mainscreen TBox of
-the Index.
-*******************************************************************************}
+(*
+BankIndexToMSBox
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankIndexToMSBox(Ind: Integer): TBox;
+
+Converts the Bank Index (spot in bank) to a Mainscreen TBox of the Index.
+
+.. note::
+
+	Author: Wizzup?
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	msBox := BankIndexToMSBox(index);
+*)
 function BankIndexToMSBox(Index: Integer): TBox;
 var
    P: TPoint;
@@ -372,11 +432,27 @@ begin
   Result.Y2 := Result.Y1 + 32;
 end;
 
-{*******************************************************************************
-function DepositItemBox(Item: Integer): TBox;
-by: ZephyrsFury
-Description: Returns a TBox surround Item (1 to 28) in the Deposit Box screen.
-*******************************************************************************}
+(*
+DepositItemBox
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function DepositItemBox(Item: Integer): TBox;
+
+Returns a TBox surround Item (1 to 28) in the Deposit Box screen.
+
+.. note::
+
+	Author: ZephyrsFury
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	currentItem := DepositItemBox(itemSlot);
+*)
 function DepositItemBox(Item: Integer): TBox;
 begin
   Result.X1 := 97 + (Item - 1) mod 7 * 48;
@@ -385,11 +461,27 @@ begin
   Result.Y2 := Result.Y1 + 50;
 end;
 
-{*******************************************************************************
-procedure FixBank;
-by: lordsaturn, Nava2, IceFire908 & Bixby Sayz
-Description: Scrolls the bank screen up.
-*******************************************************************************}
+(*
+FixBank
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure FixBank;
+
+Scrolls the bank screen up.
+
+.. note::
+
+	Author: lordsaturn, Nava2, IceFire908 & Bixby Sayz
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	FixBank;
+*)
 procedure FixBank;
 var
   Timer   : Integer;
@@ -406,11 +498,28 @@ begin
       end;
 end;
 
-{*******************************************************************************
-function FixBankTab: Boolean;
-by: Wizzup?
-Description: Fixes the BankTab to 'View All'
-*******************************************************************************}
+(*
+FixBankTab
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure FixBankTab;
+
+Fixes the BankTab to 'View All'
+
+.. note::
+
+	Author: Wizzup?
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if FixBankTab then
+    SearchForItem;
+*)
 function FixBankTab: Boolean;
 var
    activeTPA, notactiveTPA: TPointArray;
@@ -440,11 +549,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function CurrentBankTab: Integer;
-by: Narcle
-Description: Returns Current Bank Tab selected
-*******************************************************************************}
+(*
+CurrentBankTab
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function CurrentBankTab: Integer;
+
+Returns Current Bank Tab selected
+
+.. note::
+
+	Author: Narcle
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	curTab := GetCurrentBankTab;
+*)
 function CurrentBankTab: Integer;
 begin
   Result := -1;
@@ -456,11 +581,28 @@ begin
   Result := 0;
 end;
 
-{*******************************************************************************
-function ExistsBankTab(T: Integer): Boolean;
-by: Narcle
-Description: Returns true if Bank Tab Exists
-*******************************************************************************}
+(*
+ExistsBankTab
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function ExistsBankTab(T: Integer): Boolean;
+
+Returns true if Bank Tab Exists
+
+.. note::
+
+	Author: Narcle
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if ExistsBankTab(2) then
+    BankTab(2);
+*)
 function ExistsBankTab(T: Integer): Boolean;
 var
   x, y: integer;
@@ -483,11 +625,28 @@ begin
     Result := true;
 end;
 
-{*******************************************************************************
-function BankTab(T: Integer): Boolean;
-by: Narcle
-Description: If Bank Tab is there will switch to it.
-*******************************************************************************}
+(*
+BankTab
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function BankTab(T: Integer): Boolean;
+
+If Bank Tab is there will switch to it.
+
+.. note::
+
+	Author: Narcle
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if ExistsBankTab(2) then
+    BankTab(2);
+*)
 function BankTab(T: Integer): Boolean;
 begin
   result := false;
@@ -508,12 +667,28 @@ begin
   Result := T = CurrentBankTab;
 end;
 
+(*
+SearchBank
+~~~~~~~~~~~
 
-{*******************************************************************************
-procedure SearchBank(Item: string);
-by: ZephyrsFury
-Description: Searches for Item in your bank.
-*******************************************************************************}
+.. code-block:: pascal
+
+	procedure SearchBank(Item: string);
+
+Searches for Item in your bank.
+
+.. note::
+
+	Author: ZephyrsFury
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	SearchBank('air rune');
+  if FindDTM(..) then
+*)
 procedure SearchBank(Item: string);
 var
   T, II: Integer;
@@ -537,11 +712,28 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function DepositAll: Boolean;
-by: ZephyrsFury & Quickmarch
-Description: Deposits all items in your inventory
-*******************************************************************************}
+(*
+DepositAll
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function DepositAll: Boolean;
+
+Deposits all items in your inventory
+
+.. note::
+
+	Author: ZephyrsFury & Quickmarch
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if InvFull then
+    DepositAll;
+*)
 function DepositAll: Boolean;
 var
   T, X, Y: Integer;
@@ -566,13 +758,29 @@ begin
     end;
 end;
 
-{*******************************************************************************
-Procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
-by: WT-Fakawi/PPLSUQBAWLZ/Stupid3ooo/Town
-Description: Deposits from Slot to ToSlot.
+(*
+Deposit
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	Procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
+
+ Deposits from Slot to ToSlot.
   vType True = Deposit All. vType False = Deposit one by one.
   Any integer is deposit with Deposit X. (except for 5 and 10)
-*******************************************************************************}
+
+.. note::
+
+	Author: WT-Fakawi/PPLSUQBAWLZ/Stupid3ooo/Town
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	Deposit(1, 28, True);
+*)
 procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
 var
    DepositX, BScreen, DScreen: Boolean;
@@ -638,11 +846,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
-By: Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
-Description: Withdraws Amount at Column/Row.
-*******************************************************************************}
+(*
+WithdrawEx
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
+
+Withdraws Amount at Column/Row.
+
+.. note::
+
+	Author: Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	Withdraw(1, 3, 28, ['ron ore', 'ore', 'on or']);
+*)
 function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
 var
   BBox: TBox;
