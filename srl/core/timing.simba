@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //--               » Timing Routines                             --//
 //-----------------------------------------------------------------//
 // * function MsToTime(MS, StrType: Integer): string;              // by ZephyrsFury, Nava2, and Rasta Magician

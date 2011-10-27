@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //--                      DungeonWalk                            --//
 //-----------------------------------------------------------------//
 // * procedure DetectDungeonPoints(R, SD, ED: Integer);            // by ???

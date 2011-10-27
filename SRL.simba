@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------//
-//--                    Scar Standard Resource Library                      --//
+//--                    SRL Resource Library                                --//
 //----------------------------------------------------------------------------//
 //-- by: Azeroth, Bebe, BenLand100, benleegt, Boreas, c0de, Cheesehunk      --//
 //--   Coh3n, dakota, Dankness, driger1592, EvilChicken!, Flyboy,           --//
@@ -156,36 +156,16 @@ begin
   ScreenShots := True;
   WarnSensitivity := -2;
   SetupAutoColors;
-{$IFDEF SCAR325_UP}
-    rs_LoadUpChars(FontsPath + 'UpChars\');
-    NPCChars := LoadChars2(FontsPath + 'CharsNPC\');
-    UpChars := LoadChars2(FontsPath + 'UpChars\');
-    SmallChars := LoadChars2(FontsPath + 'SmallChars\');
-    StatChars := LoadChars2(FontsPath + 'StatChars\');
-    FriendChars := LoadChars2(FontsPath + 'FriendChars\');
-    BigChars := LoadChars2(FontsPath + 'BigChars\');
-    LoginChars := LoadChars2(FontsPath + 'LoginChars\');
-{$ENDIF}
-{$IFNDEF Simba}
-  {$IFDEF SCAR325_UP}
-    IncludePath := IncludesPath;
-    FontPath := FontsPath;
-  {$ELSE}
-    IncludePath := AppPath + 'Includes\';
-    FontPath := AppPath + 'Fonts\';
-  {$ENDIF}
-  XPChars := LoadChars2(FontsPath + 'XPChars\');
-{$ENDIF}
+
 {$IFDEF LoadExtraFonts}
   srl_UpdateFonts(srl_FontsUp2date);
 {$ENDIF}
 {$IFDEF YourMom}
   InitializeSRLLogFile;
 {$ENDIF}
-{$IFDEF SIMBA}
+
   AddOnTerminate('FreeSRL');
   SetSupressExceptions(true);
-{$ENDIF}
   Writeln ('SRL Compiled in '+  IntToStr(GetTimeRunning - t) + ' msec');
 
   {$IFDEF SRL_SMART}
@@ -198,11 +178,7 @@ begin
   Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
                  + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
   SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
-{$IFDEF Simba}
   SetTargetArray(SmartImageArray, 765,503);
-{$ELSE}
-  SetTargetDC(SmartGetDC);
-{$ENDIF}
   repeat
     Wait(100);
     if (GetTimeRunning - t) > 120000 then

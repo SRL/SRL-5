@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //-----------------------------------------------------------------//
 // * function FindDraynorRoadColor(var RoadColor : Integer; RX1, RY1, RX2, RY2: Integer): Boolean; // by WT-Fakawi and modified by Ron
 // * function FindDraynorLadderColor(var LadderColor : Integer): Boolean; // by WT-Fakawi and modified by Ron

@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------- //
-//--                 Scar Standard Resource Library              ------------ //
+//--                 SRL Resource Library                        ------------ //
 //--                     » XP Routines                           ------------ //
 //--------------------------------------------------------------------------- //
 // * function ConvertXpToLvl(xp:integer):integer;        // by Brak, Flyboy

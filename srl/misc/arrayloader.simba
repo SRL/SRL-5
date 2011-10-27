@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //--               » arrayLoader                                 --//
 //-----------------------------------------------------------------//
 // * function strToTPtArrayEx(tPtStr, Separater: string): TPointArray; // by moparisthebest, modified by Ron

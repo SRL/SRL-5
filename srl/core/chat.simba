@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //--               » Chat Routines                               --//
 //-----------------------------------------------------------------//
 // * function SetChat(state: string; chat: Integer): Boolean;      // by Wizzup?, WT-Fakawi, Starblaster100 & N1ke!

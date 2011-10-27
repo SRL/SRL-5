@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-//--               Scar Standard Resource Library                --//
+//--               SRL Resource Library                          --//
 //--                  » SRL Bitmap Routines                      --//
 //-----------------------------------------------------------------//
 // * function srl_GetBitmap(ID: Integer): Integer;                 // * by the SRL community
