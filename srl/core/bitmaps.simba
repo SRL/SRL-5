@@ -166,13 +166,28 @@ const
   
   bmp_Ring_Ruby             = 109;
   
-  
-{*******************************************************************************
-function srl_GetBitmap(ID: Integer): Integer;
-By: the SRL community
-Description: Returns the bitmap identified by ID. Use like this:
-FindBitmap(srl_GetBitmap(bmp_Ore_Iron), x, y)
-*******************************************************************************}
+
+(*
+srl_GetBitmap
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function srl_GetBitmap(ID: Integer): Integer;
+
+Returns the bitmap identified by ID.
+
+.. note::
+
+	Author: SRL Community
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  FindBitmap(srl_GetBitmap(bmp_Ore_Iron), x, y)
+*)
 function srl_GetBitmap(ID: Integer): Integer;
 begin
   Result := -1;
@@ -631,13 +646,27 @@ begin
   srl_BitmapSet[ID] := True;
 end;
 
+(*
+srl_LoadBitmaps
+~~~~~~~~~~~
 
+.. code-block:: pascal
 
-{*******************************************************************************
-procedure srl_LoadBitmaps(IDs: TIntegerArray);
-By: Nielsie95
-Description: Preloads bitmaps identified by ID in the srl bitmaparray.
-*******************************************************************************}
+	procedure srl_LoadBitmaps(IDs: TIntegerArray);
+
+Preloads bitmaps identified by ID in the srl bitmaparray.
+
+.. note::
+
+	Author: Nielsie95
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_LoadBitmaps(bmpArray);
+*)
 procedure srl_LoadBitmaps(IDs: TIntegerArray);
 var
   i, h: Integer;
@@ -648,13 +677,27 @@ begin
       srl_GetBitmap(IDs[i]);
 end;
 
+(*
+srl_LoadBitmapRange
+~~~~~~~~~~~
 
+.. code-block:: pascal
 
-{*******************************************************************************
-procedure srl_LoadBitmapRange(StartID, EndID: Integer);
-By: Nielsie95
-Description: Preloads bitmaps identified by ID in range StartID to EndID
-*******************************************************************************}
+	procedure srl_LoadBitmapRange(StartID, EndID: Integer);
+
+Preloads bitmaps identified by ID in range StartID to EndID
+
+.. note::
+
+	Author: Nielsie95
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_LoadBitmapRange(bmp_Uncut_Emerald, bmp_Uncut_Diamond);
+*)
 procedure srl_LoadBitmapRange(StartID, EndID: Integer);
 var
   I: Integer;
@@ -666,11 +709,27 @@ begin
       srl_GetBitmap(I);
 end;
 
-{*******************************************************************************
-procedure srl_FreeBitmapEx(which: integer);
-By: Rasta Magician
-Description: Frees SRL bitmap which
-*******************************************************************************}
+(*
+srl_FreeBitmapEx
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure srl_FreeBitmapEx(which: integer);
+
+Frees SRL bitmap which
+
+.. note::
+
+	Author: Rasta Magician
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_FreeBitmapEx(bmp_Uncut_Emerald);
+*)
 procedure srl_FreeBitmapEx(which: integer);
 begin
   try
@@ -679,11 +738,27 @@ begin
   except end;
 end;
 
-{*******************************************************************************
-procedure srl_FreeBitmapArray(bmpArr: TIntegerArray);
-By: EvilChicken!
-Description: Frees an array of assigned SRL bitmaps determined by bmpArr.
-*******************************************************************************}
+(*
+srl_FreeBitmapArray
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure srl_FreeBitmapArray(bmpArr: TIntegerArray);
+
+Frees an array of assigned SRL bitmaps determined by bmpArr.
+
+.. note::
+
+	Author: EvilChicken!
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_FreeBitmapArray([bmp_Uncut_Emerald, bmp_Uncut_Ruby]);
+*)
 procedure srl_FreeBitmapArray(bmpArr: TIntegerArray);
 var
   I, Lo, Hi: Integer;
@@ -694,11 +769,27 @@ begin
     srl_FreeBitmapEx(I);
 end;
 
-{*******************************************************************************
-procedure srl_FreeBitmaps;
-By: Nielsie95, edited by Rasta Magician
-Description: Frees all SRL bitmaps
-*******************************************************************************}
+(*
+srl_FreeBitmaps
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure srl_FreeBitmaps;
+
+Frees all SRL bitmaps
+
+.. note::
+
+	Author: Nielsie95, edited by Rasta Magician
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_FreeBitmaps;
+*)
 procedure srl_FreeBitmaps;
 var
   i: Integer;
@@ -707,11 +798,27 @@ begin
     srl_FreeBitmapEx(i);
 end;
 
-{*******************************************************************************
-procedure srl_FreeBitmapRange(StartID, EndID: Integer);
-By: EvilChicken!
-Description: Frees all SRL bitmaps with IDs ranging from StartID to EndID.
-*******************************************************************************}
+(*
+srl_FreeBitmapRange
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure srl_FreeBitmapRange(StartID, EndID: Integer);
+
+Frees all SRL bitmaps with IDs ranging from StartID to EndID.
+
+.. note::
+
+	Author: EvilChicken!
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  srl_FreeBitmapRange(bmp_Uncut_Emerald, bmp_Uncut_Diamond);
+*)
 procedure srl_FreeBitmapRange(StartID, EndID: Integer);
 var
   I: Integer;
