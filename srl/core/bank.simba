@@ -865,7 +865,7 @@ Example:
 
 .. code-block:: pascal
 
-	Withdraw(1, 3, 28, ['ron ore', 'ore', 'on or']);
+	WithdrawEx(1, 3, 28, ['ron ore', 'ore', 'on or']);
 *)
 function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
 var
@@ -912,28 +912,62 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function Withdraw(Col, Row, Amount: Integer): Boolean;
-by: Starblaster100, Town, Wizzup? and Narcle
-Description: Withdraws Amount at Column/Row.
-*******************************************************************************}
+(*
+Withdraw
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function Withdraw(Col, Row, Amount: Integer): Boolean;
+
+Withdraws Amount at Column/Row.
+
+.. note::
+
+	Author: Starblaster100, Town, Wizzup? and Narcle
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	Withdraw(1, 3, 28);
+*)
 function Withdraw(col, row, Amount: Integer): Boolean;
 begin
   Result := WithdrawEx(Col, Row, Amount,[]);
 end;
 
-{*******************************************************************************
-function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer; Amount: integer; UpText: String; Tol: TIntegerArray): boolean;
-By: Nava2
-Description: Withdraws an item from the bank by using "Ident" with tol[0]
-             as color tolerance, tol[1] as contour tolerance in case of bmp
-             masks, or the count of colors for TPA item finding.
-             Valid IdentTypes are all in FindItem.
-             Index: The Bank Index where the item is found, must be a variable.
-                    Speeds up future withdraws.
-             Amount: Amount to withdraw from bank.
-             UpText: The UpText which the function checks for.
-*******************************************************************************}
+(*
+WithdrawItemEx
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer;
+                 Amount: integer; UpText: String; Tol: TIntegerArray): boolean;
+
+Withdraws an item from the bank by using "Ident" with tol[0]
+as color tolerance, tol[1] as contour tolerance in case of bmp
+masks, or the count of colors for TPA item finding.
+Valid IdentTypes are all in FindItem.
+Index: The Bank Index where the item is found, must be a variable.
+       Speeds up future withdraws.
+Amount: Amount to withdraw from bank.
+UpText: The UpText which the function checks for.
+
+.. note::
+
+	Author: Nava2
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if WithdrawItemEx(theColor, 'color', itemSlot, 27, 'ew log', [3]) then
+    CloseBank;
+*)
 function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer; Amount: integer; UpText: string; Tol: TIntegerArray): Boolean;
 var
   x, y: integer;
@@ -993,11 +1027,29 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WithdrawItem(Ident: integer; IdentType: string; Amount: integer; UpText: TStringArray; Tol: TIntegerArray): boolean;
-by: Nava2
-Description: Withdraws an item using WithdrawItemEx, but removes the Index check.
-*******************************************************************************}
+(*
+WithdrawItem
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function WithdrawItem(Ident: integer; IdentType: string; Amount: integer;
+                           UpText: TStringArray; Tol: TIntegerArray): boolean;
+
+Withdraws an item using WithdrawItemEx, but removes the Index check.
+
+.. note::
+
+	Author: Nava2
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	if WithdrawItem(theColor, 'color', 27, ['ew log', 'ew l'], [3]) then
+    CloseBank;
+*)
 function WithdrawItem(Ident: integer; IdentType: string; Amount: integer; UpText: String; Tol: TIntegerArray): boolean;
 var
   I : Integer;
@@ -1005,11 +1057,28 @@ begin
   Result := WithdrawItemEx(Ident, IdentType, I, Amount, UpText, Tol);
 end;
 
-{*******************************************************************************
-procedure Notes(SwitchOn: Boolean);
-By: lordsaturn, idea by R1ch
-Description: Toggles note withdrawal on or off.
-*******************************************************************************}
+(*
+Notes
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	procedure Notes(SwitchOn: Boolean);
+
+Toggles note withdrawal on or off.
+
+.. note::
+
+	Author: lordsaturn, idea by R1ch
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+	Notes(True);
+  Withdraw(Col, Row, 100);
+*)
 procedure Notes(SwitchOn: Boolean);
 begin
   if BankScreen then
@@ -1017,11 +1086,28 @@ begin
       Mouse(250, 300, 10, 10, True);
 end;
 
-{*******************************************************************************
-function CloseBank: Boolean;
-By: Starblaster100
-Description: Closes the bank window - Tries twice before exiting
-*******************************************************************************}
+(*
+CloseBank
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function CloseBank: Boolean;
+
+Closes the bank window - Tries twice before exiting
+
+.. note::
+
+	Author: Starblaster100
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if Withdraw(Col, Row, 100) then
+    CloseBank;
+*)
 function CloseBank: Boolean;
 var
   i, Timer: Integer;
@@ -1046,10 +1132,15 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function OpenBankQuiet(WhichBank: string): Boolean;
-By: WT-Fakawi and modified by Ron
-Description: Opens any given bank in the free world using
+(*
+OpenBankQuiet
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenBankQuiet(WhichBank: string): Boolean;
+
+Opens any given bank in the free world using
 FindDeformedBitmapToleranceIn. Avoids strange mouse movements. Will cause
 significant lag (approx. 1 second), but finds the bank with one click.
 
@@ -1061,7 +1152,19 @@ Valid arguments are:
 'db'  (Draynor Bank)
 'eb'  (Edgeville Bank)
 'akb' (Al-Kharid Bank)
-*******************************************************************************}
+
+.. note::
+
+	Author: WT-Fakawi and modified by Ron
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankQuiet('feb') then
+    Withdraw(...);
+*)
 function OpenBankQuiet(WhichBank: string): Boolean;
 var
   TheCounter, dx, dy, tol, Mark2, Mark3: Integer;
@@ -1181,10 +1284,15 @@ begin
   FreeBitmap(TheCounter);
 end;
 
-{*******************************************************************************
-function OpenBankGlass(WhichBank: String; ChangeCompass, ChangeAngle: Boolean): Boolean;
-By: Wizzup? and modified by Ron updated to P2p banks by N1ke!
-Description: Opens the bank.
+(*
+OpenBankGlass
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenBankGlass(WhichBank: String; ChangeCompass, ChangeAngle: Boolean): Boolean;
+
+Opens the bank.
 Valid arguments are:
 'feb' (Falador East Bank)
 'fwb' (Falador West Bank)
@@ -1202,7 +1310,19 @@ Valid arguments are:
 'sgb' (South gnome bank)
 'wgb' (Warrior guild bank)
 'fgb' (Fishing guild bank)
-*******************************************************************************}
+
+.. note::
+
+	Author: Wizzup? and modified by Ron
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankGlass('feb', True, False) then
+    Withdraw(...);
+*)
 function OpenBankGlass(WhichBank: string; ChangeCompass, ChangeAngle: Boolean): Boolean;
 var
   OBC: TPoint;
@@ -1253,11 +1373,15 @@ begin
   ColorToleranceSpeed(Speed);
 end;
 
-{*******************************************************************************
-function OpenBankFast(Location: String): Boolean;
-By: Wizzup? and Nielsie95 updated by N1ke! updated again by marpis
-Last update: 7th December 2009
-Description: Opens the bank.
+(*
+OpenBankFast
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenBankFast(Location: String): Boolean;
+
+Opens the bank.
 Valid arguments are:
 'feb', 'falador east bank'
 'fwb', 'falador west bank'
@@ -1275,7 +1399,19 @@ Valid arguments are:
 'sgb', 'south gnome bank'
 'wgb', 'warrior guild bank'
 'fgb', 'fishing guild bank'
-*******************************************************************************}
+
+.. note::
+
+	Author: Wizzup? and Nielsie95
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankFast('feb') then
+    Withdraw(...);
+*)
 function OpenBankFast(Location: String): Boolean;
 var
   bo, i, l, c, z: Integer;
@@ -1387,11 +1523,28 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function OpenBankNPC: Boolean;
-By: Home
-Description: Opens the bank by using Banker.
-*******************************************************************************}
+(*
+OpenBankNPC
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenBankNPC: Boolean;
+
+Opens the bank by using Banker.
+
+.. note::
+
+	Author: Home
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankNPC then
+    Withdraw(...);
+*)
 function OpenBankNPC: Boolean;
 var
   bx, by, Speed, ColFace, ColGrey, ColBlue: Integer;
@@ -1419,10 +1572,15 @@ begin
   ColorToleranceSpeed(Speed);
 end;
 
-{*******************************************************************************
-function OpenBank(WhichBank: String, ChangeCompass, ChangeAngle: Boolean): Boolean;
-by: SRL Development Team
-Description: Opens the bank if possible.
+(*
+OpenBank
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenBank(WhichBank: String, ChangeCompass, ChangeAngle: Boolean): Boolean;
+
+Opens the bank if possible.
 Valid arguments are:
 'feb' (Falador East Bank)
 'fwb' (Falador West Bank)
@@ -1441,7 +1599,19 @@ Valid arguments are:
 'sgb' (South gnome bank)
 'wgb' (Warrior guild bank)
 'fgb' (Fishing guild bank)
-*******************************************************************************}
+
+.. note::
+
+	Author: SRL Dev Team
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBank('feb', False, True) then
+    Withdraw(...);
+*)
 function OpenBank(WhichBank: string; ChangeCompass, ChangeAngle: Boolean): Boolean;
 var
   I: Integer;
@@ -1467,11 +1637,14 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindBank(TheBank: String): Boolean;
-By: WT-Fakawi and modified by Ron Updated to P2p by N1ke! Eb added by R1ch
-Description: Finds and opens any given bank in the free world.
-If the MM DTM is found it will find and open the bank.
+(*
+FindBank
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function FindBank(TheBank: String): Boolean;
+
 Valid arguments are:
 'feb' (Falador East Bank)
 'fwb' (Falador West Bank)
@@ -1487,7 +1660,19 @@ Valid arguments are:
 'ngb' (North gnome bank)
 'sgb' (South gnome bank)
 'fgb' (Fishing guild bank)
-*******************************************************************************}
+
+.. note::
+
+	Author: WT-Fakawi and modified by Ron
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if FindBank('feb') then
+    Withdraw(...);
+*)
 function FindBank(TheBank: string): Boolean;
 var
   bx, by, TheDTM: Integer;
@@ -1559,11 +1744,28 @@ begin
   FreeDTM(TheDTM);
 end;
 
-{*******************************************************************************
-function OpenDepositBox : Boolean;
-by: Shuttleu
-Description: Opens the deposit box.
-*******************************************************************************}
+(*
+OpenDepositBox
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+	function OpenDepositBox : Boolean;
+
+Opens the deposit box.
+
+.. note::
+
+	Author: Shuttleu
+  Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenDepositBox then
+    DepositAll;
+*)
 function OpenDepositBox : Boolean;
 var
   X, Y, T:integer;
