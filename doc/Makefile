@@ -8,7 +8,7 @@ core =	amount animation antiban autocolor bank bitmaps chat \
 
 all:
 	@python docgen.py `echo $(core) | sed -r \
-		's/(\w+)/..\/SRL\/core\/\1.simba/g'` > /dev/null
+		's/(\w+)/..\/srl\/core\/\1.simba/g'` > /dev/null
 	@make -C sphinx/ html
 
 clean:

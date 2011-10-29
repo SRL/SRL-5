@@ -169,7 +169,7 @@ const
 
 (*
 srl_GetBitmap
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -648,7 +648,7 @@ end;
 
 (*
 srl_LoadBitmaps
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -679,7 +679,7 @@ end;
 
 (*
 srl_LoadBitmapRange
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -711,7 +711,7 @@ end;
 
 (*
 srl_FreeBitmapEx
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -740,7 +740,7 @@ end;
 
 (*
 srl_FreeBitmapArray
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -771,7 +771,7 @@ end;
 
 (*
 srl_FreeBitmaps
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -800,7 +800,7 @@ end;
 
 (*
 srl_FreeBitmapRange
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
