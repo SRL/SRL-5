@@ -9,34 +9,16 @@ Welcome to SRL 5's documentation!
 Here you will find (nearly) every function in SRL, complete with it's definition
 and hopefully usefull comments or examples.
 
-The SRL Resource Library is being developed by the `SRL community.
+The SRL Resource Library is being developed by the `SRL community
 <http://villavu.com>`_. You can find more information on the site.
-
-Contents:
 
 .. toctree::
     :maxdepth: 1
-    
-    amount.rst
-    animation.rst
-    antiban.rst
-    autocolor.rst
-    bank.rst
-    bitmaps.rst
-    color.rst
-    flag.rst
-    gametab.rst
-    inventory.rst
-    login.rst
-    mapwalk.rst
-    math.rst
-    mouse.rst
-    object.rst
-    players.rst
-    symbol.rst
-    timing.rst
-    text.rst
-    worldswitcher.rst
+
+    srlref.rst
+    srltut.rst
+    srlfaq.rst
+
 
 
 Indices and tables
