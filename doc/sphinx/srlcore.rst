@@ -2,6 +2,7 @@ SRL Core Reference
 ===================
 
 .. toctree::
+    :maxdepth: 1
 
     amount.rst
     animation.rst
@@ -10,6 +11,7 @@ SRL Core Reference
     bank.rst
     bitmaps.rst
     color.rst
+    chat.rst
     flag.rst
     gametab.rst
     inventory.rst

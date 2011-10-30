@@ -5,6 +5,9 @@ Amount
 The Amount include contains all kinds of functions to get the amount of items.
 Items can be in your bank or in your inventory.
 
+.. contents::
+
+
 *)
 
 function DepositScreen: Boolean; forward;
