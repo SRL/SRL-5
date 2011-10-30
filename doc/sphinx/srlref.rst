@@ -1,4 +1,4 @@
-SRL Complete Reference
+SRL Function Reference
 ======================
 
 .. toctree::
