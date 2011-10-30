@@ -7,7 +7,7 @@ Welcome to SRL 5's documentation!
 =================================
 
 Here you will find (nearly) every function in SRL, complete with it's definition
-and hopefully usefull comments or examples.
+and hopefully useful comments or examples.
 
 The SRL Resource Library is being developed by the `SRL community
 <http://villavu.com>`_. You can find more information on the site.
