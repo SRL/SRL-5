@@ -29,24 +29,24 @@ const
 
 (*
 SetupAutoColors
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure SetupAutoColors;
+    procedure SetupAutoColors;
 
 Need to initialize the global vars Which store information
 
 .. note::
 
-	Author: Nava2
-  Last Modified: Unknown
+    Author: Nava2
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	SetupAutoColors;
+    SetupAutoColors;
 *)
 procedure SetupAutoColors;
 begin
@@ -56,24 +56,24 @@ end;
 
 (*
 LoadColorArray
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function LoadColorArray(Which: Integer): TIntegerArray;
+    function LoadColorArray(Which: Integer): TIntegerArray;
 
 Returns a color array depending on the parameter Which.
 
 .. note::
 
-	Author: Coh3n
-  Last Modified: Unknown
+    Author: Coh3n
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	colArray := LoadColorArray(srl_VarrockRoadColor);
+    colArray := LoadColorArray(srl_VarrockRoadColor);
 *)
 function LoadColorArray(Which: Integer): TIntegerArray;
 begin
@@ -163,24 +163,24 @@ end;
 
 (*
 LoadAutoColor
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
+    function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
 
 Finds the color on the minimap depending on the parameter which.
 
 .. note::
 
-	Author: Nava2 & Coh3n
-  Last Modified: Unknown
+    Author: Nava2 & Coh3n
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	foundColor := LoadAutoColor(srl_VarrockRoadColor, var_AutoColor);
+    foundColor := LoadAutoColor(srl_VarrockRoadColor, var_AutoColor);
 *)
 function LoadAutoColor(which: Integer; var theAC: TAutoColorInfo): Boolean;
 var
@@ -285,7 +285,7 @@ AutoColorEx
 
 .. code-block:: pascal
 
-	function AutoColorEx(i: Integer): TAutoColorInfo;
+    function AutoColorEx(i: Integer): TAutoColorInfo;
 
 Check the isACLoaded boolean for the asked AC, if true, we know the
              AutoColorInfo has been loaded, and we will not do it again.
@@ -294,14 +294,14 @@ Check the isACLoaded boolean for the asked AC, if true, we know the
 
 .. note::
 
-	Author: Nava2 & Coh3n
-  Last Modified: Unknown
+    Author: Nava2 & Coh3n
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	var_AutoColor := AutoColorEx(srl_VarrockRoadColor);
+    var_AutoColor := AutoColorEx(srl_VarrockRoadColor);
 *)
 function AutoColorEx(which: Integer): TAutoColorInfo;
 begin
@@ -320,24 +320,24 @@ end;
 
 (*
 AutoColor
-~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-	function AutoColor(i: Integer): Integer;
+    function AutoColor(i: Integer): Integer;
 
 Returns the correct color based on the autocolor constant
 
 .. note::
 
-	Author: Coh3n
-  Last Modified: Unknown
+    Author: Coh3n
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	Color := AutoColor(srl_VarrockRoadColor);
+    Color := AutoColor(srl_VarrockRoadColor);
 *)
 function AutoColor(which: Integer): Integer;
 begin

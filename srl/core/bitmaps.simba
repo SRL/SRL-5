@@ -173,14 +173,14 @@ srl_GetBitmap
 
 .. code-block:: pascal
 
-	function srl_GetBitmap(ID: Integer): Integer;
+    function srl_GetBitmap(ID: Integer): Integer;
 
 Returns the bitmap identified by ID.
 
 .. note::
 
-	Author: SRL Community
-  Last Modified: Unknown
+    Author: SRL Community
+    Last Modified: Unknown
 
 Example:
 
@@ -652,14 +652,14 @@ srl_LoadBitmaps
 
 .. code-block:: pascal
 
-	procedure srl_LoadBitmaps(IDs: TIntegerArray);
+    procedure srl_LoadBitmaps(IDs: TIntegerArray);
 
 Preloads bitmaps identified by ID in the srl bitmaparray.
 
 .. note::
 
-	Author: Nielsie95
-  Last Modified: Unknown
+    Author: Nielsie95
+    Last Modified: Unknown
 
 Example:
 
@@ -683,14 +683,14 @@ srl_LoadBitmapRange
 
 .. code-block:: pascal
 
-	procedure srl_LoadBitmapRange(StartID, EndID: Integer);
+    procedure srl_LoadBitmapRange(StartID, EndID: Integer);
 
 Preloads bitmaps identified by ID in range StartID to EndID
 
 .. note::
 
-	Author: Nielsie95
-  Last Modified: Unknown
+    Author: Nielsie95
+    Last Modified: Unknown
 
 Example:
 
@@ -715,14 +715,14 @@ srl_FreeBitmapEx
 
 .. code-block:: pascal
 
-	procedure srl_FreeBitmapEx(which: integer);
+    procedure srl_FreeBitmapEx(which: integer);
 
 Frees SRL bitmap which
 
 .. note::
 
-	Author: Rasta Magician
-  Last Modified: Unknown
+    Author: Rasta Magician
+    Last Modified: Unknown
 
 Example:
 
@@ -744,14 +744,14 @@ srl_FreeBitmapArray
 
 .. code-block:: pascal
 
-	procedure srl_FreeBitmapArray(bmpArr: TIntegerArray);
+    procedure srl_FreeBitmapArray(bmpArr: TIntegerArray);
 
 Frees an array of assigned SRL bitmaps determined by bmpArr.
 
 .. note::
 
-	Author: EvilChicken!
-  Last Modified: Unknown
+    Author: EvilChicken!
+    Last Modified: Unknown
 
 Example:
 
@@ -775,14 +775,14 @@ srl_FreeBitmaps
 
 .. code-block:: pascal
 
-	procedure srl_FreeBitmaps;
+    procedure srl_FreeBitmaps;
 
 Frees all SRL bitmaps
 
 .. note::
 
-	Author: Nielsie95, edited by Rasta Magician
-  Last Modified: Unknown
+    Author: Nielsie95, edited by Rasta Magician
+    Last Modified: Unknown
 
 Example:
 
@@ -804,14 +804,14 @@ srl_FreeBitmapRange
 
 .. code-block:: pascal
 
-	procedure srl_FreeBitmapRange(StartID, EndID: Integer);
+    procedure srl_FreeBitmapRange(StartID, EndID: Integer);
 
 Frees all SRL bitmaps with IDs ranging from StartID to EndID.
 
 .. note::
 
-	Author: EvilChicken!
-  Last Modified: Unknown
+    Author: EvilChicken!
+    Last Modified: Unknown
 
 Example:
 

@@ -1,3 +1,13 @@
+(*
+AntiBan
+=======
+
+
+
+
+
+*)
+
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » AntiBan Routines                            --//
@@ -13,24 +23,24 @@
 
 (*
 LeaveDangerZone
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function LeaveDangerZone: Boolean;
+    function LeaveDangerZone: Boolean;
 
 Handles the 'danger zone' message users get when their total level is < 60
 
 .. note::
 
-	Author: Coh3n
-  Last Modified: Unknown
+    Author: Coh3n
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if LeaveDangerZone then
+    if LeaveDangerZone then
     ContinueWalking;
 *)
 function LeaveDangerZone: Boolean;
@@ -56,24 +66,24 @@ end;
 
 (*
 RandomRClick
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure RandomRClick
+    procedure RandomRClick
 
 Performs random right click to stay active.
 
 .. note::
 
-	Author: phantombmx/EvilChicken!, idea by Naum
-  Last Modified: Unknown
+    Author: phantombmx/EvilChicken!, idea by Naum
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	RandomRClick;
+    RandomRClick;
 *)
 procedure RandomRClick;
 var
@@ -108,25 +118,25 @@ end;
 
 (*
 HoverSkill
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure HoverSkill(Skill: variant; Click: Boolean);
+    procedure HoverSkill(Skill: variant; Click: Boolean);
 
 Hovers mouse over selected skill to "check exp" Click = True will Click Skill
 and Click = False will 'Hover'. Won't "check" skills where your level is 1.
 
 .. note::
 
-	Author: Dankness/Cheesehunk/Ron/Raymond/ZephyrsFury
-  Last Modified: Unknown
+    Author: Dankness/Cheesehunk/Ron/Raymond/ZephyrsFury
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	HoverSkill(skill_Atack, False);
+    HoverSkill(skill_Atack, False);
 *)
 procedure HoverSkill(Skill: variant; Click: Boolean);
 var
@@ -180,21 +190,21 @@ PickUpMouse
 
 .. code-block:: pascal
 
-	procedure PickUpMouse;
+    procedure PickUpMouse;
 
 Acts just like you picked your mouse off the pad...
 then sets it back down.
 
 .. note::
 
-	Author: dark_sniper
-  Last Modified: Unknown
+    Author: dark_sniper
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	PickUpMouse;
+    PickUpMouse;
 *)
 procedure PickUpMouse;
 var
@@ -218,24 +228,24 @@ end;
 
 (*
 RandomMovement
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure RandomMovement;
+    procedure RandomMovement;
 
 Presses random arrow keys and moves the mouse. Able to press 2 keys simultaneously.
 
 .. note::
 
-	Author: Krazy_Meerkat
-  Last Modified: Unknown
+    Author: Krazy_Meerkat
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	RandomMovement;
+    RandomMovement;
 *)
 procedure RandomMovement;
 var
@@ -263,11 +273,11 @@ end;
 
 (*
 BoredHuman
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure BoredHuman;
+    procedure BoredHuman;
 
 Performs 5-15 times:
     * Rotates the cam,
@@ -276,14 +286,14 @@ Performs 5-15 times:
 
 .. note::
 
-	Author: WT-Fakawi, small edit by Harry
-  Last Modified: Unknown
+    Author: WT-Fakawi, small edit by Harry
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	BoredHuman;
+    BoredHuman;
 *)
 procedure BoredHuman;
 var
@@ -319,24 +329,24 @@ end;
 
 (*
 ExamineInv
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure ExamineInv;
+    procedure ExamineInv;
 
 Chooses a random item in the inventory to examine.
 
 .. note::
 
-	Author: R1ch
-  Last Modified: Unknown
+    Author: R1ch
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	ExamineInv;
+    ExamineInv;
 *)
 procedure ExamineInv;
 var
@@ -363,24 +373,26 @@ RandomAngle
 
 .. code-block:: pascal
 
-	procedure RandomAngle(HowToEnd: Variant);
+    procedure RandomAngle(HowToEnd: Variant);
 
 Randomly changes the angle of the compass. Finishes depending on
-             HowToEnd:
-                      1, 'up', True = Highest angle
-                      2, 'down', False = Lowest angle
-             Put '' to leave it as it is.
+
+    HowToEnd:
+             1, 'up', True = Highest angle
+             2, 'down', False = Lowest angle
+
+    Put '' to leave it as it is.
 
 .. note::
 
-	Author: R1ch
-  Last Modified: Unknown
+    Author: R1ch
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	RandomAngle(1);
+    RandomAngle(1);
 *)
 procedure RandomAngle(HowToEnd : Variant);
 var
@@ -406,24 +418,24 @@ end;
 
 (*
 LevelUp
-~~~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
-	function LevelUp: Boolean;
+    function LevelUp: Boolean;
 
 Checks if you've leveled up - click Continue and returns True.
 
 .. note::
 
-	Author: R1ch
-  Last Modified: Unknown
+    Author: R1ch
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if LevelUp then
+    if LevelUp then
     Inc(LevelsGained);
 *)
 function LevelUp : Boolean;

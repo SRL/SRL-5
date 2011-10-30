@@ -8,26 +8,34 @@
 // * function Animating(B: TBox; Time, MinCount: Integer): Boolean; // * by marpis
 // * function IsMoving: Boolean;                                   // * by marpis
 
+
+(*
+Animation
+=========
+
+
+*)
+
 (*
 PixelShiftMulti
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
+    function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
 
 Calculates how many pixels change in boxes B during time T.
 
 .. note::
 
-	Author: marpis
-  Last Modified: Unknown
+    Author: marpis
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	PixelShiftArray := PixelShiftMulti(box, 5000);
+    PixelShiftArray := PixelShiftMulti(box, 5000);
 *)
 function PixelShiftMulti(B: TBoxArray; T: Integer): TIntegerArray;
 Var
@@ -55,24 +63,24 @@ end;
 
 (*
 PixelShift
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function PixelShift(B: TBox; T: Integer): Integer;
+    function PixelShift(B: TBox; T: Integer): Integer;
 
 Calculates how many pixels change in boxes B during time T.
 
 .. note::
 
-	Author: marpis
-  Last Modified: Nov. 29, 2009
+    Author: marpis
+    Last Modified: Nov. 29, 2009
 
 Example:
 
 .. code-block:: pascal
 
-	Result := (PixelShift(box, 5000) > 2000);
+    Result := (PixelShift(box, 5000) > 2000);
 *)
 function PixelShift(B: TBox; Time: Integer): Integer;
 var
@@ -84,24 +92,24 @@ end;
 
 (*
 AveragePixelShift
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function AveragePixelShift(B: TBox; waitPerloop, maxTime: Integer): Integer;
+    function AveragePixelShift(B: TBox; waitPerloop, maxTime: Integer): Integer;
 
 Gets the average pixel shift every 'waitPerLoop' ms over the time 'maxTime'
 
 .. note::
 
-	Author: Coh3n
-  Last Modified: Mar. 31st, 2011
+    Author: Coh3n
+    Last Modified: Mar. 31st, 2011
 
 Example:
 
 .. code-block:: pascal
 
-	Result := (AveragePixelShift(box, 500, 5000) > 2000);
+    Result := (AveragePixelShift(box, 500, 5000) > 2000);
 *)
 function AveragePixelShift(b: TBox; waitPerLoop, maxTime: integer): integer;
 var
@@ -121,26 +129,26 @@ end;
 
 (*
 AnimatingMulti
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
+    function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
 
 Finds constant animation in boxes B during time T. If PixelShift in box is
 smaller than MinCount, it's considered not animating.
 
 .. note::
 
-	Author: marpis
-  Last Modified: Nov. 29, 2009
+    Author: marpis
+    Last Modified: Nov. 29, 2009
 
 Example:
 
 .. code-block:: pascal
 
   boolArray := AnimatingMulti(boxArray, 5000, 2000);
-	for i := 0 to High(boolArray) do
+    for i := 0 to High(boolArray) do
     isAnimating := boolArray[i];
 *)
 function AnimatingMulti(B: TBoxArray; Time, MinCount: Integer): TBooleanArray;
@@ -164,19 +172,19 @@ end;
 
 (*
 Animating
-~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-	function Animating(B: TBox; Time, MinCount: Integer): Boolean;
+    function Animating(B: TBox; Time, MinCount: Integer): Boolean;
 
 Finds constant animation in boxes B during time T. If PixelShift in box is
 smaller than MinCount, it's considered not animating.
 
 .. note::
 
-	Author: marpis
-  Last Modified: Nov. 29, 2009
+    Author: marpis
+    Last Modified: Nov. 29, 2009
 
 Example:
 
@@ -194,18 +202,18 @@ end;
 
 (*
 IsMoving
-~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
-	function IsMoving: Boolean;
+    function IsMoving: Boolean;
 
 Results true if character is moving.
 
 .. note::
 
-	Author: marpis
-  Last Modified: Nov. 29, 2009
+    Author: marpis
+    Last Modified: Nov. 29, 2009
 
 Example:
 
@@ -213,12 +221,7 @@ Example:
 
   PlayerMoving := IsMoving;
 *)
-{*******************************************************************************
-function IsMoving: Boolean;
-By: marpis
-Description: Results true if character is moving.
-Date: Nov. 29, 2009
-*******************************************************************************}
+
 function IsMoving: Boolean;
 begin
   Result := PixelShift(IntToBox(MMCX-30, MMCY-30, MMCX+30, MMCY+30), 500) > 200;

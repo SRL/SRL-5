@@ -1,4 +1,11 @@
-                                                       //-----------------------------------------------------------------//
+(*
+Bank
+====
+
+
+*)
+
+//-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--                 Bank Routines                               --//
 //-----------------------------------------------------------------//
@@ -52,24 +59,24 @@ const
 
 (*
 BankScreen
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function BankScreen: Boolean;
+    function BankScreen: Boolean;
 
 Finds Bankscreen. Returns true if Found.
 
 .. note::
 
-	Author: SRL Dev Team
-  Last Modified: Unknown
+    Author: SRL Dev Team
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	BankOpen := BankScreen;
+    BankOpen := BankScreen;
 *)
 function BankScreen: Boolean;
 var
@@ -88,24 +95,24 @@ end;
 
 (*
 DepositScreen
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function DepositScreen: Boolean;
+    function DepositScreen: Boolean;
 
 Returns true if deposit screen is Found.
 
 .. note::
 
-	Author: Shuttleu
-  Last Modified: Unknown
+    Author: Shuttleu
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	BankOpen := (not DepositScreen);
+    BankOpen := (not DepositScreen);
 *)
 function DepositScreen: Boolean;
 var
@@ -116,24 +123,24 @@ end;
 
 (*
 PinScreen
-~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-	function PinScreen: Boolean;
+    function PinScreen: Boolean;
 
 Finds Pin Screen. Returns true if Found.
 
 .. note::
 
-	Author: Naum
-  Last Modified: Unknown
+    Author: Naum
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if PinScreen then
+    if PinScreen then
     InPin();
 *)
 function PinScreen : Boolean;
@@ -143,24 +150,24 @@ end;
 
 (*
 ClosePinScreen
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function ClosePinScreen: Boolean;
+    function ClosePinScreen: Boolean;
 
 Results true is PinScreen is not open.
 
 .. note::
 
-	Author: SRL
-  Last Modified: Unknown
+    Author: SRL
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if PinScreen then
+    if PinScreen then
     Result := ClosePinScreen;
 *)
 function ClosePinScreen: Boolean;
@@ -181,24 +188,24 @@ end;
 
 (*
 InPin
-~~~~~~~~~~~
+~~~~~
 
 .. code-block:: pascal
 
-	function Inpin(Pin: string): Boolean;
+    function Inpin(Pin: string): Boolean;
 
 Enters bank pin. Will try 3 times, returns true if bank is opened.
 
 .. note::
 
-	Author: ZephyrsFury and Nava2
-  Last Modified: Unknown
+    Author: ZephyrsFury and Nava2
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if PinScreen then
+    if PinScreen then
     InPin('1234');
 *)
 function InPin(Pin: string): Boolean;
@@ -295,24 +302,24 @@ end;
 
 (*
 MSTPointToBankPoint
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function MSTPointToBankPoint(P: TPoint): TPoint;
+    function MSTPointToBankPoint(P: TPoint): TPoint;
 
 Converts a point on the Mainscreen to the point in the Bank.
 
 .. note::
 
-	Author: Wizzup
-  Last Modified: Unknown
+    Author: Wizzup
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	ItemSlot := MSTPointToBankPoint(Point);
+    ItemSlot := MSTPointToBankPoint(Point);
 *)
 function MSTPointToBankPoint(MSP: TPoint): TPoint;
 begin
@@ -322,24 +329,24 @@ end;
 
 (*
 BankPointToBankIndex
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function BankPointToBankIndex(P: TPoint): Integer;
+    function BankPointToBankIndex(P: TPoint): Integer;
 
 Converts a Bank Point (Row,Col) to Bank Index (spot in bank). (0, 0) = 1
 
 .. note::
 
-	Author: Wizzup?
-  Last Modified: Unknown
+    Author: Wizzup?
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	BankSlot := BankPointToBankIndex(itemPoint);
+    BankSlot := BankPointToBankIndex(itemPoint);
 *)
 function BankPointToBankIndex(P: TPoint): Integer;
 begin
@@ -348,24 +355,24 @@ end;
 
 (*
 BankIndexToBankPoint
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function BankIndexToBankPoint(ind: Integer): TPoint;
+    function BankIndexToBankPoint(ind: Integer): TPoint;
 
 Converts the Bank Index (spot in bank) to a Bank Point (Row,Col). 1 = (0, 0)
 
 .. note::
 
-	Author: Wizzup?
-  Last Modified: Unknown
+    Author: Wizzup?
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	BankPoint := BankIndexToBankPoint(index);
+    BankPoint := BankIndexToBankPoint(index);
 *)
 function BankIndexToBankPoint(Index: Integer): TPoint;
 begin
@@ -375,24 +382,24 @@ end;
 
 (*
 BankIndexToMSPoint
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function BankIndexToMSPoint(Index: Integer): TPoint;
+    function BankIndexToMSPoint(Index: Integer): TPoint;
 
 Converts the Bank Index (spot in bank) to a Mainscreen TPoint of the Index. (Top Left)
 
 .. note::
 
-	Author: Wizzup?
-  Last Modified: Unknown
+    Author: Wizzup?
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	msPoint := BankIndexToMSPoint(index);
+    msPoint := BankIndexToMSPoint(index);
 *)
 function BankIndexToMSPoint(Index: Integer): TPoint;
 begin
@@ -402,24 +409,24 @@ end;
 
 (*
 BankIndexToMSBox
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function BankIndexToMSBox(Ind: Integer): TBox;
+    function BankIndexToMSBox(Ind: Integer): TBox;
 
 Converts the Bank Index (spot in bank) to a Mainscreen TBox of the Index.
 
 .. note::
 
-	Author: Wizzup?
-  Last Modified: Unknown
+    Author: Wizzup?
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	msBox := BankIndexToMSBox(index);
+    msBox := BankIndexToMSBox(index);
 *)
 function BankIndexToMSBox(Index: Integer): TBox;
 var
@@ -434,24 +441,24 @@ end;
 
 (*
 DepositItemBox
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function DepositItemBox(Item: Integer): TBox;
+    function DepositItemBox(Item: Integer): TBox;
 
 Returns a TBox surround Item (1 to 28) in the Deposit Box screen.
 
 .. note::
 
-	Author: ZephyrsFury
-  Last Modified: Unknown
+    Author: ZephyrsFury
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	currentItem := DepositItemBox(itemSlot);
+    currentItem := DepositItemBox(itemSlot);
 *)
 function DepositItemBox(Item: Integer): TBox;
 begin
@@ -463,24 +470,24 @@ end;
 
 (*
 FixBank
-~~~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
-	procedure FixBank;
+    procedure FixBank;
 
 Scrolls the bank screen up.
 
 .. note::
 
-	Author: lordsaturn, Nava2, IceFire908 & Bixby Sayz
-  Last Modified: Unknown
+    Author: lordsaturn, Nava2, IceFire908 & Bixby Sayz
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	FixBank;
+    FixBank;
 *)
 procedure FixBank;
 var
@@ -500,24 +507,24 @@ end;
 
 (*
 FixBankTab
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure FixBankTab;
+    procedure FixBankTab;
 
 Fixes the BankTab to 'View All'
 
 .. note::
 
-	Author: Wizzup?
-  Last Modified: Unknown
+    Author: Wizzup?
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if FixBankTab then
+    if FixBankTab then
     SearchForItem;
 *)
 function FixBankTab: Boolean;
@@ -551,24 +558,24 @@ end;
 
 (*
 CurrentBankTab
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function CurrentBankTab: Integer;
+    function CurrentBankTab: Integer;
 
 Returns Current Bank Tab selected
 
 .. note::
 
-	Author: Narcle
-  Last Modified: Unknown
+    Author: Narcle
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	curTab := GetCurrentBankTab;
+    curTab := GetCurrentBankTab;
 *)
 function CurrentBankTab: Integer;
 begin
@@ -583,24 +590,24 @@ end;
 
 (*
 ExistsBankTab
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function ExistsBankTab(T: Integer): Boolean;
+    function ExistsBankTab(T: Integer): Boolean;
 
 Returns true if Bank Tab Exists
 
 .. note::
 
-	Author: Narcle
-  Last Modified: Unknown
+    Author: Narcle
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if ExistsBankTab(2) then
+    if ExistsBankTab(2) then
     BankTab(2);
 *)
 function ExistsBankTab(T: Integer): Boolean;
@@ -627,24 +634,24 @@ end;
 
 (*
 BankTab
-~~~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
-	function BankTab(T: Integer): Boolean;
+    function BankTab(T: Integer): Boolean;
 
 If Bank Tab is there will switch to it.
 
 .. note::
 
-	Author: Narcle
-  Last Modified: Unknown
+    Author: Narcle
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if ExistsBankTab(2) then
+    if ExistsBankTab(2) then
     BankTab(2);
 *)
 function BankTab(T: Integer): Boolean;
@@ -669,24 +676,24 @@ end;
 
 (*
 SearchBank
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	procedure SearchBank(Item: string);
+    procedure SearchBank(Item: string);
 
 Searches for Item in your bank.
 
 .. note::
 
-	Author: ZephyrsFury
-  Last Modified: Unknown
+    Author: ZephyrsFury
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	SearchBank('air rune');
+    SearchBank('air rune');
   if FindDTM(..) then
 *)
 procedure SearchBank(Item: string);
@@ -714,24 +721,24 @@ end;
 
 (*
 DepositAll
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function DepositAll: Boolean;
+    function DepositAll: Boolean;
 
 Deposits all items in your inventory
 
 .. note::
 
-	Author: ZephyrsFury & Quickmarch
-  Last Modified: Unknown
+    Author: ZephyrsFury & Quickmarch
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if InvFull then
+    if InvFull then
     DepositAll;
 *)
 function DepositAll: Boolean;
@@ -760,11 +767,11 @@ end;
 
 (*
 Deposit
-~~~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
-	Procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
+    Procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
 
  Deposits from Slot to ToSlot.
   vType True = Deposit All. vType False = Deposit one by one.
@@ -772,14 +779,14 @@ Deposit
 
 .. note::
 
-	Author: WT-Fakawi/PPLSUQBAWLZ/Stupid3ooo/Town
-  Last Modified: Unknown
+    Author: WT-Fakawi/PPLSUQBAWLZ/Stupid3ooo/Town
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	Deposit(1, 28, True);
+    Deposit(1, 28, True);
 *)
 procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant);
 var
@@ -848,24 +855,24 @@ end;
 
 (*
 WithdrawEx
-~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
+    function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
 
 Withdraws Amount at Column/Row.
 
 .. note::
 
-	Author: Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
-  Last Modified: Unknown
+    Author: Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	WithdrawEx(1, 3, 28, ['ron ore', 'ore', 'on or']);
+    WithdrawEx(1, 3, 28, ['ron ore', 'ore', 'on or']);
 *)
 function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean;
 var
@@ -914,24 +921,24 @@ end;
 
 (*
 Withdraw
-~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
-	function Withdraw(Col, Row, Amount: Integer): Boolean;
+    function Withdraw(Col, Row, Amount: Integer): Boolean;
 
 Withdraws Amount at Column/Row.
 
 .. note::
 
-	Author: Starblaster100, Town, Wizzup? and Narcle
-  Last Modified: Unknown
+    Author: Starblaster100, Town, Wizzup? and Narcle
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	Withdraw(1, 3, 28);
+    Withdraw(1, 3, 28);
 *)
 function Withdraw(col, row, Amount: Integer): Boolean;
 begin
@@ -940,11 +947,11 @@ end;
 
 (*
 WithdrawItemEx
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer;
+    function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer;
                  Amount: integer; UpText: String; Tol: TIntegerArray): boolean;
 
 Withdraws an item from the bank by using "Ident" with tol[0]
@@ -958,14 +965,14 @@ UpText: The UpText which the function checks for.
 
 .. note::
 
-	Author: Nava2
-  Last Modified: Unknown
+    Author: Nava2
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if WithdrawItemEx(theColor, 'color', itemSlot, 27, 'ew log', [3]) then
+    if WithdrawItemEx(theColor, 'color', itemSlot, 27, 'ew log', [3]) then
     CloseBank;
 *)
 function WithdrawItemEx(Ident: integer; IdentType: string; var Index: integer; Amount: integer; UpText: string; Tol: TIntegerArray): Boolean;
@@ -1029,25 +1036,25 @@ end;
 
 (*
 WithdrawItem
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function WithdrawItem(Ident: integer; IdentType: string; Amount: integer;
+    function WithdrawItem(Ident: integer; IdentType: string; Amount: integer;
                            UpText: TStringArray; Tol: TIntegerArray): boolean;
 
 Withdraws an item using WithdrawItemEx, but removes the Index check.
 
 .. note::
 
-	Author: Nava2
-  Last Modified: Unknown
+    Author: Nava2
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	if WithdrawItem(theColor, 'color', 27, ['ew log', 'ew l'], [3]) then
+    if WithdrawItem(theColor, 'color', 27, ['ew log', 'ew l'], [3]) then
     CloseBank;
 *)
 function WithdrawItem(Ident: integer; IdentType: string; Amount: integer; UpText: String; Tol: TIntegerArray): boolean;
@@ -1059,24 +1066,24 @@ end;
 
 (*
 Notes
-~~~~~~~~~~~
+~~~~~
 
 .. code-block:: pascal
 
-	procedure Notes(SwitchOn: Boolean);
+    procedure Notes(SwitchOn: Boolean);
 
 Toggles note withdrawal on or off.
 
 .. note::
 
-	Author: lordsaturn, idea by R1ch
-  Last Modified: Unknown
+    Author: lordsaturn, idea by R1ch
+    Last Modified: Unknown
 
 Example:
 
 .. code-block:: pascal
 
-	Notes(True);
+    Notes(True);
   Withdraw(Col, Row, 100);
 *)
 procedure Notes(SwitchOn: Boolean);
@@ -1088,18 +1095,18 @@ end;
 
 (*
 CloseBank
-~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-	function CloseBank: Boolean;
+    function CloseBank: Boolean;
 
 Closes the bank window - Tries twice before exiting
 
 .. note::
 
-	Author: Starblaster100
-  Last Modified: Unknown
+    Author: Starblaster100
+    Last Modified: Unknown
 
 Example:
 
@@ -1134,11 +1141,11 @@ end;
 
 (*
 OpenBankQuiet
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function OpenBankQuiet(WhichBank: string): Boolean;
+    function OpenBankQuiet(WhichBank: string): Boolean;
 
 Opens any given bank in the free world using
 FindDeformedBitmapToleranceIn. Avoids strange mouse movements. Will cause
@@ -1155,8 +1162,8 @@ Valid arguments are:
 
 .. note::
 
-	Author: WT-Fakawi and modified by Ron
-  Last Modified: Unknown
+    Author: WT-Fakawi and modified by Ron
+    Last Modified: Unknown
 
 Example:
 
@@ -1286,11 +1293,11 @@ end;
 
 (*
 OpenBankGlass
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function OpenBankGlass(WhichBank: String; ChangeCompass, ChangeAngle: Boolean): Boolean;
+    function OpenBankGlass(WhichBank: String; ChangeCompass, ChangeAngle: Boolean): Boolean;
 
 Opens the bank.
 Valid arguments are:
@@ -1313,8 +1320,8 @@ Valid arguments are:
 
 .. note::
 
-	Author: Wizzup? and modified by Ron
-  Last Modified: Unknown
+    Author: Wizzup? and modified by Ron
+    Last Modified: Unknown
 
 Example:
 
@@ -1375,11 +1382,11 @@ end;
 
 (*
 OpenBankFast
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function OpenBankFast(Location: String): Boolean;
+    function OpenBankFast(Location: String): Boolean;
 
 Opens the bank.
 Valid arguments are:
@@ -1402,8 +1409,8 @@ Valid arguments are:
 
 .. note::
 
-	Author: Wizzup? and Nielsie95
-  Last Modified: Unknown
+    Author: Wizzup? and Nielsie95
+    Last Modified: Unknown
 
 Example:
 
@@ -1529,14 +1536,14 @@ OpenBankNPC
 
 .. code-block:: pascal
 
-	function OpenBankNPC: Boolean;
+    function OpenBankNPC: Boolean;
 
 Opens the bank by using Banker.
 
 .. note::
 
-	Author: Home
-  Last Modified: Unknown
+    Author: Home
+    Last Modified: Unknown
 
 Example:
 
@@ -1574,11 +1581,11 @@ end;
 
 (*
 OpenBank
-~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
-	function OpenBank(WhichBank: String, ChangeCompass, ChangeAngle: Boolean): Boolean;
+    function OpenBank(WhichBank: String, ChangeCompass, ChangeAngle: Boolean): Boolean;
 
 Opens the bank if possible.
 Valid arguments are:
@@ -1602,8 +1609,8 @@ Valid arguments are:
 
 .. note::
 
-	Author: SRL Dev Team
-  Last Modified: Unknown
+    Author: SRL Dev Team
+    Last Modified: Unknown
 
 Example:
 
@@ -1639,11 +1646,11 @@ end;
 
 (*
 FindBank
-~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
-	function FindBank(TheBank: String): Boolean;
+    function FindBank(TheBank: String): Boolean;
 
 Valid arguments are:
 'feb' (Falador East Bank)
@@ -1663,8 +1670,8 @@ Valid arguments are:
 
 .. note::
 
-	Author: WT-Fakawi and modified by Ron
-  Last Modified: Unknown
+    Author: WT-Fakawi and modified by Ron
+    Last Modified: Unknown
 
 Example:
 
@@ -1746,18 +1753,18 @@ end;
 
 (*
 OpenDepositBox
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-	function OpenDepositBox : Boolean;
+    function OpenDepositBox : Boolean;
 
 Opens the deposit box.
 
 .. note::
 
-	Author: Shuttleu
-  Last Modified: Unknown
+    Author: Shuttleu
+    Last Modified: Unknown
 
 Example:
 
