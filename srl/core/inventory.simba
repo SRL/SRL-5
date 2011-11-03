@@ -1,3 +1,11 @@
+(*
+Inventory
+====
+
+
+.. contents::
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » Inventory Routines                          --//
@@ -41,12 +49,28 @@ type
   end;
   TInvenItemArr = array of TInvenItem;
 
-{*******************************************************************************
-function GetInven(Inven: Integer): TInvenItem;
-By: SKy Scripter
-Description: Returns The Width, Height, Count, ItemBox and CenterPoint of the
-Given Item Slot.
-*******************************************************************************}
+(*
+GetInven
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetInven(Inven: Integer): TInvenItem;
+
+Returns The Width, Height, Count, ItemBox and CenterPoint of the given Item Slot.
+
+.. note::
+
+    by SKy Scripter
+
+Example:
+
+.. code-block:: pascal
+
+    invItem := GetInven(InvSlot);
+    MMouse(invItem.centerPoint.x, invItem.centerPoint.y, 2, 2);
+
+*)
 function GetInven(Inven: Integer): TInvenItem;
 var
   Slot, Row, Ix, Iy, I, Cx, Cy: Integer;
@@ -84,12 +108,30 @@ begin
   Result.ItemBox  := PointToBox(MinP, MaxP);
 end;
 
-{*******************************************************************************
-function GetInventoryArray : array of TInvenItem;
-By: SKy Scripter
-Description: Returns The Width, Height, Count, ItemBox and CenterPoint
-in array [0..27] of  all Items in the inventory.
-*******************************************************************************}
+(*
+GetInventoryArray
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetInventoryArray : array of TInvenItem;
+
+Returns The Width, Height, Count, ItemBox and CenterPoint in array [0..27] of
+all Items in the inventory.
+
+.. note::
+
+    by SKy Scripter
+
+Example:
+
+.. code-block:: pascal
+
+    invItems := GetInventoryArray);
+    for i := 3 to 7 do
+      MMouse(invItems[i].centerPoint.x, invItems[i].centerPoint.y, 2, 2);
+
+*)
 function GetInventoryArray : TInvenItemArr;
 var
   I: Byte;
@@ -99,14 +141,32 @@ begin
    Result[I] := GetInven(i + 1);
 end;
 
-{*******************************************************************************
-Function InvBox(i :Integer): TBox;
-By: Boreas. Coords by Ogre July 15th 2009.
-Description: Returns TBox of surrounding Inventory SlotBox
+(*
+InvBox
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function InvBox(i :Integer): TBox;
+
+Returns TBox of surrounding Inventory SlotBox
 1-2-3-4
 5-6-7-8
 etc.
-*******************************************************************************}
+
+.. note::
+
+    by Boreas
+    Last Modified: by Ogre July 15th 2009.
+
+Example:
+
+.. code-block:: pascal
+
+    iBox := InvBox;
+    MMouse(randomRange(iBox.x1, iBox.x2), randomRange(iBox.y1, iBox.y2), 0, 0);
+
+*)
 function InvBox(I :Integer): TBox;
 var
   Slot1, Slot6: TBox;
@@ -125,11 +185,28 @@ begin
   Result.y2 := Result.y1 + (Slot1.Y2 - Slot1.Y1);
 end;
 
-{*******************************************************************************
-function ItemCoords(i: Integer): TPoint;
-By: RsN
-Description: Returns X and Y of Specified Inventory Spot
-*******************************************************************************}
+(*
+ItemCoords
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ItemCoords(i: Integer): TPoint;
+
+Returns X and Y of Specified Inventory Slot
+
+.. note::
+
+    by RsN
+
+Example:
+
+.. code-block:: pascal
+
+    Coords := itemCoords(3);
+    MMouse(Coords.x, Coords.y, 2, 2);
+
+*)
 function ItemCoords(i: Integer): TPoint;
 var
   Box: TBox;
@@ -139,12 +216,28 @@ begin
   Result.Y := (Box.Y1 + Box.Y2) Shr 1;
 end;
 
-{*******************************************************************************
-function CoordsToItem(X, Y: Integer): Integer;
-By: Boreas
-Description: Returns which Inventory slot the X and Y coords are in. If the
+(*
+CoordsToItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CoordsToItem(X, Y: Integer): Integer;
+
+Returns which Inventory slot the X and Y coords are in. If the
 coords are between slots (or not in the inventory area at all) it will return 0.
-*******************************************************************************}
+
+.. note::
+
+    by Boreas
+
+Example:
+
+.. code-block:: pascal
+
+    Writeln('Item found in slot '+IntToStr(CoordsToItem(point.x, point.y)));
+
+*)
 function CoordsToItem(X, Y: Integer): Integer;
 var
   tmpBox: TBox;
@@ -166,11 +259,29 @@ begin
     Result := 0;
 end;
 
-{*******************************************************************************
-function GetInvItemBounds(InvSpot: Integer; T: TBox): Boolean;
-By: Wizzup?
-Description: If item exists, returns TBox of the item, else returns the normal InvBox.
-*******************************************************************************}
+(*
+GetInvItemBounds
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetInvItemBounds(InvSpot: Integer; var T: TBox): Boolean;
+
+If item exists, returns TBox of the item, else returns the normal InvBox.
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+    for i := 1 to 7 do
+      if GetInvItemBounds(i, iBox) then
+        Writeln('Item found in slot '+IntToStr(i));
+
+*)
 function GetInvItemBounds(InvSpot: Integer; var T: TBox): Boolean;
 var
   TPA: TPointArray;
@@ -186,11 +297,29 @@ begin
   T := GetTPABounds(TPA);
 end;
 
-{*******************************************************************************
-function ExistsItem(i: Integer): Boolean;
-By: WT-Fakawi
-Description: Checks if item in inventory at specified position exists
-*******************************************************************************}
+(*
+ExistsItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExistsItem(i: Integer): Boolean;
+
+Checks if item in inventory at specified position exists
+
+.. note::
+
+    by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+    for i := 1 to 28 do
+      if ExistsItem(i) then
+        Inc(Count);
+
+*)
 function ExistsItem(I: Integer): Boolean;
 var
   X, Y: Integer;
@@ -201,12 +330,28 @@ begin
   Result := FindColor(x, y, srl_outline_black, TB.x1, TB.y1, TB.x2, TB.y2);
 end;
 
-{*******************************************************************************
-function ExistsItemDTM(dtm: Integer; var x, y: Integer): Boolean;
-By: NCDS
-Description: Checks if the item with dtm is in the inventory. Returns the item's
-             coordinates.
-*******************************************************************************}
+(*
+ExistsItemDTM
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExistsItemDTM(dtm: Integer; var x, y: Integer): Boolean;
+
+Checks if the dtm is in the inventory. Returns the item's coordinates.
+
+.. note::
+
+    by NCDS
+
+Example:
+
+.. code-block:: pascal
+
+    if ExistsItemDTM(OreDTM, x, y) then
+      MMouse(x, y, 3, 3);
+
+*)
 function ExistsItemDTM(dtm: Integer; var x, y: Integer): Boolean;
 begin
   Gametab(tab_Inv);
@@ -214,15 +359,32 @@ begin
   Result := FindDTM(dtm, x, y, MIx1, MIy1, MIx2, MIy2);
 end;
 
-{*******************************************************************************
-function InvMouse(InvSlot, Action: Byte) : boolean;
-By: EvilChicken!
-Description: A combined MouseItem & MMouseItem, will hopefully replace both
+(*
+InvMouse
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InvMouse(InvSlot, Action: Byte) : boolean;
+
+A combined MouseItem & MMouseItem, will hopefully replace both
 procedures one day. Usage is like SRL's MouseBox, Action determines what to do:
   1: Leftclick
   2: Rightclick
   3: Move mouse to item
-*******************************************************************************}
+
+.. note::
+
+    by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+    if InvMouse(1, rightClick) then
+      WaitOption('eposit', 500);
+
+*)
 function InvMouse(InvSlot, Action: Byte) : boolean;
 var
   TB: TBox;
@@ -250,21 +412,53 @@ begin
     MouseBoxEx(TB.X1, TB.Y1, TB.X2, TB.Y2,14, Action);
 end;
 
-{*******************************************************************************
-procedure MMouseItem(i: Integer);
-By: WT-Fakawi/EvilChicken!
-Description: Moves mouse to specified inventory spot.
-*******************************************************************************}
+(*
+MMouseItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MMouseItem(i: Integer);
+
+Moves mouse to specified inventory spot.
+
+.. note::
+
+    by WT-Fakawi/EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+    MMouseItem(1);
+
+*)
 procedure MMouseItem(I: Byte);
 begin
   InvMouse(I, 3);
 end;
 
-{*******************************************************************************
-procedure MouseItem(i: Byte; Left: Boolean);
-By: WT-Fakawi/EvilChicken!, edit by NaumanAkhlaQ
-Description: Moves Mouse to inv spot then clicks left or right.
-*******************************************************************************}
+(*
+MouseItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseItem(i: Byte; Left: Boolean);
+
+Moves Mouse to inv spot then clicks left or right.
+
+.. note::
+
+    by WT-Fakawi/EvilChicken! edit by Naum
+
+Example:
+
+.. code-block:: pascal
+
+    MouseItem(1, true);
+
+*)
 procedure MouseItem(I: Byte; Left: Boolean);
 begin
   case left of
@@ -273,11 +467,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure DragItem(Inv1, Inv2: Integer);
-By: NaumanAkhlaQ
-Description: Drags Item from first position Inv1 to Inv2 (Inventory Slots)
-*******************************************************************************}
+(*
+DragItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DragItem(Inv1, Inv2: Integer);
+
+Drags Item from first position Inv1 to Inv2 (Inventory Slots)
+
+.. note::
+
+    by Naum
+
+Example:
+
+.. code-block:: pascal
+
+    DragItem(1, 3);
+
+*)
 procedure DragItem(Inv1, Inv2: Integer);
 var
   InvAr: array [0..1] of TBox;
