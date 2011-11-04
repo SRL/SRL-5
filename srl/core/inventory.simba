@@ -498,11 +498,27 @@ begin
             InvAr[1].x1, InvAr[1].y1, InvAr[1].x2 - InvAr[1].x1, InvAr[1].y2 - InvAr[1].y1);
 end;
 
-{*******************************************************************************
-function InvCount: Integer;
-By: RsN
-Description: Returns amount of items in your inventory
-*******************************************************************************}
+(*
+InvCount
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InvCount: Integer;
+
+Returns amount of items in your inventory
+
+.. note::
+
+    by RsN
+
+Example:
+
+.. code-block:: pascal
+
+    totalCount := InvCount;
+
+*)
 function InvCount: Integer;
 var
   I: Integer;
@@ -514,11 +530,28 @@ begin
      Inc(Result);
 end;
 
-{*******************************************************************************
-function InvEmpty: Boolean;
-By: WT-Fakawi
-Description: Returns True if inventory is empty
-*******************************************************************************}
+(*
+InvEmpty
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InvEmpty: Boolean;
+
+Returns True if inventory is empty
+
+.. note::
+
+    by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+    if InvEmpty then
+      CloseBank;
+
+*)
 function InvEmpty: Boolean;
 var
   X, Y: Integer;
@@ -527,37 +560,75 @@ begin
   Result := (not FindColor(X, Y, srl_outline_black, MIX1, MIY1, MIX2, MIY2));
 end;
 
-{*******************************************************************************
-function InvFull: Boolean;
-By: n3ss3s
-Description: Returns True if inventory is full
-*******************************************************************************}
+(*
+InvFull
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InvFull: Boolean;
+
+Returns True if inventory is full
+
+.. note::
+
+    by n3ss3s
+
+Example:
+
+.. code-block:: pascal
+
+    if InvFull then
+      walkToBank;
+
+*)
 function InvFull: Boolean;
 begin
   Result := (InvCount = 28);
 end;
 
-{*******************************************************************************
-function CountItems(ItemType: string; Identifier: Integer; tol: TIntegerArray): Integer;
-By: WT-Fakawi / Sumilion
-Description: Counts Items in the inventory.
+(*
+CountItems
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CountItems(ItemType: string; Identifier: Integer; tol: TIntegerArray): Integer;
+
+Counts Items in the inventory.
   ItemType - 'dtm', 'bitmap', 'bitmap mask', 'color'
   Item - name/value of your dtm/bmp/color/bmpmask.
   Tol - 'dtm' - [] (dtm's can't have tolerance).
         'bmp' - [BMPTol].
         'color' - [COLOUR Tol, Colour Count].
         'bmpmask' - [BMPTol, ContourTol].
-*******************************************************************************}
+
+.. note::
+
+    by WT-Fakawi / Sumilion
+
+Example:
+
+.. code-block:: pascal
+
+    numbOfItems := CountItems('dtm', TheDTM, []);
+
+*)
 function CountItems(ItemType: string; Identifier: Integer; tol: TIntegerArray): Integer;
 begin
   GameTab(tab_Inv);
   Result := CountItemsIn('inv', ItemType, Identifier, Tol)
 end;
 
-{*******************************************************************************
-function ClickAllItemsExcept(ItemType: String; Identifier: Integer; option: string; SlotIgnores: TIntegerArray; waitnum: Integer; tol: TIntegerArray):Integer;
-By: WT-Fakawi, Sumilion & Nava2
-Description: Performs "option" popup menu action on all items with:
+(*
+ClickAllItemsExcept
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickAllItemsExcept(ItemType: String; Identifier: Integer; option: string; SlotIgnores: TIntegerArray; waitnum: Integer; tol: TIntegerArray):Integer;
+
+Performs "option" popup menu action on all items with:
   ItemType - 'dtm', 'bitmap', 'bitmap mask', 'color'
   Identifier - name/value of your dtm/bmp/color/bmpmask.
   Tol - 'dtm' - [] (dtm's can't have tolerance).
@@ -565,7 +636,18 @@ Description: Performs "option" popup menu action on all items with:
         'color' - [COLOUR Tol, Colour Count].
         'bmpmask' - [BMPTol, ContourTol].
   Will not click items in slots SlotIgnores
-*******************************************************************************}
+
+.. note::
+
+    by WT-Fakawi / Sumilion & Nava2
+
+Example:
+
+.. code-block:: pascal
+
+    ClickAllItemsExcept('dtm', theDTM, 'eposit', [1, 4, 5], 200, []);
+
+*)
 function ClickAllItemsExcept(ItemType: String; Identifier: Integer; option: string; SlotIgnores: TIntegerArray; waitnum: Integer; tol: TIntegerArray):Integer;
 var
   arr: TIntegerArray;
@@ -599,21 +681,53 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function ClickAllItems(ItemType: String; Identifier: Integer; option: string; waitnum: Integer; tol: TIntegerArray):Integer;
-By: Nava2
-Description: See ClickAllItemsExcept, this doesn't ignore any slots.
-*******************************************************************************}
+(*
+ClickAllItems
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickAllItems(ItemType: String; Identifier: Integer; option: string; waitnum: Integer; tol: TIntegerArray):Integer;
+
+See ClickAllItemsExcept, this doesn't ignore any slots.
+
+.. note::
+
+    by WT-Fakawi / Sumilion & Nava2
+
+Example:
+
+.. code-block:: pascal
+
+    ClickAllItemsExcept('dtm', theDTM, 'eposit', 200, []);
+
+*)
 function ClickAllItems(ItemType: String; Identifier: Integer; option: string; waitnum: Integer; tol: TIntegerArray):Integer;
 begin
   Result := ClickAllItemsExcept(ItemType, Identifier, option, [], waitnum, tol);
 end;
 
-{*******************************************************************************
-procedure DropItem(i: Integer);
-By: Lorax
-Description: Drops item at given position (1-28)
-*******************************************************************************}
+(*
+DropItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropItem(i: Integer);
+
+Drops item at given position (1-28)
+
+.. note::
+
+    by Lorax
+
+Example:
+
+.. code-block:: pascal
+
+    DropItem(3);
+
+*)
 function DropItem(i: Integer): Boolean;
 begin
   Result := False;
@@ -628,12 +742,28 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure DropArray(InvSlots: TIntegerArray);
-By: Lorax/EvilChicken!, Tickyy for idea.
-Description: Drops item positioned equivalent to numbers in "InvSlots" array.
+(*
+DropArray
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropArray(InvSlots: TIntegerArray);
+
+Drops item positioned equivalent to numbers in "InvSlots" array.
 Example: "DropArray([2, 4, 9, 12]);" would drop items in InvSlot 2, 4, 9 and 12.
-*******************************************************************************}
+
+.. note::
+
+    by Lorax/EvilChicken!, Tickyy for idea.
+
+Example:
+
+.. code-block:: pascal
+
+    DropArray([2, 3, 6]);
+
+*)
 procedure DropArray(InvSlots: TIntegerArray);
 var
   I, Len: Integer;
@@ -650,11 +780,27 @@ const
   dp_Snake = 2;
   dp_Random = 3;
 
-{*******************************************************************************
-procedure DropPattern(Which: Integer);
-By: Rasta Magician
-Description: Drops all items in inventory according to pattern which.
-*******************************************************************************}
+(*
+DropPattern
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropPattern(Which: Integer);
+
+Drops all items in inventory according to pattern which.
+
+.. note::
+
+    by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+    DropPattern(dp_Snake);
+
+*)
 procedure DropPattern(Which: Integer);
 var
   Col, A, I: Integer;
@@ -711,11 +857,27 @@ begin
     DropItem(Arr[i]);
 end;
 
-{*******************************************************************************
-procedure DropAll;
-By: Rasta Magician
-Description: Drops all items in inventory.
-*******************************************************************************}
+(*
+DropAll
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropAll;
+
+Drops all items in inventory.
+
+.. note::
+
+    by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+    DropAll;
+
+*)
 procedure DropAll;
 var i: integer;
 begin
@@ -727,13 +889,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure DropAllExcept(IgnoreInvSlots: TIntegerArray);
-By: Nava2
-Date: Dec 06, 2009
-Description: Drops everything in inventory. Ignores slots specified by
-             DontDrop array.
-*******************************************************************************}
+(*
+DropAllExcept
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropAllExcept(IgnoreInvSlots: TIntegerArray);
+
+Drops everything in inventory. Ignores slots specified by DontDrop array.
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+    DropAllExcept([1, 3, 5, 6]);
+
+*)
 procedure DropAllExcept(DontDrop: TIntegerArray);
 var
   inv, i, h: Integer;
@@ -748,21 +924,53 @@ begin
       DropItem(i);
 end;
 
-{*******************************************************************************
-procedure DropItemsByIdentifier;
-By: EvilChicken! Fixed by Coh3n
-Description: See description of ClickAllItemsExcept.
-*******************************************************************************}
+(*
+DropItemsByIdentifier
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DropItemsByIdentifier(ItemType: string; Identifier: Integer; Tol: TIntegerArray);
+
+See description of ClickAllItemsExcept.
+
+.. note::
+
+    by EvilChicken! Fixed by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    DropItemsByIdentifier('dtm', tehDTM, []);
+
+*)
 procedure DropItemsByIdentifier(ItemType: string; Identifier: Integer; Tol: TIntegerArray);
 begin
   ClickAllItems(ItemType, Identifier, 'rop', 250, Tol);
 end;
 
-{*******************************************************************************
-procedure ArrangeInv;
-By: Cheesehunk
-Description: Arrange's inventory in an orderly fashion.
-*******************************************************************************}
+(*
+ArrangeInv
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure ArrangeInv;
+
+Arrange's inventory in an orderly fashion.
+
+.. note::
+
+    by Cheesehunk
+
+Example:
+
+.. code-block:: pascal
+
+    ArrangeInv;
+
+*)
 procedure ArrangeInv;
 var
   InvSpace, i, c, OpenSpace: Integer;
@@ -787,12 +995,28 @@ begin
         end;
 end;
 
-{*******************************************************************************
-function CountItemsBlackLine(Count, Tol: Integer): Integer;
-By: n3ss3s, fixed by Bobzilla69
-Description: Returns the number of items in inventory with Count amount of
+(*
+CountItemsBlackLine
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CountItemsBlackLine(Count, Tol: Integer): Integer;
+
+Returns the number of items in inventory with Count amount of
 blackline points and Tol tolerance in the amount of points.
-*******************************************************************************}
+
+.. note::
+
+    by n3ss3s, fixed by Bobzilla69
+
+Example:
+
+.. code-block:: pascal
+
+    CountItemsBlackLine(260, 2);
+
+*)
 function CountItemsBlackLine(Count, Tol: Integer): Integer;
 var
   I, B: Integer;
@@ -809,14 +1033,30 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function ClickAllItemsBlackLine(Count, Tol: Integer; Option: String): Integer;
-By: n3ss3s
-Description: Finds all items in inventory with blackline points amount of Count
+(*
+ClickAllItemsBlackLine
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickAllItemsBlackLine(Count, Tol: Integer; Option: string): Integer;
+
+Finds all items in inventory with blackline points amount of Count
 with Tol tolerance, and returns the amount of items could choose the
 option Option to. Waits the WaitT amount of millisecs between items, with
 WaitR randomness of milliseconds.
-*******************************************************************************}
+
+.. note::
+
+    by n3ss3s
+
+Example:
+
+.. code-block:: pascal
+
+    ClickAllItemsBlackLine(260, 2, 'rop');
+
+*)
 function ClickAllItemsBlackLine(Count, Tol, WaitT, WaitR: Integer; Option: String): Integer;
 var
   TPA: TPointArray;
@@ -841,12 +1081,28 @@ begin
     end;
 end;
 
-{*******************************************************************************
-function ItemActivated(Slot: Integer): Boolean;
-By: marpis
-Description: Checks if item in specified inventory slot has a white outline.
+(*
+ItemsActivated
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ItemActivated(Slot: Integer): Boolean;
+
+Checks if item in specified inventory slot has a white outline.
 Returns True if the item has a white outline, otherwise returns false.
-*******************************************************************************}
+
+.. note::
+
+    by marpis
+
+Example:
+
+.. code-block:: pascal
+
+    Result := ItemActivated(4);
+
+*)
 function ItemActivated(Slot: Integer): Boolean;
 var
   X, Y: Integer;
@@ -861,11 +1117,27 @@ begin
                     CountColor(srl_outline_black, TB.x1, TB.y1, TB.x2, TB.y2),-40,40);
 end;
 
-{*******************************************************************************
-function SelectedItem : integer;
-By: MaaaassturrRrrraymond
-Description: Returns the selected item in invetory (if any), else returns -1.
-*******************************************************************************}
+(*
+ActivatedItem
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ActivatedItem : integer;
+
+Returns the selected item in invetory (if any), else returns -1.
+
+.. note::
+
+    by mastaraymond
+
+Example:
+
+.. code-block:: pascal
+
+    item := ActivatedItem;
+
+*)
 function ActivatedItem : integer;
 var
   i : integer;
