@@ -1,3 +1,11 @@
+(*
+Globals
+====
+
+
+.. contents::
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » Global Variables                            --//
@@ -241,11 +249,25 @@ var
 // *  running scripts, CTB and DB handle errors. So sorry, declared them global
 //****************************************************************************//
 
-{*******************************************************************************
-procedure LoadSRLBitMaps;
-By: SRL Dev Team
-Description: Loads SRL Bitmaps into memory.
-*******************************************************************************}
+(*
+LoadSRLBitmaps
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure LoadSRLBitMaps;
+
+Loads SRL Bitmaps into memory.
+
+.. note::
+
+    by SRL Dev Team
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure LoadSRLBitMaps;
 begin
   bmpMod := BitmapFromString(9, 6, 'beNqbPn0RWeDBgwdAkgEMkBnT' +
@@ -265,11 +287,25 @@ begin
   SetDTMName(Lamp,'SRL - Lamp bitmap');
 end;
 
-{*******************************************************************************
-procedure FreeSRLBitMaps;
-By: Ron
-Description: Frees SRL Bitmaps from memory.
-*******************************************************************************}
+(*
+FreeSRLBitmaps
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure FreeSRLBitMaps;
+
+Frees SRL Bitmaps from memory.
+
+.. note::
+
+    by Ron
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure FreeSRLBitmaps;
 begin
   if SRLBitmapsLoaded then
@@ -282,11 +318,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure LoadSRLFonts;
-By: Markus
-Description: Loads SRL Fonts into memory.
-*******************************************************************************}
+(*
+LoadSRLFonts
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure LoadSRLFonts;
+
+Loads SRL Fonts into memory.
+
+.. note::
+
+    by Markus
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure LoadSRLFonts;
 begin
 {$IFDEF LoadExtraFonts}
@@ -295,11 +345,25 @@ begin
 {$ENDIF}
 end;
 
-{*******************************************************************************
-procedure FreeSRLFonts;
-By: Markus
-Description: Frees SRL Fonts from memory.
-*******************************************************************************}
+(*
+FreeSRLFonts
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure FreeSRLFonts;
+
+Frees SRL Fonts from memory.
+
+.. note::
+
+    by Markus
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure FreeSRLFonts;
 begin
 {$IFDEF LoadExtraFonts}
@@ -308,11 +372,31 @@ begin
 {$ENDIF}
 end;
 
-{*******************************************************************************
-procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer);
-by: SRL Dev Team
-Description: WriteLn's a warning message.
-*******************************************************************************}
+(*
+srl_Warn
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer);
+
+WriteLn's a warning message.
+
+.. note::
+
+    by SRL Dev Team
+
+Example:
+
+.. code-block:: pascal
+
+    try
+      FindTree;
+    except
+      srl_Warn('FindTree', 'Through an error', warn_AllVersions);
+    end;
+
+*)
 procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer);
 begin
   if (wVersion >= WarnSensitivity) then
@@ -328,11 +412,25 @@ end;
 var
   MSBox, MMBox, MIBox, MCBox, MBBox: TBox;
 
-{*******************************************************************************
-Procedure SetupBoxes;
-by: SRL Dev Team & MylesMadness
-Description: Sets up Box variables
-*******************************************************************************}
+(*
+SetupBoxes
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SetupBoxes;
+
+Sets up Box variables
+
+.. note::
+
+    by SRL Dev Team & MylesMadness
+
+Example:
+
+.. code-block:: pascal
+
+*)
 Procedure SetupBoxes;
 begin
   MSBox := IntToBox(MSX1, MSY1, MSX2, MSY2);
@@ -351,14 +449,34 @@ const
   HP_BAR_WIDTH = 57;
   HP_BAR_HEIGHT = 7;
 
-{*******************************************************************************
-function srl_InFight: Boolean;
-By: Frement
-Description: Checks whether player currently is in a fight, using mainscreen
+(*
+srl_InFight
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function srl_InFight: Boolean;
+
+Checks whether player currently is in a fight, using mainscreen
 HP bar presence detection. Returns True if Player's HP bar is detected.
 Idea for improvement: Also check using PixelShift(); to see whether Player
 is performing fighting animations to further improve the certainty of results.
-*******************************************************************************}
+
+.. note::
+
+    by Frement
+
+Example:
+
+.. code-block:: pascal
+
+    while srl_InFight do
+    begin
+      CheckHP;
+      EatFood;
+    end;
+
+*)
 function srl_InFight: Boolean;
 var
   X, Y, HPBarCorner: Integer;
