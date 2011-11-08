@@ -1,3 +1,11 @@
+(*
+Login
+====
+
+
+.. contents::
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               ? Login Routines                              --//
@@ -68,22 +76,50 @@ const                       //GetScreen
 
   LOGIN_TEXTCOLOUR = 12378347; //Colour of text
 
-{*******************************************************************************
-function LobbyScreen: Boolean;
-By: IceFire908 & Bionicle1800
-Description: Returns true if we are at the Lobby Screen
-*******************************************************************************}
+(*
+LobbyScreen
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LobbyScreen: Boolean;
+
+Returns true if we are at the Lobby Screen
+
+.. note::
+
+    by IceFire908 & Bionicle1800
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LobbyScreen: Boolean;
 begin
   Result := InRange(GetLobbyTab, L_PlayerInfo, L_Options);
 end;
 
-{*******************************************************************************
-function RSReady: Boolean;
-By: ZephyrsFury
-Description: Returns true if we are ready to auto (on loginscreen or logged in).
-  Useful for waiting until RS has fully loaded.
-*******************************************************************************}
+(*
+RSReady
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RSReady: Boolean;
+
+Returns true if we are ready to auto (on loginscreen or logged in).
+Useful for waiting until RS has fully loaded.
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function RSReady: Boolean;
 var
   t: Integer;
@@ -105,16 +141,28 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure Login_SetAudio(Volume, SFX, Area: Integer; SMSetting: (Stereo, Mono, NoChange) );
-By: ZephyrsFury, fixed by Markus
-Description: Sets audio options through the login screen.
-Use: Enter the desired Setting for the desired Option. Make option 0 for no change.
-  EG. Login_SetAudio(1, 5, 2, NoChange);
+(*
+Login_SetAudio
+~~~~~~~~~
 
-                        1   2   3   4   5
-  Volume, SFX, Area:  <-o---o---o---o---o->
-*******************************************************************************}
+.. code-block:: pascal
+
+    procedure Login_SetAudio(Volume, SFX, Area: Integer; SMSetting: TSMSetting);
+
+Sets audio options through the login screen.
+Use: Enter the desired Setting for the desired Option. Make option 0 for no change.
+
+.. note::
+
+    by ZephyrsFury, fixed by Markus
+
+Example:
+
+.. code-block:: pascal
+
+  Login_SetAudio(1, 5, 2, NoChange);
+
+*)
 procedure Login_SetAudio(Volume, SFX, Area: Integer; SMSetting: TSMSetting);
 var
   II, Tx, Ty, T, AudioMask,x,y: Integer;
@@ -165,11 +213,27 @@ begin
   FreeBitmap(AudioMask);
 end;
 
-{*******************************************************************************
-procedure Login_SetGraphics(Brightness: Integer);
-By: ZephyrsFury Fixed by TRiLeZ, Markus
-Description: Sets graphic options in the login screen.
-*******************************************************************************}
+(*
+Login_SetGraphics
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure Login_SetGraphics(Brightness: Integer);
+
+Sets graphic options in the login screen.
+
+.. note::
+
+    by ZephyrsFury, fixed by Markus
+
+Example:
+
+.. code-block:: pascal
+
+  Login_SetGraphics(4);
+
+*)
 procedure Login_SetGraphics(Brightness: Integer);
 var
   T, x, y, tx, ty, graphicsslice, i: Integer;
@@ -237,11 +301,25 @@ begin
   FreeBitmap(graphicsslice);
 end;
 
-{*******************************************************************************
-procedure SetAudioOff;
-By: ZephyrsFury
-Description: Sets the Audio to off (1 for each bar). Works logged in and out.
-*******************************************************************************}
+(*
+SetAudioOff
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetAudioOff;
+
+Sets the Audio to off (1 for each bar). Works logged in and out.
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure SetAudioOff;
 begin
   if (LoggedIn) then
@@ -250,11 +328,25 @@ begin
     Login_SetAudio(1, 1, 1, NoChange);
 end;
 
-{*******************************************************************************
-procedure SetAutoingDefaults;
-By: ZephyrsFury
-Description: Sets the graphic options for best SRL compatibility. Works both logged in and out.
-*******************************************************************************}
+(*
+SetAutoingDefaults
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetAutoingDefaults;
+
+Sets the graphic options for best SRL compatibility. Works both logged in and out.
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure SetAutoingDefaults;
 begin
   if (LoggedIn) then
@@ -263,11 +355,25 @@ begin
     Login_SetGraphics(4);
 end;
 
-{*******************************************************************************
-function ExitToLobby: Boolean;
-By: Starblaster100, Raymond, IceFire908, & Tarajunky
-Description: Exits to the Lobby (for breaks?)
-*******************************************************************************}
+(*
+ExitToLobby
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExitToLobby: Boolean;
+
+Exits to the Lobby (for breaks?)
+
+.. note::
+
+    by Starblaster100, Raymond, IceFire908, & Tarajunky
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function ExitToLobby: Boolean;
 var
   x, y, c, i: Integer;
@@ -312,11 +418,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function LeaveLobby: Boolean;
-By: IceFire908
-Description: Logs you out from lobby screen.
-*******************************************************************************}
+(*
+LeaveLobby
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LeaveLobby: Boolean;
+
+Logs you out from lobby screen.
+
+.. note::
+
+    by IceFire908
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LeaveLobby: Boolean;
 var
   T: LongInt;
@@ -330,11 +450,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function Logout: Boolean;
-By: Starblaster100, Raymond, IceFire908, & Tarajunky Fixed by NCDS
-Description: Logs you all the way out from ingame.
-*******************************************************************************}
+(*
+Logout
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function Logout: Boolean;
+
+Logs you all the way out from ingame.
+
+.. note::
+
+    by Starblaster100, Raymond, IceFire908, Tarajunky & NCDS
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function Logout: Boolean;
 var
   x, y, c, i: Integer;
@@ -368,11 +502,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function LoginPlayerToLob: Boolean;
-By: The SRL Team
-Description: Like LoginPlayer but only to the lobbyscreen.
-*******************************************************************************}
+(*
+LoginPLayerToLob
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LoginPlayerToLob: Boolean;
+
+Like LoginPlayer but only to the lobbyscreen.
+
+.. note::
+
+    by SRL Dev Team
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LoginPlayerToLob: Boolean;
 var
   Members, RetryLogin: Boolean;
@@ -603,11 +751,25 @@ begin
 
 end;
 
-{*******************************************************************************
-procedure LoginPlayer;
-By: The SRL Team
-Description: Logs in the Player[CurrentPlayer]. Detects most Client Login Errors
-*******************************************************************************}
+(*
+LoginPLayer
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LoginPlayer: Boolean;
+
+Logs in the Player[CurrentPlayer]. Detects most Client Login Errors
+
+.. note::
+
+    by SRL Dev Team
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LoginPlayer: Boolean;
 var
   RetryLogin, B, BB: Boolean;
@@ -772,11 +934,25 @@ begin
 
 end;
 
-{*******************************************************************************
-function NextPlayerIndex: Integer;
-By: Dankness, Ron, Raymond & ZephyrsFury
-Description: Returns the player number of the next active player.
-*******************************************************************************}
+(*
+NextPlayerIndex
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function NextPlayerIndex: Integer;
+
+Returns the player number of the next active player.
+
+.. note::
+
+    by Dankness, Ron, Raymond & ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function NextPlayerIndex: Integer;
 begin
   if (AllPlayersInactive) then
@@ -789,11 +965,25 @@ begin
     Result := (Result + 1) mod Length(Players);
 end;
 
-{*******************************************************************************
-function RandomPlayerIndex: Integer;
-By: Dankness, Ron, Raymond & ZephyrsFury
-Description: Returns the Player number of a random active player.
-*******************************************************************************}
+(*
+RandomPlayerIndex
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RandomPlayerIndex: Integer;
+
+Returns the player number of a random active player.
+
+.. note::
+
+    by Dankness, Ron, Raymond & ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function RandomPlayerIndex: Integer;
 var
   N: Integer;
@@ -812,12 +1002,27 @@ begin
   Result := N;
 end;
 
-{*******************************************************************************
-function SwitchToPlayer(PlayerNo: Integer; Active: Boolean): Boolean;
-By: Dankness, Ron, Raymond & ZephyrsFury
-Description: Switches to a specific player, setting the current player's
-  activity to True or False.
-*******************************************************************************}
+(*
+SwitchToPlayer
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SwitchToPlayer(PlayerNo: Integer; Active: Boolean): Boolean;
+
+Switches to a specific player, setting the current player's activity to True or False.
+
+.. note::
+
+    by Dankness, Ron, Raymond & ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+    SwitchToPlayer(1, True);
+
+*)
 function SwitchToPlayer(PlayerNo: Integer; Active: Boolean): Boolean;
 begin
   WriteLn('SwitchToPlayer(PlayerNo: ' + IntToStr(PlayerNo) + ', Active: ' + BoolToStr(Active)+ ');');
@@ -833,12 +1038,28 @@ begin
   Result := LoggedIn;
 end;
 
-{*******************************************************************************
-procedure NextPlayer(Active: Boolean);
-By: ZephyrsFury
-Description: Logs in the next player that isn't inactive.
+(*
+NextPlayer
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure NextPlayer(Active: Boolean);
+
+Logs in the next player that isn't inactive.
 Boolean: True - Current player is ok. False - Current player is false.
-*******************************************************************************}
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+    NextPlayer(True);
+
+*)
 procedure NextPlayer(Active: Boolean);
 var
   srl_PlayerIndexFunc: function: Integer;
@@ -863,12 +1084,28 @@ begin
   SwitchToPlayer(cP, Active);
 end;
 
-{*******************************************************************************
-procedure RandomNextPlayer(Active: Boolean);
-By: ZephyrsFury
-Description: Logs in a random player that isn't inactive.
+(*
+RandomNextPlayer
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure RandomNextPlayer(Active: Boolean);
+
+Logs in a random player that isn't inactive.
 Boolean: True - Current player is ok. False - Current player is false.
-*******************************************************************************}
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+    RandomNextPlayer(True);
+
+*)
 procedure RandomNextPlayer(Active: Boolean);
 var
   tmpBool: Boolean;
@@ -879,11 +1116,25 @@ begin
   RandomPlayer := tmpBool;
 end;
 
-{*******************************************************************************
-procedure CheckUserNicks;
-By: Sumilion, Raymond, and Nava2
-Description: Checks if all nicks are set correct.
-*******************************************************************************}
+(*
+CheckUserNicks
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure CheckUserNicks;
+
+Checks if all nicks are set correct.
+
+.. note::
+
+    by Sumilion, Raymond, and Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure CheckUserNicks;
 var
   I, II: Integer;
