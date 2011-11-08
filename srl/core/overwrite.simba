@@ -12,11 +12,25 @@
 // * function FindTransparentBitmapTolerance(Bitmap: Integer; var x, y: Integer; Col, x1, y1, x2, y2, Tol: Integer): Boolean; // by Nava2, ZephyrsFury, & Quickmarch.
 // * function FindColors(var TPA: TPointArray; Color, x1, y1, x2, y2: Integer): Boolean; // by Nava2, ZephyrsFury, & Quickmarch.
 
-{*******************************************************************************
-function Function rs_GetCompassAngleDegrees: Extended;
-By: Wizzup
-Description: Returns the compass angle in degrees.
-*******************************************************************************}
+(*
+rs_GetCompassAngleDegrees
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_GetCompassAngleDegrees: Extended;
+
+Returns the compass angle in degrees.
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function rs_GetCompassAngleDegrees: Extended;
 var
    Compass: TPointArray;
@@ -32,21 +46,49 @@ begin
     Result := Result + 360;
 end;
 
-{*******************************************************************************
-function rs_GetCompassAngleRadians: Extended;
-By: Wizzup
-Description: Returns the compass angle in radians.
-*******************************************************************************}
+(*
+rs_GetCompassAngleRadians
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_GetCompassAngleRadians: Extended;
+
+Returns the compass angle in radians.
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function rs_GetCompassAngleRadians: Extended;
 begin
   Result := Radians(rs_GetCompassAngleDegrees);
 end;
 
-{*******************************************************************************
-procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
-By: SKy Scripter and Nielsie95
-Description: Moves mouse into a random position in the box. Clicks if told to.
-*******************************************************************************}
+(*
+MouseBox
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
+
+Moves mouse into a random position in the box. Clicks if told to.
+
+.. note::
+
+    by SKy Scripter and Nielsie95
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
 begin
   case ClickType of
@@ -58,11 +100,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function rs_OnMinimap(x, y: Integer): Boolean;
-By: Raymond
-Description: Checks wether the specified point is on the minimap.
-*******************************************************************************}
+(*
+rs_OnMinimap
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_OnMinimap(x, y: Integer): Boolean;
+
+Checks wether the specified point is on the minimap.
+
+.. note::
+
+    by Raymond
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function rs_OnMinimap(x, y: Integer): Boolean;
 begin
   Result := InCircle(x, y, MMCX, MMCY, 73);

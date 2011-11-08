@@ -1,3 +1,15 @@
+(*
+
+Player Management
+=================
+
+.. note::
+
+    TODO:
+
+        - Document variables
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--                » PlayerArray Routines                       --//
@@ -100,23 +112,51 @@ var
    PlayerCurTime, PlayerStartTime: LongInt;
 
 
-{*******************************************************************************
-function LoggedIn: Boolean;
-By: Fakawi & NCDS
-Description: Returns True if Logged In.
-*******************************************************************************}
+(*
+LoggedIn
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function LoggedIn: Boolean;
+
+Returns True if Logged in.
+
+.. note::
+
+    by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LoggedIn: Boolean;
 begin
   //White text on Report Abuse Button
   Result := (GetColor(472, 490) = 16777215);
 end;
 
-{*******************************************************************************
-procedure NumberOfPlayers(Number: Integer);
-By: BenLand100 / Wizzup?
-Description: Makes the Players array have Number indexes, also sets strings and
+(*
+NumberOfPlayers
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure NumberOfPlayers(Number: Integer);
+
+Makes the Players array have Number indexes, also sets strings and
 other player array's too standard 100.
-*******************************************************************************}
+
+.. note::
+
+    by BenLand100 / Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure NumberOfPlayers(Number: Integer);
 var
    I: Integer;
@@ -133,11 +173,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function PlayersActive: Integer;
-By: ss23
-Description: Numbers of players active in the Players array.
-*******************************************************************************}
+(*
+PlayersActive
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function PlayersActive: Integer;
+
+Numbers of players active in the Players array.
+
+.. note::
+
+    by ss23
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function PlayersActive: Integer;
 var
   i, h: Integer;
@@ -149,20 +203,49 @@ begin
       Inc(Result);
 end;
 
-{*******************************************************************************
-function AllPlayersInactive: Boolean;
-By: ZephyrsFury
-Description: Returns true if all players are inactive in the Players array.
-*******************************************************************************}
+(*
+AllPlayersInactive
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure NumberOfPlayers(Number: Integer);
+
+Returns true if all players are inactive in the Players array.
+
+.. note::
+
+    by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function AllPlayersInactive: Boolean;
 begin
   Result := (PlayersActive = 0);
 end;
 
-{*******************************************************************************
-function PlayerWorked(player : integer) : integer;
-Description: Returns the time a player has worked..
-*******************************************************************************}
+(*
+PlayerWorked
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function PlayerWorked(player : integer) : integer;
+
+Returns the time a player has worked..
+
+.. note::
+
+    by SRL Community
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function PlayerWorked(player : integer) : integer;
 begin
   result := Players[player].Worked;

@@ -1,3 +1,14 @@
+(*
+
+Object Finding
+==============
+
+.. note::
+    Remove?:
+
+        -   Several FindObj*() functions?
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » ObjectFinding Routines                      --//
@@ -13,11 +24,26 @@
 // * function FindObjTPAMulti(var X, Y: integer; Color: TIntegerArray; Tol, CTS, ObjWidth, ObjHeight, minCount :Integer; UpText: TStringArray): Boolean; // By: Torrent of Flame based on FindObjTPA
 // * Function FindObjThroughMM(var x, y: Integer; Kind: String; Colors, Tol: TIntegerArray; UpText: TStringArray; Width, Height: Integer): boolean; // By N1ke!
 
-{*******************************************************************************
-function FindAllObjsRecord(var Objects: TPointArray; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean;
-By: Sumilion
-Description: Finds an Object using a TAutoColorInfo record, returns the center of the found objects.
-*******************************************************************************}
+(*
+FindAllObjsRecord
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindAllObjsRecord(var Objects: TPointArray; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean;
+
+Finds an Object using a TAutoColorInfo record, returns the center of the found
+objects.
+
+.. note::
+
+    by Sumilion
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindAllObjsRecord(var Objects: TPointArray; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean;
 var
   arP, arAP: TPointArray;
@@ -99,11 +125,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindObjRecordEx(var fx, fy: Integer; AutoInfo: TAutoColorInfo; QuickSorting, RGBXYZCheck: Boolean): Boolean;
-By: Sumilion
-Description: Finds an Object using a TAutoColorInfo record with extra options.
-*******************************************************************************}
+(*
+FindAllObjsRecordEx
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjRecordEx(var fx, fy: Integer; AutoInfo: TAutoColorInfo; QuickSorting, RGBXYZCheck: Boolean): Boolean;
+
+Finds an Object using a TAutoColorInfo record with extra options.
+
+.. note::
+
+    by Sumilion
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjRecordEx(var fx, fy: Integer; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean;
 var
   arP: TPointArray;
@@ -148,30 +188,61 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindObjRecord(var fx, fy: Integer; AutoInfo: TAutoColorInfo): Boolean;
-By: Sumilion
-Description: Finds an Object using a TAutoColorInfo record.
-*******************************************************************************}
+(*
+FindObjRecord
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjRecord(var fx, fy: Integer; AutoInfo: TAutoColorInfo): Boolean;
+
+Finds an Object using a TAutoColorInfo record.
+
+.. note::
+
+    by Sumilion
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjRecord(var fx, fy: Integer; AutoInfo: TAutoColorInfo): Boolean;
 begin
   Result := FindObjRecordEx(fx, fy, AutoInfo, MSX1, MSY1, MSX2, MSY2, False, True);
 end;
 
-{*******************************************************************************
-function FindObjEx(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray;
+(*
+FindObjEx
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjEx(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray;
     Tol, Step, xs, ys, xe, ye: Integer): Boolean;
-By: Starblaster100
-Description: Searches for an object using an array of colors and texts within the area
-             you specify.  Will start searching from the middle and returns true if found.
+
+Searches for an object using an array of colors and texts within the area
+you specify. Will start searching from the middle and returns true if found.
 Parameters:
-    cx, cy:           Coordinate Position of object if result is true
-    Text:             Array of string you want to search for
-    Color:            Array of colors you want to search for
-    Tol:              Tolerance of the colors you will allow
-    Step:             How big you want to make the search squares.  50 = Default. 30-70 Recommended
-    xs, ys, xe, ye:   Bounds you want to search in
-*******************************************************************************}
+
+    - cx, cy:           Coordinate Position of object if result is true
+    - Text:             Array of string you want to search for
+    - Color:            Array of colors you want to search for
+    - Tol:              Tolerance of the colors you will allow
+    - Step:             How big you want to make the search squares.
+                        50 = Default. 30-70 Recommended
+    - xs, ys, xe, ye:   Bounds you want to search in
+
+.. note::
+
+    by Starblaster100
+
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjEx(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray;
     Tol, Step, xs, ys, xe, ye: Integer): Boolean;
 var
@@ -232,35 +303,82 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindObj(var cx, cy: Integer; Text: string; Color, Tol: Integer): Boolean;
-By: Starblaster100
-Description: Finds Object
-*******************************************************************************}
+(*
+FindObj
+~~~~~~~
+
+.. code-block:: pascal
+
+
+    function FindObj(var cx, cy: Integer; Text: string; Color, Tol: Integer): Boolean;
+
+Finds Object
+
+.. note::
+
+    by Starblaster100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObj(var cx, cy: Integer; Text: string; Color: Integer; Tol: Integer): Boolean;
 begin
   Result := FindObjEx(cx, cy, [Text], [Color], Tol, 50, MSX1, MSY1, MSX2, MSY2);
 end;
 
-{*******************************************************************************
-function FindObjCustom(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray; Tol: Integer): Boolean;
-By: Starblaster100
-Description: Finds Object with custom amount of colors and custom amount of Uptext
-Example: FindObjCustom(x, y, ['att', 'ack'], [123456, 345678], 5);
-*******************************************************************************}
+(*
+FindObjCustom
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjCustom(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray; Tol: Integer): Boolean;
+
+Finds Object with custom amount of colors and custom amount of Uptext
+
+.. note::
+
+    by Starblaster100
+
+Example:
+
+.. code-block:: pascal
+
+    FindObjCustom(x, y, ['att', 'ack'], [123456, 345678], 5);
+
+*)
 function FindObjCustom(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray; Tol: Integer): Boolean;
 begin
   Result := FindObjEx(cx, cy, Text, Color, Tol, 50, MSX1, MSY1, MSX2, MSY2);
 end;
 
-{*******************************************************************************
-function FindObjectDeformed(var ObjX, ObjY: Integer; UpText1, UpText2: String; BMP, a, b, c, d: Integer): Boolean;
-By: WT-Fakawi
-Description: Finds Object in Box a,b,c,d, specified by BitMap and Uptext1 or Uptext2
+(*
+FindObjectDeformed
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjectDeformed(var ObjX, ObjY: Integer; UpText1, UpText2: String; BMP, a, b, c, d: Integer): Boolean;
+
+Finds Object in Box a,b,c,d, specified by BitMap and Uptext1 or Uptext2
 Returns coords in ObjX and ObjY.
-Uses Deformed Bitmap. FindObjectDeformed will gradually lower Tol and reduce Accuracy.
-Functon can cause severe Lag when using bitmaps bigger then 16 pixels. Works but Lags.
-*******************************************************************************}
+Uses Deformed Bitmap. FindObjectDeformed will gradually lower Tol and reduce
+Accuracy.
+Functon can cause severe Lag when using bitmaps bigger than 16 pixels.
+
+Works but lags.
+
+.. note::
+
+    by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjectDeformed(var ObjX, ObjY: Integer; UpText1, UpText2: string;
   BMP, a, b, c, d: Integer): Boolean;
 var
@@ -292,11 +410,15 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindObjTPA(var x, y: integer; color, tol, cts, ObjWidth, ObjHeight, minCount :Integer; UpText: tstringarray): Boolean;
-By: Wizzup?
-Description: Finds object using WizzyPlugin functions.
-Starts with a Spiral from x and y.
+(*
+FindObjTPA
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjTPA(var x, y: integer; color, tol, cts, ObjWidth, ObjHeight, minCount :Integer; UpText: tstringarray): Boolean;
+
+Finds object using WizzyPlugin functions. Starts with a Spiral from x and y.
 Put in the color, Tolerance and ColorToleranceSpeed.
 If you don't know what colortolerancespeed to choose, put in -1.
 ObjWidth and ObjHeight are the parameters TPAToATPAEx uses, thus filtering
@@ -306,7 +428,15 @@ minCount is the amount of colors it should at least find in a Object box.
 UpText, is ofcourse the text the object should have. In the Multi variant the
 UpText is a string array.
 
-*******************************************************************************}
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjTPA(var X, Y: Integer; Color, Tol, CTS, ObjWidth, ObjHeight, minCount: Integer; UpText: TStringArray): Boolean;
 var
   I, tCTS: Integer;
@@ -345,12 +475,25 @@ begin
   ColorToleranceSpeed(tCTS);
 end;
 
-{*******************************************************************************
-function FindObjTPAMulti(var X, Y: integer; Color: TIntegerArray; Tol, CTS, ObjWidth, ObjHeight, minCount :Integer; UpText: TStringArray): Boolean;
-By: Torrent of Flame based on FindObjTPA
-Description: This is a modification of FindObjTPA, which uses a TIntegerArray for the Colors.
-Date: 29th August 2009
-*******************************************************************************}
+(*
+FindObjTPAMulti
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjTPAMulti(var X, Y: integer; Color: TIntegerArray; Tol, CTS, ObjWidth, ObjHeight, minCount :Integer; UpText: TStringArray): Boolean;
+
+This is a modification of FindObjTPA, which uses a TIntegerArray for the Colors.
+
+.. note::
+
+    by Torrent of Flame based on FindObjTPA
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjTPAMulti(var X, Y: Integer; Colour: TIntegerArray; Tol, CTS, ObjWidth, ObjHeight, minCount: Integer; UpText: TStringArray): Boolean;
 var
   i, tCTS: Integer;
@@ -395,22 +538,36 @@ begin
   ColorToleranceSpeed(tCTS);
 end;
 
-{*******************************************************************************
-function FindObjThroughMM(var x, y: Integer; Kind: string; Colors, Tol: TIntegerArray; UpText: TStringArray; Width, Height: Integer): boolean;
-By: N1ke!
-Description: Finds a object with the given parameters.
+(*
+FindObjThroughMM
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindObjThroughMM(var x, y: Integer; Kind: string; Colors, Tol: TIntegerArray; UpText: TStringArray; Width, Height: Integer): boolean;
+
+Finds a object with the given parameters.
 Uses minimap dots to get locations of objects.
 Will put the matching areas first in the TPA array,so it hovers those
 first.
 
-Note: It still searches the whole screen, but it puts items first in
+.. note:: It still searches the whole screen, but it puts items first in
       the array.
 
-Valid kinds are
-- npc/yellow
-- item/red
-- player/white
-*******************************************************************************}
+Valid kinds are:
+    - npc/yellow
+    - item/red
+    - player/white
+
+.. note::
+
+    by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindObjThroughMM(var x, y: Integer; Kind: string; Colors, Tol: TIntegerArray; UpText: TStringArray; Width, Height: Integer): boolean;
 var
   ATPA: T2DPointArray;

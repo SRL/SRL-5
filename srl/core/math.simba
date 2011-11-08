@@ -1,3 +1,10 @@
+(*
+Math
+====
+
+Supporting math functions.
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » Math Routines                               --//
@@ -21,11 +28,25 @@
 var
    SineArray, Cosearray: array[0..360] of Extended;
    
-{*******************************************************************************
-procedure LoadCoSineArrays;
-By: Mutant Squirrle
-Description: Loads arrays for use with Radial- and LinearWalk.
-*******************************************************************************}
+(*
+LoadCoSineArrays
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure LoadCoSineArrays;
+
+Load default sin/cos values.
+
+.. note::
+
+    by Mutant Squirrle
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure LoadCoSineArrays;
 var
   i: Integer;
@@ -37,11 +58,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function CreateTPAFromText(Txt : string; Chars : string) : TPointArray;
-By: MastaRaymond
-Description: Returns the TPointArray of the inputted Text. Needs Wizzyplugin
-*******************************************************************************}
+(*
+CreateTPAFromText
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CreateTPAFromText(Txt : string; Chars : string) : TPointArray;
+
+Returns the TPointArray of the inputted Text. Needs Wizzyplugin
+
+.. note::
+
+    by MastaRaymond
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function CreateTPAFromText(Txt : string; Chars : string) : TPointArray;
 var
   w,h : integer;
@@ -49,11 +84,25 @@ begin;
   result := TPAFromText(Txt,Chars,w,h);
 end;
 
-{*******************************************************************************
-function GetSplinePt(Points: TPointArray; Theta: Extended): TPoint;
-By: BenLand100
-Description: Returns the point on a spline, defined by control points Points, at Theta
-*******************************************************************************}
+(*
+GetSplitPt
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetSplinePt(Points: TPointArray; Theta: Extended): TPoint;
+
+Returns the point on a spline, defined by control points Points, at Theta
+
+.. note::
+
+    by BenLand100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function GetSplinePt(Points: TPointArray; Theta: Extended): TPoint;
 var
   i, n: Integer;
@@ -71,11 +120,26 @@ begin
   Result.y := Round(YTemp);
 end;
 
-{*******************************************************************************
-function MakeSplinePath(Points: TPointArray; ThetaInc: Extended): TPointArray;
-By: BenLand100
-Description: Returns a spline, defined by control points Points, incrementing theta by ThetaInc
-*******************************************************************************}
+(*
+MakeSplinePath
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function MakeSplinePath(Points: TPointArray; ThetaInc: Extended): TPointArray;
+
+Returns a spline, defined by control points Points, incrementing theta by
+ThetaInc
+
+.. note::
+
+    by BenLand100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function MakeSplinePath(Points: TPointArray; ThetaInc: Extended): TPointArray;
 var
   i: Integer;
@@ -101,11 +165,25 @@ begin
   until (done)
 end;
 
-{*******************************************************************************
-function MidPoints(Path: TPointArray; MaxDist: Integer): TPointArray;
-By: BenLand100
-Description: Adds midpoints to Path so no distance on it is greater than MaxDist
-*******************************************************************************}
+(*
+MidPoints
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function MidPoints(Path: TPointArray; MaxDist: Integer): TPointArray;
+
+Adds midpoints to Path so no distance on it is greater than MaxDist
+
+.. note::
+
+    by BenLand100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function MidPoints(Path: TPointArray; MaxDist: Integer): TPointArray;
 var
   i, c: Integer;
@@ -138,19 +216,33 @@ begin
   Result := Path;
 end;
 
-{*******************************************************************************
-function InAbstractBox(x1, y1, x2, y2, x3, y3, x4, y4: Integer; x, y: Integer): Boolean;
-By: BenLand100
-Description: Returns true if point x, y is in an abstract box defined by x1, y1, x2, y2, x3, y3, x4, y4
-An abstract box example:
+(*
+InAbstractBox
+~~~~~~~~~~~~~
 
-x1, y1     x2, y2
-   +--------+
-    \         /
-     \       /
-      +--+
-x4, y4    x3, y3
-*******************************************************************************}
+.. code-block:: pascal
+
+    function InAbstractBox(x1, y1, x2, y2, x3, y3, x4, y4: Integer; x, y: Integer): Boolean;
+
+Returns true if point x, y is in an abstract box defined by
+*x1, y1, x2, y2, x3, y3, x4, y4*.
+
+| x1, y1     x2, y2
+|    +--------+
+|     \       /
+|      \     /
+|       +--+
+| x4, y4    x3, y3
+
+.. note::
+
+    by BenLand100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function InAbstractBox(x1, y1, x2, y2, x3, y3, x4, y4: Integer; x, y: Integer):
   Boolean;
 var
@@ -188,31 +280,73 @@ begin
   if U and D and L and R then Result := True;
 end;
 
-{*******************************************************************************
-function Sine(degrees: Integer): Extended;
-By: ???
-Description:
-*******************************************************************************}
+(*
+Sine
+~~~~
+
+.. code-block:: pascal
+
+    function Sine(degrees: Integer): Extended;
+
+Return the sin of *degrees*.
+
+.. note::
+
+    by Mutant Squirrle
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function Sine(Degrees: Integer): Extended;
 begin
   Result := sinearray[Trunc(FixD(Degrees))];
 end;
 
-{*******************************************************************************
-function Cose(degrees: Integer): Extended;
-By: ???
-Description:
-*******************************************************************************}
+(*
+Cose
+~~~~
+
+.. code-block:: pascal
+
+    function Cose(degrees: Integer): Extended;
+
+Return the cos of *degrees*.
+
+.. note::
+
+    by Mutant Squirrle
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function Cose(Degrees: Integer): Extended;
 begin
   Result := cosearray[Trunc(FixD(Degrees))];
 end;
 
-{*******************************************************************************
-function MMToMS(MM: TPoint): TPoint;
-By: N1ke!
-Description: Turns a Minimap point into a close MS point.
-*******************************************************************************}
+(*
+MMToMS
+~~~~~~
+
+.. code-block:: pascal
+
+    function MMToMS(MM: TPoint): TPoint;
+
+Turns a Minimap point into a close MS point.
+
+.. note::
+
+    by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function MMToMS(MM: TPoint): TPoint;
 var
   X, Y: Integer;
@@ -228,12 +362,26 @@ begin
     Result := Point(-1, -1);
 end;
 
-{*******************************************************************************
+(*
+DeleteValueInStrArray
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInStrArray(var Arr: TStringArray; ValuePosition: Integer);
+
+Deletes value with ValuePosition in "Arr" string array.
+
+.. note::
+
+    by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInStrArray(var Arr: TStringArray; ValuePosition: Integer);
-By: EvilChicken!
-Description: Deletes value with ValuePosition in "Arr" string array.
-*******************************************************************************}
-procedure DeleteValueInStrArray(var Arr: TStringArray; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
 begin
@@ -243,12 +391,26 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
+(*
+DeleteValueInIntArray
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInIntArray(var Arr: TIntegerArray; ValuePosition: Integer);
+
+Deletes value with ValuePosition in "Arr" Integer array.
+
+.. note::
+
+    by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInIntArray(var Arr: TIntegerArray; ValuePosition: Integer);
-By: EvilChicken!
-Description: Deletes value with ValuePosition in "Arr" Integer array.
-*******************************************************************************}
-procedure DeleteValueInIntArray(var Arr: TIntegerArray; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
 begin
@@ -258,11 +420,26 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
-procedure DeleteValueInFloatArray(var Arr: TExtendedArray; ValuePosition: Integer);
-By: EvilChicken!
-Description: Deletes value with ValuePosition in "Arr" Float array.
-*******************************************************************************}
+(*
+DeleteValueInFloatArray
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInFloatArray(var Arr: TExtendedArray; ValuePosition: Integer);
+
+
+Deletes value with ValuePosition in "Arr" Float array.
+
+.. note::
+
+    by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInFloatArray(var Arr: TExtendedArray; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
@@ -273,11 +450,25 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
-procedure DeleteValueInBoolArray(var Arr: TBooleanArray; ValuePosition: Integer);
-By: EvilChicken!
-Description: Deletes value with ValuePosition in "Arr" Boolean array.
-*******************************************************************************}
+(*
+DeleteValueInBoolArray
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInBoolArray(var Arr: TBooleanArray; ValuePosition: Integer);
+
+Deletes value with ValuePosition in "Arr" Boolean array.
+
+.. note::
+
+    by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInBoolArray(var Arr: array of boolean; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
@@ -288,11 +479,25 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
-procedure DeleteValueInTPA(var Arr: TPointArray; ValuePosition: Integer);
-By: EvilChicken! & Coh3n
-Description: Deletes value with ValuePosition in "Arr" TPointArray.
-*******************************************************************************}
+(*
+DeleteValueInTPA
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInTPA(var Arr: TPointArray; ValuePosition: Integer);
+
+Deletes value with ValuePosition in "Arr" TPointArray.
+
+.. note::
+
+    by EvilChicken! & Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInTPA(var Arr: TPointArray; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
@@ -303,11 +508,25 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
-procedure DeleteValueInATPA(var Arr: T2DPointArray; ValuePosition: Integer);
-By: EvilChicken! & Coh3n
-Description: Deletes value with ValuePosition in "Arr" T2DPointArray.
-*******************************************************************************}
+(*
+DeleteValueInATPA
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DeleteValueInATPA(var Arr: T2DPointArray; ValuePosition: Integer);
+
+Deletes value with ValuePosition in "Arr" T2DPointArray.
+
+.. note::
+
+    by EvilChicken! & Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure DeleteValueInATPA(var Arr: T2DPointArray; ValuePosition: Integer);
 var
   ArrLen, I: Integer;
@@ -318,21 +537,37 @@ begin
   SetArrayLength(Arr, ArrLen);
 end;
 
-{*******************************************************************************
-function BoxClosestPoint(p : TPoint; b : TBox) : TPoint;
-By: Raym0nd
-Description: There are 'nine' places where the point can be (relative to a box)..
+(*
+BoxClosestPoint
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function BoxClosestPoint(p : TPoint; b : TBox) : TPoint;
+
+There are 'nine' places where the point can be (relative to a box)..
 The middle, 5, is the box itself.
 The rest looks like this:
-1 | 2 | 3
-----------
-4 | 5 | 6
----------
-7 | 8 | 9
 
-Place 9 means it's past the b.x2, and past the b.y2, therefore the smallest dist between the point
-and the box is the distance between the point and the box's x2,y2 coordinate.
-*******************************************************************************}
+|    1 | 2 | 3
+|    ---------
+|    4 | 5 | 6
+|    ---------
+|    7 | 8 | 9
+
+Place 9 means it's past the b.x2, and past the b.y2,
+therefore the smallest dist between the point and the box is the
+distance between the point and the box's x2,y2 coordinate.
+
+.. note::
+
+    by Raym0nd
+
+Example:
+
+.. code-block:: pascal
+
+*)
 
 function BoxClosestPoint(p : TPoint; b : TBox) : TPoint;
 var
@@ -365,14 +600,31 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function RandomPointBoxEx(p : TPoint; b : TBox; extraDist : integer) : TPoint;
-By: Raym0nd
-Description: Returns a point in the box which is 'aimed' near the TPoint given..
-Basically it only allows points that lay within the extradist from the closest point to be returned.
-Practical example: Invetory Box.. When your mouse is on the right of an inv item, you don't want to
-click on the left of the box.
-*******************************************************************************}
+(*
+RandomPointBoxEx
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RandomPointBoxEx(p : TPoint; b : TBox; extraDist : integer) : TPoint;
+
+Returns a point in the box which is 'aimed' near the TPoint given..
+Basically it only allows points that lay within the extradist from
+the closest point to be returned.
+Practical example:
+
+    Inventory Box.. When your mouse is on the right of an inv item,
+    you don't want to click on the left of the box.
+
+.. note::
+
+    by Raym0nd
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function RandomPointBoxEx(p : TPoint; b : TBox; extraDist : integer) : TPoint;
 var
   TPA : TPointArray;
@@ -393,22 +645,50 @@ begin
   else
     result := TPA[random(length(tpa))];
 end;
-{*******************************************************************************
-function MiddleBox(b : TBox) : TPoint;
-By: Raym0nd
-Description: Returns the middle of the box.
-*******************************************************************************}
+
+(*
+MiddleBox
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function MiddleBox(b : TBox) : TPoint;
+
+Returns the middle of the box.
+
+.. note::
+
+    by Raym0nd
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function MiddleBox(b : TBox) : TPoint;
 begin
   result := point((b.x2+b.x1) div 2,(b.y2+b.y1) div 2);
 end;
 
-{*******************************************************************************
-function MSI_GroupDigits(n: integer; token: String): String;
-By: PriSoner and Nava2
-Description: Formats an integer into groups of 3 seperated by `token' and
-             returns a formatted string (i.e 1234567 would become 1,234,567)
-*******************************************************************************}
+(*
+GroupDigits
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GroupDigits(n: integer; token: String): String;
+
+Adds midpoints to Path so no distance on it is greater than MaxDist
+
+.. note::
+
+    by PriSoner and Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function GroupDigits(n: integer; token: String): String;
 var
   b: integer;

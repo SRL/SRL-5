@@ -1,9 +1,9 @@
 (*
 Login
-====
+=====
 
-
-.. contents::
+The Login include contains all the functions to succesfully log you in and out
+of the game and/or the lobby.
 
 *)
 //-----------------------------------------------------------------//
@@ -78,7 +78,7 @@ const                       //GetScreen
 
 (*
 LobbyScreen
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -102,7 +102,7 @@ end;
 
 (*
 RSReady
-~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
@@ -143,7 +143,7 @@ end;
 
 (*
 Login_SetAudio
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -215,7 +215,7 @@ end;
 
 (*
 Login_SetGraphics
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -303,7 +303,7 @@ end;
 
 (*
 SetAudioOff
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -330,7 +330,7 @@ end;
 
 (*
 SetAutoingDefaults
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -357,7 +357,7 @@ end;
 
 (*
 ExitToLobby
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -420,7 +420,7 @@ end;
 
 (*
 LeaveLobby
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -452,7 +452,7 @@ end;
 
 (*
 Logout
-~~~~~~~~~
+~~~~~~
 
 .. code-block:: pascal
 
@@ -504,7 +504,7 @@ end;
 
 (*
 LoginPLayerToLob
-~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -753,7 +753,7 @@ end;
 
 (*
 LoginPLayer
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -936,7 +936,7 @@ end;
 
 (*
 NextPlayerIndex
-~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -967,7 +967,7 @@ end;
 
 (*
 RandomPlayerIndex
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1004,7 +1004,7 @@ end;
 
 (*
 SwitchToPlayer
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1040,7 +1040,7 @@ end;
 
 (*
 NextPlayer
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1086,7 +1086,7 @@ end;
 
 (*
 RandomNextPlayer
-~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1118,7 +1118,7 @@ end;
 
 (*
 CheckUserNicks
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

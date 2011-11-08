@@ -1,3 +1,11 @@
+(*
+
+SRL Debug-log management
+========================
+
+Saves SRLLog
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » SRL Log related functions                   --//
@@ -10,12 +18,23 @@
 var
   SRLSavePath : string;
 
-{*******************************************************************************
-function InitializeSRLLogFile : boolean;
-By: Markus
-Description: Sets the SRLSavePath variable by looping through a few folders.
-Also intializes TheFile
-*******************************************************************************}
+(*
+InitializeSRLLogFile
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InitializeSRLLogFile : boolean;
+
+.. note::
+
+    by Markus
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function InitializeSRLLogFile : boolean;
 {$IFDEF YourMom}
 var
@@ -80,6 +99,23 @@ procedure AddToSRLLog(s : string);
 By: Markus
 Description: Adds a line to the SRL Log file.
 *******************************************************************************}
+(*
+AddToSRLLog
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure AddToSRLLog(s : string);
+
+.. note::
+
+    by Markus
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure AddToSRLLog(s : string);
 {$IFDEF YourMom}
 var
@@ -105,6 +141,23 @@ procedure FreeSRLLog;
 By: Raymond
 Description: Frees the opened SRL logfile.
 *******************************************************************************}
+(*
+FreeSRLLog
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure FreeSRLLog;
+
+.. note::
+
+    by Raymond
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure FreeSRLLog;
 {$IFDEF YourMom}
 begin

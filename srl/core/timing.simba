@@ -1,3 +1,10 @@
+(*
+Timing
+======
+
+The Timing include contains a lot of timing related functions.
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » Timing Routines                             --//
@@ -41,18 +48,33 @@ function GetCurrentTab: Integer; forward;
 function TabExists(Tab: Integer): Boolean; forward;
 function GameTab(Tab: Integer): Boolean; forward;
 
-{*******************************************************************************
-function MsToTime(MS, StrType: Integer): string;
-By: ZephyrsFury, Nava2, and Rasta Magician
-Description: Takes MS in milliseconds and outputs a string with hours, mins and
-  seconds. Different styles can be created with different StrType values:
-  Str Type
-    Time_Formal: 2 Hours, 47 Minutes and 28 Seconds
-    Time_Short: 02h, 47m, 28s
-    Time_Abbrev: 2 hr, 47 min, 28 sec
-    Time_Bare: 02:47:28
-    Time_FStop: 12.04.40
-*******************************************************************************}
+(*
+MsToTime
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function MsToTime(MS, StrType: Integer): string;
+
+Takes MS in milliseconds and outputs a string with hours, mins and
+seconds. Different styles can be created with different StrType values:
+Str Type:
+
+    -  Time_Formal: 2 Hours, 47 Minutes and 28 Seconds
+    -  Time_Short: 02h, 47m, 28s
+    -  Time_Abbrev: 2 hr, 47 min, 28 sec
+    -  Time_Bare: 02:47:28
+    -  Time_FStop: 12.04.40
+
+.. note::
+
+  by Zephyrsfury, Nava2 and Rasta Magician.
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function MsToTime(MS, TheType: Integer): string;
 var
   STA: array [0..4] of TVariantArray;
@@ -76,42 +98,99 @@ begin
       Result := Result + PadZ(IntToStr(Time[i]), STA[TheType][4]) + STA[TheType][i];
 end;
 
-{*******************************************************************************
-function TimeRunning: String;
-By: Rasta Magician
-Description: Returns Time since the script was started (GetTimeRunning).
-*******************************************************************************}
+(*
+TimeRunning
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function TimeRunning: String;
+
+Returns Time since the script was started (GetTimeRunning).
+
+.. note::
+
+  by Rasta Magician.
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function TimeRunning: string;
 begin
   Result := MsToTime(GetTimeRunning, Time_Formal);
 end;
 
-{*******************************************************************************
-procedure MarkTime(var TimeMarker: Integer);
-By: Stupid3ooo
-Description: Sets TimeMarker to current system time
-*******************************************************************************}
+(*
+MarkTime
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MarkTime(var TimeMarker: Integer);
+
+Sets TimeMarker to current system time
+
+.. note::
+
+  by Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure MarkTime(var TimeMarker: Integer);
 begin
   TimeMarker := GetSystemTime;
 end;
 
-{*******************************************************************************
-function TimeFromMark(TimeMarker: Integer): Integer;
-By: Stupid3ooo
-Description: returns Milliseconds since MarkTime was set
-*******************************************************************************}
+(*
+TimeFromMark
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function TimeFromMark(TimeMarker: Integer): Integer;
+
+Returns Milliseconds since MarkTime was set
+
+.. note::
+
+  by Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function TimeFromMark(TimeMarker: Integer): Integer;
 begin
   Result := GetSystemTime - TimeMarker;
 end;
 
 
-{*******************************************************************************
-function TheTime : string;
-By: RsN (fixed by Ron)
-Description: Returns current time as a string
-*******************************************************************************}
+(*
+TheTime
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function TheTime(FullTime : boolean) : string;
+
+Returns current time as a string
+FullTime = True will return in 24 hours rather than 12 hours
+
+.. note::
+
+  by RsN (fixed by Ron and Markus)
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function TheTime: string;
 var
   Hour, Mins, Sec, MSec: Word;
@@ -130,14 +209,29 @@ begin
   Result := (Padz(IntToStr(Hour), 2) + ':' + Padz(IntToStr(Mins), 2) + ':' + Padz(IntToStr(Sec), 2) + ' ' + PAM);
 end;
 
-{*******************************************************************************
-function TheDate(DateFormat : Integer) : String;
-By: Ron, Nava2 & Narcle
-Description: TheDate will return the current date. DateFormats can be...
-   Date_Formal = April 2nd, 2007  Month Day, Year
-   Date_Month  = 04/02/07         Month/Day/Year
-   Date_Day    = 02-04-07         Day-Month-Year
-*******************************************************************************}
+(*
+TheDate
+~~~~~~~
+
+.. code-block:: pascal
+
+    function TheDate(DateFormat : Integer) : String;
+
+TheDate will return the current date. DateFormats can be:
+
+    -   Date_Formal = April 2nd, 2007  Month Day, Year
+    -   Date_Month  = 04/02/07         Month/Day/Year
+    -   Date_Day    = 02-04-07         Day-Month-Year
+
+.. note::
+
+  by Ron, Nava2 & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function TheDate(DateFormat: Integer): string;
 var
   Year, Month, Day: Word;
@@ -164,19 +258,33 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitOptionMultiEx(S: TStringArray; TextType: string;
-  Action: fnct_ActionOptions; Time: Integer): Boolean;
-By: Infantry001
-Description: Waits for a TStringArray of options and selects one of them.
-             Searches for TextType you input.
-             'action', 'player': The white text
-             'item': The orange text
-             'npc': The yellow text
-             'object': The cyan text
-             'all': Searches for all colors of text.
-             Will default to 'all'.
-*******************************************************************************}
+(*
+WaitOptionMultiEx
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitOptionMultiEx(S: TStringArray; TextType: string;
+        Action: fnct_ActionOptions; Time: Integer): Boolean;
+
+Waits for a TStringArray of options and selects one of them.
+Searches for TextType you input.
+'action', 'player': The white text
+'item': The orange text
+'npc': The yellow text
+'object': The cyan text
+'all': Searches for all colors of text.
+Will default to 'all'.
+
+.. note::
+
+  by Infantry001
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitOptionMultiEx(S: TStringArray; TextType: string; Action: fnct_ActionOptions; Time: Integer): Boolean;
 var
   T: Integer;
@@ -194,41 +302,97 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitOptionMulti(S: TStringArray; Time: Integer): Boolean;
-By: Marpis, N1ke! & Rasta Magician
-Description: Waits for a TStringArray of options and selects one of them
-*******************************************************************************}
+(*
+WaitOptionMulti
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitOptionMulti(S: TStringArray; Time: Integer): Boolean;
+
+Waits for a TStringArray of options and selects one of them
+
+.. note::
+
+  by Marpis, N1ke! & Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitOptionMulti(S: TStringArray; Time: Integer): Boolean;
 begin
   Result := WaitOptionMultiEx(S, 'all', ClickLeft, Time);
 end;
 
-{*******************************************************************************
-function WaitOptionEx(S, TextType: String; Time: Integer): Boolean;
-By: Infantry001
-Description: Waits for an Option and selects it. Searches for TextType.
-*******************************************************************************}
+(*
+WaitOptionEx
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitOptionEx(S, TextType: String; Time: Integer): Boolean;
+
+Waits for an Option and selects it. Searches for TextType.
+
+.. note::
+
+  by Infantry001
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitOptionEx(S, TextType: string; Action: fnct_ActionOptions; Time: Integer): Boolean;
 begin
   Result := WaitOptionMultiEx([S], TextType, Action, Time);
 end;
 
-{*******************************************************************************
-function WaitOption(S: String; Time: Integer): Boolean;
-By: N1ke!
-Description: Waits for an Option and selects it
-*******************************************************************************}
+(*
+WaitOption
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitOption(S: String; Time: Integer): Boolean;
+
+Waits for an Option and selects it
+
+.. note::
+
+  by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitOption(S: string; Time: Integer): Boolean;
 begin
   Result := WaitOptionMultiEx([S], 'all', ClickLeft, Time);
 end;
 
-{*******************************************************************************
-function WaitUpTextMulti(S: TStringArray; Time: integer): Boolean;
-By: Marpis & N1ke!
-Description: Waits for a TStringArray of UpText, returns true if found
-*******************************************************************************}
+(*
+WaitUpTextMulti
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitUpTextMulti(S: TStringArray; Time: integer): Boolean;
+
+Waits for a TStringArray of UpText, returns true if found
+
+.. note::
+
+  by Marpis & N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitUpTextMulti(S: TStringArray; Time: Integer): Boolean;
 var
   T: Integer;
@@ -246,21 +410,49 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitUptext(S: String; Time: Integer): Boolean;
-By: Marpis edited by N1ke!
-Description: Waits for an UpText, returns true if found
-*******************************************************************************}
+(*
+WaitUptext
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitUptext(S: String; Time: Integer): Boolean;
+
+Waits for an UpText, returns true if found
+
+.. note::
+
+  by Marpis edited by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitUptext(S: string; Time: Integer): Boolean;
 begin
   Result := WaitUptextMulti([S], Time);
 end;
 
-{*******************************************************************************
-function WaitInvCount(Count, MaxTime: Integer; CountType: (MaxCT, MinCT, ExactCT)): boolean;
-By: Rasta Magician
-Description: Waits for a maximum inv count. Returns true if InvCount <= Count
-*******************************************************************************}
+(*
+WaitInvCount
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitInvCount(Count, MaxTime: Integer; CountType: (MaxCT, MinCT, ExactCT)): boolean;
+
+Waits for a maximum inv count. Returns true if InvCount <= Count
+
+.. note::
+
+  by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function BankScreen: Boolean; forward;
 function WaitInvCount(Count, MaxTime: Integer; CountType: (MaxCT, MinCT, ExactCT)): boolean;
 var
@@ -286,31 +478,73 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitInvMaxCount(Count, MaxTime: integer): boolean;
-By: Rasta Magician
-Description: Waits for a maximum inv count. Returns true if InvCount <= Count
-*******************************************************************************}
+(*
+WaitInvMaxCount
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitInvMaxCount(Count, MaxTime: integer): boolean;
+
+Waits for a maximum inv count. Returns true if InvCount <= Count
+
+.. note::
+
+  by Rasta Magician.
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitInvMaxCount(Count, MaxTime: integer): boolean;
 begin
   Result := WaitInvCount(Count, MaxTime, MaxCT);
 end;
 
-{*******************************************************************************
-function WaitInvMinCount(Count, MaxTime: integer): boolean;
-By: Rasta Magician
-Description: Waits for a minimum inv count. Returns true if InvCount >= Count
-*******************************************************************************}
+(*
+WaitInvMinCount
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitInvMinCount(Count, MaxTime: integer): boolean;
+
+Waits for a minimum inv count. Returns true if InvCount >= Count
+
+.. note::
+
+  by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitInvMinCount(Count, MaxTime: integer): boolean;
 begin
   Result := WaitInvCount(Count, MaxTime, MinCT);
 end;
 
-{*******************************************************************************
-function WaitColor(x, y, Color, Tol, MaxTime: integer): Boolean;
-By: Rasta Magician, fixed by TRiLeZ
-Description: Waits for a color at (x, y) with tolerance Tol, returns true if found
-*******************************************************************************}
+(*
+WaitColor
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitColor(x, y, Color, Tol, MaxTime: integer): Boolean;
+
+Waits for a color at (x, y) with tolerance Tol, returns true if found
+
+.. note::
+
+  by Rasta Magician, fixed by TRiLeZ
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitColor(X, Y, Color, Tol, MaxTime: Integer): Boolean;
 var
   Time: Integer;
@@ -329,11 +563,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitFindColor(var x, y: integer; Color, Tol, x1, y1, x2, y2, MaxTime: integer): Boolean;
-By: Rasta Magician, fixed by TRiLeZ
-Description: Waits for a color at (x, y) with tolerance Tol, returns true if found
-*******************************************************************************}
+(*
+WaitFindColor
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFindColor(var x, y: integer; Color, Tol, x1, y1, x2, y2, MaxTime: integer): Boolean;
+
+Waits for a color at (x, y) with tolerance Tol, returns true if found
+
+.. note::
+
+  by Rasta Magician, fixed by TRiLeZ
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitFindColor(var X, Y: Integer; Color, x1, y1, x2, y2, Tol, MaxTime: Integer): Boolean;
 var
   Time: Integer;
@@ -351,11 +599,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitFindColors(var x, y: integer; Color, Tol, x1, y1, x2, y2, MaxTime: integer): Boolean;
-By: IceFire908 based completely off WaitFindColor
-Description: Waits for a color at (x, y) with tolerance Tol, returns true if found
-*******************************************************************************}
+(*
+WaitFindColors
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFindColors(var x, y: integer; Color, Tol, x1, y1, x2, y2, MaxTime: integer): Boolean;
+
+Waits for a color at (x, y) with tolerance Tol, returns true if found
+
+.. note::
+
+  by IceFire908 based completely off WaitFindColor
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitFindColors(var TPA: TPointArray; Color, x1, y1, x2, y2, Tol, MaxTime: Integer): Boolean;
 var
   Time: Integer;
@@ -374,11 +636,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitColorCount(Color, x1, y1, x2, y2, Tol, MinCount, MaxCount, MaxTime: integer):boolean;
-By: Rasta Magician
-Description: Waits Color count in box (x1, y1, x2, y2) with Tol
-*******************************************************************************}
+(*
+WaitColorCount
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitColorCount(Color, x1, y1, x2, y2, Tol, MinCount, MaxCount, MaxTime: integer):boolean;
+
+Waits Color count in box (x1, y1, x2, y2) with Tol
+
+.. note::
+
+  by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitColorCount(Color, x1, y1, x2, y2, Tol, MinCount, MaxCount, MaxTime: integer):boolean;
 var
   Time: integer;
@@ -398,12 +674,26 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitColorGone(Color, x, y, Tol, MaxTime: integer): Boolean;
-By: TRiLeZ
-Description: Waits until a colour is gone at (x, y) with tolerance and a timeout.
+(*
+WaitColorGone
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitColorGone(Color, x, y, Tol, MaxTime: integer): Boolean;
+
+Waits until a colour is gone at (x, y) with tolerance and a timeout.
 Results true if the colour disappeared at (x, y) within the time cap.
-*******************************************************************************}
+
+.. note::
+
+  by TRiLeZ
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitColorGone(Color, x, y, Tol, MaxTime: integer): Boolean;
 var
   Time: Integer;
@@ -422,12 +712,26 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitColorGoneIn(Colour, x1, y1, x2, y2, Tol, MaxTime: integer): Boolean;
-By: TRiLeZ
-Description: Waits until a colour is gone in an area with tolerance and a timeout.
+(*
+WaitColorGoneIn
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitColorGoneIn(Colour, x1, y1, x2, y2, Tol, MaxTime: integer): Boolean;
+
+Waits until a colour is gone in an area with tolerance and a timeout.
 Results true if the colour disappeared in the area within the time cap.
-*******************************************************************************}
+
+.. note::
+
+  by TRiLeZ
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitColorGoneIn(Colour, x1, y1, x2, y2, Tol, MaxTime: integer): Boolean;
 var
   Time, CX, CY: Integer;
@@ -446,15 +750,29 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function WaitFunc(Func: Function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
-By: Rasta Magician, small edit by EvilChicken!
-Description: Waits for function Func to be true. WaitPerLoop is how often you
+(*
+WaitFunc
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFunc(Func: Function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
+
+Waits for function Func to be true. WaitPerLoop is how often you
 want to call "Func" function.
 Example: "WaitFunc(@BankScreen, 10 + Random(15), 750);" will check if BankScreen
 is open every 10-25th millisecond, for a maximum of 750 milliseconds.
 Notice the '@'.
-*******************************************************************************}
+
+.. note::
+
+  by Rasta Magician, small edit by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WaitFunc(Func: function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
 var
   T: Integer;
@@ -471,12 +789,10 @@ begin
   end;
 end;
 
-{*******************************************************************************
-procedure WaitNone;
-By: IceFire908
-Description: For use with while (this) do WaitNone
-*******************************************************************************}
-
+// Remove? It was originally created to do this:
+//   while Condition do WaitNone;
+// But with simba you can do
+//   while Condition do ;
 procedure WaitNone;
 begin
 end;

@@ -1,3 +1,10 @@
+(*
+Worldswitcher
+=============
+
+The Worldswitcher include contains all kinds of functions to control the built-in RS world switcher.
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » WorldSwitch routines                        --//
@@ -33,21 +40,49 @@ var
 function ExitToLobby: Boolean; forward;
 function LogInPlayer: Boolean; forward;
 
-{*******************************************************************************
-function WorldScreen: Boolean;
-by: IceFire908
-Description: Returns true if the World screen is open.
-*******************************************************************************}
+(*
+WorldScreen
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function Worldscreen: boolean;
+
+Returns true if the Worldswitcher screen is open
+
+.. note::
+
+  by Icefire908
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WorldScreen: Boolean;
 begin
   Result := (GetLobbyTab = L_WorldSelect);
 end;
 
-{*******************************************************************************
-function OpenWorldScreen: Boolean;
-by: Bionicle1800
-Description: Opens the world screen. Returns true if world screen is opened.
-*******************************************************************************}
+(*
+OpenWorldScreen
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function: OpenWorldScreen: Boolean;
+
+Opens the Worldswitcher screen. Returns true if it is succesfully opened.
+
+.. note::
+
+    by Bionicle1800
+
+Example:
+
+.. code-block::pascal
+
+*)
 function OpenWorldScreen: Boolean;
 begin
  Result := LobbyTab(2);
@@ -65,11 +100,25 @@ const
   SRL_WS_SCROLLCOLOR1 = 1250841;//Black color on the left side of scroll area
   SRL_WS_SCROLLCOLOR2 = 592137;//Black color under scroll bar
 
-{*******************************************************************************
-procedure UpdateWorlds;
-by: mixster
-Description: Parses the worlds page into Worlds.INI
-*******************************************************************************}
+(*
+UpdateWorlds
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure UpdateWorlds;
+
+Parses the worlds page into Worlds.ini
+
+.. note::
+
+    by mixster
+
+Example:
+
+.. code-block::pascal
+
+*)
 function UpdateWorlds: Boolean;
 var
   worldList: TWorldArray;
@@ -165,11 +214,25 @@ begin
   Writeln('Parsed Worlds Page into Worlds.INI. Took ' + IntToStr(GetTimeRunning - Time) + ' ms.');
 end;
 
-{*******************************************************************************
-procedure LoadWorldArrays;
-by: Narcle; Edits by Nava2
-Description: Loads the world array into WorldArray from Worlds.ini
-*******************************************************************************}
+(*
+LoadWorldArrays
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure LoadWorldArrays;
+
+Loads the world array into Worldarray from Worlds.ini
+
+..note::
+
+    by Narcle; Edits by Nava2;
+
+Example:
+
+.. code-block:: pascal
+
+*)
 procedure LoadWorldArrays;
 var
   i, H, Hw: integer;
@@ -202,12 +265,25 @@ begin
   SetArrayLength(WorldArray, Hw);
 end;
 
-{*******************************************************************************
-function WS_CurrentWorld(var World: Integer): Boolean;
-by: IceFire908
-Description: Results true if the current world is members,returns world number.
-World returns -1 if failed. Only works at world screen.
-*******************************************************************************}
+(*
+WS_CurrentWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WS_CurrentWorld(var World: Integer): Boolean;
+
+Results true if the current world is members,returns world number. World returns -1 if failed. Only works at world screen.
+
+..note::
+
+    by Icefire908
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function WS_CurrentWorld(var World: Integer): Boolean;
 var
   P: TPoint;
@@ -220,13 +296,25 @@ begin
   Result := FindColorTolerance(P.X, P.Y, 3141117, 596, 64, 701, 100, 20);
 end;
 
-{*******************************************************************************
-Procedure OrderWorlds(by: string; Descending: boolean);
-by: NaumanAkhlaQ
-Description: Orders worlds by 'by' in order 'Descending'
-             Check function for valid params of 'by'
-             Descending = true means the left button
-*******************************************************************************}
+(*
+OrderWorlds
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure OrderWorlds(by: string; Descending: boolean);
+
+Orders worlds by 'by' in order 'Descending', Check function for valid params of 'by', Descending = true means the left button
+
+..note::
+
+    by NaumanAkhlaQ
+
+Example:
+
+.. code-block:: pascal
+
+*)
 Function OrderWorlds(by: string; Descending: boolean): boolean;
 var
   ATPA: T2DPointArray;
@@ -251,11 +339,25 @@ begin
 end;
 
 
-{*******************************************************************************
-function FindWorld(W: integer): Boolean;
-by: Narcle
-Description: Scrolls to area and returns true if world was found
-*******************************************************************************}
+(*
+FindWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindWorld(W: integer): Boolean;
+
+Scrolls to area and returns true if world was found.
+
+..note::
+
+    by Narcle fixed by Shuttleu
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindWorld(W: integer): Boolean;
 Var
   WPos, SPos, CurPos, i, H, CurW, TextColor: integer;
@@ -345,12 +447,25 @@ begin
   Result := IsTextInAreaEx(84, 134, 134, 440, p.X, p.Y, IntToStr(W) + ' ', 0, StatChars, False, False, -1, 2, TextColor);
 end;
 
-{*******************************************************************************
-function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean;
-by: Narcle
-Description: Records World info into TWorld record, also Results true if world
-was found
-*******************************************************************************}
+(*
+GetWorldInfo
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean;
+
+Records World info into TWorld record, also Results true if world was found.
+
+..note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean;
 var
   xx, yy, x, y, Color: integer;
@@ -381,11 +496,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-Function SelectWorld(W: Integer): Boolean;
-by: Narcle & ZephyrsFury
-Description: Switches to the specified world. Returns true if successful.
-*******************************************************************************}
+(*
+SelectWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function SelectWorld(W: Integer): Boolean;
+
+Switches to the specified world. Returns true if successful.
+
+..note::
+
+    by Narcle & ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function SelectWorld(W: integer): boolean;
 var
   x, y, xx, yy, T, CurW: integer;
@@ -443,11 +572,25 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function RandomWorld(Members, PvP: Boolean): Integer;
-by: Narcle & mixster
-Description: Returns a random world by paramaters.
-*******************************************************************************}
+(*
+RandomWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RandomWorld(Members, PvP: Boolean): Integer;
+
+Returns a random world by paramaters.
+
+..note::
+
+    by Narcle & mixster
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function RandomWorld(Members, PvP: Boolean): Integer;
 var
   i, H, l: integer;
@@ -471,11 +614,25 @@ begin
  Result := wArray[random(l)].Number;
 end;
 
-{*******************************************************************************
-function ChangeWorld(W: Integer): Boolean;
-by: Nava2
-Description: Changes to world W. Returns True if successful.
-*******************************************************************************}
+(*
+ChangeWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ChangeWorld(W: Integer): Boolean;
+
+Changes to world W. Returns True if successful.
+
+..note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function ChangeWorld(W: Integer): Boolean;
 begin
   if LoggedIn then
@@ -484,13 +641,25 @@ begin
   LoginPlayer;
 end;
 
-{*******************************************************************************
-Function ChooseWorldBy(SettingsNames:TStringArray; SettingsDescending: array of boolean; Members, PVP: boolean): boolean;
-by: Rasta Magician
-Description: Chooses a world by SettingsNames , ordered by SettingsDescending
-             Takes into account Members and PVP
-             Check OrderWorlds for valid params for SettingsNames
-*******************************************************************************}
+(*
+ChooseWorldBy
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function ChooseWorldBy(SettingsNames:TStringArray; SettingsDescending: array of boolean; Members, PVP: boolean): boolean;
+
+Chooses a world by SettingsNames , ordered by SettingsDescending, Takes into account Members and PVP, Check OrderWorlds for valid params for SettingsNames
+
+..note::
+
+    by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function ChooseWorldBy(SettingsNames:TStringArray; SettingsDescending: array of boolean; Members, PVP: boolean): boolean;
 var
   TPA: TPointArray;

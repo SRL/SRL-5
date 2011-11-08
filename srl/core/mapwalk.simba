@@ -1,3 +1,10 @@
+(*
+Mapwalk
+=======
+
+The Mapwalk include contains all Mapwalking functions
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » MapWalking Routines                         --//
@@ -32,14 +39,29 @@ Description: Global record containing all roadcolors collected during runtime.
 var
   RoadColors: TIntegerArray;
 
-{*******************************************************************************
-function MakeCompass(Direction: Variant): Boolean;
-By: Nielsie95 & Nava2
-Description: Aligns RS to specified direction
-direction: Enter a compass angle ('n', 's', 'e', 'w') or degree (23.3, 25, 205.2)
-           and it will move the compass to that angle. Also accepts 'random',
-           and 'rand' to make the compass a random direction.
-*******************************************************************************}
+(*
+MakeCompass
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function MakeCompass(Direction: Variant): Boolean;
+
+Aligns RS to specified direction
+   - Enter a compass angle ('n', 's', 'e', 'w') or degree (23.3, 25, 205.2)
+      and it will move the compass to that angle. Also accepts 'random',
+      and 'rand' to make the compass a random direction.
+
+.. note::
+
+    by Nielsie95 & Nava2
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function MakeCompass(Direction: Variant): Boolean;
 var
   StartAngle, Angle, DirectionDeg, i: Extended;
@@ -96,11 +118,26 @@ begin
   Result := ((MinE(Abs(Angle - DirectionDeg), MinE(Abs(Angle - (DirectionDeg + 360)), Abs((Angle + 360) - DirectionDeg)))) <= (7.0 + i));
 end;
 
-{*******************************************************************************
-procedure SetAngle(Highest : Boolean);
-By: Raymond, edit by NaumanAkhlaQ
-Description: Sets the mainscreen at highest\lowest angle (Depends on the boolean)
-*******************************************************************************}
+(*
+SetAngle
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetAngle(Highest : Boolean);
+
+Sets the mainscreen at highest\lowest angle (Depends on the boolean)
+
+.. note::
+
+    by Raymond, edit by NaumanAkhlaQ
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure SetAngle(Highest : Boolean);
 begin
   if (not LoggedIn) then exit;
@@ -110,12 +147,26 @@ begin
   Wait(500 + Random(100));
 end;
 
-{*******************************************************************************
-procedure ClickNorth(AngleHigh : boolean);
-By: R1ch
-Description: Clicks the compass to make it perfect North. Will set angle at
-             highest depending on AngleHigh
-*******************************************************************************}
+(*
+ClickNorth
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure ClickNorth(AngleHigh : boolean);
+
+Clicks the compass to make it perfect North. Will set angle at highest depending on AngleHigh
+
+.. note::
+
+    by R1ch
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure ClickNorth(AngleHigh: boolean);
 begin
   if rs_GetCompassAngleDegrees <> 0 then
@@ -130,12 +181,27 @@ end;
 
 {$DEFINE WALL_ANGLELEFT}
 
-{*******************************************************************************
-Function GetWallAngle(Ps: TPointArray): Extended;
-by: Wizzup?
-Description: Get's the Minimap angle using Walls. Returns Angle in Radians.
+(*
+GetWallAngle
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetWallAngle(Ps: TPointArray): Extended;
+
+Get's the Minimap angle using Walls. Returns Angle in Radians.
 Used in Maze.scar, but feel free to use for Perfect map aligning projects.
-*******************************************************************************}
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetWallAngle(Ps: TPointArray): Extended;
 var
    L, I, C: Integer;
@@ -200,18 +266,36 @@ begin
   {$IFDEF WALL_ANGLELEFT} {$ELSE} Result := Result + 0.5 * Pi {$ENDIF}
 end;
 
-{*******************************************************************************
-procedure RunAway(dir: string; RunFar: Boolean; Action, WaitTime: Integer);
-By: nielsie95 modified by ZephyrsFury
-Description: Runs away in minimap related direction, based on north.
-Dir can be 'N', 'E', 'S', 'W' or an angle in degrees (145, 93, 180, etc).
-RunFar will run further than normal.
-Action can be either 1, 2 or 3.
- 1: RunAway + Wait(WaitTime) + RunBack
- 2: RunAway + Wait(WaitTime)
- 3: RunBack
-Note: WaitTime is in milliseconds!
-*******************************************************************************}
+(*
+RunAway
+~~~~~~~
+
+.. code-block:: pascal
+
+    procedure RunAway(dir: string; RunFar: Boolean; Action, WaitTime: Integer);
+
+- Runs away in minimap related direction, based on north.
+- Dir can be 'N', 'E', 'S', 'W' or an angle in degrees (145, 93, 180, etc).
+- RunFar will run further than normal.
+- Action can be either 1, 2 or 3:
+
+    1. RunAway + Wait(WaitTime) + RunBack
+    2. RunAway + Wait(WaitTime)
+    3. RunBack
+
+.. note::
+    WaitTime is in milliseconds!
+
+.. note::
+
+    by nielsie95 modified by ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure RunAway(dir: string; RunFar: Boolean; Action, WaitTime: Integer);
 var
   Rad, Deg, T: Integer;
@@ -257,11 +341,26 @@ begin
   SetRun(False);
 end;
 
-{*******************************************************************************
-procedure StoreToRoadColorArray;
-By: Wizzup? / WT-Fakawi, rewritten by EvilChicken!
-Description: Stores RoadColor to an array. Debugging and logging purposes.
-*******************************************************************************}
+(*
+StoreToRoadColorArray
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure StoreToRoadColorArray;
+
+Stores RoadColor to an array. Debugging and logging purposes.
+
+.. note::
+
+    by Wizzup? / WT-Fakawi, rewritten by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure StoreToRoadColorArray;
 var
   Hi: Integer;
@@ -272,12 +371,27 @@ begin
   RoadColors[Hi + 1] := RoadColor;
 end;
 
-{*******************************************************************************
-function GetOldRoadColors: Boolean;
-By: Wizzup? / WT-Fakawi, edited by EvilChicken!
-Description: Checks if RoadColor matches with any color stored in RoadColors
-array. If successful, it sets the roadcolor.
-*******************************************************************************}
+(*
+GetOldRoadColors
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetOldRoadColors: Boolean;
+
+Checks if RoadColor matches with any color stored in RoadColors array.
+If successful, it sets the roadcolor.
+
+.. note::
+
+    by Wizzup? / WT-Fakawi, edited by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetOldRoadColors: Boolean;
 var
   I, X, Y, Hi: Integer;
@@ -299,12 +413,26 @@ begin
     end;
 end;
 
-{*******************************************************************************
-function GetNewRoadColor(xs, ys, xe, ye, tol: Integer): Boolean;
-By: Wizzup?/WT-Fakawi, edited by Ron & EvilChicken!
-Description: Searches for new RoadColor in box xs, ys, xe, ye by comparing
-  all the colors found within box against current RoadColor.
-*******************************************************************************}
+(*
+GetNewRoadColor
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetNewRoadColor(xs, ys, xe, ye, tol: Integer): Boolean;
+
+Searches for new RoadColor in box xs, ys, xe, ye by comparing all the colors found within box against current RoadColor.
+
+.. note::
+
+    by Wizzup?/WT-Fakawi, edited by Ron & EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetNewRoadColor(xs, ys, xe, ye, Tol: Integer): Boolean;
 var
   X, Y, W, H, Bmp: Integer;
@@ -356,12 +484,27 @@ begin
   FreeBitmap(Bmp);
 end;
 
-{*******************************************************************************
-function RoadColorChecker: Boolean;
-By: Wizzup?/WT-Fakawi, edited by Ron & EvilChicken!
-Description: Checks for presence of RoadColor. If none is found, it will try
+(*
+RoadColorChecker
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RoadColorChecker: Boolean;
+
+Checks for presence of RoadColor. If none is found, it will try
 various methods to find it. If successful, it sets RoadColor to the new color.
-*******************************************************************************}
+
+.. note::
+
+    by Wizzup?/WT-Fakawi, edited by Ron & EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RoadColorChecker: Boolean;
 var
   I, X, Y: Integer;
@@ -392,15 +535,32 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function LinearWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, Direction, Radius: Integer): Boolean;
-By: Nielsie95
-Description: Finds TheColor from Radial (scanning outwards) for Radius Distance.
+(*
+LinearWalkEx
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LinearWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, Direction, Radius: Integer): Boolean;
+
+Finds TheColor from Radial (scanning outwards) for Radius Distance.
 Valid Arguments:
-tpa: Result points.
-Direction: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-*******************************************************************************}
+
+    - tpa.  Result points.
+    - Direction. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius.  Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
+
+
+.. note::
+
+    by Nielsie95
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function LinearWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, Direction, Radius: Integer): Boolean;
 var
   i, SD, ED: Integer;
@@ -429,15 +589,32 @@ begin
     IntToStr(Length(TPA)) + 'points.', warn_Debug);
 end;
 
-{*******************************************************************************
-function RadialWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, StartRadial, EndRadial, Radius: Integer): Boolean;
-By: Nielsie95
-Description: Finds TheColor from StartRadial to EndRadial for Radius Distance.
+(*
+RadialWalkEx
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RadialWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, StartRadial, EndRadial, Radius: Integer): Boolean;
+
+Finds TheColor from StartRadial to EndRadial for Radius Distance.
 Valid Arguments:
-tpa: Result points.
-StartRadial/EndRadial: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-*******************************************************************************}
+
+    - tpa. Result points.
+    - StartRadial/EndRadial. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far
+      away the mouse clicks. Use numbers 20-72
+
+.. note::
+
+    by Nielsie95
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RadialWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol, StartRadial, EndRadial, Radius: Integer): Boolean;
 var
   i, SD, ED: Integer;
@@ -468,16 +645,33 @@ begin
     ' ms, found' + IntToStr(Length(TPA)) + ' points', warn_Debug);
 end;
 
-{*******************************************************************************
-function RadialWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
-By: Nielsie95
-Description: Walks TheColor from StartRadial to EndRadial for Radius Distance
+(*
+RadialWalk
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RadialWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
+
+Walks TheColor from StartRadial to EndRadial for Radius Distance
 Valid Arguments:
-TheColor: Any Color, but Road- or WaterColor will do fine :)
-StartRadial/EndRadial: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-XMod, YMod: deviation from MouseFindFlag. -2 to 2.
-*******************************************************************************}
+
+    - TheColor. Any Color, but Road- or WaterColor will do fine :)
+    - StartRadial/EndRadial. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
+    - XMod, YMod: deviation from MouseFindFlag. -2 to 2.
+
+
+.. note::
+
+    by Nielsie95 from an original idea by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RadialWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
 var
   TPA: TPointArray;
@@ -494,16 +688,33 @@ begin
       end;
 end;
 
-{*******************************************************************************
-function LinearWalk(TheColor, Direction, Radius, Xmod, Ymod: Integer): Boolean;
-By: Nielsie95
-Description: Walks TheColor from Direction MIDDLE OUT!by performing windscreenlike scanning movements for Radius Distance
+(*
+LinearWalk
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LinearWalk(TheColor, Direction, Radius, Xmod, Ymod: Integer): Boolean;
+
+Walks TheColor from Direction MIDDLE OUT!by performing windscreenlike scanning movements for Radius Distance
 Valid Arguments:
-TheColor: Any Color, but Road- or WaterColor will do fine :)
-Direction: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-XMod, YMod: deviation from MouseFindFlag. -2 to 2.
-*******************************************************************************}
+
+    - TheColor. Any Color, but Road- or WaterColor will do fine :)
+    - Direction. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far away
+      the mouse clicks. Use numbers 20-72.
+    - *XMod*, *YMod*: deviation from MouseFindFlag. -2 to 2.
+
+.. note::
+
+    by Nielsie95 from another original idea by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function LinearWalk(TheColor, Direction, Radius, Xmod, Ymod: Integer): Boolean;
 var
   TPA: TPointArray;
@@ -521,11 +732,26 @@ begin
       end;
 end;
 
-{*******************************************************************************
-function LinearWalkTolerance(TheColor, Direction, Radius, Xmod, Ymod, Tol : Integer): Boolean;
-By: Nielsie95
-Description: Same as LinearWalk, but with a tolerance.
-*******************************************************************************}
+(*
+LinearWalkTolerance
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LinearWalkTolerance(TheColor, Direction, Radius, Xmod, Ymod, Tol : Integer): Boolean;
+
+Same as LinearWalk, but with a tolerance.
+
+.. note::
+
+    by Nielsie95
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function LinearWalkTolerance(TheColor, Direction, Radius, Xmod, Ymod, Tol : Integer): Boolean;
 var
   TPA: TPointArray;
@@ -546,16 +772,33 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function RadialRoadWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
-By: Nielsie95
-Description: Walks TheColor from StartRadial to EndRadial for Radius Distance
+(*
+RadialRoadWalk
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RadialRoadWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
+
+Walks TheColor from StartRadial to EndRadial for Radius Distance
 Valid Arguments:
-TheColor: RoadColor. RoadColor will be dynamically updated.
-StartRadial/EndRadial: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-XMod, YMod: deviation from MouseFindFlag. -2 to 2.
-*******************************************************************************}
+
+    - TheColor. RoadColor. RoadColor will be dynamically updated.
+    - StartRadial/EndRadial. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
+      XMod, YMod: deviation from MouseFindFlag. -2 to 2.
+
+
+.. note::
+
+    by  WT-Fakawi?
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RadialRoadWalk(TheColor, StartRadial, EndRadial, Radius, Xmod, Ymod: Integer): Boolean;
 var
   tpa: TPointArray;
@@ -579,11 +822,26 @@ begin
     RoadColorChecker;
 end;
 
-{*******************************************************************************
-function RadialWalkTolerance(Color, sRadial, eRadial, r, modX, modY, Tol: Integer): Boolean;
-By: Coh3n
-Description: Same as RadialWalk, but with a tolerance.
-*******************************************************************************}
+(*
+RadialWalkTolerance
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RadialWalkTolerance(Color, sRadial, eRadial, r, modX, modY, Tol: Integer): Boolean;
+
+Same as RadialWalk, but with a tolerance.
+
+.. note::
+
+    by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RadialWalkTolerance(Color, sRadial, eRadial, r, modX, modY, Tol: Integer): Boolean;
 var
   TPA: TPointArray;
@@ -604,11 +862,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function RadialWalkAutoColor(...): Boolean;
-By: Coh3n
-Description: Uses the TAutoColorInfo record to radial walk.
-*******************************************************************************}
+(*
+RadialWalkAutoColor
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function RadialWalkAutoColor(autoColorConst, sRad, eRad, r, modX, modY: Integer): Boolean;
+
+Uses the TAutoColorInfo record to radial walk.
+
+
+.. note::
+
+    by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function RadialWalkAutoColor(autoColorConst, sRad, eRad, r, modX, modY: Integer): Boolean;
 var
   acInfo: TAutoColorInfo;
@@ -631,16 +905,33 @@ begin
   ColorToleranceSpeed(curCTS);
 end;
 
-{*******************************************************************************
-function LinearRoadWalk(TheColor: Integer; Direction: Integer; Radius: Integer; Xmod, Ymod: Integer): Boolean;
-By: Nielsie95
-Description: Walks TheColor from Direction MIDDLE OUT!by performing windscreenlike scanning movements for Radius Distance
+(*
+LinearRoadWalk
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LinearRoadWalk(TheColor: Integer; Direction: Integer; Radius: Integer; Xmod, Ymod: Integer): Boolean;
+
+Walks TheColor from Direction MIDDLE OUT!by performing windscreenlike scanning movements for Radius Distance
 Valid Arguments:
-TheColor: Any Color, but Road- or WaterColor will do fine :)
-Direction: Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-XMod, YMod: deviation from MouseFindFlag. -2 to 2.
-*******************************************************************************}
+
+    - TheColor. Any Color, but Road- or WaterColor will do fine :)
+    - Direction. Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far away
+      the mouse clicks. Use numbers 20-72
+    - XMod, YMod: deviation from MouseFindFlag. -2 to 2.
+
+.. note::
+
+    by Nielsie95
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function LinearRoadWalk(TheColor: Integer; Direction: Integer; Radius: Integer; Xmod, Ymod: Integer): Boolean;
 var
   tpa: TPointArray;
@@ -664,16 +955,32 @@ begin
     RoadColorChecker;
 end;
 
-{*******************************************************************************
-function WaterWalk(StartRadial, EndRadial, Radius, FFlagBreakOut, Xoff, Yoff, Xmod, Ymod: Integer): Boolean;
-By: Nielsie95
-Description: Walks alongside Water.
-StartRadial/EndRadial := Any number between 0-720. 0=N,90=E,180=S,270=W.
-Radius: Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
-FFlagBreakOut: Distance to flag where it will break out. 15 - 10 is good.
-Xoff, Yoff: Added to found point.
-XMod, YMod: deviation from MouseFindFlag. -2 to 2.
-*******************************************************************************}
+(*
+WaterWalk
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaterWalk(StartRadial, EndRadial, Radius, FFlagBreakOut, Xoff, Yoff, Xmod, Ymod: Integer): Boolean;
+
+Walks alongside Water.
+    - StartRadial/EndRadial = Any number between 0-720. 0=N,90=E,180=S,270=W.
+    - Radius. Distance from the centre of minimap, i.e. how far away the mouse clicks. Use numbers 20-72
+    - FFlagBreakOut. Distance to flag where it will break out. 15 - 10 is good.
+    - Xoff, Yoff. Added to found point.
+    - XMod, YMod. deviation from MouseFindFlag. -2 to 2.
+
+
+.. note::
+
+    by Nielsie95 from a third original idea by WT-Fakawi
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function WaterWalk(StartRadial, EndRadial, Radius, FFlagBreakOut, Xoff, Yoff, Xmod, Ymod: Integer): Boolean;
 var
   tpa: TPointArray;
@@ -690,16 +997,34 @@ begin
       end;
 end;
 
-{*******************************************************************************
-function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
-By: footballjds, NaumanAkhlaQ, Nava2 & Cazax
-Description: Results the dots specified by WhatDot in x1, y1, x2, y2.
-Usage : 'npc', 'yellow' : Yellow Dot;
-        'cape', 'blue' : Blue Dot;
-        'item', 'red' : Red Dot;
-        'player', 'white' : White Dot;
-        'friend', 'green' : Green Dot;
-*******************************************************************************}
+(*
+GetMiniMapDotsIn
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
+
+Results the dots specified by WhatDot in x1, y1, x2, y2.
+Usage:
+
+    - 'npc', 'yellow' = Yellow Dot;
+    - 'cape', 'blue' = Blue Dot;
+    - 'item', 'red' = Red Dot;
+    - 'player', 'white' = White Dot;
+    - 'friend', 'green' = Green Dot;
+
+
+.. note::
+
+    by
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetMiniMapDotsIn(WhatDot: string; x1, y1, x2, y2: Integer): TPointArray;
 var
   Color: Integer;
@@ -725,34 +1050,79 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function GetMiniMapDots(WhatDot: String): TPointArray;
-By: Nava2
-Description: Results the dots specified by WhatDot on the Minimap. See GetMiniMapDots
-             in for more information.
-*******************************************************************************}
+(*
+GetMiniMapDots
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMiniMapDots(WhatDot: String): TPointArray;
+
+Results the dots specified by WhatDot on the Minimap. See GetMiniMapDots in for more information.
+
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetMiniMapDots(WhatDot: String): TPointArray;
 begin
   Result := GetMinimapDotsIn(WhatDot, MMX1, MMY1, MMX2, MMY2);
 end;
 
-{*******************************************************************************
-function CountDots(WhatDot: String): integer;
-By: Nava2
-Description: Counts the occurance of WhatDot on the MiniMap. See GetMiniMapDots
-             in for more information.
-*******************************************************************************}
+(*
+CountDots
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CountDots(WhatDot: String): integer;
+
+Counts the occurance of WhatDot on the MiniMap. See GetMiniMapDots in for more information.
+
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function CountDots(WhatDot: String): integer;
 begin
   Result := Length(GetMinimapDots(WhatDot));
 end;
 
-{*******************************************************************************
-procedure MouseMM(x, y, randX, randY: Integer);
-By: mixster
-Description: Clicks (x, y) on the MM, taking Map Angle into Account.
-             Be sure to choose the coords when Map Angle = 0 !
-*******************************************************************************}
+(*
+MouseMM
+~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseMM(x, y, randX, randY: Integer);
+
+
+Clicks (x, y) on the MM, taking Map Angle into Account. Be sure to choose the coords when Map Angle = 0 !
+
+.. note::
+
+    by mixster
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure MouseMM(x, y, randX, randY: Integer);
 var
   p: TPoint;

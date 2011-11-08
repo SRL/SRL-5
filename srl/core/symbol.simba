@@ -1,3 +1,10 @@
+(*
+Symbol
+======
+
+The Symbol include contains minimap symbol related functions.
+
+*)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
 //--               » Symbol Routines                             --//
@@ -45,11 +52,26 @@ Valid Arguments are:
 
 *******************************************************************************}
 
-{*******************************************************************************
-function LoadSymbolBitmapColor(Name: String): Integer;
-By: Stupid3ooo, WT-Fakawi, Bebemycat2, Ron, and StarBlaster100
-Description: Loads Bitmap and Color of a Specific Symbol.
-*******************************************************************************}
+(*
+LoadSymbolBitmapColor
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+
+    function LoadSymbolBitmapColor(Name: String): Integer;
+
+Loads Bitmap and Color of a Specific Symbol.
+
+.. note::
+
+  by Stupid3ooo, WT-Fakawi, Bebemycat2, Ron, and StarBlaster100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function LoadSymbolBitmapColor(Name: string): Integer;
 begin
   case LowerCase(Name) of
@@ -625,12 +647,26 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function GetSymbolColorIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Integer;
-By: Starblaster100 based off of the ideas of Stupid3000
-Description: Returns the Color of the Chosen Symbol, Searching in a selected area
-             of the Minimap
-*******************************************************************************}
+(*
+GetSymbolColorIn
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetSymbolColorIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Integer;
+
+Returns the Color of the Chosen Symbol, Searching in a selected area
+of the Minimap
+
+.. note::
+
+  by Starblaster100 based off of the ideas of Stupid3000
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function GetSymbolColorIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Integer;
 var
   TheColor, c, Speed, x, y: Integer;
@@ -663,42 +699,98 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function GetSymbolColor(var rx, ry: Integer; Name: string): Integer;
-By: Stupid3ooo and Modified by Starblaster100
-Description: Returns the Color of the Chosen Symbol, searching the whole Minimap
-*******************************************************************************}
+(*
+GetSymbolColor
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetSymbolColor(var rx, ry: Integer; Name: string): Integer;
+
+Returns the Color of the Chosen Symbol, searching the whole Minimap
+
+.. note::
+
+  by Stupid3ooo and Modified by Starblaster100
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function GetSymbolColor(var rx, ry: Integer; Name: string): Integer;
 begin
   Result := GetSymbolColorIn(rx, ry, LowerCase(Name), MMX1, MMY1, MMX2, MMY2);
 end;
 
-{*******************************************************************************
-function FindSymbol(var rx, ry: Integer; Name: String): Boolean;
-By: Stupid3ooo
-Description: Finds a minimap Symbol and returns a Boolean if True.
-Searches the whole Minimap
-*******************************************************************************}
+(*
+FindSymbol
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSymbol(var rx, ry: Integer; Name: String): Boolean;
+
+Finds a minimap Symbol and returns a Boolean if True.
+
+.. note::
+
+  by Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbol(var rx, ry: Integer; Name: string): Boolean;
 begin
   Result := (GetSymbolColor(rx, ry, LowerCase(Name)) > 0);
 end;
 
-{*******************************************************************************
-function FindSymbolIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Boolean;
-By: Starblaster100, based on the ideas of Stupid3ooo
-Description: Finds a minimap Smbol and returns a Boolean if True.
+(*
+FindSymbolIn
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSymbolIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Boolean;
+
+Finds a minimap Symbol and returns a Boolean if True.
 Searches a selected area of the Minimap
-*******************************************************************************}
+
+.. note::
+
+  by Starblaster100, based on the ideas of Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbolIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Boolean;
 begin
   Result := (GetSymbolColorIn(rx, ry, LowerCase(Name), xs, ys, xe, ye) > 0);
 end;
 
-{*******************************************************************************
-function IsPointInTPA(Point:TPoint; TPA:TPointArray): Boolean;
-By: IceFire908
-*******************************************************************************}
+(*
+IsPointInTPA
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsPointInTPA(Point:TPoint; TPA:TPointArray): Boolean;
+
+Returns true if a point is in a TPA.
+
+.. note::
+
+  by IceFire908
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function IsPointInTPA(Point: TPoint; TPA: TPointArray): Boolean;
 var
   I: LongInt;
@@ -712,12 +804,26 @@ begin
       end;
 end;
 
-{*******************************************************************************
-function FindSymbolsIn(var AnsTPA: TPointArray; SymbolName: string; x1, y1, x2, y2: integer): Boolean;
-By: lordsaturn Fixed by Bad Boy JH
-Description: Finds a symbol in multiple places within the search coords. Results
+(*
+FindSymbolsIn
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSymbolsIn(var AnsTPA: TPointArray; SymbolName: string; x1, y1, x2, y2: integer): Boolean;
+
+Finds a symbol in multiple places within the search coords. Results
 true if at least 1 symbol is found.
-*******************************************************************************}
+
+.. note::
+
+  by lordsaturn Fixed by Bad Boy JH
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbolsIn(var AnsTPA: TPointArray; SymbolName: string; x1, y1, x2, y2: integer): Boolean;
 var
   CTS, Col, Hi, i, x, y, fx, fy, L: integer;
@@ -758,23 +864,51 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindSymbols(var AnsTPA: TPointArray; SymbolName: string): Boolean;
-By: lordsaturn
-Description: Finds a symbol in multiple places searching the whole minimap.
+(*
+FindSymbols
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSymbols(var AnsTPA: TPointArray; SymbolName: string): Boolean;
+
+Finds a symbol in multiple places searching the whole minimap.
 Results true if at least 1 symbol is found.
-*******************************************************************************}
+
+.. note::
+
+  by lordsaturn
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbols(var AnsTPA: TPointArray; SymbolName: string): Boolean;
 begin
   Result := FindSymbolsIn(AnsTPA, SymbolName, MMX1, MMY1, MMX2, MMY2);
 end;
 
-{*******************************************************************************
-function FindSymbolsMultiIn(var aTPA: TPointArray; Symbols: TStringArray; x1, y1, x2, y2: integer): Boolean;
-By: Nava2 & NCDS
-Description: Finds multiple symbols the specified area. Results true if at least
+(*
+FindSymbolsMultiIn
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSymbolsMultiIn(var aTPA: TPointArray; Symbols: TStringArray; x1, y1, x2, y2: integer): Boolean;
+
+Finds multiple symbols the specified area. Results true if at least
 1 symbol is found.
-*******************************************************************************}
+
+.. note::
+
+  by Nava2 & NCDS
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbolsMultiIn(var aTPA: TPointArray; Symbols: TStringArray; x1, y1, x2, y2: integer): Boolean;
 var
   gTPA: TPointArray;
@@ -789,12 +923,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function FindSymbolsMulti(var aTPA: TPointArray; Symbols: TStringArray): Boolean
-By: NCDS
-Description: Finds multiple symbols in multiple places. Results true if at least
+(*
+FindSymbolsMulti
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+
+    function FindSymbolsMulti(var aTPA: TPointArray; Symbols: TStringArray): Boolean
+
+Finds multiple symbols in multiple places. Results true if at least
 1 symbol is found.
-*******************************************************************************}
+
+.. note::
+
+  by NCDS
+
+Example:
+
+.. code-block:: pascal
+
+*)
 function FindSymbolsMulti(var aTPA: TPointArray; Symbols: TStringArray): Boolean;
 begin
   Result := FindSymbolsMultiIn(aTPA, Symbols, MMx1, MMy1, MMx2, MMy2);
