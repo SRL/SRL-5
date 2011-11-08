@@ -1,7 +1,8 @@
 (*
 Inventory
-====
+=========
 
+The Inventory include contains all inventory-related functions.
 
 .. contents::
 
@@ -51,7 +52,7 @@ type
 
 (*
 GetInven
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -110,7 +111,7 @@ end;
 
 (*
 GetInventoryArray
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -143,7 +144,7 @@ end;
 
 (*
 InvBox
-~~~~~~~~~
+~~~~~~
 
 .. code-block:: pascal
 
@@ -187,7 +188,7 @@ end;
 
 (*
 ItemCoords
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -218,7 +219,7 @@ end;
 
 (*
 CoordsToItem
-~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -261,7 +262,7 @@ end;
 
 (*
 GetInvItemBounds
-~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -299,7 +300,7 @@ end;
 
 (*
 ExistsItem
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -332,7 +333,7 @@ end;
 
 (*
 ExistsItemDTM
-~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -361,7 +362,7 @@ end;
 
 (*
 InvMouse
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -414,7 +415,7 @@ end;
 
 (*
 MMouseItem
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -469,7 +470,7 @@ end;
 
 (*
 DragItem
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -500,7 +501,7 @@ end;
 
 (*
 InvCount
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -532,7 +533,7 @@ end;
 
 (*
 InvEmpty
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -562,7 +563,7 @@ end;
 
 (*
 InvFull
-~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
@@ -589,7 +590,7 @@ end;
 
 (*
 CountItems
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -622,7 +623,7 @@ end;
 
 (*
 ClickAllItemsExcept
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -683,7 +684,7 @@ end;
 
 (*
 ClickAllItems
-~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -709,7 +710,7 @@ end;
 
 (*
 DropItem
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -782,7 +783,7 @@ const
 
 (*
 DropPattern
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -859,7 +860,7 @@ end;
 
 (*
 DropAll
-~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
@@ -891,7 +892,7 @@ end;
 
 (*
 DropAllExcept
-~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -926,7 +927,7 @@ end;
 
 (*
 DropItemsByIdentifier
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -952,7 +953,7 @@ end;
 
 (*
 ArrangeInv
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -997,7 +998,7 @@ end;
 
 (*
 CountItemsBlackLine
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1035,7 +1036,7 @@ end;
 
 (*
 ClickAllItemsBlackLine
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1083,7 +1084,7 @@ end;
 
 (*
 ItemsActivated
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1119,7 +1120,7 @@ end;
 
 (*
 ActivatedItem
-~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

@@ -2,6 +2,7 @@
 Bank
 ====
 
+The Bank include contains Bank finders, and all banking routines.
 
 .. contents::
 

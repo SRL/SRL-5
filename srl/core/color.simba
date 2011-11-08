@@ -9,7 +9,6 @@ The Color include contains all Colorfinding routines.
 .. note::
 
     Remove?:
-    
         -   FindDeformed
         -   DTMRotated
         -   GetColorsBox?

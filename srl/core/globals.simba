@@ -1,6 +1,6 @@
 (*
 Globals
-====
+=======
 
 
 .. contents::
@@ -251,7 +251,7 @@ var
 
 (*
 LoadSRLBitmaps
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -289,7 +289,7 @@ end;
 
 (*
 FreeSRLBitmaps
-~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -320,7 +320,7 @@ end;
 
 (*
 LoadSRLFonts
-~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -347,7 +347,7 @@ end;
 
 (*
 FreeSRLFonts
-~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -374,7 +374,7 @@ end;
 
 (*
 srl_Warn
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -414,7 +414,7 @@ var
 
 (*
 SetupBoxes
-~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -451,7 +451,7 @@ const
 
 (*
 srl_InFight
-~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
