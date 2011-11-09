@@ -7,36 +7,6 @@ The Inventory include contains all inventory-related functions.
 .. contents::
 
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Inventory Routines                          --//
-//-----------------------------------------------------------------//
-// * function GetInven(Inven : Integer) : TInvenItem;              // by Sky Scripter
-// * function GetInventoryArray : array of TInvenItem;             // by Sky Scripter
-// * function InvBox(i :Integer): TBox;                            // by Boreas & Ogre
-// * function ItemCoords(i: Integer): TPoint;                      // by RsN
-// * Function CoordsToItem(X, Y: Integer): Integer;                // by Boreas
-// * function GetInvItemBounds(InvSpot: Integer; T: TBox): Boolean; // by Wizzup?
-// * procedure InvMouse(InvSlot, Action: Byte);                    // by EvilChicken!
-// * procedure MMouseItem(i: Integer);                             // by WT-Fakawi & EvilChicken!
-// * procedure MouseItem(i: Integer; left: Boolean);               // by WT-Fakawi, EvilChicken!, & NaumanAkhlaQ
-// * procedure DragItem(Inv1, Inv2: Integer);                      // by NaumanAkhlaQ
-// * function ExistsItem(i: Integer): Boolean;                     // by RsN
-// * function InvCount: Integer;                                   // by RsN
-// * function InvEmpty: Boolean;                                   // by WT-Fakawi
-// * function InvFull: Boolean;                                    // by RsN
-// * function CountItems(identifier: Integer; identifiertype: string; tol: TIntegerArray): Integer; // by WT-Fakawi & Sumilion
-// * function ClickAllItemsExcept(identifier: Integer; identifiertype, option: string; SlotIgnores: TIntegerArray; waitnum: Integer; tol: TIntegerArray):Integer; // by WT-Fakawi, Sumilion, & Nava2
-// * function ClickAllItems(identifier: Integer; identifiertype, option: string; waitnum: Integer; tol: TIntegerArray):Integer; // by Nava2
-// * procedure DropItem(i: Integer);                               // by Lorax
-// * Procedure DropPattern(which: integer);                        // by Rasta Magician
-// * procedure DropAll;                                            // by Rasta Magician
-// * procedure DropAllExcept(IgnoreInvSlots: array of Byte);       // by R1ch
-// * procedure DropItemsByIdentifier;                              // by EvilChicken!
-// * procedure ArrangeInv;                                         // by Cheesehunk
-// * function CountItemsBlackLine(Count, Tol: Integer): Integer;   // by n3ss3s
-// * function ClickAllItemsBlackLine(Count, Tol: Integer; Option: String): Integer; // by n3ss3s
-// * function ItemActivated(Slot: Integer): Boolean;               // by marpis
 
 { type TInvenItem;
   Description: Holds data regarding an inventory item }

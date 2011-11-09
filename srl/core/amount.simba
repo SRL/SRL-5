@@ -186,7 +186,7 @@ Example:
       i: Integer;
     begin
       i := GetAmountBox(InvBox(1)); // Gets the amount in inventory slot 1
-    Writeln('Amount = '+toStr(i));
+      Writeln('Amount = '+toStr(i));
     end;
 *)
 function GetAmountBox(box: TBox): integer;
@@ -234,7 +234,6 @@ Returns the amount of an item at inventory coordinates (x, y).
 .. note::
 
     Author: Coh3n
-    Last Modified: Unknown
 
 Example:
 
@@ -242,12 +241,13 @@ Example:
 
     var
       amount, x, y: integer;
-  begin
-    if (findDTM(x, y, dtm_Hatchet, MIX1, MIY1, MIX2, MIY2)) then
+
     begin
-      amount := GetAmount(x, y);
-      writeln('amount: '+toStr(amount));
-    end;
+      if (findDTM(x, y, dtm_Hatchet, MIX1, MIY1, MIX2, MIY2)) then
+      begin
+        amount := GetAmount(x, y);
+        writeln('amount: '+toStr(amount));
+      end;
     end;
 *)
 function InvBox(i: integer): TBox; forward;
@@ -278,7 +278,6 @@ Returns information on certain interfaces.  Valid interfaces (area):
 .. note::
 
     Author: masquerader
-    Last Modified: Unknown by Mr. Freeweed
 
 Example:
 
@@ -286,8 +285,8 @@ Example:
 
     var
       info: array[0..5] of integer;
-  begin
-    AreaInfo('inv', info[0], info[1], info[2], info[3], info[4], info[5]);
+    begin
+      AreaInfo('inv', info[0], info[1], info[2], info[3], info[4], info[5]);
     end;
 *)
 procedure AreaInfo(area: string; var startx, starty, rowsize, colsize, colnumber, rownumber: Integer);
@@ -377,7 +376,7 @@ Example:
 .. code-block:: pascal
 
     if (CheckArea('shop')) then
-    writeln('Shop is open!');
+      WriteLn('Shop is open!');
 *)
 function CheckArea(area: string): Boolean;
 begin
@@ -428,8 +427,8 @@ Example:
 
 .. code-block:: pascal
 
-    if (length(ItemCoordinates('inv', 'dtm', dtm_Hatchet, []) > 0) then
-    writeln('Hatchet found!');
+    if (Length(ItemCoordinates('inv', 'dtm', dtm_Hatchet, []) > 0) then
+      Writeln('Hatchet found!');
 *)
 function ItemCoordinates(Area, ItemType: string; Item: Integer; Tol: TIntegerArray): TPointArray;
 var
@@ -479,12 +478,12 @@ Example:
 
 .. code-block:: pascal
 
-  var
-    itemsFound: integer;
-  begin
+    var
+      itemsFound: integer;
+    begin
       itemsFound := CountItemsIn('inv', 'dtm', dtm_Ore, []);
-    writeln('Ore found: '+toStr(itemsFound));
-  end;
+      writeln('Ore found: ' + toStr(itemsFound));
+    end;
 *)
 function CountItemsIn(area, ItemType: string; Item: Integer; Tol: TIntegerArray): Integer;
 begin
@@ -511,12 +510,12 @@ Example:
 
 .. code-block:: pascal
 
-  var
-    itemsFound: integer;
-  begin
+    var
+      itemsFound: integer;
+    begin
       itemsFound := CountItemsArea('inv');
-    writeln('Items found: '+toStr(itemsFound));
-  end;
+      writeln('Items found: '+toStr(itemsFound));
+    end;
 *)
 function CountItemsArea(area: string): Integer;
 begin
@@ -587,12 +586,12 @@ Example:
 
 .. code-block:: pascal
 
-  var
-    x, y: integer;
-  begin
-    if (FindCoins(x, y, 'inv')) then
-      writeln('Coins found: '+toStr(GetAmount(x, y)));
-  end;
+    var
+      x, y: integer;
+    begin
+      if (FindCoins(x, y, 'inv')) then
+        WriteLn('Coins found: '+toStr(GetAmount(x, y)));
+    end;
 *)
 function FindCoins(var X, Y: Integer; Area: string): Boolean;
 var
@@ -659,7 +658,7 @@ Example:
 
 .. code-block:: pascal
 
-  writeln('Coins found: '+toStr(CoinAmount('inv')));
+    WriteLn('Coins found: '+toStr(CoinAmount('inv')));
 *)
 function CoinAmount(Area: string): Integer;
 var
@@ -688,7 +687,7 @@ Example:
 
 .. code-block:: pascal
 
-  writeln('Air runes found: '+toStr(RuneAmount('inv', 'air')));
+    WriteLn('Air runes found: '+toStr(RuneAmount('inv', 'air')));
 *)
 function RuneAmount(Area, RuneType: string): Integer;
 var
@@ -728,7 +727,8 @@ Example:
 
 .. code-block:: pascal
 
-  ShopSwitchTab('main');
+    ShopSwitchTab('main');
+
 *)
 procedure ShopSwitchTab(Name: string);
 begin

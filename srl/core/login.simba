@@ -5,28 +5,10 @@ Login
 The Login include contains all the functions to succesfully log you in and out
 of the game and/or the lobby.
 
+.. contents:
+
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               ? Login Routines                              --//
-//-----------------------------------------------------------------//
-// * function  RSReady: Boolean;                                   // by ZephyrsFury
-// * procedure Login_SetAudio(Volume, SFX, Area: Integer; SMSetting: (Stereo, Mono, NoChange) ); // by ZephyrsFury
-// * procedure Login_SetGraphics(Brightness: Integer; vl, rr, gd, td, ia, fl, gt, cs: string); // by ZephyrsFury
-// * procedure SetAudioOff;                                        // by ZephyrsFury
-// * procedure SetAutoingDefaults;                                 // by ZephyrsFury
-// * function LobbyScreen: Boolean;                                // by IceFire908 & Bionicle1800
-// * function ExitToLobby;                                         // by Starblaster100 and Raymond
-// * function LeaveLobby: Boolean;                                 // by IceFire908
-// * function Logout: Boolean;                                     // by IceFire908
-// * function LoginPlayerToLob: Boolean;                           // by The SRL Team
-// * function LogInPlayer: Boolean;                                // by The SRL Team
-// * function NextPlayerIndex: Integer;                            // by Dankness, Ron, Raymond & ZephyrsFury
-// * function RandomPlayerIndex: Integer;                          // by Dankness, Ron, Raymond & ZephyrsFury
-// * function SwitchToPlayer(PlayerNo: Integer; Active: Boolean): Boolean; // by Dankness, Ron, Raymond & ZephyrsFury
-// * procedure NextPlayer(Active: Boolean);                        // by ZephyrsFury
-// * procedure RandomNextPlayer(Active: Boolean);                  // by ZephyrsFury
-// * procedure CheckUserNicks;                                     // by Sumilion, Raymond and Nava2
+
 
 const
   SM_Color = 8115338;
@@ -93,6 +75,9 @@ Returns true if we are at the Lobby Screen
 Example:
 
 .. code-block:: pascal
+    // wait for the Lobby Screen to appear!
+    while (not LobbyScreen) do
+      Wait(100 + Random(400));
 
 *)
 function LobbyScreen: Boolean;
@@ -118,6 +103,8 @@ Useful for waiting until RS has fully loaded.
 Example:
 
 .. code-block:: pascal
+    while (not RSReady) do
+      SleepAndMoveMouse(100 + Random(500));
 
 *)
 function RSReady: Boolean;
@@ -318,7 +305,8 @@ Sets the Audio to off (1 for each bar). Works logged in and out.
 Example:
 
 .. code-block:: pascal
-
+    // sounds are annoying, let's turn them off
+    setAudioOff();
 *)
 procedure SetAudioOff;
 begin
@@ -345,6 +333,10 @@ Sets the graphic options for best SRL compatibility. Works both logged in and ou
 Example:
 
 .. code-block:: pascal
+    procedure SetupScript();
+    begin
+      SetAutoingDefaults(); // set the graphics options appropriately
+    end;
 
 *)
 procedure SetAutoingDefaults;
@@ -372,6 +364,9 @@ Exits to the Lobby (for breaks?)
 Example:
 
 .. code-block:: pascal
+    // world switch!
+    if (ExitToLobby()) then
+      SelectWorld(20); // parameters here may be inaccurate
 
 *)
 function ExitToLobby: Boolean;
@@ -435,6 +430,9 @@ Logs you out from lobby screen.
 Example:
 
 .. code-block:: pascal
+    if (LobbyScreen()) then
+      if (not LeaveLobby()) then
+        WriteLn('Oh no, we didn''t make it out of the Lobby Screen.');
 
 *)
 function LeaveLobby: Boolean;
@@ -467,6 +465,8 @@ Logs you all the way out from ingame.
 Example:
 
 .. code-block:: pascal
+    if (not FindTree()) then
+      Logout();
 
 *)
 function Logout: Boolean;
@@ -519,6 +519,9 @@ Like LoginPlayer but only to the lobbyscreen.
 Example:
 
 .. code-block:: pascal
+    LoginPlayerToLob();
+    if (not LobbyScreen()) then
+      LoginPlayerToLob(); // try again!
 
 *)
 function LoginPlayerToLob: Boolean;
@@ -768,6 +771,11 @@ Logs in the Player[CurrentPlayer]. Detects most Client Login Errors
 Example:
 
 .. code-block:: pascal
+    if (not LoggedIn()) then
+    begin
+      WriteLn('Error: Not Logged In! Fixing');
+      LoginPlayer();
+    end;
 
 *)
 function LoginPlayer: Boolean;
@@ -951,6 +959,8 @@ Returns the player number of the next active player.
 Example:
 
 .. code-block:: pascal
+    if (NextPlayerIndex() != -1) then
+      WriteLn('We still have active players!');
 
 *)
 function NextPlayerIndex: Integer;
@@ -982,6 +992,16 @@ Returns the player number of a random active player.
 Example:
 
 .. code-block:: pascal
+    procedure NextPlayerRandom(Active: Boolean);
+    begin
+      Players[CurrentPlayer].Active := Active;
+      CurrentPlayer := RandomPlayerIndex();
+      if (CurrentPlayer = -1) then
+      begin
+        WriteLn('All players inactive..');
+        TerminateScript();
+      end;
+    end;
 
 *)
 function RandomPlayerIndex: Integer;
@@ -1133,22 +1153,29 @@ Checks if all nicks are set correct.
 Example:
 
 .. code-block:: pascal
+    // make sure the user setup their nicks right..
+    CheckUserNicks();
 
 *)
+
+// TODO: Remove? Not used?
 procedure CheckUserNicks;
 var
   I, II: Integer;
   Wrong, FWrong: Boolean;
   WarnStrings: TStringArray;
 begin
-  WarnStrings := ['Please fill in your nickname.', 'Your nickname isn'' found in the players name'];
+  WarnStrings := ['Please fill in your nickname.',
+                  'Your nickname isn'' found in the players name'];
+
   for i := 0 to HowManyPlayers - 1 do
     for II := 0 to 1 do
     begin
       case II of
         0: Wrong := (Players[i].Nick = '');
-		1: Wrong := (Pos(Players[i].nick, Capitalize(Players[i].name))<1);
+		    1: Wrong := (Pos(Players[i].nick, Capitalize(Players[i].name))<1);
       end;
+
       if Wrong then
       begin;
         Writeln('--');
@@ -1156,6 +1183,7 @@ begin
         FWrong := True;
       end;
     end;
+
   if FWrong then
   begin
     Writeln('');

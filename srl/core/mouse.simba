@@ -5,25 +5,12 @@ Mouse
 
 Mouse routines.
 
-*)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Mouse Routines                              --//
-//-----------------------------------------------------------------//
-// * procedure WindMouse(xs, ys, xe, ye, gravity, wind, minWait, maxWait, maxStep, targetArea: extended) // by BenLand100
-// * procedure MMouse(x, y, rx, ry: integer);                      // by BenLand100
-// * procedure Mouse(mousex, mousey, ranx, rany: Integer; left: Boolean); // by Mutant Squirrle
-// * procedure SleepAndMoveMouse(Time: Integer);                   // by RsN
-// * procedure IdleTime(Time, Rand: Integer; Gravity: Extended);   // by BenLand100
-// * function SpiralMouseMulti(var fx, fy: Integer; x1, y1, x2, y2: Integer; UpText: TStringArray; PpC, aInc: Integer): Boolean; // by Nava2
-// * function SpiralMouse(var fx, fy: Integer; x1, y1, x2, y2: Integer; UpText: String; PpC, aInc: Integer): Boolean; // by Nava2
-// * function DidClick(Red: Boolean; Time: Integer);               // by Rasta Magician
-// * function DidRedClick: Boolean;                                // by Rasta Magician
-// * function DidYellowClick: Boolean;                             // by Rasta Magician
-// * procedure MouseOval(cx, cy, mx, my, clickType: Integer);      // by Mixster
-// * procedure MouseCircle(MidX, MidY, Radius, clickType: Integer); // by Mixster
-// * procedure DragMouse(StartX, StartY, SRandX, SRandY, EndX, EndY, ERandX, ERandY: Integer); // by NaumanAkhlaQ
+.. contents::
 
+*)
+
+
+// TODO: Constant/Var docs
 var
   MouseSpeed: Integer;
 
@@ -41,6 +28,7 @@ WindMouse
 
     procedure WindMouse(xs, ys, xe, ye, gravity, wind, minWait, maxWait, maxStep, targetArea: extended);
 
+Moves the mouse along a spline defined by
 
 .. note::
 
@@ -49,6 +37,8 @@ WindMouse
 Example:
 
 .. code-block:: pascal
+
+
 
 *)
 procedure WindMouse(xs, ys, xe, ye, gravity, wind, minWait, maxWait, maxStep, targetArea: extended);
