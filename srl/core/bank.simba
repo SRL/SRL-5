@@ -961,10 +961,19 @@ Withdraws an item from the bank by using "Ident" with tol[0]
 as color tolerance, tol[1] as contour tolerance in case of bmp
 masks, or the count of colors for TPA item finding.
 Valid IdentTypes are all in FindItem.
-Index: The Bank Index where the item is found, must be a variable.
-       Speeds up future withdraws.
-Amount: Amount to withdraw from bank.
-UpText: The UpText which the function checks for.
+
+Index:
+
+    The Bank Index where the item is found, must be a variable.
+    Speeds up future withdraws.
+
+Amount:
+
+    Amount to withdraw from bank.
+
+UpText:
+
+    The UpText which the function checks for.
 
 .. note::
 
@@ -1341,7 +1350,7 @@ begin
   result := false;
   Speed := GetColorToleranceSpeed;
   ColorToleranceSpeed(2);
-  if ChangeAngle then SetAngle(True);
+  if ChangeAngle then SetAngle(SRL_ANGLE_HIGH);
   if ChangeCompass then
   begin
     c := Random(2);

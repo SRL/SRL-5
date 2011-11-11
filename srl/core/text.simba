@@ -6,40 +6,6 @@ The Text include contains all sorts of functions used for finding, analysing and
 using text in RS. It also contains a few useful input routines
 
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Text Routines                               --//
-//-----------------------------------------------------------------//
-// * function srl_Explode(str, del: string): TStringArray;         // by mixster
-// * function srl_Implode(Pieces: TStringArray; Separator: string): string; // * by ZephyrsFury & mixster
-// * procedure TypeByte(k: Byte);                                  // by Mutant Squirrle
-// * procedure TypeSendEx(Text: string; PressEnter: Boolean);      // by SKy Scripter
-// * procedure TypeSend(Text: String);                             // by N1ke!
-// * function AddMistakes(Orig: string; Chance: Integer): string;  // by ZephyrsFury
-// * function GetUpText: String;                                   // by Freddy1990
-// * function IsUpTextEx(Text: String): Boolean;                   // by Frement
-// * function IsUpTextRe(RegEx: String): Boolean;                  // by Frement
-// * function IsUpText(UpText: String): Boolean;                   // by Masquerader / Nielsie95 / Freddy1990
-// * function IsUpTextMultiCustom(Text: TStringArray): Boolean;    // by Starblaster100 / Nielsie95 / Freddy1990
-// * function GetLevelAtPos(x, y: Integer): integer;               // by marpis and Nava2
-// * function FindNPCChatText(txt: string; Action: (ClickLeft,ClickRight,Move,Nothing)): Boolean; // by Kernel Klink and Nielsie95
-// * function FindText(var cx, cy: Integer; txt: String; font, xs, ys, xe, ye: Integer): Boolean; // by Stupid3ooo
-// * function ClickText(txt: String; font, x1, y1, x2, y2: Integer; left: Boolean): Boolean; // by Stupid3ooo and SKy Scripter
-// * Function LoadTextTPA(Text : String; Chars : Integer;var height : integer) : TPointArray; // by Raymond
-// * Function FindTextTpaEx(Color, Tol, xs, ys, xe, ye: integer; var x,y: integer; Txt: string; Chars: Integer; Action: (ClickLeft, ClickRight, Move, Nothing)): Boolean; // by Raymond
-// * Function FindTextTpa(Color, Tol, xs, ys, xe, ye: integer; Txt: string; Chars: Integer; Action: (ClickLeft, ClickRight, Move, Nothing)): Boolean; // by Raymond
-// * function FindTextTPAMulti(Color, tol, xs, ys, xe, ye: integer; Texts: TStringArray; Chars: string;/integer; Action: fnct_ActionOptions): Boolean; // by Cigue and EvilChicken!
-// * function ChooseOptionMultiEx(Texts: TStringArray; TextType: String; Action: fnct_ActionOptions): Boolean; // by Wizzup?, Nava2, and modified by N1ke!
-// * function ChooseOptionMulti(Text: TStringArray): Boolean;      // by Wizzup? modified by N1ke!
-// * function ChooseOptionEx(Txt, TextType: String): Boolean;      // by Wizzup?, Nava2, and modified by N1ke!
-// * function ChooseOption(txt: String): Boolean;                  // by Stupid3ooo, modded by Sumilion
-// * Function OptionsExist(txt: TStringArray; MoveMouse: boolean): boolean; // by Rasta Magician
-// * procedure CloseWindow;                                        // by Solemn Wishes, Starblaster100 and ZephyrsFury
-// * Function InStrArrEx(S: String; StrArr: TStringArray; Var W: Integer): Boolean; // by n3ss3s
-// * function StrInArr(str: string; arrS: TStringArray): Boolean;  // by Narcle & Nava2
-// * function ArrInStr(arrS: TStringArray; str: string): Boolean;  // by Narcle & Nava2
-// * procedure SetDebugColors(Text, Back: Integer);                // by Nava2
-// * procedure WriteArrayCols(Lines: TStringArray; Text, Back: Integer); // by Nava2
 
 { var OldLine,TheLine, TheName: String;
   Description: ChatLog vars. }
@@ -335,7 +301,7 @@ Returns the text in the upperleft corner (often referred to as UpText).
 
 .. note::
 
-    by Freddy1990
+    by Simba Development Team.
 
 Example:
 
@@ -408,7 +374,7 @@ Returns True if there is currently Uptext on the screen
 
 .. note::
 
-    by Freddy1990
+    by Simba Development Team.
 
 Example:
 

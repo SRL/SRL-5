@@ -75,6 +75,7 @@ Returns true if we are at the Lobby Screen
 Example:
 
 .. code-block:: pascal
+
     // wait for the Lobby Screen to appear!
     while (not LobbyScreen) do
       Wait(100 + Random(400));
@@ -103,6 +104,7 @@ Useful for waiting until RS has fully loaded.
 Example:
 
 .. code-block:: pascal
+
     while (not RSReady) do
       SleepAndMoveMouse(100 + Random(500));
 
@@ -147,7 +149,7 @@ Example:
 
 .. code-block:: pascal
 
-  Login_SetAudio(1, 5, 2, NoChange);
+    Login_SetAudio(1, 5, 2, NoChange);
 
 *)
 procedure Login_SetAudio(Volume, SFX, Area: Integer; SMSetting: TSMSetting);
@@ -218,7 +220,7 @@ Example:
 
 .. code-block:: pascal
 
-  Login_SetGraphics(4);
+    Login_SetGraphics(4);
 
 *)
 procedure Login_SetGraphics(Brightness: Integer);
@@ -305,6 +307,7 @@ Sets the Audio to off (1 for each bar). Works logged in and out.
 Example:
 
 .. code-block:: pascal
+
     // sounds are annoying, let's turn them off
     setAudioOff();
 *)
@@ -333,6 +336,7 @@ Sets the graphic options for best SRL compatibility. Works both logged in and ou
 Example:
 
 .. code-block:: pascal
+
     procedure SetupScript();
     begin
       SetAutoingDefaults(); // set the graphics options appropriately
@@ -364,6 +368,7 @@ Exits to the Lobby (for breaks?)
 Example:
 
 .. code-block:: pascal
+
     // world switch!
     if (ExitToLobby()) then
       SelectWorld(20); // parameters here may be inaccurate
@@ -430,6 +435,7 @@ Logs you out from lobby screen.
 Example:
 
 .. code-block:: pascal
+
     if (LobbyScreen()) then
       if (not LeaveLobby()) then
         WriteLn('Oh no, we didn''t make it out of the Lobby Screen.');
@@ -465,6 +471,7 @@ Logs you all the way out from ingame.
 Example:
 
 .. code-block:: pascal
+
     if (not FindTree()) then
       Logout();
 
@@ -519,6 +526,7 @@ Like LoginPlayer but only to the lobbyscreen.
 Example:
 
 .. code-block:: pascal
+
     LoginPlayerToLob();
     if (not LobbyScreen()) then
       LoginPlayerToLob(); // try again!
@@ -771,6 +779,7 @@ Logs in the Player[CurrentPlayer]. Detects most Client Login Errors
 Example:
 
 .. code-block:: pascal
+
     if (not LoggedIn()) then
     begin
       WriteLn('Error: Not Logged In! Fixing');
@@ -959,6 +968,7 @@ Returns the player number of the next active player.
 Example:
 
 .. code-block:: pascal
+
     if (NextPlayerIndex() != -1) then
       WriteLn('We still have active players!');
 
@@ -992,6 +1002,7 @@ Returns the player number of a random active player.
 Example:
 
 .. code-block:: pascal
+
     procedure NextPlayerRandom(Active: Boolean);
     begin
       Players[CurrentPlayer].Active := Active;
@@ -1153,6 +1164,7 @@ Checks if all nicks are set correct.
 Example:
 
 .. code-block:: pascal
+
     // make sure the user setup their nicks right..
     CheckUserNicks();
 
