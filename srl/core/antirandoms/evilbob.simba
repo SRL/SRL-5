@@ -593,7 +593,7 @@ Begin
   MarkTime(Mark);         //mark time
   If rs_GetCompassAngleDegrees <> 0 Then
     MakeCompass('N');       //sets optimum object finding.
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   SetRun(True);
   GameTab(tab_inv);
 

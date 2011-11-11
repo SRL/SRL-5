@@ -223,7 +223,7 @@ begin
   while FindNPCChatText('ontinue', ClickLeft) do
     Wait(2000 + Random(500));
 
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   t := GetSystemTime;
   while (GetSystemTime - T < 180000) do
   begin

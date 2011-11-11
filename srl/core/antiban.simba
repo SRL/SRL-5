@@ -8,19 +8,6 @@ The Antiban include contains functions to help eliminate bans.
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » AntiBan Routines                            --//
-//-----------------------------------------------------------------//
-// * procedure RandomRClick;                                       // by phantombmx/EvilChicken!, idea by NaumanAkhlaQ
-// * procedure HoverSkill(Skill: String; Click: Boolean);          // by Dankness extended by Cheesehunk and fixed by Ron
-// * procedure PickUpMouse;                                        // by dark_sniper
-// * procedure RandomMovement;                                     // by Krazy_Meerkat
-// * procedure BoredHuman;                                         // by WT-Fakawi
-// * procedure ExamineInv;                                         // by R1ch
-// * procedure RandomAngle(HowToEnd : Variant);                    // by R1ch
-// * function LevelUp : Boolean;                                   // by R1ch
-
 (*
 LeaveDangerZone
 ~~~~~~~~~~~~~~~
@@ -386,7 +373,6 @@ Randomly changes the angle of the compass. Finishes depending on
 .. note::
 
     Author: R1ch
-    Last Modified: Unknown
 
 Example:
 
@@ -394,13 +380,13 @@ Example:
 
     RandomAngle(1);
 *)
-procedure RandomAngle(HowToEnd : Variant);
+procedure RandomAngle(HowToEnd: Variant);
 var
-  Key : Byte;
-  B : Boolean;
+  Key: Byte;
+  B: Integer;
 begin
-  B:= RBoolEx(2);
-  if B then
+  B:= random(2);
+  if (B = 0) then
     Key:= 38
   else
     Key:= 40;
@@ -411,8 +397,8 @@ begin
   KeyUp(Key);
   Wait(RandomRange(500, 1000));
   case (HowToEnd) of
-    1, 'up', True : SetAngle(True);
-    2, 'down', False : SetAngle(False);
+    SRL_ANGLE_LOW, 'down', False : SetAngle(SRL_ANGLE_LOW);
+    SRL_ANGLE_HIGH, 'up', True : SetAngle(SRL_ANGLE_HIGH);
   end;
 end;
 
@@ -429,7 +415,6 @@ Checks if you've leveled up - click Continue and returns True.
 .. note::
 
     Author: R1ch
-    Last Modified: Unknown
 
 Example:
 
@@ -437,14 +422,15 @@ Example:
 
     if LevelUp then
     Inc(LevelsGained);
+
 *)
-function LevelUp : Boolean;
+function LevelUp: Boolean;
 var
-  X, Y : Integer;
+  X, Y: Integer;
 begin
   if (not(FindColor(X, Y, 0, 7, 460, 69, 474))) then
     Result:= FindNPCChatText('gratu', Nothing);
-  if Result then
+  if (Result) then
   begin
     ClickContinue(True, True);
     WriteLn(Players[CurrentPlayer].Name + ' leveled up');

@@ -299,7 +299,7 @@ begin
     Exit;
   Animals := [pete_goat, pete_dog, pete_sheep, pete_cat];
   MakeCompass('S');
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   if (Pete_WalkTo) then
     if (Pete_TalkTo) then
       Wait(100)

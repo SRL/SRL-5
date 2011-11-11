@@ -238,12 +238,12 @@ begin
   cts := GetColorToleranceSpeed;
   deg := Round(rs_GetCompassAngleDegrees);
   MakeCompass('n');
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   ColorToleranceSpeed(2);
   SetColorSpeed2Modifiers(0.2, 0.2);
   t := GetSystemTime;
 
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   while (not FindColorTolerance(x, y, 2070783, 130, 260, 215, 315, 2)) and
         ((GetSystemTime - t) < 40000) do
   begin
