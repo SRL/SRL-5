@@ -1,0 +1,279 @@
+//-----------------------------------------------------------------//
+//--               SRL Resource Library                          --//
+//--               » AntiRandom Routines                         --//
+//-----------------------------------------------------------------//
+// * procedure ExitOut(sender: TObject);              // * by N1ke!
+// * procedure SolveItYourSelf(sender: TObject);      // * by N1ke!
+// * procedure LabelChange(sender: TObject);          // * by N1ke!
+// * Procedure r_InitForm;                            // * by N1ke!
+// * Procedure r_SafeInitForm;                        // * by N1ke!
+// * procedure r_ShowFormModal;                       // * by N1ke!
+// * procedure r_SafeShowFormModal;                   // * by N1ke!
+// * procedure r_RunAlert;                            // * by N1ke!
+// * function r_CheckAction: Boolean;                 // * by N1ke!
+// * Procedure r_ResetAll;                            // * by N1ke!
+// * Procedure r_ResetAll;                            // * by N1ke!
+//-----------------------------------------------------------------//
+
+var
+  RandomTool : TForm;
+  InfoTxt: Array [0..3] of TLabel;
+  BChoice: Array [0..1] of TButton;
+  TimeUntilClose, CountDown: TTimer;
+  UseBox: TCheckBox;
+  r_WaitTimeout, r_CountMS, r_FKeyFinish: Integer;
+  r_SelfSolve: Boolean;
+  r_SolveAble: TIntegerArray;
+
+{*******************************************************************************
+procedure r_ItemClicked(sender: TObject);
+by: Richard
+TimeStamp: 5 Aug, 2009
+Description: Performs the desired action
+*******************************************************************************}
+procedure r_ItemClicked(sender: TObject);
+Begin
+  Case sender of
+    BChoice[0]: Begin
+                  RandomTool.ModalResult:= mrOk;
+                  r_SelfSolve := True;
+                end;
+    BChoice[1]: RandomTool.ModalResult := mrOk;
+    TimeUntilClose: RandomTool.ModalResult := mrOk;
+    CountDown: begin
+                 Inc(r_CountMS);
+                 InfoTxt[3].Caption := 'Timeout in: ' + MsToTime(r_WaitTimeOut-(r_CountMS*1000), 1);
+               end;
+  end;
+end;
+
+{*******************************************************************************
+Procedure r_InitForm;
+by: N1ke! and Richard
+TimeStamp: 5 Aug, 2009
+Description:
+*******************************************************************************}
+Procedure r_InitForm;
+var
+  I: Integer;
+  InfoTxtCap: TStringArray;
+begin
+  RandomTool := CreateForm;
+  With RandomTool do
+  Begin
+    With Font do
+    Begin
+      Height := -11;
+      Name := 'MS Sans Serif';
+    end;
+    Visible := False;
+    SetBounds(0, 0, 160, 210);
+    Position := poScreenCenter;
+    FormStyle := fsStayOnTop;
+    BorderIcons := [biSystemMenu];
+    BorderStyle := bsSingle;
+  end;
+
+  InfoTxt[0] := TLabel.Create(RandomTool);
+  With InfoTxt[0] do
+  Begin
+    Parent := RandomTool;
+    Left := 30;
+    Top := 10;
+    Width := 46;
+    Height := 13;
+    Font.Height := -14;
+    Font.Style := [fsBold];
+    Caption := 'Random found!';
+  end;
+
+  InfoTxtCap := ['Random: ' + Players[CurrentPlayer].Rand,
+                 'Player stuck: ' + Players[CurrentPlayer].Name,
+                 'Timeout in: ' + MsToTime(r_WaitTimeOut, 1)];
+
+  For I:=1 to 3 do
+  begin
+    InfoTxt[i] := TLabel.Create(RandomTool);
+    With InfoTxt[i] do
+    Begin
+      Parent := RandomTool;
+      Left := 10;
+      Top := 25+I*14;
+      Width := 46;
+      Height := 13;
+      Font.Height := -12;
+      Caption := InfoTxtCap[I-1];
+    end;
+  end;
+
+  InfoTxtCap := ['Solve it yourself',
+                 'Let SRL solve it'];
+
+  For I:=0 to 1 do
+  begin
+    BChoice[i] := TButton.Create(RandomTool);
+    With BChoice[i] do
+    Begin
+      Parent := RandomTool;
+      Width := 130;
+      Height := 28;
+      Left := 10;
+      Top := 110+(I*30);
+      Caption := InfoTxtCap[i];
+      Font.Height := -11;
+      OnClick := @r_ItemClicked;
+    end;
+  end;
+
+  BChoice[1].Enabled :=  InIntArray(r_SolveAble, CurRandom);
+
+  TimeUntilClose := TTimer.Create(RandomTool);
+  With TimeUntilClose do
+  Begin
+    Interval := r_WaitTimeOut;
+    Enabled := True;
+    OnTimer := @r_ItemClicked;
+  end;
+
+  CountDown := TTimer.Create(RandomTool);
+  With CountDown do
+  Begin
+    Interval := 1000;
+    Enabled := True;
+    OnTimer := @r_ItemClicked;
+  end;
+
+  UseBox := TCheckBox.Create(RandomTool);
+  With UseBox do
+  Begin
+    Parent := RandomTool;
+    Left := 8;
+    Top := 95;
+    Width := 200;
+    Height := 13;
+    Caption := 'Stop using RandomTool?';
+  end;
+end;
+
+{*******************************************************************************
+procedure r_SafeInitForm;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description:
+*******************************************************************************}
+procedure r_SafeInitForm;
+var v: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('r_InitForm', v);
+end;
+
+{*******************************************************************************
+procedure r_ShowFormModal;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description:
+*******************************************************************************}
+procedure r_ShowFormModal;
+begin
+  RandomTool.ShowModal;
+end;
+
+{*******************************************************************************
+procedure r_SafeShowFormModal;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description:
+*******************************************************************************}
+procedure r_SafeShowFormModal;
+var v: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('r_ShowFormModal', v);
+end;
+
+{*******************************************************************************
+Procedure r_ResetAll;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description: Resets all vars.
+*******************************************************************************}
+Procedure r_ResetAll;
+begin
+  r_UseRandomTool := not(UseBox.Checked);
+  TimeUntilClose.Enabled := False;
+  CountDown.Enabled := False;
+  r_CountMS := 0;
+  CurRandom := 0;
+  r_SelfSolve := False;
+  Freeform(RandomTool);
+end;
+
+{*******************************************************************************
+procedure r_RunAlert;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description: Runs the form.
+*******************************************************************************}
+procedure r_RunAlert;
+begin
+  r_SafeInitForm;
+  r_SafeShowFormModal;
+end;
+
+{*******************************************************************************
+Function r_CheckAction: Boolean;
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description: Checks if r_SelfSolve is True.
+If so it waits for the player to solve the random.
+*******************************************************************************}
+Function r_CheckAction: Boolean;
+begin
+  Result := r_SelfSolve;
+  If Not Result then
+    Exit;
+
+  Writeln('** Press F' + IntToStr(r_FKeyFinish) + ' when you wish to continue. **');
+  While not IsFKeyDown(r_FKeyFinish)do
+    Wait(150);
+end;
+
+{*******************************************************************************
+Procedure SetupRandomTool(TimeOutWait, FKeyForFinish: Integer; t_SoundPath: String);
+by: N1ke!
+TimeStamp: 5 Aug, 2009
+Description: Sets up RandomTool so it can be used.
+
+TimeOutWait: Time until SRL will try to solve itself, before this you
+have the option to solve it yourself.
+
+FKeyForFinish: The FKey to break out of the "Solve it yourself" loop.
+
+t_SoundPath: The path for a sound you wish to play, if random detected.
+Leave blank if you don't wish to have any sound.
+*******************************************************************************}
+Procedure SetupRandomTool(TimeOutWait, FKeyForFinish: Integer; t_SoundPath: String);
+var
+  I, H, ArrC: Integer;
+begin
+  r_WaitTimeout := TimeOutWait;
+  If Not InRange(FKeyForFinish, 1, 12) then
+  begin
+    srl_Warn('SetupRandomTool', 'Incorrect parameter FKeyForFinish [1..12] only.', warn_AllVersions);
+    srl_Warn('SetupRandomTool', 'FKeyForFinish is now set to 2.', warn_AllVersions);
+    r_FKeyFinish := 2;
+  end else r_FKeyFinish := FKeyForFinish;
+  r_UseRandomTool := True;
+  SoundPath := t_SoundPath;
+
+  H := High(TeleRandoms);
+  SetArrayLength(r_SolveAble, H+1);
+  For I:=0 to H do
+    If (TeleRandoms[i].SolveRandom <> nil) then
+    begin
+      Inc(ArrC);
+      r_SolveAble[ArrC-1] := I;
+    end;
+  SetArrayLength(r_SolveAble, ArrC);
+end;
