@@ -26,20 +26,20 @@
 
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
-{.include SRL/SRL/misc/smart.simba}
+{$include SRL/SRL/misc/smart.simba}
 {$ENDIF}
 {$ENDIF}
 
-//{.include SRL/SRL/core/defines.simba}
+//{$include SRL/SRL/core/defines.simba}
 {$ifdef Simba}
 {$i SRL/SRL/core/simba.simba}
 {$endif}
-{.include SRL/SRL/core/globals.simba}
-{.include SRL/SRL/core/math.simba}
-{.include SRL/SRL/core/mouse.simba}
-{.include SRL/SRL/core/color.simba}
-{.include SRL/SRL/core/players.simba}
-{.include SRL/SRL/core/overwrite.simba}
+{$include SRL/SRL/core/globals.simba}
+{$include SRL/SRL/core/math.simba}
+{$include SRL/SRL/core/mouse.simba}
+{$include SRL/SRL/core/color.simba}
+{$include SRL/SRL/core/players.simba}
+{$include SRL/SRL/core/overwrite.simba}
 
 //----------------------------------------------------------------------------//
 //--                         SRL Level 2 Includes                           --//
@@ -47,11 +47,11 @@
 //--                     Interface and OCR routines.                        --//
 //----------------------------------------------------------------------------//
 
-{.include SRL/SRL/core/text.simba}
-{.include SRL/SRL/core/timing.simba}
-{.include SRL/SRL/core/SRLlog.simba}
-{.include SRL/SRL/core/chat.simba}
-{.include SRL/SRL/core/gametab.simba}
+{$include SRL/SRL/core/text.simba}
+{$include SRL/SRL/core/timing.simba}
+{$include SRL/SRL/core/SRLlog.simba}
+{$include SRL/SRL/core/chat.simba}
+{$include SRL/SRL/core/gametab.simba}
 
 //----------------------------------------------------------------------------//
 //--                         SRL Level 3 Includes                           --//
@@ -59,45 +59,45 @@
 //--   MapWalking, AntiRandoms, Objects, Bank, Symbol and many more...      --//
 //----------------------------------------------------------------------------//
 
-{.include SRL/SRL/core/animation.simba}
-{.include SRL/SRL/core/flag.simba}
-{.include SRL/SRL/core/worldswitcher.simba}
-{.include SRL/SRL/core/login.simba}
-{.include SRL/SRL/core/autocolor.simba}
-{.include SRL/SRL/core/mapwalk.simba}
-{.include SRL/SRL/core/object.simba}
-{.include SRL/SRL/core/bitmaps.simba}
-{.include SRL/SRL/core/amount.simba}
-{.include SRL/SRL/core/inventory.simba}
-{.include SRL/SRL/core/bank.simba}
-{.include SRL/SRL/core/symbol.simba}
-{.include SRL/SRL/core/rc.simba}
-{.include SRL/SRL/core/globalstats.simba}
-{.include SRL/SRL/core/cautorespond.simba}
-{.include SRL/SRL/core/antiban.simba}
-{.include SRL/SRL/core/antirandoms/common.simba}
-{.include SRL/SRL/core/antirandoms/certer.simba}
-{.include SRL/SRL/core/antirandoms/demon.simba}
-{.include SRL/SRL/core/antirandoms/forester.simba}
-{.include SRL/SRL/core/antirandoms/quiz.simba}
-{.include SRL/SRL/core/antirandoms/sandwich.simba}
-{.include SRL/SRL/core/antirandoms/evilbob.simba}
-{.include SRL/SRL/core/antirandoms/leo.simba}
-{.include SRL/SRL/core/antirandoms/frog.simba}
-{.include SRL/SRL/core/antirandoms/molly.simba}
-{.include SRL/SRL/core/antirandoms/pillory.simba}
-{.include SRL/SRL/core/antirandoms/pinball.simba}
-{.include SRL/SRL/core/antirandoms/maze.simba}
-{.include SRL/SRL/core/antirandoms/capnarnav.simba}
-{.include SRL/SRL/core/antirandoms/beekeeper.simba}
-{.include SRL/SRL/core/antirandoms/abyss.simba}
-{.include SRL/SRL/core/antirandoms/mordaut.simba}
-{.include SRL/SRL/core/antirandoms/prisonpete.simba}
-{.include SRL/SRL/core/antirandoms/mime.simba}
-{.include SRL/SRL/core/antirandoms/antirandoms.simba}
-{.include SRL/SRL/core/antirandoms/randomtool.simba}
+{$include SRL/SRL/core/animation.simba}
+{$include SRL/SRL/core/flag.simba}
+{$include SRL/SRL/core/worldswitcher.simba}
+{$include SRL/SRL/core/login.simba}
+{$include SRL/SRL/core/autocolor.simba}
+{$include SRL/SRL/core/mapwalk.simba}
+{$include SRL/SRL/core/object.simba}
+{$include SRL/SRL/core/bitmaps.simba}
+{$include SRL/SRL/core/amount.simba}
+{$include SRL/SRL/core/inventory.simba}
+{$include SRL/SRL/core/bank.simba}
+{$include SRL/SRL/core/symbol.simba}
+{$include SRL/SRL/core/rc.simba}
+{$include SRL/SRL/core/globalstats.simba}
+{$include SRL/SRL/core/cautorespond.simba}
+{$include SRL/SRL/core/antiban.simba}
+{$include SRL/SRL/core/antirandoms/common.simba}
+{$include SRL/SRL/core/antirandoms/certer.simba}
+{$include SRL/SRL/core/antirandoms/demon.simba}
+{$include SRL/SRL/core/antirandoms/forester.simba}
+{$include SRL/SRL/core/antirandoms/quiz.simba}
+{$include SRL/SRL/core/antirandoms/sandwich.simba}
+{$include SRL/SRL/core/antirandoms/evilbob.simba}
+{$include SRL/SRL/core/antirandoms/leo.simba}
+{$include SRL/SRL/core/antirandoms/frog.simba}
+{$include SRL/SRL/core/antirandoms/molly.simba}
+{$include SRL/SRL/core/antirandoms/pillory.simba}
+{$include SRL/SRL/core/antirandoms/pinball.simba}
+{$include SRL/SRL/core/antirandoms/maze.simba}
+{$include SRL/SRL/core/antirandoms/capnarnav.simba}
+{$include SRL/SRL/core/antirandoms/beekeeper.simba}
+{$include SRL/SRL/core/antirandoms/abyss.simba}
+{$include SRL/SRL/core/antirandoms/mordaut.simba}
+{$include SRL/SRL/core/antirandoms/prisonpete.simba}
+{$include SRL/SRL/core/antirandoms/mime.simba}
+{$include SRL/SRL/core/antirandoms/antirandoms.simba}
+{$include SRL/SRL/core/antirandoms/randomtool.simba}
 {$IFDEF LoadExtraFonts}
-{.include SRL/SRL/misc/fontupdater.simba}
+{$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
 
 {$DEFINE SRL_OPENDEV}
