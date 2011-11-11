@@ -20,13 +20,17 @@
 //--                                                                        --//
 //--        Low Level SCAR Math, Mouse Movement and Color routines.         --//
 //----------------------------------------------------------------------------//
+
+// For development:
+{$DEFINE CompileSRL}
+
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
 {.include SRL/SRL/misc/smart.simba}
 {$ENDIF}
 {$ENDIF}
 
-{.include SRL/SRL/core/defines.simba}
+//{.include SRL/SRL/core/defines.simba}
 {$ifdef Simba}
 {$i SRL/SRL/core/simba.simba}
 {$endif}
@@ -192,3 +196,9 @@ begin
   {$ENDIF}
 
 end;
+
+{$ifdef CompileSRL}
+begin
+  SetupSRL;
+end.
+{$endif}
