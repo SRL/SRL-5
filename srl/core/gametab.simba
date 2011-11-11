@@ -964,7 +964,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{
+
 function EquipmentCoords(EquipSlot: Integer): TPoint;
 begin
   case EquipSlot of
@@ -985,7 +985,7 @@ begin
 	    srl_warn('EquipmentCoords','Invalid EquipSlot('+inttostr(EquipSlot)+') passed',warn_AllVersions);
     end;
   end;
-end;}
+end;
 
 (*
 GetEquippedItemBounds
@@ -1006,7 +1006,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function GetEquippedItemBounds(Which: Variant): TBox;
+function GetEquippedItemBounds(Which: Variant): TBox;
 var
   P: TPoint;
   I: Integer;
@@ -1053,7 +1053,7 @@ begin
   P := EquipmentCoords(I);
   Result := IntToBox(P.x - 11, P.y - 11, P.x + 11, P.y + 11);
 end;
-}
+
 (*
 MouseEquippedItem
 ~~~~~~~~~~~~~~~~~
@@ -1073,7 +1073,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure MouseEquippedItem(Which: String; ClickType: Integer);
+procedure MouseEquippedItem(Which: String; ClickType: Integer);
 var
   B : TBox;
 begin
@@ -1082,7 +1082,7 @@ begin
   GameTab(tab_Equip);
   MouseBox(B.x1, B.y1, B.x2, B.y2, ClickType);
 end;
-}
+
 (*
 WearingItem
 ~~~~~~~~~~~
@@ -1102,7 +1102,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function WearingItem(I: Integer): Boolean;
+function WearingItem(I: Integer): Boolean;
 var
   X, Y: Integer;
   TP: TPoint;
@@ -1118,7 +1118,7 @@ begin
   TP := EquipmentCoords(I);
   Result := FindColor(X, Y, srl_outline_black, TP.x - 8, TP.y - 8, TP.x + 8, TP.y + 8);
 end;
-}
+
 (*
 TakeOff
 ~~~~~~~
@@ -1138,7 +1138,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure TakeOff(I: Integer);
+procedure TakeOff(I: Integer);
 var
   TP: TPoint;
 begin
@@ -1149,7 +1149,7 @@ begin
     Wait(200 + Random(350));
   end;
 end;
-}
+
 (*
 TakeOffAllExcept
 ~~~~~~~~~~~~~~~~
@@ -1169,7 +1169,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
+procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
 var
   I: Integer;
 begin
@@ -1177,7 +1177,7 @@ begin
     if (not InIntArray(ExceptionSlots, I)) then
       TakeOff(I);
 end;
-}
+
 (*
 TakeOffAllItems
 ~~~~~~~~~~~~~~~
