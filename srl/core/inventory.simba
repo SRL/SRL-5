@@ -340,9 +340,10 @@ InvMouse
 
 A combined MouseItem & MMouseItem, will hopefully replace both
 procedures one day. Usage is like SRL's MouseBox, Action determines what to do:
-  1: Leftclick
-  2: Rightclick
-  3: Move mouse to item
+
+  - 1: Leftclick
+  - 2: Rightclick
+  - 3: Move mouse to item
 
 .. note::
 
@@ -566,13 +567,16 @@ CountItems
 
     function CountItems(ItemType: string; Identifier: Integer; tol: TIntegerArray): Integer;
 
-Counts Items in the inventory.
-  ItemType - 'dtm', 'bitmap', 'bitmap mask', 'color'
-  Item - name/value of your dtm/bmp/color/bmpmask.
-  Tol - 'dtm' - [] (dtm's can't have tolerance).
-        'bmp' - [BMPTol].
-        'color' - [COLOUR Tol, Colour Count].
-        'bmpmask' - [BMPTol, ContourTol].
+Counts Items in the inventory:
+
+  - ItemType: 'dtm', 'bitmap', 'bitmap mask', 'color'
+  - Item: name/value of your dtm/bmp/color/bmpmask.
+  - Tol:
+
+        *   'dtm' - [] (dtm's can't have tolerance).
+        *   'bmp' - [BMPTol].
+        *   'color' - [COLOUR Tol, Colour Count].
+        *   'bmpmask' - [BMPTol, ContourTol].
 
 .. note::
 
@@ -600,12 +604,16 @@ ClickAllItemsExcept
     function ClickAllItemsExcept(ItemType: String; Identifier: Integer; option: string; SlotIgnores: TIntegerArray; waitnum: Integer; tol: TIntegerArray):Integer;
 
 Performs "option" popup menu action on all items with:
-  ItemType - 'dtm', 'bitmap', 'bitmap mask', 'color'
-  Identifier - name/value of your dtm/bmp/color/bmpmask.
-  Tol - 'dtm' - [] (dtm's can't have tolerance).
-        'bmp' - [BMPTol].
-        'color' - [COLOUR Tol, Colour Count].
-        'bmpmask' - [BMPTol, ContourTol].
+
+  - ItemType: 'dtm', 'bitmap', 'bitmap mask', 'color'
+  - Identifier: name/value of your dtm/bmp/color/bmpmask.
+  - Tol:
+
+        *   'dtm' - [] (dtm's can't have tolerance).
+        *   'bmp' - [BMPTol].
+        *   'color' - [COLOUR Tol, Colour Count].
+        *   'bmpmask' - [BMPTol, ContourTol].
+
   Will not click items in slots SlotIgnores
 
 .. note::

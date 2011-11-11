@@ -2242,8 +2242,7 @@ Returns the number from your XP Bar.
 .. note::
 
     by Narcle & IceFire908
-
-*******************************************************************************}
+*)
 
 function GetXPBarTotal: LongInt;
 var

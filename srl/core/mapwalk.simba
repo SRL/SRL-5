@@ -91,6 +91,7 @@ Aligns RS to specified direction
 Example:
 
 .. code-block:: pascal
+
     // using a string!
     MakeCompass('N');
 
