@@ -964,6 +964,7 @@ Example:
 .. code-block:: pascal
 
 *)
+{
 function EquipmentCoords(EquipSlot: Integer): TPoint;
 begin
   case EquipSlot of
@@ -984,7 +985,7 @@ begin
 	    srl_warn('EquipmentCoords','Invalid EquipSlot('+inttostr(EquipSlot)+') passed',warn_AllVersions);
     end;
   end;
-end;
+end;}
 
 (*
 GetEquippedItemBounds
@@ -1005,7 +1006,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function GetEquippedItemBounds(Which: Variant): TBox;
+{function GetEquippedItemBounds(Which: Variant): TBox;
 var
   P: TPoint;
   I: Integer;
@@ -1052,7 +1053,7 @@ begin
   P := EquipmentCoords(I);
   Result := IntToBox(P.x - 11, P.y - 11, P.x + 11, P.y + 11);
 end;
-
+}
 (*
 MouseEquippedItem
 ~~~~~~~~~~~~~~~~~
@@ -1072,7 +1073,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure MouseEquippedItem(Which: String; ClickType: Integer);
+{procedure MouseEquippedItem(Which: String; ClickType: Integer);
 var
   B : TBox;
 begin
@@ -1081,7 +1082,7 @@ begin
   GameTab(tab_Equip);
   MouseBox(B.x1, B.y1, B.x2, B.y2, ClickType);
 end;
-
+}
 (*
 WearingItem
 ~~~~~~~~~~~
@@ -1101,7 +1102,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function WearingItem(I: Integer): Boolean;
+{function WearingItem(I: Integer): Boolean;
 var
   X, Y: Integer;
   TP: TPoint;
@@ -1117,7 +1118,7 @@ begin
   TP := EquipmentCoords(I);
   Result := FindColor(X, Y, srl_outline_black, TP.x - 8, TP.y - 8, TP.x + 8, TP.y + 8);
 end;
-
+}
 (*
 TakeOff
 ~~~~~~~
@@ -1137,7 +1138,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure TakeOff(I: Integer);
+{procedure TakeOff(I: Integer);
 var
   TP: TPoint;
 begin
@@ -1148,7 +1149,7 @@ begin
     Wait(200 + Random(350));
   end;
 end;
-
+}
 (*
 TakeOffAllExcept
 ~~~~~~~~~~~~~~~~
@@ -1168,7 +1169,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
+{procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
 var
   I: Integer;
 begin
@@ -1176,7 +1177,7 @@ begin
     if (not InIntArray(ExceptionSlots, I)) then
       TakeOff(I);
 end;
-
+}
 (*
 TakeOffAllItems
 ~~~~~~~~~~~~~~~
@@ -1196,11 +1197,11 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure TakeOffAllItems;
+{procedure TakeOffAllItems;
 begin
   TakeOffAllExcept([]);
 end;
-
+}
 (*
 CountEquippedItems
 ~~~~~~~~~~~~~~~~~~
@@ -1220,7 +1221,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function CountEquippedItems: Integer;
+{function CountEquippedItems: Integer;
 var
   I: Integer;
 begin
@@ -1231,7 +1232,7 @@ begin
     if WearingItem(I) then
       Inc(Result);
 end;
-
+}
 (*
 Gametab 6
 ---------
@@ -1348,7 +1349,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function ObjectiveCoords(ObjectiveSlot: Byte): TPoint;
+{function ObjectiveCoords(ObjectiveSlot: Byte): TPoint;
 begin
   if (not InRange(ObjectiveSlot, 1, 6)) then
   begin
@@ -1364,7 +1365,7 @@ begin
   Result := Point(RandomRange(20 + 165 * (Result.x - 1), 160 + 165 * (Result.x - 1)),
     RandomRange(50 + 65 * (Result.y - 1), 160 + 65 * (Result.y - 1)));
 end;
-
+}
 (*
 HasObjective
 ~~~~~~~~~~~~
@@ -1384,7 +1385,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function HasObjective: Boolean;
+{function HasObjective: Boolean;
 begin
   Result := False;
   if (GameTab(tab_Objectives)) then
@@ -1393,7 +1394,7 @@ begin
     srl_Warn('HasObjective', 'Failed to open GameTab #' +
       IntToStr(tab_Objectives), Warn_AllVersions);
 end;
-
+}
 (*
 ClearObjective
 ~~~~~~~~~~~~~~
@@ -1730,7 +1731,7 @@ begin
   if (not LoggedIn) then exit;
   CloseWindow;
 
-  if (not FindColor(x, y, ClBlack, 7, 460, 69, 474)) then   //if you're in chat
+  if (not FindColor(x, y, ClBlack, 7, 460, 69, 474)) then   {if you're in chat}
     if (not ClickContinue(True, True)) then
     begin
       Mouse(MMCX, MMCY, 2, 2, True);
