@@ -115,7 +115,7 @@ begin
   SetLength(Tol, 2);
   case Lowercase(IdentType) of
     'bitmap mask', 'bmpmask', 'bmp mask', 'mask': Result := FindBitmapMaskTolerance(Ident, x, y, Area.x1, Area.y1, Area.x2, Area.y2, Tol[0], Tol[1]);
-    'bitmap', 'bmp': Result := FindTransparentBitmapTolerance(Ident, x, y, 0, Area.x1, Area.y1, Area.x2, Area.y2, Tol[0]);
+    'bitmap', 'bmp': Result := FindBitmapToleranceIn(Ident, x, y, Area.x1, Area.y1, Area.x2, Area.y2, Tol[0]);
     'dtm': Result := FindDTM(Ident, x, y, Area.x1, Area.y1, Area.x2, Area.y2);
     'colour', 'color':
       begin

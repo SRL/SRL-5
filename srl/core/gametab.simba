@@ -8,58 +8,6 @@ This Include contains all Gametab Routines.
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » GameTab Routines I                          --//
-//-----------------------------------------------------------------//
-// * function GetCurrentTab: Integer;                              // by ZephyrsFury
-// * function TabExists(Tab: Integer): Boolean;                    // by ZephyrsFury
-// * function GameTab(Tab: Integer): Boolean;                      // by ZephyrsFury
-// * function SetFightMode(oFightMode: Integer): Boolean;          // by Nielsie95 & Nava2, fixed by Quickmarch
-// * function SetCombatType(Kind: String): Boolean;                // by Narcle & Nava2
-// * function GetCombatLevel: Integer;                             // by Nielsie95
-// * procedure Retaliate(AutoRet:Boolean);                         // By WT-Fakawi & n3ss3s
-// * function SkillCoords(row, column: Integer): TPoint;           // by NaumanAkhlaQ
-// * function SkillToCoords(ScrollDownIfNeeded: Boolean; Skill: Variant): TPoint; // by Masquerader, Cheesehunk, Raymond, Wizzup? & ZephyrsFury
-// * function GetSkillInfo(Skill: Variant; Amount: Boolean): Integer; // by Raymond
-// * function GetSkillLevel(Skill: Variant): Integer;              // by Raymond
-// * function IsResting: Boolean;                                  // by Sabzi
-// * function GetMMLevels: integer;                                // by Raymond / Wizzup? / Sabzi
-// * function GetXP(Skill: Variant): Integer;                      // by Nielsie95
-// * function XpTillNextLevel(Skill: Variant): Integer;            // by Nielsie95
-// * function HpPercent: Integer;                                  // by Wizzup?
-// * procedure GetAllLevels;                                       // by WT-Fakawi
-// * function EquipmentCoords(EquipSlot: Integer): TPoint;         // by RsN modded by WT-Fakawi and Nielsie95
-// * function GetEquippedItemBounds(Which: String): TBox;          // by Nava2
-// * procedure MouseEquippedItem(Which : String; Left : Integer);  // by Nava2
-// * function WearingItem(i: Integer): Boolean;                    // by RsN
-// * procedure TakeOff(i: Integer);                                // by RsN
-// * procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);    // by EvilChicken!
-// * procedure TakeOffAllItems;                                    // by EvilChicken!
-// * function CountEquippedItems: Byte;                            // by EvilChicken!
-// * function CurrentWorld: Integer;                               // by Cheesehunk, edited by Ron and fixed by ZephyrsFury
-// * function SetRun(Run: Boolean: Boolean;                        // by Wizzup? and EvilChicken!
-// * function ObjectivePercent: Integer;                           // by r!ch!e
-// * function ObjectiveCoords(ObjSlot: Integer): TPoint;           // by r!ch!e & Naum
-// * function HasObjective: Boolean;                               // by r!ch!e
-// * function ClearObjective: Boolean;                             // By r!ch!e
-// * function SetObjective(Skill: String; Level: Integer): Boolean; // by r!ch!e
-// * function SetRandomObjective(ObjectiveSlot: Integer; KeepOld: Boolean): Boolean; // by r!ch!e
-// * function RunEnergy(Min: Integer): Boolean;                    // by lordsaturn
-// * function SetRest: Boolean;                                    // by ZephyrsFury
-// * function RestUntil(Energy: Integer): Boolean;                 // by ZephyrsFury
-// * procedure SetGraphics(Brightness: Integer; vl, rr, gd, td, id, fl, gt, cs: string); // by ZephyrsFury
-// * procedure SetAudio(Volume, SFX, Area: Integer; SMSetting: (Stereo, Mono, NoChange) ); // by ZephyrsFury
-// * procedure SetBar(Brightness, Volume, SFX, Area: Integer);     // by ZephyrsFury
-// * procedure DoEmote(EmoteNumber: Integer);                      // by NaumanAkhlaQ
-// * function GetLobbyTab: Boolean;                                // by Bionicle1800
-// * function LobbyTab: Boolean;                                   // by Bionicle1800
-// * function IsXPBarOpen: Boolean;                                // by Narcle & IceFire908
-// * function ToggleXPBar(Open: Boolean): Boolean;                 // by Narcle & IceFire908
-// * function GetXPBarTotal: LongInt;                              // by Narcle & IceFire908
-// * function ResetXPTotal: Boolean;                               // by Narcle & IceFire908
-//*****************************************************************//
-
 type
   TSMSetting = (Stereo, Mono, NoChange);
 
@@ -964,7 +912,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{
+
 function EquipmentCoords(EquipSlot: Integer): TPoint;
 begin
   case EquipSlot of
@@ -985,7 +933,7 @@ begin
 	    srl_warn('EquipmentCoords','Invalid EquipSlot('+inttostr(EquipSlot)+') passed',warn_AllVersions);
     end;
   end;
-end;}
+end;
 
 (*
 GetEquippedItemBounds
@@ -1006,7 +954,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function GetEquippedItemBounds(Which: Variant): TBox;
+function GetEquippedItemBounds(Which: Variant): TBox;
 var
   P: TPoint;
   I: Integer;
@@ -1053,7 +1001,7 @@ begin
   P := EquipmentCoords(I);
   Result := IntToBox(P.x - 11, P.y - 11, P.x + 11, P.y + 11);
 end;
-}
+
 (*
 MouseEquippedItem
 ~~~~~~~~~~~~~~~~~
@@ -1073,7 +1021,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure MouseEquippedItem(Which: String; ClickType: Integer);
+procedure MouseEquippedItem(Which: String; ClickType: Integer);
 var
   B : TBox;
 begin
@@ -1082,7 +1030,7 @@ begin
   GameTab(tab_Equip);
   MouseBox(B.x1, B.y1, B.x2, B.y2, ClickType);
 end;
-}
+
 (*
 WearingItem
 ~~~~~~~~~~~
@@ -1102,7 +1050,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function WearingItem(I: Integer): Boolean;
+function WearingItem(I: Integer): Boolean;
 var
   X, Y: Integer;
   TP: TPoint;
@@ -1118,7 +1066,7 @@ begin
   TP := EquipmentCoords(I);
   Result := FindColor(X, Y, srl_outline_black, TP.x - 8, TP.y - 8, TP.x + 8, TP.y + 8);
 end;
-}
+
 (*
 TakeOff
 ~~~~~~~
@@ -1138,7 +1086,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure TakeOff(I: Integer);
+procedure TakeOff(I: Integer);
 var
   TP: TPoint;
 begin
@@ -1149,7 +1097,7 @@ begin
     Wait(200 + Random(350));
   end;
 end;
-}
+
 (*
 TakeOffAllExcept
 ~~~~~~~~~~~~~~~~
@@ -1169,7 +1117,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
+procedure TakeOffAllExcept(ExceptionSlots: TIntegerArray);
 var
   I: Integer;
 begin
@@ -1177,7 +1125,7 @@ begin
     if (not InIntArray(ExceptionSlots, I)) then
       TakeOff(I);
 end;
-}
+
 (*
 TakeOffAllItems
 ~~~~~~~~~~~~~~~
@@ -1197,11 +1145,11 @@ Example:
 .. code-block:: pascal
 
 *)
-{procedure TakeOffAllItems;
+procedure TakeOffAllItems;
 begin
   TakeOffAllExcept([]);
 end;
-}
+
 (*
 CountEquippedItems
 ~~~~~~~~~~~~~~~~~~
@@ -1221,7 +1169,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function CountEquippedItems: Integer;
+function CountEquippedItems: Integer;
 var
   I: Integer;
 begin
@@ -1232,7 +1180,7 @@ begin
     if WearingItem(I) then
       Inc(Result);
 end;
-}
+
 (*
 Gametab 6
 ---------
@@ -1289,7 +1237,7 @@ begin
   if (IsTextInAreaEx(635, 205, 727, 226, TextX, TextY, 'RuneSca', 5,
                      SmallChars, False, False, 0, 0, 3381759)) then
     Result := StrToIntDef(Trim(GetTextAtEx(TextX + 65, TextY, 5,
-      SmallChars, True, False, 0, 0, 3381759}, 3, False, tr_AllChars)), -1);
+      SmallChars, True, False, 0, 0, 3381759, 3, False, tr_AllChars)), -1);
   if (Result = -1) then
     srl_Warn('CurrentWorld', 'Could not get Player''s current world', Warn_AllVersions);
 end;
@@ -1349,7 +1297,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function ObjectiveCoords(ObjectiveSlot: Byte): TPoint;
+function ObjectiveCoords(ObjectiveSlot: Byte): TPoint;
 begin
   if (not InRange(ObjectiveSlot, 1, 6)) then
   begin
@@ -1365,7 +1313,7 @@ begin
   Result := Point(RandomRange(20 + 165 * (Result.x - 1), 160 + 165 * (Result.x - 1)),
     RandomRange(50 + 65 * (Result.y - 1), 160 + 65 * (Result.y - 1)));
 end;
-}
+
 (*
 HasObjective
 ~~~~~~~~~~~~
@@ -1385,7 +1333,7 @@ Example:
 .. code-block:: pascal
 
 *)
-{function HasObjective: Boolean;
+function HasObjective: Boolean;
 begin
   Result := False;
   if (GameTab(tab_Objectives)) then
@@ -1394,7 +1342,7 @@ begin
     srl_Warn('HasObjective', 'Failed to open GameTab #' +
       IntToStr(tab_Objectives), Warn_AllVersions);
 end;
-}
+
 (*
 ClearObjective
 ~~~~~~~~~~~~~~

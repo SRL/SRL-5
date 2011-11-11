@@ -1350,7 +1350,7 @@ begin
   result := false;
   Speed := GetColorToleranceSpeed;
   ColorToleranceSpeed(2);
-  if ChangeAngle then SetAngle(True);
+  if ChangeAngle then SetAngle(SRL_ANGLE_HIGH);
   if ChangeCompass then
   begin
     c := Random(2);

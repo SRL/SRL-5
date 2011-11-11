@@ -6,17 +6,9 @@ Globals
 .. contents::
 
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Global Variables                            --//
-//-----------------------------------------------------------------//
-// * procedure LoadSRLBitMaps;                                     // by SRL Dev Team
-// * procedure FreeSRLBitMaps;                                     // by Ron
-// * procedure LoadSRLFonts;                                       // by Markus
-// * procedure FreeSRLFonts;                                       // by Markus
-// * procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer); // by SRL Dev Team
-// * procedure SetupBoxes;                                         // by the SRL Dev Team & MylesMadness
-// * function srl_InFight: Boolean;                                // by Frement
+
+type
+  TBooleanArray = array of Boolean;
 
 { const SRLVersionNumber;
   Description: Repository Version Number. }

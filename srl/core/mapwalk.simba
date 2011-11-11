@@ -57,7 +57,7 @@ begin
           begin
             e := StrToFloatDef(dir, -1337);
             if (e <> -1337) then
-              Result := FixD(e);
+              Result := FixD(e)
             else
             begin
               srl_Warn('variantToDirection',
@@ -360,7 +360,8 @@ Example:
 // TODO: Implement constants!
 procedure RunAway(dir: variant; RunFar: Boolean; Action, WaitTime: Integer);
 var
-  Rad, Deg, T: Integer;
+  Rad, T: Integer;
+  Deg: extended;
 begin
   if (not LoggedIn) then exit;
 
@@ -697,7 +698,8 @@ Example:
 // TODO: Reorder params to clean up type changes?
 function RadialWalkEx(var TPA: TPointArray; cx, cy, TheColor, tol: Integer; StartRadial, EndRadial: Variant; Radius: Integer): Boolean;
 var
-  time, SD, ED: Integer;
+  time: Integer;
+  SD, ED: extended;
 begin
   Result := False;
   if (not LoggedIn) then Exit;
