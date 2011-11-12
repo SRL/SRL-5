@@ -1,0 +1,175 @@
+program new;
+
+{
+  Written by Dr. Steven Beauchemin; Released to Kevin Brightwell (Nava2)
+  Calculates numbers within a Gaussian distribution of numbers about the mean
+  with +/- the variance (aka. sigma).
+}
+
+
+{
+  Numerically evaluated constants for Normal distribution.
+}
+var
+  __NORM_CONST: TExtendedArray;
+
+procedure SetupGauss;
+begin
+  __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
+    0.252408784, 3.949846138 ];
+end;
+
+(*
+
+Helper method for cal_normal_random. Does polynomial calculation using the
+`Horner Scheme`_
+
+..http://en.wikipedia.org/wiki/Horner_scheme
+
+*)
+function __gauss_poly(r, rsqr: Extended): Extended;
+begin
+  Result := __NORM_CONST[0]*rsqr + __NORM_CONST[1];
+  Result := Result*rsqr + __NORM_CONST[2];
+  Result := Result*rsqr + __NORM_CONST[3];
+  Result := Result*rsqr + __NORM_CONST[4];
+  Result := Result*r;
+end;
+
+(*
+
+rand_normal
+~~~~~~~~~~~
+
+Calculates a normal random that is based upon the mean and the standard deviance
+passed into the function.
+
+By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
+
+*)
+function cal_normal_random(mean, sigma: Extended): Extended;
+var
+  r, gauss_rand: Extended;
+  max, i: Integer;
+begin
+  r := 0.0;
+  for i := 0 to 11 do
+    r := r + (random(MaxInt)+1.0)/MaxInt;
+
+  r := (r-6.0)/4.0 ;
+  gauss_rand:= __gauss_poly(r, r*r);
+  result := mean + sigma*gauss_rand;
+end;
+
+(*
+
+Gauss_Point
+~~~~~~~~~~~
+
+Calculates a point about cX, cY with radius maxRad. The point is returned in the
+reference parameters oX, oY.
+
+.. note::
+    by Nava2
+
+Example:
+.. code-block:: pascal
+
+    var
+      gX, gY: Integer;
+    // get a gaussian pt in a circle:
+    Gauss_Point(MMCX, MMCY, MMX2-MMCX, gX, gY);
+    WriteLn(Format("gX, gY -> %d, %d", gX, gY);
+
+*)
+
+const
+  SRL_GAUSS_POINT_DEV = 0.6;
+
+procedure Gauss_Point(cX, cY: Integer; sAngle, eAngle: Extended; maxRad: Integer; out oX, oY: Integer);
+var
+  angle: Extended;
+  radius: Extended;
+  xShift, yShift: Integer;
+begin
+
+  if (eAngle < sAngle) then
+    swap(eAngle, sAngle);
+
+  // random angle about the center;
+  angle := sAngle + (eAngle-sAngle)*Random(MaxInt)/MaxInt;
+
+  // get normal pt about zero, where 68% lie within .5*maxRad
+  radius := cal_normal_random(0,maxRad*SRL_GAUSS_POINT_DEV);
+
+  if (Abs(radius) >= maxRad) then
+  begin
+    if (radius > 0) then
+      radius := maxRad - 1
+    else
+      radius := (maxRad - 1) * -1;
+  end;
+
+  // the shifting distance based on the radius and angle (both rand)
+  xShift := round(radius * Cos(angle));
+  yShift := round(radius * Sin(angle));
+
+  oX := cX + xShift;
+  oY := cY + yShift;
+end;
+
+(*
+
+Gauss_Box
+~~~~~~~~~
+
+Calculates a point normally distributed from the center of the passed box. It
+checks for outlying points and will regenerate points if necessary.
+
+.. note::
+    by Nava2
+
+Example:
+.. code-block:: pascal
+
+    var
+      gX, gY: Integer;
+    // get a gaussian pt in a circle:
+    Gauss_Box(gX, gY, MMX1, MMY1, MMX2, MMY2);
+    WriteLn(Format("gX, gY -> %d, %d", gX, gY);
+
+*)
+
+procedure Gauss_Box(out px, py: Integer; x1, y1, x2, y2: Integer);
+var
+  rad: Extended;
+  gx, gy: Integer;
+  cx, cy, maxrad: Integer; // gauss info
+  valid: Boolean;
+  fail: Integer;
+begin
+  // initial setup.
+  cx := (x2-x1)/2;
+  cy := (y2-y1)/2;
+  maxRad := trunc(sqrt(Sqr(x2-cx) +  sqr(y2-cy))); // use pythag. theorem to get Rad.
+
+  fail := 0;
+  valid := false;
+  while ((not valid) and (fail < 5)) do
+  begin
+    // get the gaussian pts. Should only loop two or three times MAX.
+    Gauss_Point(cx, cy, 0.0, 360.0, maxRad, gx, gy);
+
+    valid := inRange(gx, x1, x2) and inRange(gy, y1, y2);
+    inc(fail);
+  end;
+
+  // return the values.
+  px := gx;
+  py := gy;
+end;
+
+
+
+begin
+end.
