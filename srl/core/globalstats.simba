@@ -238,11 +238,13 @@ begin
       begin
         case MessageBox('Would you want to disable this dialog from showing again in the future? (Not Recommended)', 'Disable this dialog?', mbYesNoCancel) of
           mrYes: SetSettingValue(stats_ShowStatsDialog, 'FALSE');
-          mrNo, mrCancel: Exit;
         end;
-            stats_Username := 'Anonymous';
-            stats_UserPass := 'anon1337';
-      end;
+
+        if (stats_username = '') then
+        begin
+          stats_Username := 'Anonymous';
+          stats_UserPass := 'anon1337';
+        end;
       mrCancel: TerminateScript;
     end;
   end;
