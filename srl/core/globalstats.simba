@@ -225,7 +225,6 @@ begin
   begin
     case MessageBox('No Stats account entered, would you like to set one up?', 'SRL Stats', mbYesNoCancel) of
       mrYes:
-      begin
         try
           stats_formSafeCall('stats_formInit');
         except
@@ -233,20 +232,18 @@ begin
         finally
           stats_formSafeCall('stats_formFree');
         end;
-      end;
+
       mrNo:
-      begin
         case MessageBox('Would you want to disable this dialog from showing again in the future? (Not Recommended)', 'Disable this dialog?', mbYesNoCancel) of
           mrYes: SetSettingValue(stats_ShowStatsDialog, 'FALSE');
         end;
-
-        if (stats_username = '') then
-        begin
-          stats_Username := 'Anonymous';
-          stats_UserPass := 'anon1337';
-        end;
-      mrCancel: TerminateScript;
     end;
+  end;
+
+  if (stats_username = '') then
+  begin
+    stats_Username := 'Anonymous';
+    stats_UserPass := 'anon1337';
   end;
 end;
 
@@ -376,7 +373,11 @@ begin
   ExtraTime := ExtraTime - (Worked*60000);
 
   stats_Timer := GetSystemTime - ExtraTime;
+  {$IFDEF Simba}
   SRLClient := InitializeHTTPClientWrap(False);
+  {$ELSE}
+  SRLClient := InitializeHTTPClient(False, False);
+  {$ENDIF}
   ClearPostData(SRLClient);
 
   AddPostVariable(SRLClient, 'user', stats_UserName);
@@ -416,7 +417,11 @@ begin
   S := PostHTTPPageEx(SRLClient, 'http://stats.villavu.com/api/commit');
   FreeHTTPClient(SRLClient);
   Result := False;
+  {$IFDEF Simba}
   case StrToIntDef(ExtractFromStr(S, Numbers), -1) of
+  {$ELSE}
+  case StrToIntDef(GetNumbers(S), -1) of
+  {$ENDIF}
     100: Result := True; // successful commit.
     110: Writeln('SRL_Stats: Incorrect user and/or password');
     120: Writeln('SRL_Stats: Incorrect script ID');
