@@ -485,7 +485,7 @@ Begin                                       //solves the maze using all the proc
   Wait(600 + Random(200));
 
   If rs_GetCompassAngleDegrees <> 0 Then   {antirandoms.scar also sets north}
-    ClickNorth(True);
+    ClickNorth(SRL_ANGLE_HIGH);
 
   DetectedPath := Maze_DetectStart;   //gets the start
 

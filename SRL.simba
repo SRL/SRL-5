@@ -74,6 +74,7 @@
 {$include SRL/SRL/core/rc.simba}
 {$include SRL/SRL/core/cautorespond.simba}
 {$include SRL/SRL/core/antiban.simba}
+{$include SRL/SRL/core/globalstats.simba}
 {$include SRL/SRL/core/antirandoms/common.simba}
 {$include SRL/SRL/core/antirandoms/certer.simba}
 {$include SRL/SRL/core/antirandoms/demon.simba}
@@ -95,7 +96,6 @@
 {$include SRL/SRL/core/antirandoms/mime.simba}
 {$include SRL/SRL/core/antirandoms/antirandoms.simba}
 {$include SRL/SRL/core/antirandoms/randomtool.simba}
-{$include SRL/SRL/core/globalstats.simba}
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
@@ -142,7 +142,7 @@ begin
   WaterColor := 0;
   BankColor := 0;
   LampSkill := 'mining';
-  SetUpSRLReport;
+  //SetUpSRLReport;
   LoadCosineArrays;
   SymbolAccuracy:= 0.8;
   LoadSRLBitMaps;

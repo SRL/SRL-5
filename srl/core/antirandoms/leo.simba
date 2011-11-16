@@ -386,7 +386,7 @@ const
 function Leo_BuryCoffins: Boolean;
 var
   GraveTypeCount: array [0..4] of array [0..4] of Integer;
-  GraveNames: array [0..4] of array [0..2] of integer};
+  GraveNames: array [0..4] of array [0..2] of integer;
   CofNames, GraveName: array [0..4] of integer;
   InvLoc: array [0..4] of Integer;
   I, Coffin, II, III, T: Integer;

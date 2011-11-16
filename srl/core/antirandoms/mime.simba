@@ -114,7 +114,7 @@ begin
 
   while not Mime_InSlot do
     Wait(300 + Random(200));
-  SetAngle(True);
+  SetAngle(SRL_ANGLE_HIGH);
   MakeCompass(0);
 
   MMouse(RandomRange(MSX1, MSX2), RandomRange(MSCY, MSY2), 0, 0);

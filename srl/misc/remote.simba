@@ -11,8 +11,6 @@ const
 
 
 function FileEmpty(FilePath: string): Boolean;
-var
-  aFile: Integer;
 begin
   if (not(FileExists(FilePath))) then Exit;
   Result:= not(StrToBool(ReadINI('Main', 'Running', FilePath)));
