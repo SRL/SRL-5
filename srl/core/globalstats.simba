@@ -25,7 +25,9 @@ var
   stats_Timer: integer;
   stats_RandNames: Array of String;
   stats_RandSolved: Array of Integer;
+  tmp_RandSolved: array of Integer;
   stats_RandFailed: Array of Integer;
+  tmp_RandFailed: array of integer;
   stats_form: TForm;
   stats_txtUser, stats_txtPass, stats_txtEmail: TEdit;
   stats_btnRegister, stats_btnCancel: TButton;
@@ -220,12 +222,13 @@ begin
                       'Sandwich', 'Beekeeper', 'Pillory', 'Arnav', 'Abyss',
                       'Certer', 'Mime', 'Frog'];
   SetArrayLength(stats_RandSolved, Length(stats_RandNames));
+  SetArrayLength(tmp_RandSolved, Length(stats_RandNames));
   SetArrayLength(stats_RandFailed, Length(stats_RandNames));
+  SetArrayLength(tmp_RandFailed, Length(stats_RandNames));
   if ((stats_Username = '') AND (stats_UserPass = '')) AND (StrToBoolDef(GetSettingValue(stats_ShowStatsDialog), True)) then
   begin
     case MessageBox('No Stats account entered, would you like to set one up?', 'SRL Stats', mbYesNoCancel) of
       mrYes:
-      begin
         try
           stats_formSafeCall('stats_formInit');
         except
@@ -233,18 +236,18 @@ begin
         finally
           stats_formSafeCall('stats_formFree');
         end;
-      end;
+
       mrNo:
-      begin
         case MessageBox('Would you want to disable this dialog from showing again in the future? (Not Recommended)', 'Disable this dialog?', mbYesNoCancel) of
           mrYes: SetSettingValue(stats_ShowStatsDialog, 'FALSE');
-          mrNo, mrCancel: Exit;
         end;
-            stats_Username := 'Anonymous';
-            stats_UserPass := 'anon1337';
-      end;
-      mrCancel: TerminateScript;
     end;
+  end;
+
+  if (stats_username = '') then
+  begin
+    stats_Username := 'Anonymous';
+    stats_UserPass := 'anon1337';
   end;
 end;
 
@@ -374,7 +377,11 @@ begin
   ExtraTime := ExtraTime - (Worked*60000);
 
   stats_Timer := GetSystemTime - ExtraTime;
+  {$IFDEF Simba}
   SRLClient := InitializeHTTPClientWrap(False);
+  {$ELSE}
+  SRLClient := InitializeHTTPClient(False, False);
+  {$ENDIF}
   ClearPostData(SRLClient);
 
   AddPostVariable(SRLClient, 'user', stats_UserName);
@@ -385,18 +392,18 @@ begin
   for i := rand_Leo to rand_Frog do
   begin
     // Update solved stats.
-    Increment := RandSolved[i] - stats_RandSolved[i];
+    Increment := tmp_RandSolved[i] - stats_RandSolved[i];
     if (Increment > 0) then
     begin
       stats_IncVariable(stats_RandNames[i] + ' (Solved)', Increment);
-      stats_RandSolved[i] := RandSolved[i];
+      stats_RandSolved[i] := tmp_RandSolved[i];
     end;
     // Update unsolved stats.
-    Increment := RandFailed[i] - stats_RandFailed[i];
+    Increment := tmp_RandFailed[i] - stats_RandFailed[i];
     if (Increment > 0) then
     begin
       stats_IncVariable(stats_RandNames[i] + ' (Unsolved)', Increment);
-      stats_RandFailed[i] := RandFailed[i];
+      tmp_RandFailed[i] := stats_RandFailed[i];
     end;
   end;
 
@@ -414,7 +421,11 @@ begin
   S := PostHTTPPageEx(SRLClient, 'http://stats.villavu.com/api/commit');
   FreeHTTPClient(SRLClient);
   Result := False;
+  {$IFDEF Simba}
   case StrToIntDef(ExtractFromStr(S, Numbers), -1) of
+  {$ELSE}
+  case StrToIntDef(GetNumbers(S), -1) of
+  {$ENDIF}
     100: Result := True; // successful commit.
     110: Writeln('SRL_Stats: Incorrect user and/or password');
     120: Writeln('SRL_Stats: Incorrect script ID');

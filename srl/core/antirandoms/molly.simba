@@ -293,7 +293,7 @@ Begin
   ColorToleranceSpeed(2);
   CompassAngle := Round(rs_GetCompassAngleDegrees);
   If CompassAngle <> 0 Then
-    ClickNorth(True);
+    ClickNorth(SRL_ANGLE_HIGH);
   Players[CurrentPlayer].Rand := 'Molly';
   MarkTime(MolMark);
   Wait(500 + Random(314));
