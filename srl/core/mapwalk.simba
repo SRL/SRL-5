@@ -1125,28 +1125,30 @@ Example:
 *)
 
 // TODO: Constants
-function GetMiniMapDotsIn(WhatDot: string; x1, y1, x2, y2: Integer): TPointArray;
+function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
 var
-  Color: Integer;
+  DotColor: Integer;
+  i, h: Integer;
 begin
-  WhatDot := LowerCase(WhatDot);
-  case WhatDot Of
-    'npc', 'yellow': Color := 61937; //60909
-    'cape', 'blue': Color := 12742980;
-    'item', 'red': Color := 592381; //789758
-    'player', 'white': Color := 16711422;
-    'friend', 'green': Color := 61440;
-  else
-    srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
+  case LowerCase(WhatDot) of
+    'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
+    'item', 'i', 'red', 'r':	      DotColor := 237;
+    'player', 'p', 'white', 'w':      DotColor := 15527148;
+    'friend', 'f', 'green', 'g':      DotColor := 60160;
+    'team', 't', 'blue', 'b', 'cape': DotColor := 9917996;
+    'clan', 'c', 'orange', 'o':	      DotColor := 1604816;
+    else
+      srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
-  FindColorsSpiralTolerance(MMCX, MMCY, Result, Color, x1, y1, x2, y2, 0);
-  RAaSTPA(Result, 4);
+  FindColorsPie(Result, DotColor, 0, 0, 360, 0, 76, x1, y1, x2, y2, MMCX, MMCY);
+  RAaSTPAEx(Result, 1, 1);
   if (Length(Result) < 1) then Exit;
-  if (WhatDot = 'player') or (WhatDot = 'white') then
+  if (inStrArr(WhatDot, ['player', 'p', 'white', 'w'], false)) then
   begin
-    InvertTPA(Result);
-    SetLength(Result, Length(Result) - 1);
-    InvertTPA(Result);
+    h := High(Result)-1;
+    for i := 0 to h do
+      Result[i] := Result[i+1];
+    SetLength(Result, h+1);
   end;
 end;
 
