@@ -260,7 +260,7 @@ begin
     Exit;
   end;
 
-  writeln('looking for box option');
+  WriteLn('looking for box option');
   if (not FindBoxOption(B, Index)) then
   begin
     SRL_Warn('UseRewardBox', 'Could not find a usable option.', Warn_AllVersions);
@@ -486,6 +486,29 @@ begin
       LogOut;
       Players[CurrentPlayer].Rand := 'Oh Dear You Are in Lumby';
       Players[CurrentPlayer].Active := False;
+    end;
+end;
+
+{*******************************************************************************
+function FindDwarvenPopup: Boolean;
+by: Harry
+Description: A simple functinds and closes the "please buy RS Members" popup
+that happens when you reach lvl 10 in any skill.
+*******************************************************************************}
+function FindDwarvenPopup: Boolean;
+begin
+  Result := False;
+  // Parts of red X, checked in two different spots to reduce false-positives
+  if (GetColor(485, 40) = 2569093) then 
+    if (GetColor(488, 40) = 11189720) then
+    begin
+      Result := True;
+      TakeScreen('Found Popup');
+      AddToSRLLog('******** FOUND POPUP ********');
+      WriteLn('******** FOUND POPUP ********');
+      // Box around the X, to close it.
+      MouseBox(482, 35, 492, 44, 1); 
+      Wait(1000+Random(3000));
     end;
 end;
 
@@ -920,14 +943,15 @@ function FindNonInventoryRandoms: Boolean;
 var
   I: Byte;
 begin
-  for I := 1 to 5 do
+  for I := 1 to 6 do
   begin
     case I of
       1: Result := SolveTeleportRandoms;
       2: Respond;
       3: Result := FindDead;
       4: Result := RC;
-      5: if (SRL_Procs[srl_OnRandomCall] <> nil) then
+      5: Result := FindDwarvenPopup;
+      6: if (SRL_Procs[srl_OnRandomCall] <> nil) then
            SRL_Procs[srl_OnRandomCall]();
     end;
     if (Result) then
@@ -959,16 +983,17 @@ begin
   for I := 1 to 9 do
   begin
     case I of
-      1: Result := SolveTeleportRandoms;
-      2: Respond;
-      3: Result := FindDead;
-      4: Result := FindLamp(LampSkill);
-      5: Result :=  RC;
-      6: Result := FindMod;
-      7: if (SRL_Procs[srl_OnRandomCall] <> nil) then
-           SRL_Procs[srl_OnRandomCall]();
-      8: Result := UseRewardBox;
-      9: Result := UseMysteryBox;
+      1:  Result := SolveTeleportRandoms;
+      2:  Respond;
+      3:  Result := FindDead;
+      4:  Result := FindLamp(LampSkill);
+      5:  Result :=  RC;
+      6:  Result := FindMod;
+      7:  Result := FindDwarvenPopup;
+      8:  if (SRL_Procs[srl_OnRandomCall] <> nil) then
+            SRL_Procs[srl_OnRandomCall]();
+      9:  Result := UseRewardBox;
+      10: Result := UseMysteryBox;
     end;
     if (Result) then
     begin
