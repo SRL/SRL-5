@@ -1129,6 +1129,7 @@ function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray
 var
   DotColor: Integer;
   i, h: Integer;
+  radius: Integer;
 begin
   case LowerCase(WhatDot) of
     'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
@@ -1140,7 +1141,9 @@ begin
     else
       srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
-  FindColorsPie(Result, DotColor, 0, 0, 360, 0, 76, x1, y1, x2, y2, MMCX, MMCY);
+  
+  radius := Max((x2-x1)/2, (y2-y1)/2);
+  FindColorsPie(Result, DotColor, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
   RAaSTPAEx(Result, 1, 1);
 end;
 
