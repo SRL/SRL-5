@@ -1132,7 +1132,7 @@ var
 begin
   case LowerCase(WhatDot) of
     'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
-    'item', 'i', 'red', 'r':	      DotColor := 237;
+    'item', 'i', 'red', 'r':	        DotColor := 237;
     'player', 'p', 'white', 'w':      DotColor := 15527148;
     'friend', 'f', 'green', 'g':      DotColor := 60160;
     'team', 't', 'blue', 'b', 'cape': DotColor := 9917996;
@@ -1142,14 +1142,6 @@ begin
   end;
   FindColorsPie(Result, DotColor, 0, 0, 360, 0, 76, x1, y1, x2, y2, MMCX, MMCY);
   RAaSTPAEx(Result, 1, 1);
-  if (Length(Result) < 1) then Exit;
-  if (inStrArr(WhatDot, ['player', 'p', 'white', 'w'], false)) then
-  begin
-    h := High(Result)-1;
-    for i := 0 to h do
-      Result[i] := Result[i+1];
-    SetLength(Result, h+1);
-  end;
 end;
 
 (*
