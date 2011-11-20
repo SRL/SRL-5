@@ -543,8 +543,10 @@ var
   TPA: TPointArray;
   Boxes : TIntegerArray;
   //B: TBox;
+{$IFNDEF LAPE}
 label
   ProcStart;
+{$ENDIF}
 begin
   ActivateClient;
   Wait(100);
@@ -608,7 +610,7 @@ begin
   if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
     Members := Players[CurrentPlayer].WorldInfo[0];
 
-  ProcStart:
+  {$IFNDEF LAPE}ProcStart:{$ENDIF}
 
   {if (Members) then
     I := 1;
@@ -757,7 +759,7 @@ begin
   begin
     RetryLogin := False;
     Inc(Attempts);
-    goto ProcStart;
+    {$IFNDEF LAPE} goto ProcStart;{$ENDIF}
   end;
 
 end;
@@ -792,10 +794,12 @@ var
   RetryLogin, B, BB: Boolean;
   Actions: TVariantArray;
   T, Attempts: LongInt;
+{$IFNDEF LAPE}
 label
   ProcStart;
+{$ENDIF}
 begin
-  ProcStart:
+  {$IFNDEF LAPE}ProcStart:{$ENDIF}
   //Writeln('1');
   if (not (Result)) then    {Check if Logged in}
     Result := LoggedIn;
@@ -941,13 +945,13 @@ begin
   begin
     RetryLogin := False;
     Inc(Attempts);
-    goto ProcStart;
+    {$IFNDEF LAPE}goto ProcStart;{$ENDIF}
   end;
 
                       {Set player start time ect...}
 
   if (Result) then
-    goto ProcStart;
+    {$IFNDEF LAPE}goto ProcStart;{$ENDIF}
 
 end;
 

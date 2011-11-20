@@ -28,6 +28,8 @@ var
   tmp_RandSolved: array of Integer;
   stats_RandFailed: Array of Integer;
   tmp_RandFailed: array of integer;
+
+{$IFNDEF LAPE}
   stats_form: TForm;
   stats_txtUser, stats_txtPass, stats_txtEmail: TEdit;
   stats_btnRegister, stats_btnCancel: TButton;
@@ -195,6 +197,7 @@ procedure stats_formFree();
 begin
   stats_form.free();
 end;
+{$ENDIF}
 
 
 (*
@@ -227,6 +230,7 @@ begin
   SetArrayLength(tmp_RandFailed, Length(stats_RandNames));
   if ((stats_Username = '') AND (stats_UserPass = '')) AND (StrToBoolDef(GetSettingValue(stats_ShowStatsDialog), True)) then
   begin
+    {$IFNDEF LAPE}
     case MessageBox('No Stats account entered, would you like to set one up?', 'SRL Stats', mbYesNoCancel) of
       mrYes:
         try
@@ -242,6 +246,7 @@ begin
           mrYes: SetSettingValue(stats_ShowStatsDialog, 'FALSE');
         end;
     end;
+    {$ENDIF}
   end;
 
   if (stats_username = '') then

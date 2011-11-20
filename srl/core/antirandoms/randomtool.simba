@@ -15,6 +15,7 @@
 // * Procedure r_ResetAll;                            // * by N1ke!
 //-----------------------------------------------------------------//
 
+{$IFNDEF LAPE}
 var
   RandomTool : TForm;
   InfoTxt: Array [0..3] of TLabel;
@@ -191,6 +192,7 @@ begin
   setarraylength(V, 0);
   ThreadSafeCall('r_ShowFormModal', v);
 end;
+{$ENDIF}
 
 {*******************************************************************************
 Procedure r_ResetAll;
@@ -200,6 +202,9 @@ Description: Resets all vars.
 *******************************************************************************}
 Procedure r_ResetAll;
 begin
+  {$IFDEF LAPE}
+  WriteLn('r_ResetAll not available in Lape');
+  {$ELSE}
   r_UseRandomTool := not(UseBox.Checked);
   TimeUntilClose.Enabled := False;
   CountDown.Enabled := False;
@@ -207,6 +212,7 @@ begin
   CurRandom := 0;
   r_SelfSolve := False;
   Freeform(RandomTool);
+  {$ENDIF}
 end;
 
 {*******************************************************************************
@@ -217,8 +223,12 @@ Description: Runs the form.
 *******************************************************************************}
 procedure r_RunAlert;
 begin
+  {$IFDEF LAPE}
+  WriteLn('r_RunAlert not available in Lape');
+  {$ELSE}
   r_SafeInitForm;
   r_SafeShowFormModal;
+  {$ENDIF}
 end;
 
 {*******************************************************************************
@@ -230,6 +240,9 @@ If so it waits for the player to solve the random.
 *******************************************************************************}
 Function r_CheckAction: Boolean;
 begin
+  {$IFDEF LAPE}
+  WriteLn('r_CheckAction not available in Lape');
+  {$ELSE}
   Result := r_SelfSolve;
   If Not Result then
     Exit;
@@ -237,6 +250,7 @@ begin
   Writeln('** Press F' + IntToStr(r_FKeyFinish) + ' when you wish to continue. **');
   While not IsFKeyDown(r_FKeyFinish)do
     Wait(150);
+  {$ENDIF}
 end;
 
 {*******************************************************************************
@@ -254,6 +268,9 @@ t_SoundPath: The path for a sound you wish to play, if random detected.
 Leave blank if you don't wish to have any sound.
 *******************************************************************************}
 Procedure SetupRandomTool(TimeOutWait, FKeyForFinish: Integer; t_SoundPath: String);
+{$IFDEF LAPE}
+begin WriteLn('Random tool is not available in Lape!');
+{$ELSE}
 var
   I, H, ArrC: Integer;
 begin
@@ -276,4 +293,5 @@ begin
       r_SolveAble[ArrC-1] := I;
     end;
   SetArrayLength(r_SolveAble, ArrC);
+{$ENDIF}
 end;

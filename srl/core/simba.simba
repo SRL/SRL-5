@@ -13,10 +13,14 @@ type
   TDTM = TSDTM;
 function  AddDTM(DTM : TDTM) : integer;
 begin
+  {$IFDEF LAPE}
+  WriteLn('AddDTM not implemented yet!');
+  {$ELSE}
   result := AddSDTM(dtm);
+  {$ENDIF}
 end;
 
-function InitializeHTTPClient(HandleCookies,handleredirects: Boolean): Integer;
+function InitializeHTTPClient(HandleCookies,handleredirects: Boolean): Integer; {$IFDEF LAPE}overload;{$ENDIF}
 begin
   {$ifdef SimbaDebug}
   if HandleRedirects then
@@ -58,6 +62,7 @@ begin
   DebugLn('Should clear report now..');
 end;
 
+{$IFNDEF LAPE}
 var
   Bladieblatempthingy : TForm;
 procedure CreateFormBladieblatempthingy;
@@ -69,6 +74,7 @@ begin
   if assigned(Bladieblatempthingy) then
     Bladieblatempthingy.free;
 end;
+
 procedure FreeForm(var form : TForm);
 var
   v : TVariantArray;
@@ -85,34 +91,13 @@ begin;
   ThreadSafeCall('CreateFormBladieblatempthingy',v);
   result := Bladieblatempthingy;
 end;
+{$ENDIF}
 
 function IsFKeyDown(FKey : integer) : boolean;
 begin
   if not InRange(FKey,1,12) then
     raiseexception(erCustomError,'FKey not in range 1..12');
   result := IsKeyDown(VK_F1 + FKey - 1);
-end;
-
-function GetColors(Coords : TPointArray) : TIntegerArray;
-begin
-  GetColorsWrap(Coords,Result);
-end;
-
-procedure ColorToRGB(Color : TColor; var R,G,B : integer);
-begin
-  R := Color and $ff;
-  G := Color shr 8 and $ff;
-  B := Color shr 16 and $ff;
-end;
-
-function Degrees(Radians: Extended): Extended;
-begin
-  result := Radians * 180 / pi;
-end;
-
-function Radians(Degrees: Extended): Extended;
-begin
-  result := Pi * degrees / 180;
 end;
 
 function InCircle(x, y, mx, my, r: Integer): Boolean;
@@ -161,7 +146,7 @@ const
 type
   TCharRange = longword; //I donno
 
-function GetTextAtEx(x, y: Integer; Tolerance: Integer; Chars: String; CheckShadow, CheckOutline: Boolean; MinSpacing, MaxSpacing: Integer; TextColor: Integer; TextLength: Integer; Strict: Boolean; Range: TCharRange): anystring;
+function GetTextAtEx(x, y: Integer; Tolerance: Integer; Chars: String; CheckShadow, CheckOutline: Boolean; MinSpacing, MaxSpacing: Integer; TextColor: Integer; TextLength: Integer; Strict: Boolean; Range: TCharRange): string; {$IFDEF LAPE}overload;{$ENDIF}
 begin
   // no hspacing, defaulting to 4. (with 4 ' and : will work)
   // Defaulting MaxSpacing to 3
@@ -252,9 +237,9 @@ begin;
   result := false;
 end;
 
-function Replace(Text, FindStr, ReplaceStr: string): string;
+function Replace(Text, FindStr, ReplaceStr: string): string; {$IFDEF LAPE}overload;{$ENDIF}
 begin;
-  result := ReplaceWrap(Text,FindStr,ReplaceStr,[rfReplaceAll]);
+  result := {$IFDEF LAPE}Replace{$ELSE}ReplaceWrap{$ENDIF}(Text,FindStr,ReplaceStr,[rfReplaceAll]);
 end;
 
 //Sends arrow to Client's window. For a, 0 = up, 1 = right, 2 = down, 3 = left.

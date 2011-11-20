@@ -509,7 +509,7 @@ Begin                                       //solves the maze using all the proc
     If Not Maze_TouchShrine Then
     Begin
       WriteLn('Couldn''t touch shrine!');
-      Result := False
+      Result := False;
       Exit;
     End Else
     Begin
