@@ -333,7 +333,7 @@ begin
   SortATPAFromFirstPoint(ATPA, Point(92, 166));
   if Length(ATPA) < (I * 2) then
     Exit;
-  TB := GetTPABounds(ATPA[(I * 2) + Integer(Descending)]);
+  TB := GetTPABounds(ATPA[(I * 2) + Byte(Descending)]);
   MouseBox(TB.x1, TB.y1, TB.x2, TB.y2, 1);
   Result := true;
 end;
@@ -403,7 +403,7 @@ begin
   SP := GetTPABounds(TPA2);
 
   BarHeight := (SP.Y2-SP.Y1);
-  WorldsOnScreen := (SB.y2-SB.y1+32)/42;//This is HALF of the worlds on screen. I don't use the full amount.
+  WorldsOnScreen := (SB.y2-SB.y1+32) div 42;//This is HALF of the worlds on screen. I don't use the full amount.
 
   if Length(WorldArray) < 1 then
     LoadWorldArrays;
@@ -430,19 +430,19 @@ begin
     Exit;
   end;
 
-  SPos := (SB.y1+BarHeight/2) + (WPos)*(SB.y2-SB.y1-BarHeight)/(H+1-WorldsOnScreen);//need the 0.0 to make it extended inside ()
-  CurPos := (SP.y1 + BarHeight/2);
+  SPos := (SB.y1+BarHeight div 2) + (WPos)*(SB.y2-SB.y1-BarHeight) div (H+1-WorldsOnScreen);//need the 0.0 to make it extended inside ()
+  CurPos := (SP.y1 + BarHeight div 2);
   Debugln('SCROLLINFO: CurPos: '+ToStr(CurPos)+' WPos: '+ToStr(WPos)+' H+1: '+ToSTr(H+1)+' SPos: '+ToStr(SPos));
   if InRange(SPos, CurPos - BarHeight, CurPos + BarHeight) then
   begin//if its too close the scroll bar won't move to correct position
-    if (CurPos < ((SB.y1+BarHeight/2)+ (SB.y2-SB.y1-BarHeight)/2)) then//half point
-      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y2, 0, 0, true)
+    if (CurPos < ((SB.y1+BarHeight div 2)+ (SB.y2-SB.y1-BarHeight) div 2)) then//half point
+      Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SB.y2, 0, 0, true)
     else
-      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y1, 0, 0, true);
+      Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SB.y1, 0, 0, true);
   end;
 
   //Writeln('SPos := '+ToStr(SPos));
-  Mouse((SB.x1 + (SB.x2-SB.x1)/2), SPos, 0, 0, true);
+  Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SPos, 0, 0, true);
   wait(300+Random(100));
   Result := IsTextInAreaEx(84, 134, 134, 440, p.X, p.Y, IntToStr(W) + ' ', 0, StatChars, False, False, -1, 2, TextColor);
 end;

@@ -128,7 +128,7 @@ begin
     Exit;
   end;
   Left := (Round((360 - StartAngle) + DirectionDeg) mod 360 <= Round((StartAngle + 360) - DirectionDeg) mod 360);
-  KeyDown((Integer(not Left) * 2) + 37);
+  KeyDown((Byte(not Left) * 2) + 37);
   Wait(10);
   MarkTime(Mark);
   i := 0.0;

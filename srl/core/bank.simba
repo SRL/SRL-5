@@ -756,7 +756,7 @@ begin
   if (BScreen) or (DScreen) then
     if (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) then
     begin
-      Mouse(390 - 50 * Integer(DScreen), 305 - 30 * Integer(DScreen), 15, 10, True);
+      Mouse(390 - 50 * Byte(DScreen), 305 - 30 * Byte(DScreen), 15, 10, True);
       Wait(200 + Random(300));
       T := GetSystemTime;
       while (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) and (GetSystemTime - T < 2000) do
@@ -841,7 +841,7 @@ begin
         Wait(100);
       TypeSend(vType);
     end else if VarType(vType) = varInteger then
-      WaitOptionMulti(['Deposit-' + inttostr(vType), 'Deposit'], 200)
+      WaitOptionMulti(['Deposit-' + IntToStr(Integer(vType)), 'Deposit'], 200)
     else
       WaitOptionMulti(['Deposit-All', 'Deposit'], 200);
     T := GetSystemTime;

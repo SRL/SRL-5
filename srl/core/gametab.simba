@@ -1173,7 +1173,7 @@ function CountEquippedItems: Integer;
 var
   I: Integer;
 begin
-  Result := Integer(GameTab(tab_Equip)) - 2;
+  Result := Byte(GameTab(tab_Equip)) - 2;
   if (Result = -1) then exit;
 
   for I := 1 to 11 do
