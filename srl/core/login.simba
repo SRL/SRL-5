@@ -110,19 +110,9 @@ Example:
 
 *)
 function RSReady: Boolean;
-var
-  t: Integer;
 begin
-  t := GetSystemTime + 5000;
-  while (not (Result)) and (t > GetSystemTime) do
-  begin
-    Result := (CountColor(0, MSCx - 20, MSCy - 20, MSCx + 20, MSCy + 20) < 20);
-    Wait(3);
-  end;
-  if (not (Result)) then
-    Exit;
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 12312554); //X button in top right
-  if (GetColor(748,66) = 12312554) then // X button on resizeable client
+  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
     WriteLn('Please set it to "Fixed" to have SRL function properly.');

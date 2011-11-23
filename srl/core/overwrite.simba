@@ -13,37 +13,30 @@
 // * function FindColors(var TPA: TPointArray; Color, x1, y1, x2, y2: Integer): Boolean; // by Nava2, ZephyrsFury, & Quickmarch.
 
 (*
-rs_GetCompassAngleDegrees
-~~~~~~~~~~~~~~~~~~~~~~~~~
+fixRad
+~~~~~~
 
 .. code-block:: pascal
+    function fixRad(rad: Extended): Extended;
 
-    function rs_GetCompassAngleDegrees: Extended;
-
-Returns the compass angle in degrees.
+Returns the periodic rad in the range (0,2PI].
 
 .. note::
-
-    by Wizzup?
-
-Example:
-
-.. code-block:: pascal
+  By Nava2
 
 *)
-function rs_GetCompassAngleDegrees: Extended;
+function fixRad(rad: Extended): Extended;
 var
-   Compass: TPointArray;
-   MyPoint: TPoint;
+  __TWO_PI: extended;
 begin
-  Result := -1;
-  FindColorsTolerance(Compass, 1911089, 520, 2, 560, 40, 0);
-  if (Length(Compass) < 1) then
-    Exit;
-  MyPoint := MiddleTPA(Compass);
-  Result := Degrees(ArcTan2(-(MyPoint.Y - 24), MyPoint.X - 543)) - 90;
-  if (Result < 0) then
-    Result := Result + 360;
+  __TWO_PI := 2 * Pi;
+  result := rad;
+
+  while (result >= __TWO_PI) do
+    result := result - __TWO_PI;
+
+  while (result < 0) do
+    result := result + __TWO_PI;
 end;
 
 (*
@@ -66,8 +59,42 @@ Example:
 
 *)
 function rs_GetCompassAngleRadians: Extended;
+var
+   Compass: TPointArray;
+   MyPoint: TPoint;
 begin
-  Result := Radians(rs_GetCompassAngleDegrees);
+  Result := -1;
+  FindColorsTolerance(Compass, 7699891, 520, 2, 560, 40, 0);
+  if (Length(Compass) < 1) then
+    Exit;
+  MyPoint := MiddleTPA(Compass);
+  Result := ArcTan2(-(MyPoint.Y - 24), MyPoint.X - 543) - Radians(80);
+
+  Result := fixRad(Result);
+end;
+
+(*
+rs_GetCompassAngleDegrees
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_GetCompassAngleDegrees: Extended;
+
+Returns the compass angle in degrees.
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function rs_GetCompassAngleDegrees: Extended;
+begin
+  Result := Degrees(rs_GetCompassAngleRadians());
 end;
 
 (*
