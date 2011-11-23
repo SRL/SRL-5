@@ -6,11 +6,11 @@
 //--   Freddy1990, Hobbit, IceFire908, inferno, Kernel Klink, Knightstreak, --//
 //--   Krazy_Meerkat, Krichevskoy, Liquid, Lorax, lordsaturn, Mad Cow,      --//
 //--   marpis, Markus, masquerader, mastaraymond, moparisthebest,           --//
-//--   Mutant Squirrle, n3ss3s, N1ke, Naum, Nava2, nielsie95, phantombmx,   --//
-//--   pups, Pyro, RAM, Rasta Magician, realrune, Renax, Ron, RsN,          --//
-//--   SKy Scripter, solemn wishes, Spky, SRL, Starblaster100, Stupid3ooo,  --//
-//--   Sumilion, tarajunky, The Claw, The_Rs_Monkey, TRiLeZ, Wizzup?,       --//
-//--   WT-Fakawi, XxKanexX, Yakman, YoHoJo, ZephyrsFury, _ChArMz,           --//
+//--   Mutant Squirrle, n3ss3s, N1ke, Naum, Nava2, NCDS, nielsie95,         --//
+//--   phantombmx, pups, Pyro, RAM, Rasta Magician, realrune, Renax, Ron,   --//
+//--   RsN, SKy Scripter, solemn wishes, Spky, SRL, Starblaster100,         --//
+//--   Stupid3ooo,Sumilion, tarajunky, The Claw, The_Rs_Monkey, TRiLeZ,     --//
+//--   Wizzup?, WT-Fakawi, XxKanexX, Yakman, YoHoJo, ZephyrsFury, _ChArMz,  --//
 //--                                                                        --//
 //--                                ....... and the SRL Community.          --//
 //----------------------------------------------------------------------------//
@@ -74,6 +74,7 @@
 {$include SRL/SRL/core/rc.simba}
 {$include SRL/SRL/core/cautorespond.simba}
 {$include SRL/SRL/core/antiban.simba}
+{$include SRL/SRL/core/globalstats.simba}
 {$include SRL/SRL/core/antirandoms/common.simba}
 {$include SRL/SRL/core/antirandoms/certer.simba}
 {$include SRL/SRL/core/antirandoms/demon.simba}
@@ -95,7 +96,6 @@
 {$include SRL/SRL/core/antirandoms/mime.simba}
 {$include SRL/SRL/core/antirandoms/antirandoms.simba}
 {$include SRL/SRL/core/antirandoms/randomtool.simba}
-{$include SRL/SRL/core/globalstats.simba}
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
@@ -142,7 +142,7 @@ begin
   WaterColor := 0;
   BankColor := 0;
   LampSkill := 'mining';
-  SetUpSRLReport;
+  //SetUpSRLReport;
   LoadCosineArrays;
   SymbolAccuracy:= 0.8;
   LoadSRLBitMaps;

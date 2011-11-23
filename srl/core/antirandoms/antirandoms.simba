@@ -58,52 +58,52 @@ Begin
   Begin
     Case i of
       0: begin CurrentInt := SRL_Logs;                     Name := '| SRL Logs          :'; end;
-      1: begin CurrentInt := RandSolved[rand_Trade];       Name := '| Trades Made       :'; end;
-      2: begin CurrentInt := RandFailed[rand_Trade];       Name := '| Trades Missed     :'; end;
-      3: begin CurrentInt := RandSolved[rand_Fight];       Name := '| Fights            :'; end;
-      4: begin CurrentInt := RandSolved[rand_Sandwich];    Name := '| Sandwiches Solved :'; end;
-      5: begin CurrentInt := RandFailed[rand_Sandwich];    Name := '| Sandwiches Missed :'; end;
-      6: begin CurrentInt := RandSolved[rand_Lamp];        Name := '| Lamps Solved      :'; end;
-      7: begin CurrentInt := RandFailed[rand_Lamp];        Name := '| Lamps Missed      :'; end;
-      8: begin CurrentInt := RandSolved[rand_Frog];        Name := '| Frog Solved       :'; end;
-      9: begin CurrentInt := RandFailed[rand_Frog];        Name := '| Frog Missed       :'; end;
-      10: begin CurrentInt := RandSolved[rand_Certer];     Name := '| Certers Solved    :'; end;
-      11: begin CurrentInt := RandFailed[rand_Certer];     Name := '| Certers Missed    :'; end;
-      12: begin CurrentInt := RandSolved[rand_Demon];      Name := '| Demons Solved     :'; end;
-      13: begin CurrentInt := RandFailed[rand_Demon];      Name := '| Demons Missed     :'; end;
-      14: begin CurrentInt := RandSolved[rand_Mod];        Name := '| Mods Found        :'; end;
-      15: begin CurrentInt := RandSolved[rand_Maze];       Name := '| Mazes Solved      :'; end;
-      16: begin CurrentInt := RandFailed[rand_Maze];       Name := '| Mazes Missed      :'; end;
-      17: begin CurrentInt := RandSolved[rand_Mime];       Name := '| Mimes Solved      :'; end;
-      18: begin CurrentInt := RandFailed[rand_Mime];       Name := '| Mimes Missed      :'; end;
-      19: begin CurrentInt := RandSolved[rand_Death];      Name := '| Deaths            :'; end;
-      20: begin CurrentInt := RandSolved[rand_Quiz];       Name := '| Quizes Solved     :'; end;
-      21: begin CurrentInt := RandFailed[rand_Quiz];       Name := '| Quizes Missed     :'; end;
-      22: begin CurrentInt := RandSolved[rand_ScapeRune];  Name := '| ScapeRunes Solved :'; end;
-      23: begin CurrentInt := RandFailed[rand_ScapeRune];  Name := '| ScapeRunes Missed :'; end;
-      24: begin CurrentInt := RandSolved[rand_BirdNest];   Name := '| Birds Nests       :'; end;
-      25: begin CurrentInt := RandSolved[rand_Pinball];    Name := '| Pinballs Solved   :'; end;
-      26: begin CurrentInt := RandFailed[rand_Pinball];    Name := '| Pinballs Missed   :'; end;
-      27: begin CurrentInt := RandSolved[rand_PrisonPete]; Name := '| Petes Solved      :'; end;
-      28: begin CurrentInt := RandFailed[rand_PrisonPete]; Name := '| Petes Missed      :'; end;
-      29: begin CurrentInt := RandSolved[rand_Forester];   Name := '| Foresters Solved  :'; end;
-      30: begin CurrentInt := RandFailed[rand_Forester];   Name := '| Foresters Missed  :'; end;
-      31: begin CurrentInt := RandSolved[rand_Leo];        Name := '| Leo''s Solved      :'; end; //Another space due to the ''
-      32: begin CurrentInt := RandFailed[rand_Leo];        Name := '| Leo''s Missed      :'; end;
-      33: begin CurrentInt := RandSolved[rand_Molly];      Name := '| Molly''s Solved    :'; end;
-      34: begin CurrentInt := RandFailed[rand_Molly];      Name := '| Molly''s Missed    :'; end;
-      35: begin CurrentInt := RandSolved[rand_Pillory];    Name := '| Pillory''s Solved  :'; end;
-      36: begin CurrentInt := RandFailed[rand_Pillory];    Name := '| Pillory''s Missed  :'; end;
-      37: begin CurrentInt := RandSolved[rand_CapnArnav];  Name := '| Capn Arnav Solved :'; end;
-      38: begin CurrentInt := RandFailed[rand_CapnArnav];  Name := '| Capn Arnav Missed :'; end;
-      39: begin CurrentInt := RandSolved[rand_Beekeeper];  Name := '| Beekeepers Solved :'; end;
-      40: begin CurrentInt := RandFailed[rand_Beekeeper];  Name := '| Beekeepers Missed :'; end;
-      41: begin CurrentInt := RandSolved[rand_Abyss];      Name := '| Abysses Solved    :'; end;
-      42: begin CurrentInt := RandFailed[rand_Abyss];      Name := '| Abysses Missed    :'; end;
-      43: begin CurrentInt := RandSolved[rand_Mordaut];    Name := '| Mordauts Solved   :'; end;
-      44: begin CurrentInt := RandFailed[rand_Mordaut];    Name := '| Mordauts Missed   :'; end;
-      45: begin CurrentInt := RandSolved[rand_RewardBox];  Name := '| Reward Box Solved :'; end;
-      46: begin CurrentInt := RandFailed[rand_RewardBox];  Name := '| Reward Box Missed :'; end;
+      1: begin CurrentInt := tmp_RandSolved[rand_Trade];       Name := '| Trades Made       :'; end;
+      2: begin CurrentInt := tmp_RandFailed[rand_Trade];       Name := '| Trades Missed     :'; end;
+      3: begin CurrentInt := tmp_RandSolved[rand_Fight];       Name := '| Fights            :'; end;
+      4: begin CurrentInt := tmp_RandSolved[rand_Sandwich];    Name := '| Sandwiches Solved :'; end;
+      5: begin CurrentInt := tmp_RandFailed[rand_Sandwich];    Name := '| Sandwiches Missed :'; end;
+      6: begin CurrentInt := tmp_RandSolved[rand_Lamp];        Name := '| Lamps Solved      :'; end;
+      7: begin CurrentInt := tmp_RandFailed[rand_Lamp];        Name := '| Lamps Missed      :'; end;
+      8: begin CurrentInt := tmp_RandSolved[rand_Frog];        Name := '| Frog Solved       :'; end;
+      9: begin CurrentInt := tmp_RandFailed[rand_Frog];        Name := '| Frog Missed       :'; end;
+      10: begin CurrentInt := tmp_RandSolved[rand_Certer];     Name := '| Certers Solved    :'; end;
+      11: begin CurrentInt := tmp_RandFailed[rand_Certer];     Name := '| Certers Missed    :'; end;
+      12: begin CurrentInt := tmp_RandSolved[rand_Demon];      Name := '| Demons Solved     :'; end;
+      13: begin CurrentInt := tmp_RandFailed[rand_Demon];      Name := '| Demons Missed     :'; end;
+      14: begin CurrentInt := tmp_RandSolved[rand_Mod];        Name := '| Mods Found        :'; end;
+      15: begin CurrentInt := tmp_RandSolved[rand_Maze];       Name := '| Mazes Solved      :'; end;
+      16: begin CurrentInt := tmp_RandFailed[rand_Maze];       Name := '| Mazes Missed      :'; end;
+      17: begin CurrentInt := tmp_RandSolved[rand_Mime];       Name := '| Mimes Solved      :'; end;
+      18: begin CurrentInt := tmp_RandFailed[rand_Mime];       Name := '| Mimes Missed      :'; end;
+      19: begin CurrentInt := tmp_RandSolved[rand_Death];      Name := '| Deaths            :'; end;
+      20: begin CurrentInt := tmp_RandSolved[rand_Quiz];       Name := '| Quizes Solved     :'; end;
+      21: begin CurrentInt := tmp_RandFailed[rand_Quiz];       Name := '| Quizes Missed     :'; end;
+      22: begin CurrentInt := tmp_RandSolved[rand_ScapeRune];  Name := '| ScapeRunes Solved :'; end;
+      23: begin CurrentInt := tmp_RandFailed[rand_ScapeRune];  Name := '| ScapeRunes Missed :'; end;
+      24: begin CurrentInt := tmp_RandSolved[rand_BirdNest];   Name := '| Birds Nests       :'; end;
+      25: begin CurrentInt := tmp_RandSolved[rand_Pinball];    Name := '| Pinballs Solved   :'; end;
+      26: begin CurrentInt := tmp_RandFailed[rand_Pinball];    Name := '| Pinballs Missed   :'; end;
+      27: begin CurrentInt := tmp_RandSolved[rand_PrisonPete]; Name := '| Petes Solved      :'; end;
+      28: begin CurrentInt := tmp_RandFailed[rand_PrisonPete]; Name := '| Petes Missed      :'; end;
+      29: begin CurrentInt := tmp_RandSolved[rand_Forester];   Name := '| Foresters Solved  :'; end;
+      30: begin CurrentInt := tmp_RandFailed[rand_Forester];   Name := '| Foresters Missed  :'; end;
+      31: begin CurrentInt := tmp_RandSolved[rand_Leo];        Name := '| Leo''s Solved      :'; end; //Another space due to the ''
+      32: begin CurrentInt := tmp_RandFailed[rand_Leo];        Name := '| Leo''s Missed      :'; end;
+      33: begin CurrentInt := tmp_RandSolved[rand_Molly];      Name := '| Molly''s Solved    :'; end;
+      34: begin CurrentInt := tmp_RandFailed[rand_Molly];      Name := '| Molly''s Missed    :'; end;
+      35: begin CurrentInt := tmp_RandSolved[rand_Pillory];    Name := '| Pillory''s Solved  :'; end;
+      36: begin CurrentInt := tmp_RandFailed[rand_Pillory];    Name := '| Pillory''s Missed  :'; end;
+      37: begin CurrentInt := tmp_RandSolved[rand_CapnArnav];  Name := '| Capn Arnav Solved :'; end;
+      38: begin CurrentInt := tmp_RandFailed[rand_CapnArnav];  Name := '| Capn Arnav Missed :'; end;
+      39: begin CurrentInt := tmp_RandSolved[rand_Beekeeper];  Name := '| Beekeepers Solved :'; end;
+      40: begin CurrentInt := tmp_RandFailed[rand_Beekeeper];  Name := '| Beekeepers Missed :'; end;
+      41: begin CurrentInt := tmp_RandSolved[rand_Abyss];      Name := '| Abysses Solved    :'; end;
+      42: begin CurrentInt := tmp_RandFailed[rand_Abyss];      Name := '| Abysses Missed    :'; end;
+      43: begin CurrentInt := tmp_RandSolved[rand_Mordaut];    Name := '| Mordauts Solved   :'; end;
+      44: begin CurrentInt := tmp_RandFailed[rand_Mordaut];    Name := '| Mordauts Missed   :'; end;
+      45: begin CurrentInt := tmp_RandSolved[rand_RewardBox];  Name := '| Reward Box Solved :'; end;
+      46: begin CurrentInt := tmp_RandFailed[rand_RewardBox];  Name := '| Reward Box Missed :'; end;
     end;
 
     if (CurrentInt < 1) then
@@ -256,16 +256,16 @@ begin
   begin
     SRL_Warn('UseRewardBox', 'Could not open Reward Screen', Warn_AllVersions);
     DropItem(BoxInvSlot);
-    Inc(RandFailed[rand_RewardBox]);
+    Inc(tmp_RandFailed[rand_RewardBox]);
     Exit;
   end;
 
-  writeln('looking for box option');
+  WriteLn('looking for box option');
   if (not FindBoxOption(B, Index)) then
   begin
     SRL_Warn('UseRewardBox', 'Could not find a usable option.', Warn_AllVersions);
     DropItem(BoxInvSlot);
-    Inc(RandFailed[rand_RewardBox]);
+    Inc(tmp_RandFailed[rand_RewardBox]);
     Exit;
   end;
 
@@ -284,7 +284,7 @@ begin
   begin
     CloseWindow;
     DropItem(BoxInvSlot);
-    Inc(RandFailed[rand_RewardBox]);
+    Inc(tmp_RandFailed[rand_RewardBox]);
     Exit;
   end;
 
@@ -307,7 +307,7 @@ begin
   end;
 
   if (Result) then
-    Inc(RandSolved[rand_RewardBox]);
+    Inc(tmp_RandSolved[rand_RewardBox]);
 
   RB_SkipArray := [];
 
@@ -315,7 +315,7 @@ begin
   begin
     Result := False;
     DropItem(BoxInvSlot);
-    Inc(RandFailed[rand_RewardBox]);
+    Inc(tmp_RandFailed[rand_RewardBox]);
   end;
 end;
 
@@ -368,14 +368,14 @@ begin
     LoadSRLBitMaps;
   if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
        (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
-    if (FindTransparentBitmapTolerance(bmpMod, tX, tY, clBlack, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
-     (FindTransparentBitmapTolerance(bmpAdmin, tx, ty, clBlack, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    if (FindBitmapMaskTolerance(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) or
+     (FindBitmapMaskTolerance(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) then
     begin
       Result := True;
       AddToSRLLog('******** FOUND MOD ********');
       WriteLn('******** FOUND MOD ********');
       TakeScreen('Found mod');
-      Inc(RandSolved[rand_Mod]);
+      Inc(tmp_RandSolved[rand_Mod]);
       SaveToChatLog;
       if (SRL_Procs[srl_OnFindMod] <> nil) then
         SRL_Procs[srl_OnFindMod]();
@@ -408,7 +408,7 @@ begin
       FindDTM(BookOfKnowledge, x, y, MIX1, MIY1, MIX2, MIY2)) then
   begin
     Result := True;
-    Inc(RandSolved[rand_Lamp]);
+    Inc(tmp_RandSolved[rand_Lamp]);
     TakeScreen('Lamp Random Solved');
     AddToSRLLog('******** SOLVED LAMP RANDOM ********');
     WriteLn('******** SOLVED LAMP RANDOM ********');
@@ -476,7 +476,7 @@ begin
   if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dear', SmallChars, Nothing) then
     if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dead', SmallChars, Nothing) then
     begin
-      Inc(RandSolved[rand_Death]);
+      Inc(tmp_RandSolved[rand_Death]);
       Result := True;
       SaveToChatLog;
       if (SRL_Procs[srl_OnFindDead] <> nil) then
@@ -486,6 +486,29 @@ begin
       LogOut;
       Players[CurrentPlayer].Rand := 'Oh Dear You Are in Lumby';
       Players[CurrentPlayer].Active := False;
+    end;
+end;
+
+{*******************************************************************************
+function FindDwarvenPopup: Boolean;
+by: Harry
+Description: A simple functinds and closes the "please buy RS Members" popup
+that happens when you reach lvl 10 in any skill.
+*******************************************************************************}
+function FindDwarvenPopup: Boolean;
+begin
+  Result := False;
+  // Parts of red X, checked in two different spots to reduce false-positives
+  if (GetColor(485, 40) = 2569093) then 
+    if (GetColor(488, 40) = 11189720) then
+    begin
+      Result := True;
+      TakeScreen('Found Popup');
+      AddToSRLLog('******** FOUND POPUP ********');
+      WriteLn('******** FOUND POPUP ********');
+      // Box around the X, to close it.
+      MouseBox(482, 35, 492, 44, 1); 
+      Wait(1000+Random(3000));
     end;
 end;
 
@@ -819,7 +842,7 @@ begin
     end;
     r_ResetAll;
   end;
-  ClickNorth(True);
+  ClickNorth(SRL_ANGLE_HIGH);
 
   RandResult := False;
   if (TeleRandoms[Num].SolveRandom <> nil) and (SolveSRLRandoms) then
@@ -829,14 +852,14 @@ begin
   begin
     WriteLn('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED SUCCESSFULLY! *****');
     AddToSRLLog('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED SUCCESSFULLY! *****');
-    Inc(RandSolved[TeleRandoms[Num].RandIndex]);
+    Inc(tmp_RandSolved[TeleRandoms[Num].RandIndex]);
     Players[CurrentPlayer].Rand := '';
     Wait(10000 + Random(2000));
   end else
   begin
     WriteLn('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVING FAILED! *****');
     AddToSRLLog('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVING FAILED! *****');
-    Inc(RandFailed[TeleRandoms[Num].RandIndex]);
+    Inc(tmp_RandFailed[TeleRandoms[Num].RandIndex]);
     Players[CurrentPlayer].Active := False;
     LogOut;
     while (LoggedIn) do
@@ -920,14 +943,15 @@ function FindNonInventoryRandoms: Boolean;
 var
   I: Byte;
 begin
-  for I := 1 to 5 do
+  for I := 1 to 6 do
   begin
     case I of
       1: Result := SolveTeleportRandoms;
       2: Respond;
       3: Result := FindDead;
       4: Result := RC;
-      5: if (SRL_Procs[srl_OnRandomCall] <> nil) then
+      5: Result := FindDwarvenPopup;
+      6: if (SRL_Procs[srl_OnRandomCall] <> nil) then
            SRL_Procs[srl_OnRandomCall]();
     end;
     if (Result) then
@@ -956,19 +980,20 @@ begin
     if not Cont then
       exit;
   end;
-  for I := 1 to 9 do
+  for I := 1 to 10 do
   begin
     case I of
-      1: Result := SolveTeleportRandoms;
-      2: Respond;
-      3: Result := FindDead;
-      4: Result := FindLamp(LampSkill);
-      5: Result :=  RC;
-      6: Result := FindMod;
-      7: if (SRL_Procs[srl_OnRandomCall] <> nil) then
-           SRL_Procs[srl_OnRandomCall]();
-      8: Result := UseRewardBox;
-      9: Result := UseMysteryBox;
+      1:  Result := SolveTeleportRandoms;
+      2:  Respond;
+      3:  Result := FindDead;
+      4:  Result := FindLamp(LampSkill);
+      5:  Result :=  RC;
+      6:  Result := FindMod;
+      7:  Result := FindDwarvenPopup;
+      8:  if (SRL_Procs[srl_OnRandomCall] <> nil) then
+            SRL_Procs[srl_OnRandomCall]();
+      9:  Result := UseRewardBox;
+      10: Result := UseMysteryBox;
     end;
     if (Result) then
     begin

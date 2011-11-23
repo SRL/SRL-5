@@ -172,6 +172,36 @@ const
   tab_Music = 35;
   tab_Notes = 36;
   tab_LogOut = 37;
+
+{ const Antirandoms Constants;
+  Description: Constants representing randoms index. }
+const
+  rand_Leo = 0;
+  rand_Forester = 1;
+  rand_Maze = 2;
+  rand_PrisonPete = 3;
+  rand_ScapeRune = 4;
+  rand_Demon = 5;
+  rand_Quiz = 6;
+  rand_Mordaut = 7;
+  rand_Molly = 8;
+  rand_Pinball = 9;
+  rand_Sandwich = 10;
+  rand_BeeKeeper = 11;
+  rand_Pillory = 12;
+  rand_CapnArnav = 13;
+  rand_Abyss = 14;
+  rand_Certer = 15;
+  rand_Mime = 16;
+  rand_Frog = 17;
+
+  rand_Trade = 18;
+  rand_Mod = 19;
+  rand_Fight = 20;
+  rand_Lamp = 21;
+  rand_BirdNest = 22;
+  rand_Death = 23;
+  rand_RewardBox = 24;
   
 { type TAutoColorInfo;
   Description: Set of information that can be used in some functions. }

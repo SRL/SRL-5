@@ -25,7 +25,9 @@ var
   stats_Timer: integer;
   stats_RandNames: Array of String;
   stats_RandSolved: Array of Integer;
+  tmp_RandSolved: array of Integer;
   stats_RandFailed: Array of Integer;
+  tmp_RandFailed: array of integer;
   stats_form: TForm;
   stats_txtUser, stats_txtPass, stats_txtEmail: TEdit;
   stats_btnRegister, stats_btnCancel: TButton;
@@ -220,7 +222,9 @@ begin
                       'Sandwich', 'Beekeeper', 'Pillory', 'Arnav', 'Abyss',
                       'Certer', 'Mime', 'Frog'];
   SetArrayLength(stats_RandSolved, Length(stats_RandNames));
+  SetArrayLength(tmp_RandSolved, Length(stats_RandNames));
   SetArrayLength(stats_RandFailed, Length(stats_RandNames));
+  SetArrayLength(tmp_RandFailed, Length(stats_RandNames));
   if ((stats_Username = '') AND (stats_UserPass = '')) AND (StrToBoolDef(GetSettingValue(stats_ShowStatsDialog), True)) then
   begin
     case MessageBox('No Stats account entered, would you like to set one up?', 'SRL Stats', mbYesNoCancel) of
@@ -388,18 +392,18 @@ begin
   for i := rand_Leo to rand_Frog do
   begin
     // Update solved stats.
-    Increment := RandSolved[i] - stats_RandSolved[i];
+    Increment := tmp_RandSolved[i] - stats_RandSolved[i];
     if (Increment > 0) then
     begin
       stats_IncVariable(stats_RandNames[i] + ' (Solved)', Increment);
-      stats_RandSolved[i] := RandSolved[i];
+      stats_RandSolved[i] := tmp_RandSolved[i];
     end;
     // Update unsolved stats.
-    Increment := RandFailed[i] - stats_RandFailed[i];
+    Increment := tmp_RandFailed[i] - stats_RandFailed[i];
     if (Increment > 0) then
     begin
       stats_IncVariable(stats_RandNames[i] + ' (Unsolved)', Increment);
-      stats_RandFailed[i] := RandFailed[i];
+      tmp_RandFailed[i] := stats_RandFailed[i];
     end;
   end;
 
