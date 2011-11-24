@@ -87,10 +87,10 @@ var
   colonx, colony: Integer;
 begin
   case TradeScreen of
-    1: if (IsTextInAreaEx(174, 32, 345, 49, colonx, colony, ':', 0, upchars, False, True, 0, 0, 2070783)) then
-         Result := (Trim(GetTextAtEx(colonx + 8, colony, 0, upchars, False, True, 0, 2, 2070783, 12, False, tr_AllChars)));
-    2: if (IsTextInAreaEx(373, 287, 458, 319, colonx, colony, 'Trad', 0, upchars, False, True, 0, 0, 16776960)) then
-         Result := (Trim(GetTextAtEx(colonx + 3, colony + 14, 0, upchars, False, True, 0, 2, 16776960, 12, False, tr_AllChars)));
+    1: if (IsTextInAreaEx(174, 32, 345, 49, colonx, colony, ':', 0, UpCharsEx, False, True, 0, 0, 2070783)) then
+         Result := (Trim(GetTextAtEx(colonx + 8, colony, 0, UpCharsEx, False, True, 0, 2, 2070783, 12, False, tr_AllChars)));
+    2: if (IsTextInAreaEx(373, 287, 458, 319, colonx, colony, 'Trad', 0, UpCharsEx, False, True, 0, 0, 16776960)) then
+         Result := (Trim(GetTextAtEx(colonx + 3, colony + 14, 0, UpCharsEx, False, True, 0, 2, 16776960, 12, False, tr_AllChars)));
   end;
   if (Result = '') then Writeln('Could not get Trader''s Name');
 end;
@@ -213,13 +213,13 @@ begin
     y2 := 335
   end;
 
-  while (IsTextInAreaEx(x1, y1, x2, y2, itemx, itemy, name, 0, upchars, True,
+  while (IsTextInAreaEx(x1, y1, x2, y2, itemx, itemy, name, 0, UpCharsEx, True,
     True, 0, 2, 16777215)) do
   begin
-    if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, '(', 0, upchars, True,
+    if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, '(', 0, UpCharsEx, True,
       True, 0, 2, 16777215)) then
     begin
-      number := Trim(GetTextAtEx(x + 3, y, 0, upchars, True, True, 0, 2,
+      number := Trim(GetTextAtEx(x + 3, y, 0, UpCharsEx, True, True, 0, 2,
         16777215, 12, False, tr_digits));
       for i := 1 to Length(number) do
       begin
@@ -228,10 +228,10 @@ begin
       Add := StrToInt(number);
       Result := Result + Add;
     end else
-      if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, 'x', 0, upchars, True,
+      if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, 'x', 0, UpCharsEx, True,
         True, 0, 2, 16777215)) then
       begin
-        number := Trim(GetTextAtEx(x + 10, y, 0, upchars, True, True, 0, 2,
+        number := Trim(GetTextAtEx(x + 10, y, 0, UpCharsEx, True, True, 0, 2,
           16777215, 12, False, tr_digits));
         for i := 1 to Length(number) do
           if (Copy(number, i, 1) = ' ') then Delete(number, i, 1);

@@ -776,7 +776,7 @@ begin
   SortATPAFromFirstPoint(ATPA, Point(OptionBox.X1, optionbox.y1));
   for I :=0 To H do
   begin
-    TextTPA := LoadTextTPA(Texts[i], UpChars, HH);
+    TextTPA := LoadTextTPA(Texts[i], UpCharsEx, HH);
     for ii := 0 to L do
       If FindTextTPAInTPA(HH, TextTPA, aTPA[ii], TPA) Then
       begin
