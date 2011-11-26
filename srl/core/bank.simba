@@ -1533,7 +1533,7 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue: Integer;
+  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair: Integer;
 begin
   Result := (LoggedIn) and (BankScreen or PinScreen);
   if (Result) then exit;
@@ -1543,7 +1543,8 @@ begin
   ColFace := 7774419; // Face Color
   ColGrey := 6381925; // Grey Color [ Clothes ]
   ColBlue := 2429979; // Blue Color [ Clothes ]
-  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey], [5, 5, 5],
+  ColHair := 1398163; // Orange Hair [wyn10]
+  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey, ColHair], [5, 5, 5, 5],
     ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
   begin
     Mouse(bx, by, 0, 0, False);
