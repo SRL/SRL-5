@@ -118,6 +118,9 @@ begin
       inc(l);
     end;
 
+  if l <> 3 then
+    Exit;
+
   setLength(tpa, l);
 
   SetLength(VectorArray, 3);
