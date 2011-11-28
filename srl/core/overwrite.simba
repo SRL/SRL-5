@@ -53,6 +53,7 @@ begin
   Result := fixRad(a1 - a2)
 end;
 
+
 procedure Normalise(var vect: TVector);
 begin
   vect.a := vect.a / vect.Magnitude;
@@ -103,7 +104,7 @@ begin
   math_2pi := 2*pi;
 
   { Colour of 3 E/S/W dots }
-  FindColorsTolerance(tpa, 2239277, 529, 9, 558, 39, 0);
+  FindColorsTolerance(tpa, 2370604, 529, 9, 558, 39, 0);
 
   atpa := SplitTPA(tpa, 1);
 
@@ -123,14 +124,16 @@ begin
 
   setLength(tpa, l);
 
+  FilterPointsDist(tpa, 9, 20, 543, 24);
+
   SetLength(VectorArray, 3);
 
   for i := 0 to 2 do
     VectorArray[i] := CreateVector(Point(543, 24), tpa[i], True);
 
   angles := [AngleBetween(VectorArray[0], VectorArray[1]),
-             AngleBetween(VectorArray[1], VectorArray[2]),
-             AngleBetween(VectorArray[2], VectorArray[0])];
+         AngleBetween(VectorArray[1], VectorArray[2]),
+         AngleBetween(VectorArray[2], VectorArray[0])];
 
   for i := 0 to 2 do
   begin
@@ -140,9 +143,9 @@ begin
     if angles[i] > radians(100) then
     begin
       case i of
-        0: RefPoint := tpa[2];
-        1: RefPoint := tpa[0];
-        2: RefPoint := tpa[1];
+    0: RefPoint := tpa[2];
+    1: RefPoint := tpa[0];
+    2: RefPoint := tpa[1];
       end;
       { break the loop, we have reference pt. }
       break;
