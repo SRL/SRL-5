@@ -31,17 +31,22 @@ Var
 
 {*******************************************************************************
 procedure TakeScreen(reason: String);
-by: Mutant Squirrle edit yakman
+by: Mutant, Squirrle, Yakman, & Harry
 Description: Takes a screenshot if the global Screenshots is true,
 Adds +TimeRunning+ to the path, so no screenshots will overwrite each other.
 Adds '.bmp' to the end, will not crash the script if it goes wrong.
+Todo: Make PNG when Simba supports it properly.
 *******************************************************************************}
-
 procedure TakeScreen(Reason: string);
 begin
   if(not Screenshots)then Exit;
   try
-   SaveScreenshot(SRLSavePath + reason + ' ' + TimeRunning + '.bmp');
+
+   if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
+     SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
+   else
+     SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
+
    WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
   except
    Writeln('Failed to save screenshot of: ' + reason);
