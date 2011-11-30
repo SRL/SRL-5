@@ -691,7 +691,7 @@ begin
       1239: Actions := ['Not a Members Account',                 0,    1,    'PlayerTrue',    ''];
        364: Actions := ['Error Connecting.',                 20000,    9,    'Terminate',     'Error Connecting'];
       1057: Actions := ['Too many incorrect logins.',    5 * 60000,    2,    'PlayerFalse',   'Too many logins'];
-       732: Actions := ['Runescape has been updated.',           0,    0,    'Terminate',     'RS updated'];
+       732: Actions := ['Runescape has been updated.',           0,    0,    'Updates',       'RS Updated'];
        777: Actions := ['Login limit exceeded.',             20000,   10,    '',              'Waiting for login.'];
     end;
                              {Respond}
@@ -734,6 +734,22 @@ begin
           end;
 
         'Terminate': TerminateScript;
+
+        'Updates':
+          begin
+            {$IFDEF CRASHSMART}
+            Writeln('You are using CRASHSMART, we are going to reload your client after update!');
+            SmartgetFieldObject(1488,'crash'); // will crash SMART (and Simba).
+            // IF THIS DOES NOT CRASH YOUR SIMBA, YOU ARE NOT USING THE PROPER PLUGIN
+            // AN ACCESS VIOLATION HERE IS NOT THE CRASH - MOVE THE EDITED PLUGIN
+            Wait(5000);
+            WriteLn('CRASHSMART Failed: Make sure you are using the proper plugin!');
+            TerminateScript;
+            Exit;
+            {$ENDIF}
+            Writeln('You have no CRASHSMART enabled, so you can not reload RS. Sorry, bye!');
+            TerminateScript;
+          end;
       end;
       Exit;
     end;
