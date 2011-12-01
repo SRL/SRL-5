@@ -53,10 +53,16 @@ begin
         x := Pts[1].x;
         y := Pts[1].y;
       end;
-      if (inRange(Distance(pts[0].x, pts[0].y, x, y), 9, 13)) then
+      if (inRange(Distance(pts[0].x, pts[0].y, x, y), 5, 13)) then
       begin
         pts := getMiniMapDotsIn('item',  MMX1, MMY1, MMX2, MMY2);
         Result := inRange(Length(pts), 4, 12);
+        if result then
+        begin
+          SetupAutoColors;
+          writeln(IntToStr(countColor(autoColorEx(srl_WaterColor).color, mmx1, mmy1, mmx2, mmy2)));
+          result := (countColor(autoColorEx(srl_WaterColor).color, mmx1, mmy1, mmx2, mmy2) >= 100);
+        end;
       end;
     end;
   end;
@@ -196,7 +202,7 @@ Begin
                      Result.StatueCoords := Point(MMCX - 60, MMCY);
                    End;
 
-      0.21..0.3259 : Begin
+      0.21..0.3265 : Begin
                      Result.StatueLoc := 'South';
                      Result.StatueCoords := Point(MMCX, MMCY + 50);
                    End;
@@ -250,6 +256,12 @@ Begin
   End;
 End;
 
+type
+  Fish = record
+    Slot: Integer;
+  end;
+var
+  rFish: Fish;
 {********************************************************************************}
 { Function EB_PerformTask : Boolean;                                             }
 { By: Naum                                                                       }
@@ -272,8 +284,6 @@ Begin
   If Not LoggedIn Then Exit;
 
   TP := TempInfo.StatueCoords;      //loading information
-  RetardedFish := BitmapFromString(4, 2, 'meJxjYmCwDy28cvXe+fM3mBgYHMKL' +
-        'naLKnaMrAXEpCTs=');
 
   GameTab(tab_inv);
   If InvCount >= 27 Then    //if the inventory is full
@@ -377,10 +387,15 @@ Begin
         SleepAndMoveMouse(400 + Random(800));
         Inc(I);                                  //waits until the fish appears in inv
       End;
-      If FindBitmapIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2) Then
+      RetardedFish := BitmapFromString(2, 3, 'meJwz8ExWtw0/bSV3wkp2ha/jBRs5' +
+        'ADjRBjo=');
+      //Writeln('initBMP');
+      If FindBitmapToleranceIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2, 10) Then
       Begin
         WriteLn('Fished the fish');
-        Result := True;                 //double check
+        Result := True;
+        rFish.Slot := CoordsToItem(x, y);
+        FreeBitmap(RetardedFish);                 //double check
         Exit;
       End;
                                  //decides outcome
@@ -408,12 +423,19 @@ Begin
   ColorToleranceSpeed(2);
   SetColorSpeed2Modifiers(16.67, 1.62);      //correct mods
 
-  RetardedFish := BitmapFromString(4, 2, 'meJxjYmCwDy28cvXe+fM3mBgYHMKL' +
-        'naLKnaMrAXEpCTs=');
+  RetardedFish := BitmapFromString(2, 3, 'meJwz8ExWtw0/bSV3wkp2ha/jBRs5' +
+        'ADjRBjo=');
 
-  If FindBitmapIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2) Then
-    Mouse(X, Y, 2, 2, True)                    //clicks the fish so we can cook
-  Else
+  If FindBitmapToleranceIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2, 20) Then
+    Mouse(X, Y, 2, 2, True)}                    //clicks the fish so we can cook
+  if (not (rFish.Slot > 0)) then
+    Exit;
+  invMouse(rFish.Slot, 3);
+  if waitUpTextMulti(['ish','hing'], 500) then
+  begin
+    getMousePos(x, y);
+    Mouse(x, y, 2, 2, True);
+  end Else                   //clicks the fish so we can cook
   Begin
     WriteLn('Could not find retarded fish in inventory');
     FreeBitmap(RetardedFish);               //if it's not there..
@@ -448,7 +470,7 @@ Begin
   Wait(6000 + Random(1200));     //wait while the player cooks it
   CookedRetardedFish := BitmapFromString(4, 2, 'meJxjYmC4WCx7/MTFo0fPMTEwXC2V' +
         'u3L13vnzNwCDOAyD');
-  Result := FindBitmapIn(CookedRetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2);
+  Result := FindBitmapToleranceIn(CookedRetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2, 10);
   FreeBitmap(CookedRetardedFish);
   If Result Then                               //when its cooked..
     WriteLn('Un cooked the retarded fish :)');
@@ -644,7 +666,7 @@ Begin
 
   If (EB_Solved) Then
   Begin
-    WriteLn('Solved');
+    //WriteLn('Solved');
     Wait(1200 + Random(200));      //yay it's solved
     EB_FindPortal;
     WriteLn('Solved Evil Bob'#39's Island in '+IntToStr(TimeFromMark(Mark))+' msec');

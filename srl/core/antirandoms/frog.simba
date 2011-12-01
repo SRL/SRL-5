@@ -9,6 +9,13 @@
 // * ffunction SolveFrog: Boolean;                                 // * by Nielsie95 & ZephyrsFury & marpis
 //-----------------------------------------------------------------//
 
+const
+  frog_gasHole     = 9678788;
+  frog_Yellow      = 13552344;
+  princess_Yellow  = 2411005;
+  frog_Red         = 2372855;
+  frog_Green       = 2411005;
+
 {*******************************************************************************
 function InSecondCave: Boolean;
 by: marpis
@@ -38,9 +45,9 @@ var
 begin
   If Length(GetMinimapDots('npc')) >= 4 Then
     If PercentBlackMM >= 35 Then
-      If FindColorTolerance(X, Y, 1141775, MSX1, MSY1, MSX2, MSY2, 30) Then // Green
-        If FindColorTolerance(X, Y, 2109415, MSX1, MSY1, MSX2, MSY2, 30) Then // Red
-          Result := FindColorTolerance(X, Y, 1742268, MSX1, MSY1, MSX2, MSY2, 30); // Yellow
+      If FindColorTolerance(X, Y, frog_Green, MSX1, MSY1, MSX2, MSY2, 30) Then // Green
+        If FindColorTolerance(X, Y, frog_Red, MSX1, MSY1, MSX2, MSY2, 30) Then // Red
+          Result := FindColorTolerance(X, Y, frog_Yellow, MSX1, MSY1, MSX2, MSY2, 30); // Yellow
 end;
 
 {*******************************************************************************
@@ -56,10 +63,10 @@ Var
   I, RedCount: Integer;
 Begin
   {WriteLn('Entering function: Frog_ClickFrog');}
-  FindColorsTolerance(TPAGasHole, 8557924, MSX1, MSY1, MSX2, MSY2, 10);
+  FindColorsTolerance(TPAGasHole, frog_gasHole, MSX1, MSY1, MSX2, MSY2, 15);
   GasHole := MiddleTPA(TPAGasHole);
   
-  FindColorsTolerance(Yellow, 2075092, MSX1, MSY1, MSX2, MSY2, 30);
+  FindColorsTolerance(Yellow, princess_Yellow, MSX1, MSY1, MSX2, MSY2, 30);
   ATPA := SplitTPA(Yellow, 10);
   SortATPAFrom(ATPA, GasHole);
   InvertATPA(ATPA);
@@ -67,7 +74,7 @@ Begin
   For I := 0 To High(ATPA) Do
   Begin
     Middle := MiddleTPA(ATPA[I]);
-    RedCount := CountColorTolerance(2241261, Middle.X - 20, Middle.Y - 20, Middle.X + 20, Middle.Y + 20, 30);
+    RedCount := CountColorTolerance(frog_Red, Middle.X - 20, Middle.Y - 20, Middle.X + 20, Middle.Y + 20, 30);
     { Length(ATPA[I]) = Yellow count! }
     If Trunc(RedCount*1.2) < Length(ATPA[I]) Then
       If InRange(RedCount, 1, 30) Then
