@@ -21,6 +21,14 @@ const
   clTrade   = clPurple;
   clFriend  = 128;
 
+{ type TOptions
+  Descripts: Choose option record.  }
+Type
+  TOptions = Record
+    Str: string;
+    Bounds: TBox;
+  end;
+
 function CloseBank: Boolean; Forward;
 
 (*
@@ -705,6 +713,205 @@ begin
     end;
 end;
 
+{$IFNDEF SIMBAMAJOR980}
+  {$IFNDEF SIMBA975}
+    {$WARNING ChooseOption is NOT accelerated}
+    procedure ocr_FilterUpTextByCharacteristics(bmp: TMufasaBitmap);
+    var
+      x,y: Integer;
+    begin
+     for y := 0 to bmp.Height - 2 do
+      for x := 0 to bmp.Width - 2 do
+       begin
+         if bmp.fastgetpixel(x,y) = clPurple then
+           continue;
+         if bmp.fastgetpixel(x,y) = clBlack then
+           continue;
+         if (bmp.fastgetpixel(x,y) <> bmp.fastgetpixel(x+1,y+1)) and
+              (bmp.fastgetpixel(x+1,y+1) <> clpurple) then
+           bmp.fastsetpixel(x,y,{clAqua}0);
+       end;
+     for y := bmp.Height - 1 downto 1 do
+       for x := bmp.Width - 1 downto 1 do
+       begin
+        if bmp.fastgetpixel(x,y) <> clPurple then
+          continue;
+        if bmp.fastgetpixel(x,y) = bmp.fastgetpixel(x-1,y-1) then
+        begin
+          bmp.fastsetpixel(x,y,clSilver);
+          continue;
+        end;
+        if bmp.fastgetpixel(x-1,y-1) = 0 then
+          bmp.fastsetpixel(x,y,clSilver);
+       end;
+      for y := bmp.Height - 2 downto 0 do
+        for x := bmp.Width - 2 downto 0 do
+        begin
+          if bmp.fastgetpixel(x,y) = clPurple then
+            continue;
+          if bmp.fastgetpixel(x,y) = clBlack then
+            continue;
+         if (bmp.fastgetpixel(x,y) = bmp.fastgetpixel(x+1,y+1) ) then
+           continue;
+         if bmp.fastgetpixel(x+1,y+1) <> clPurple then
+          begin
+           bmp.fastsetpixel(x,y,0); // 0 was clOlive
+           continue;
+          end;
+      end;
+    end;
+  {$ENDIF}
+{$ENDIF}
+
+(*
+SortATPAFromFirstPointY
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SortATPAFromFirstPointY(var a: T2DPointArray; const From: TPoint);
+
+Sorts the Y coords of the ATPA.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SortATPAFromFirstPointY(var a: T2DPointArray; const From: TPoint);
+var
+   i, l: Integer;
+   DistArr: TIntegerArray;
+begin
+  l := High(a);
+  if (l < 0) then Exit;
+  SetLength(DistArr, l + 1);
+  for i := 0 to l do
+    DistArr[i] := Round(Sqr(From.y - a[i][0].y));
+  QuickATPASort(DistArr, a, 0, l, True);
+end;
+
+(*
+SortATPAFromFirstPointX
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SortATPAFromFirstPointX(var a: T2DPointArray; const From: TPoint);
+
+Sorts the X coords of the ATPA.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SortATPAFromFirstPointX(var a: T2DPointArray; const From: TPoint);
+var
+   i, l: Integer;
+   DistArr: TIntegerArray;
+begin
+  l := High(a);
+  if (l < 0) then Exit;
+  SetLength(DistArr, l + 1);
+  for i := 0 to l do
+    DistArr[i] := Round(Sqr(From.x - a[i][0].x));
+  QuickATPASort(DistArr, a, 0, l, True);
+end;
+
+(*
+GetChooseOptions
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetChooseOptions(TextType: string): Array of TOptions;
+
+Gets the texe from the options menu.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetChooseOptions(TextType: string): Array of TOptions;
+var
+   B,BB: TBox;
+   TPA, TPA1, TPA2: TPointArray;
+   aTPA, tempatpa: T2DPointArray;
+   I, L, target, bmp,w,h: Integer;
+   Colors: TIntegerArray;
+begin
+  target := GetImageTarget;
+  GetClientDimensions(B.X2, B.Y2);
+  B.X1 := 0;
+  B.Y1 := 0;
+  Dec(B.X2);
+  Dec(B.Y2);
+  FindColorsTolerance(TPA1, 4343893, B.X1, B.Y1, B.X2, B.Y2, 0);
+  FindColorsTolerance(TPA2, 3950929, B.X1, B.Y1, B.X2, B.Y2, 0);
+  TPA := CombineTPA(TPA1, TPA2);
+  If Length(TPA) < 10 Then
+    Exit;
+  B.X2 := 0;
+  B.Y2 := 0;
+  aTPA := SplitTPAEx(TPA, 20, 20);
+  SortATPASize(aTPA, True);
+  B := GetTPABounds(aTPA[0]);
+
+  Colors := [14210562, 14803165, 2850770, 8560553, 317398];//Object Blue, Player White, Item Orange, Action Tan, NPC Yellow
+  SetLength(aTPA, Length(Colors));
+  for i := 0 to High(Colors) do
+    FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 40);
+
+  TPA := MergeATPA(aTPA);
+
+  FindColorsTolerance(TPA1, 460291, B.X1, B.Y1, B.X2, B.Y2, 24);
+
+  bmp := CreateBitmap(B.X2-B.X1+1, B.Y2-B.Y1+1);
+  OffsetTPA(TPA, Point(-B.X1, -B.Y1));
+  OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
+  FastDrawClear(bmp, 0);
+  DrawTPABitmap(bmp, TPA, clRed);
+  DrawTPABitmap(bmp, TPA1, clPurple);
+  ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
+  GetbitmapSize(bmp,w,h);
+  SetTargetBitmap(bmp);  // new target for findcolorstolerance.
+  findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
+
+  ATPA := SplitTPAEx(TPA, 15, 2);
+  L := High(ATPA);
+  SortATPAFromFirstPointY(ATPA, Point(w/2,0));
+
+  SetArrayLength(Result, Length(ATPA));
+  for i := 0 to high(ATPA) do
+  begin
+    TPA := ATPA[i];
+    tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
+    SortATPAFromFirstPointX(tempatpa, Point(0, 0));
+    Result[i].Str := GetTextATPA(tempatpa, 4, 'SmallChars');
+    BB := GetTPABounds(ATPA[i]);
+    Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
+    setlength(tempatpa,0);
+    setlength(TPA,0);
+  end;
+
+  SetImageTarget(target);
+  FreeBitmap(bmp);
+end;
+
 (*
 ChooseOptionMultiEx
 ~~~~~~~~~~~~~~~~~~~
@@ -733,57 +940,26 @@ Example:
 *)
 function ChooseOptionMultiEx(Texts: TStringArray; TextType: String; Action: fnct_ActionOptions): Boolean;
 var
-   B,OptionBox: TBox;
-   TPA, TPA1, TPA2, TextTPA: TPointArray;
-   aTPA: T2DPointArray;
-   I, H, HH, ii, L: Integer;
-   Colors,SearchCols: TIntegerArray;
+   B: TBox;
+   I, H, ii, L: Integer;
+   Options: array of TOptions;
 begin
   Result := False;
-  GetClientDimensions(B.X2, B.Y2);
-  B.X1 := 0;
-  B.Y1 := 0;
-  Dec(B.X2);
-  Dec(B.Y2);
-  FindColorsTolerance(TPA1, 4343893, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 3950929, B.X1, B.Y1, B.X2, B.Y2, 0);
-  TPA := CombineTPA(TPA1, TPA2);
-  If Length(TPA) < 10 Then
+  Options := GetChooseOptions(TextType);
+  H := High(Options);
+  if (H < 1) then
     Exit;
-  B.X2 := 0;
-  B.Y2 := 0;
-  aTPA := SplitTPAEx(TPA, 20, 20);
-  SortATPASize(aTPA, True);
-  B := GetTPABounds(aTPA[0]);
-  Colors := [13034990, 4231423, 2070783, 65535, 16776960, 9812166, 16777215];
-  TextType := LowerCase(TextType);
-  case TextType of
-    'action', 'player': SearchCols := [0,5,6];
-    'item'  : SearchCols := [1,2];
-    'npc'   : SearchCols := [3];
-    'object': SearchCols := [4];
-    else
-      SearchCols := [0,1,2,3,4,5,6];
-  end;
-  L := High(SearchCols);
-  SetLength(aTPA,l+1);
-  for i := 0 to l do
-    FindColorsTolerance(aTPA[I], Colors[SearchCols[I]], B.X1, B.Y1, B.X2, B.Y2, 3);
-  TPA := MergeATPA(aTPA);
-  aTPA := SplitTPAEx(TPA, 15, 1);
-  L := High(aTPA);
-  H := High(Texts);
-  SortATPAFromFirstPoint(ATPA, Point(OptionBox.X1, optionbox.y1));
-  for I :=0 To H do
+  L := High(Texts);
+  for I := 0 To H do
   begin
-    TextTPA := LoadTextTPA(Texts[i], UpCharsEx, HH);
     for ii := 0 to L do
-      If FindTextTPAInTPA(HH, TextTPA, aTPA[ii], TPA) Then
+      If Pos(Texts[ii], Options[I].Str) > 0 Then
       begin
         Result := True;
+        B := Options[I].Bounds;
         case Action of
-          ClickLeft: MouseBoxEx(B.x1 + 5, TPA[0].Y, B.x2 - 5, TPA[0].Y + 5,5, 1);
-          Move:      MouseBoxEx(B.x1 + 5, TPA[0].Y, B.x2 - 5, TPA[0].Y + 5,5, 3);
+          ClickLeft: MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 1);
+          Move:      MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 3);
           Nothing:   begin end;
           else
             srl_warn('ChooseOptionMultiEx', 'ClickRight not a valid click for RS menus!', warn_AllVersions);
@@ -798,7 +974,7 @@ begin
   end;
 
   if (not result) then
-    chooseOptionMultiEx(['Cancel', 'ancel', 'ncel'], 'All', clickLeft);
+    ChooseOptionMultiEx(['Cancel', 'ancel', 'ncel'], 'All', clickLeft);
 end;
 
 (*
