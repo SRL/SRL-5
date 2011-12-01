@@ -8,39 +8,6 @@ The Bank include contains Bank finders, and all banking routines.
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--                 Bank Routines                               --//
-//-----------------------------------------------------------------//
-// * function BankScreen: Boolean;                                 // * by SRL Dev Team
-// * function DepositScreen: Boolean;                              // * by Shuttleu
-// * function PinScreen: Boolean;                                  // * by NaumanAkhlaq
-// * function InPin(Pin: string): Boolean;                         // * by ZephyrsFury and Nava2
-// * function BankIndexToBankPoint(Ind: Integer): TPoint;          // * by Wizzup
-// * function BankPointToIndex(P: TPoint): Integer;                // * by Wizzup
-// * function BankIndexToMSBox(Ind: Integer): TBox;                // * by Wizzup
-// * function MSTPointToBankIndex(P: TPoint): Integer;             // * by Wizzup
-// * function DepositItemBox: TBox;                                // * by ZephyrsFury
-// * procedure Fixbank                                             // * by lordsaturn & Nava2
-// * function FixBankTab: Boolean;                                 // * by Wizzup?
-// * function CurrentBankTab: Integer;                             // * by Narcle
-// * function ExistsBankTab(T: Integer): Boolean;                  // * by Narcle
-// * function BankTab(T: Integer): Boolean;                        // * by Narcle
-// * procedure SearchBank(Item: string);                           // * by ZephyrsFury
-// * procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant); // * by PPLSUQBAWLZ / Stupid3ooo
-// * function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean; // * by Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
-// * procedure Withdraw(Col, Row, Amount: Integer);                // * by Starblaster100, Town, Wizzup? and Narcle
-// * procedure DepositAll;                                         // * by ZephyrsFury
-// * procedure Notes(SwitchOn: Boolean);                           // * by lordsaturn, idea by R1ch
-// * procedure CloseBank;                                          // * by Starblaster100
-// * function OpenBankQuiet(WhichBank:string):Boolean;             // * by WT-Fakawi
-// * function OpenBankGlass(WhichBank:String; ChangeCompass:Boolean): Boolean; // * By Wizzup? & N1ke!
-// * function OpenBankFast(Location: String): Boolean;             // * by Wizzup?, Nielsie95 & N1ke!
-// * function OpenBankNPC: Boolean;                                // * by Home
-// * function OpenBank(WhichBank:String; ChangeCompass:Boolean): Boolean; // * by SRL
-// * function FindBank(TheBank: string): Boolean;                  // * by WT-Fakawi & N1ke!
-// * function OpenDepositBox: Boolean;                             // * by Shuttleu
-
 const
   Bank_FE = 'feb'; // (Falador East Bank)
   Bank_FW = 'fwb'; // (Falador West Bank)
@@ -93,7 +60,7 @@ begin
       Wait(50);
     Wait(RandomRange(100, 150));
   end;
-  Result := FindTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', upchars, Nothing);
+  Result := FindTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', UpCharsEx, Nothing);
 end;
 
 (*
@@ -121,7 +88,7 @@ function DepositScreen: Boolean;
 var
   X, Y: Integer;
 begin
-  Result := FindText(x, y, 'Deposit Box', upchars, 92, 29, 396, 54);
+  Result := FindText(x, y, 'Deposit Box', UpCharsEx, 92, 29, 396, 54);
 end;
 
 (*
@@ -148,7 +115,7 @@ Example:
 *)
 function PinScreen : Boolean;
 begin
-  Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpChars, Nothing);
+  Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpCharsEx, Nothing);
 end;
 
 (*
@@ -244,7 +211,7 @@ begin
       // Counts the "Now click the NUM_X digit.". This is used later on.
 
       GetMousePos(X, Y);
-      if (FindText(Tx, Ty, Pin[I], UpChars, 30, 100, 383, 319)) then
+      if (FindText(Tx, Ty, Pin[I], UpCharsEx, 30, 100, 383, 319)) then
       begin
         H := High(Boxes);
         for J := 0 to H do
@@ -712,7 +679,7 @@ begin
     while (BankScreen) and (GetSystemTime - T < 5000) do
     begin
       Wait(500 + Random(500));
-      if (FindTextTpa(0, 0, 350, 392, 399, 410, 'search', UpChars, Nothing)) then
+      if (FindTextTpa(0, 0, 350, 392, 399, 410, 'search', UpCharsEx, Nothing)) then
       begin
         TypeSend(Item);
         Exit;
@@ -1566,7 +1533,7 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue: Integer;
+  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair: Integer;
 begin
   Result := (LoggedIn) and (BankScreen or PinScreen);
   if (Result) then exit;
@@ -1576,7 +1543,8 @@ begin
   ColFace := 7774419; // Face Color
   ColGrey := 6381925; // Grey Color [ Clothes ]
   ColBlue := 2429979; // Blue Color [ Clothes ]
-  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey], [5, 5, 5],
+  ColHair := 1398163; // Orange Hair [wyn10]
+  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey, ColHair], [5, 5, 5, 5],
     ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
   begin
     Mouse(bx, by, 0, 0, False);

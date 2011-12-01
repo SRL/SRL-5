@@ -140,9 +140,9 @@ begin
   begin
     if (InIntArray(RB_SkipArray, II)) then Continue;
     if (II < L + 1) then
-      Text := LoadTextTPA(Players[CurrentPlayer].BoxRewards[II], UpChars, H)
+      Text := LoadTextTPA(Players[CurrentPlayer].BoxRewards[II], UpCharsEx, H)
     else
-      Text := LoadTextTPA('box', UpChars, H);
+      Text := LoadTextTPA('box', UpCharsEx, H);
 
     FindColorsTolerance(TPA, 2070783, 35, 69, 362, 311, 3);
     ATPA := SplitTPAEx(TPA, 3, 1);
@@ -240,7 +240,7 @@ begin
   Mouse(fx, fy, 0, 0, True);
 
   Result := False;
-  Text := LoadTextTPA('hoose', UpChars, Height);
+  Text := LoadTextTPA('hoose', UpCharsEx, Height);
   Time := GetTimeRunning + 10000;
 
   while (not Result and (GetTimeRunning < Time)) do
@@ -259,7 +259,7 @@ begin
     Exit;
   end;
 
-  writeln('looking for box option');
+  WriteLn('looking for box option');
   if (not FindBoxOption(B, Index)) then
   begin
     SRL_Warn('UseRewardBox', 'Could not find a usable option.', Warn_AllVersions);
@@ -944,14 +944,15 @@ function FindNonInventoryRandoms: Boolean;
 var
   I: Byte;
 begin
-  for I := 1 to 5 do
+  for I := 1 to 6 do
   begin
     case I of
       1: Result := SolveTeleportRandoms;
       2: Respond;
       3: Result := FindDead;
       4: Result := RC;
-      5: if (SRL_Procs[srl_OnRandomCall] <> nil) then
+      5: Result := FindDwarvenPopup;
+      6: if (SRL_Procs[srl_OnRandomCall] <> nil) then
            SRL_Procs[srl_OnRandomCall]();
     end;
     if (Result) then

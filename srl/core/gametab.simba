@@ -723,7 +723,6 @@ function GetXP(Skill: Variant): Integer;
 var
   B: TBox;
   p: TPoint;
-  tx, ty: Integer;
   TPA: TPointArray;
 begin
   Result := -1;
@@ -1407,7 +1406,7 @@ begin
   Mouse(TP.x, TP.y + 3, 2, 2, False);
   WaitOption('bjec', 300 + Random(500));
   Wait(1000 + Random(250));
-  if (FindTextTpa(clBlack, 0, 100, 390, 235, 410, 'Enter the skill', UpChars, Nothing)) then
+  if (FindTextTpa(clBlack, 0, 100, 390, 235, 410, 'Enter the skill', UpCharsEx, Nothing)) then
   begin
     Wait(1000 + Random(250));
     TypeSend(IntToStr(Level));
@@ -1687,7 +1686,7 @@ begin
     end;
 
   i := 0;                       //failsafe opening clause
-  while (not FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpChars, Nothing)) and (LoggedIn) do
+  while (not FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
     MouseBox(605, 258, 623, 277, 1);
@@ -1701,7 +1700,7 @@ begin
     end;
   end;
 
-  If FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpChars, Nothing) Then
+  If FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing) Then
     Mouse(386, 172, 30, 10, True);
 
   if GetColor(255, 178) = BrightnessColor then
@@ -1795,7 +1794,7 @@ begin
       Mouse(MMCX, MMCY, 2, 2, True);
 
   II := 0;
-  while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Graphics Options', UpChars, Nothing)) and (LoggedIn) do
+  while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Graphics Options', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
     MouseBox(605, 258, 623, 277, 1);
@@ -1904,7 +1903,7 @@ begin
     if (not ClickContinue(True, True)) then
       Mouse(MMCX, MMCY, 2, 2, True);
 
-  while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Audio Options', UpChars, Nothing)) and (LoggedIn) do
+  while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Audio Options', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
     MouseBox(654, 252, 677, 278, 1);

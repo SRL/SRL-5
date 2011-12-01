@@ -155,7 +155,7 @@ end;
 *******************************************************************************}
 function SmithingScreen: Boolean;
 begin
-  Result := FindTextTPA(2071039, 0, 161, 30, 356, 53, 'mithing', UpChars, nothing);
+  Result := FindTextTPA(2071039, 0, 161, 30, 356, 53, 'mithing', UpCharsEx, nothing);
 end;
 
 {*******************************************************************************

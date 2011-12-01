@@ -316,7 +316,7 @@ Date: December 29, 2009
 function WarningScreen: Boolean;
 begin
   if (CountColor(0, MSX1, MSY1, MSX2, MSY2) > 1400) then
-  Result := FindTextTPA(2070783, 20, 240, 48, 300, 66, 'Warning', upchars, Nothing);
+  Result := FindTextTPA(2070783, 20, 240, 48, 300, 66, 'Warning', UpCharsEx, Nothing);
 end;
 
 
