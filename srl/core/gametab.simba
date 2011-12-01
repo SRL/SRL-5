@@ -723,7 +723,6 @@ function GetXP(Skill: Variant): Integer;
 var
   B: TBox;
   p: TPoint;
-  tx, ty: Integer;
   TPA: TPointArray;
 begin
   Result := -1;
