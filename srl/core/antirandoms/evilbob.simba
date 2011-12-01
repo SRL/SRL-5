@@ -427,7 +427,7 @@ Begin
         'ADjRBjo=');
 
   If FindBitmapToleranceIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2, 20) Then
-    Mouse(X, Y, 2, 2, True)}                    //clicks the fish so we can cook
+    Mouse(X, Y, 2, 2, True);                    //clicks the fish so we can cook
   if (not (rFish.Slot > 0)) then
     Exit;
   invMouse(rFish.Slot, 3);
