@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------//
 
 // For development:
-{$DEFINE CompileSRL}
+//{$DEFINE CompileSRL}
 
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
