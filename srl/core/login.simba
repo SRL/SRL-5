@@ -110,19 +110,9 @@ Example:
 
 *)
 function RSReady: Boolean;
-var
-  t: Integer;
 begin
-  t := GetSystemTime + 5000;
-  while (not (Result)) and (t > GetSystemTime) do
-  begin
-    Result := (CountColor(0, MSCx - 20, MSCy - 20, MSCx + 20, MSCy + 20) < 20);
-    Wait(3);
-  end;
-  if (not (Result)) then
-    Exit;
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 12312554); //X button in top right
-  if (GetColor(748,66) = 12312554) then // X button on resizeable client
+  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
     WriteLn('Please set it to "Fixed" to have SRL function properly.');
@@ -389,7 +379,7 @@ begin
   while (LoggedIn) and (c < 10) do
   begin
     Inc(c);
-    if(FindText(x, y, 'obb', UpChars, MIX1, MIY1, MIX2, MIY2))then
+    if(FindText(x, y, 'obb', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
     begin
       MouseBox(566, 346, 715, 373, 1);
       for i := 0 to 10 do
@@ -402,7 +392,7 @@ begin
         end;
       end;
     end else
-    if(FindText(x, y, 'lick', UpChars, MIX1, MIY1, MIX2, MIY2))then
+    if(FindText(x, y, 'lick', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
     begin
       MouseBox(579, 367, 699, 386, 1);
       for i := 0 to 10 do
@@ -491,10 +481,10 @@ begin
   while (LoggedIn) and (c < 10) do
   begin
     Inc(c);
-    if(FindText(x, y, 'ogin', UpChars, MIX1, MIY1, MIX2, MIY2))then
+    if(FindText(x, y, 'ogin', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
       MouseBox(569, 393, 713, 418, 1)
     else
-      if(FindText(x, y, 'lick', UpChars, MIX1, MIY1, MIX2, MIY2))then
+      if(FindText(x, y, 'lick', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
         MouseBox(569, 349, 713, 375, 1);
 
     for i := 0 to 10 do
@@ -701,7 +691,7 @@ begin
       1239: Actions := ['Not a Members Account',                 0,    1,    'PlayerTrue',    ''];
        364: Actions := ['Error Connecting.',                 20000,    9,    'Terminate',     'Error Connecting'];
       1057: Actions := ['Too many incorrect logins.',    5 * 60000,    2,    'PlayerFalse',   'Too many logins'];
-       732: Actions := ['Runescape has been updated.',           0,    0,    'Terminate',     'RS updated'];
+       732: Actions := ['Runescape has been updated.',           0,    0,    'Updates',       'RS Updated'];
        777: Actions := ['Login limit exceeded.',             20000,   10,    '',              'Waiting for login.'];
     end;
                              {Respond}
@@ -744,6 +734,22 @@ begin
           end;
 
         'Terminate': TerminateScript;
+
+        'Updates':
+          begin
+            {$IFDEF CRASHSMART}
+            Writeln('You are using CRASHSMART, we are going to reload your client after update!');
+            SmartgetFieldObject(1488,'crash'); // will crash SMART (and Simba).
+            // IF THIS DOES NOT CRASH YOUR SIMBA, YOU ARE NOT USING THE PROPER PLUGIN
+            // AN ACCESS VIOLATION HERE IS NOT THE CRASH - MOVE THE EDITED PLUGIN
+            Wait(5000);
+            WriteLn('CRASHSMART Failed: Make sure you are using the proper plugin!');
+            TerminateScript;
+            Exit;
+            {$ENDIF}
+            Writeln('You have no CRASHSMART enabled, so you can not reload RS. Sorry, bye!');
+            TerminateScript;
+          end;
       end;
       Exit;
     end;

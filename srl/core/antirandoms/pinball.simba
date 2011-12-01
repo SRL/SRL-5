@@ -24,7 +24,7 @@ end;
 
 {*******************************************************************************
 function p_ScanPillar(var x, y: Integer): Boolean;
-by: SKy Scripter
+by: SKy Scripter & NCDS
 Updated: July 30, 2011 by NCDS
 Description: Scans for the pinball pillar
 *******************************************************************************}
@@ -32,9 +32,9 @@ function p_ScanPillar(var x, y: Integer): Boolean;
 var
   Points: TPointArray;
   Colors: array of Integer;
-  P2D: T2DPointArray;
+  P2D, pillar: T2DPointArray;
   I, Hi, Bitmap,
-  J, ma, ind: Integer;
+  J, ind, hi_P, ii: Integer;
   H, S, L: Extended;
   OldTarget : integer;
   Temp : Integer;
@@ -78,18 +78,15 @@ begin
       if (Length(Points) > 10) then
       begin
         P2D := TPAtoATPA(Points, 60);
-        Hi := High(P2D);
-        ma := 0;
-        for I := 0 to Hi do
+        sortATPASize(p2d, true);
+        hi := high(p2d);
+        for i := 0 to hi do
         begin
-          J := Length(P2D[I]);
-          if (ma < j) then
-          begin
-            ma := j;
-            ind := I;
-          end;
+          pillar := findGapsTPA(p2d[i], 10);
+          hi_P := High(pillar);
+          for ii := 0 to hi_P do
+            result := (length(pillar[ii]) > 2);
         end;
-        result := (ma > 40);
       end;
     end;
     if (result) then

@@ -39,36 +39,35 @@ end;
 
 {*******************************************************************************
 function InLeoGraveyard: Boolean;
-By: ZephyrsFury
+By: ZephyrsFury & NCDS
 Description: Checks if we're in the Leo random.
 *******************************************************************************}
-
 function InLeoGraveyard: Boolean;
 var
   Pts: TPointArray;
   ATPA: T2DPointArray;
-  X, Y, II, GraveCount, cts: Integer;
+  II, GraveCount, cts: Integer;
   B: TBox;
 begin
   if (InBlack) then
-    if (FindColor(X, Y, 60909, MMX1, MMY1, MMX2, MMY2)) then
-      if (CountColor(60909, MMX1, MMY1, MMX2, MMY2) = 1) then
-        if (InRange(PercentBlackMM, 75, 80)) then
-        begin
-          FindColorsPie(Pts, clWhite, 50, 0.0, 360.0, 0.0, 76.0, MMX1, MMY1, MMX2, MMY2, MMCX, MMCY);
-          B := GetTPABounds(Pts);
-          cts := GetColorToleranceSpeed;
-          ColorToleranceSpeed(2);
-          SetColorSpeed2Modifiers(100.0, 100.0);
-          FindColorsTolerance(Pts, 0, B.X1, B.Y1, B.X2, B.Y2, 3);
-          SetColorSpeed2Modifiers(0.2, 0.2);
-          ColorToleranceSpeed(cts);
-          ATPA := SplitTPAEx(Pts, 1, 1);
-          for II := 0 to High(ATPA) do
-            if (Length(ATPA[II]) < 50) then
-              Inc(GraveCount);
-          Result := (GraveCount > 5);
-        end;
+    if (CountDots('npc') = 1) then
+    begin                {fence}
+      FindColorsPie(Pts, clWhite, 50, 0.0, 360.0, 0.0, 76.0, MMX1, MMY1, MMX2, MMY2, MMCX, MMCY);
+      B := GetTPABounds(Pts);
+      cts := GetColorToleranceSpeed;
+      ColorToleranceSpeed(2);
+      SetColorSpeed2Modifiers(100.0, 100.0);
+      FindColorsTolerance(Pts, 0, B.X1, B.Y1, B.X2, B.Y2, 5);//Get grave site points on MM
+      SetColorSpeed2Modifiers(0.2, 0.2);
+      ColorToleranceSpeed(cts);
+      ATPA := SplitTPAEx(Pts, 4, 8); //Split grave points
+      for II := 0 to High(ATPA) do
+        if (not inRange(Length(ATPA[II]), 28, 45)) then
+          Continue
+        else
+          Inc(GraveCount);
+      Result := (GraveCount = 5);
+    end;
 end;
 
 {*******************************************************************************
@@ -581,6 +580,9 @@ var
   X, Y, Leo_Trys: Integer;
   KeepGoin: Boolean;
 begin
+  Writeln('Leo solver currently broken, logging out.');
+  Logout; //Until Access Violation is fixed.
+  Exit;
   Leo_LoadDTMs;
   for Leo_Trys := 1 to 10 do
   begin

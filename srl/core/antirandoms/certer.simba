@@ -25,20 +25,6 @@ const
   cert_AnalysisTime = 30000;
 
 {*******************************************************************************
-function InCerterRandom: Boolean;
-by: ZephyrsFury
-Description: Checks if we're in the Certer random.
-*******************************************************************************}
-
-function InCerterRandom: Boolean;
-begin
-  if (InBlack) then
-    Result := (InRange(PercentBlackMM, 85, 90)) and
-                 (InRange(CountColorTolerance(15659757, Mmx1, Mmy1, Mmx2, Mmy2, 12), 125, 155)) and
-                   (Length(GetMiniMapDotsIn('npc', MMx1, MMy1, MMx2, MMy2)) = 1);
-end;
-
-{*******************************************************************************
 function CerterScreen: Boolean;
 by: ZephyrsFury
 Description: Returns True if the Certer screen is open.
@@ -74,14 +60,14 @@ begin
     PercentCover := 75;
   end;
 
-  with CerterItems[1] do    //
+  with CerterItems[1] do    // Updated: Nov 12, 2011
   begin
-    Name := 'battleaxe';//'hatchet';
-    AvgCount := 980;
-    W := 65;
-    H := 51;
-    Area := 3150;
-    PercentCover := 33;
+    Name := 'battleaxe';
+    AvgCount := 958;
+    W := 66;
+    H := 48;
+    Area := 3185;
+    PercentCover := 29;
   end;
 
   with CerterItems[2] do    //
@@ -104,24 +90,24 @@ begin
     PercentCover := 43;
   end;
 
-  with CerterItems[4] do    //
+  with CerterItems[4] do    // Updated Nov 10, 2011
   begin
     Name := 'sword';
-    AvgCount := 401;
-    W := 64;
-    H := 35;
-    Area := 2365;
-    PercentCover := 24;
+    AvgCount := 342;
+    W := 63;
+    H := 43;
+    Area := 2237;
+    PercentCover := 21;
   end;
 
-  with CerterItems[5] do    //
+  with CerterItems[5] do    // Updated Nov 16, 2011
   begin
     Name := 'shears';
-    AvgCount := 588;
-    W := 46;
-    H := 32;
-    Area := 1363;
-    PercentCover := 49;
+    AvgCount := 723;
+    W := 48;
+    H := 35;
+    Area := 1569;
+    PercentCover := 48;
   end;
 
   with CerterItems[6] do    //
@@ -144,14 +130,14 @@ begin
     PercentCover := 65;
   end;
 
-  with CerterItems[8] do   //
+  with CerterItems[8] do   // Updated Nov 2, 2011
   begin
     Name := 'shield';
-    AvgCount := 1750;
-    W := 65;
-    H := 49;
-    Area := 3100;
-    PercentCover := 52;
+    AvgCount := 2139;
+    W := 67;
+    H := 54;
+    Area := 3468;
+    PercentCover := 61;
   end;
 
   with CerterItems[9] do   //

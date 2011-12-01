@@ -493,7 +493,7 @@ Begin                                       //solves the maze using all the proc
   Begin
     WriteLn('Turquoise path is not fully done, PM the debug to Naum');
     WriteLn('Saving a screenshot, please send this also.');
-    SaveScreenshot('[ Maze ] - '+TheDate(1) + ' ' + Replace(TheTime, ':', '_') + '.bmp');
+    TakeScreen('Maze');
     WriteLn('Screenshot is located within the program folder.');
   End;
   If DetectedPath = Maze_StartFail Then

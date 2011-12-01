@@ -179,8 +179,8 @@ Example:
 // TODO: fix doc for this.
 // Allows one to use ClickNorth without waiting 1s every time.
 const
-  SRL_ANGLE_LOW   = 0;
-  SRL_ANGLE_HIGH  = 1;
+  SRL_ANGLE_HIGH  = 0;
+  SRL_ANGLE_LOW   = 1;
   SRL_ANGLE_NONE  = 2;
 
 // TODO: Check if 1000ms wait is necessary
@@ -1129,10 +1129,11 @@ function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray
 var
   DotColor: Integer;
   i, h: Integer;
+  radius: Integer;
 begin
   case LowerCase(WhatDot) of
     'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
-    'item', 'i', 'red', 'r':	      DotColor := 237;
+    'item', 'i', 'red', 'r':	        DotColor := 237;
     'player', 'p', 'white', 'w':      DotColor := 15527148;
     'friend', 'f', 'green', 'g':      DotColor := 60160;
     'team', 't', 'blue', 'b', 'cape': DotColor := 9917996;
@@ -1140,16 +1141,10 @@ begin
     else
       srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
-  FindColorsPie(Result, DotColor, 0, 0, 360, 0, 76, x1, y1, x2, y2, MMCX, MMCY);
+  
+  radius := Max((x2-x1)/2, (y2-y1)/2);
+  FindColorsPie(Result, DotColor, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
   RAaSTPAEx(Result, 1, 1);
-  if (Length(Result) < 1) then Exit;
-  if (inStrArr(WhatDot, ['player', 'p', 'white', 'w'], false)) then
-  begin
-    h := High(Result)-1;
-    for i := 0 to h do
-      Result[i] := Result[i+1];
-    SetLength(Result, h+1);
-  end;
 end;
 
 (*

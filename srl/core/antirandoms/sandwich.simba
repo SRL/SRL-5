@@ -60,7 +60,7 @@ begin
     'kebab':
         Info := [4091012, 25, 150, 0.02, 0.5];
     'chocolate bar':
-        Info := [1914204, 15, 150, 0.04, 0.14];
+        Info := [2244463, 10, 150, 0.19, 0.64];
     else
     begin
       WriteLn('Sandwich Lady: Unknown target: '+s+'!');
