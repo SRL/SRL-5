@@ -211,10 +211,9 @@ begin
   if (not(FindColorTolerance(fX, fY, 4329061 , MIX1, MIY1, MIX2, MIY2, 22))) then
     Exit;
 
-  { DTM updated 10th Januray 2010 - marpis }
-  bDTM := DTMFromString('78DA63F467626098CDC8800A98C0244C94D11' +
-       '9C8EF21A0C601C89F40408D19903F8F801A47207F0901357E40FE' +
-       '62DC6A5880180087DB0562');
+  { DTM updated 30th October 2011 - NCDS }
+  bDTM := DTMFromString('mbQAAAHicY2VgYHBiYmBwBGJTIPYHYm8gfgoUvwrEr4H4HRDfBeI0f'
+                         +'mcgyYSC/zNgAkYsGAwAOH0Hlg==');
 
   for I := 1 to 28 do
   begin
@@ -332,10 +331,12 @@ begin
   if (not LoggedIn) then
     Exit;
 
-  DTM := DTMFromString('mggAAAHicY2NgYHBmYmAwA2IHIPYHYi8oO5iRgSEAiN2A2A+Io4A4'+
-                       'BohnR4oBdTFhwZiAH4gZcWAIAADG1gTB');
+  DTM := DTMFromString('78DA639CC6C4C0F0940105CC891603D38C503' +
+       'EE322A09A7BA86AC2857830D5BC425533355C1455CD74A09A8FA8' +
+       '6A5A7D8551D57403D5BC25600E48CD7D543593C3D0D44C02AAB98' +
+       '5AAA62B400455CD0CA09ADB04EC9A0054F31E554DB31916373F23' +
+       '60CE224C35186E9E836917BA1A00409C1D23');
   SetDTMName(DTM, 'Mystery Box');
-
 
   if (FindDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
   begin
@@ -499,7 +500,7 @@ function FindDwarvenPopup: Boolean;
 begin
   Result := False;
   // Parts of red X, checked in two different spots to reduce false-positives
-  if (GetColor(485, 40) = 2569093) then 
+  if (GetColor(485, 40) = 2569093) then
     if (GetColor(488, 40) = 11189720) then
     begin
       Result := True;
@@ -507,7 +508,7 @@ begin
       AddToSRLLog('******** FOUND POPUP ********');
       WriteLn('******** FOUND POPUP ********');
       // Box around the X, to close it.
-      MouseBox(482, 35, 492, 44, 1); 
+      MouseBox(482, 35, 492, 44, 1);
       Wait(1000+Random(3000));
     end;
 end;

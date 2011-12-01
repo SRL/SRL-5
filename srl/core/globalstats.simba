@@ -220,7 +220,8 @@ begin
   stats_RandNames := ['Leo', 'Forester', 'Maze', 'P. Pete', 'Evil Bob',
                       'Demon', 'Quiz', 'Mordaut', 'Molly', 'Pinball',
                       'Sandwich', 'Beekeeper', 'Pillory', 'Arnav', 'Abyss',
-                      'Certer', 'Mime', 'Frog'];
+                      'Certer', 'Mime', 'Frog', 'Trade', 'Mod', 'Fight', 'Lamp',
+                      'Bird Nest', 'Death', 'Reward Box'];
   SetArrayLength(stats_RandSolved, Length(stats_RandNames));
   SetArrayLength(tmp_RandSolved, Length(stats_RandNames));
   SetArrayLength(stats_RandFailed, Length(stats_RandNames));

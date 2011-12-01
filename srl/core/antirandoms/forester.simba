@@ -99,8 +99,9 @@ begin
       begin
         ColorToleranceSpeed(2);
         SetColorspeed2Modifiers(0.67, 1.68);
-        if (PercentColorMM(1397036, 8) > 10) then
-          Result := True;
+        if ((PercentColorMM(1397796, 8) > 5) and
+          (PercentColorMM(3634254, 8) > 3)) then
+            Result := True;
       end;
   end;
   ColorToleranceSpeed(CTS);
@@ -223,6 +224,9 @@ begin
     if FindNPCChatText('four', Nothing) then
       Result := 4;
 
+    if FindNPCChatText('portal', Nothing) then
+      Result := -1;
+
     ClickContinue(True, True);
   end;
 
@@ -234,7 +238,10 @@ begin
   end;
   marktime(t);
   while ClickContinue(True, True) and (TimeFromMark(t) < 5000) do Wait(700 + random(500));
-  Writeln('Forester: Kill The ' + inttostr(Result) + ' Tailed Pheasant.');
+  if (Result > 0) then
+    Writeln('Forester: Kill The ' + inttostr(Result) + ' Tailed Pheasant.')
+  else
+    Writeln('Forester: Already killed the Pheasant.');
 end;
 
 {*******************************************************************************
@@ -415,50 +422,69 @@ begin
   while ClickContinue(True, True) and (TimeFromMark(t) < 5000) do Wait(700 + random(500));
 end;
 
+type
+  TPortal = record
+    color, tol, w, h: Integer;
+    hue, sat: Extended;
+  end;
 {*******************************************************************************
 function LeaveForester: Boolean;
-by: Sumilion
+by: NCDS & Sumilion
 Description: Leaves the random through the portal.
 *******************************************************************************}
-
 function LeaveForester: Boolean;
 var
-  PortalInfo: TAutoColorInfo;
-  fx, fy, t: Integer;
+  pt: TPoint;
+  portal: TPortal;
+  pArr: TPointArray;
+  arrArr: T2DPointArray;
+  x, y, t, i, h: Integer;
 begin
   Writeln('Forester: Leaving Forester.');
-  with PortalInfo do
+  with Portal do
   begin
-    UpText := 'Enter';
-    MaxDist := 15;
-    Color := 4240276;
-    HueMod := 0.13;
-    SatMod := 0.47;
-    LumTol := 9;
-    MinR := 128; MaxR := 162;
-    MinG := 147; MaxG := 201;
-    MinB := 53; MaxB := 84;
-    MinX := 20.29; MaxX := 36.93;
-    MinY := 26.09; MaxY := 49.53;
-    MinZ := 7.44; MaxZ := 15.81;
+    color := 4895114;
+    hue   := 0.05;
+    sat   := 0.56;
+    tol   := 5;
+    w     := 37;
+    h     := 33;
   end;
-  ForesterCenter(fx, fy);
-  Mouse(fx + 45, fy, 0, 0, True);
+  ForesterCenter(x, y);
+  Mouse(x + 45, y, 0, 0, True);
   Flag;
+  Wait(RandomRange(1000, 1500)); //To make sure we stopped walking
 
-  MarkTime(t);
-  repeat;
-    if FindObjRecordEx(fx, fy, PortalInfo, MSX1, MSY1, MSX2, MSY2, False, True) then
-      Mouse(fx, fy, 0, 0, False);
-    Wait(100 + Random(100));
-  until ChooseOption('Enter') or
-       (TimeFromMark(t) > 30000);
-
-  if (TimeFromMark(t) > 30000) then
+  for i := 0 to 10 do
   begin
-    Writeln('Forester: Can''t find the portal.');
-    LogOut;
-    Exit;
+    findColorsTolerance(pArr, portal.color, MSX1, MSY1, MSX2, MSY2, portal.tol);
+    if Length(pArr) > 5 then
+      Break;
+    Wait(75);
+    if i = 10 then
+    begin
+      writeln('Forester: Can''t find the portal.');
+      Exit;
+    end;
+  end;
+
+  arrArr := TPAToATPAEx(pArr, portal.w, portal.h);
+  sortATPAFrom(arrArr, Point(MMCX, MMCY));
+  h := High(arrArr);
+  for i := 0 to h do
+  begin
+    pt := MiddleTPA(arrArr[i]);
+    MMouse(pt.x, pt.y, 2, 2);
+    if waitUptextMulti(['Enter', 'nter', 'ortal'], 1000) then
+    begin
+      getMousePos(x, y);
+      Mouse(x, y, 0, 0, False);
+      if (not waitOptionMulti(['Enter', 'nter'], 1000)) then
+      begin
+        writeln('Forester: Can''t enter the portal.');
+        Exit;
+      end;
+    end;
   end;
 
   Flag;
@@ -490,31 +516,33 @@ begin
   GetColorspeed2Modifiers(TempHue, TempSat);
   Task := forester_GetTask;
   if not InForesterRandom then Exit;
-  if InvFull then
+  if (Task > 0) then
   begin
-    DropItem(28);
-    ItemDropped := True;
-  end;
+    if InvFull then
+    begin
+      DropItem(28);
+      ItemDropped := True;
+    end;
 
-  if (not KillPheasant(Task)) then
-  begin
-    Writeln('Forester: ForesterSolver failed to find the pheasant.');
-    if ItemDropped then PickUpDroppedItem;
-    LogOut;
-    Exit;
-  end;
+    if (not KillPheasant(Task)) then
+    begin
+      Writeln('Forester: ForesterSolver failed to find the pheasant.');
+      if ItemDropped then PickUpDroppedItem;
+      LogOut;
+      Exit;
+    end;
 
-  Flag;
-  MarkTime(t);
-  while (TimeFromMark(t) < 10000) do
-  begin
-    Wait(10);
-    if ClickContinue(True, True) then Break;
+    Flag;
+    MarkTime(t);
+    while (TimeFromMark(t) < 10000) do
+    begin
+      Wait(10);
+      if ClickContinue(True, True) then Break;
+    end;
+    Writeln('Forester: Killed Pheasant.');
+    Wait(1000 + Random(500));
+    BringRawPheasant;
   end;
-  Writeln('Forester: Killed Pheasant.');
-  Wait(1000 + Random(500));
-  BringRawPheasant;
-
   if ItemDropped then PickUpDroppedItem;
 
   if not InForesterRandom then Exit;
