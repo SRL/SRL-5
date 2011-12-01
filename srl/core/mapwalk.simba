@@ -179,8 +179,8 @@ Example:
 // TODO: fix doc for this.
 // Allows one to use ClickNorth without waiting 1s every time.
 const
-  SRL_ANGLE_LOW   = 0;
-  SRL_ANGLE_HIGH  = 1;
+  SRL_ANGLE_HIGH  = 0;
+  SRL_ANGLE_LOW   = 1;
   SRL_ANGLE_NONE  = 2;
 
 // TODO: Check if 1000ms wait is necessary
