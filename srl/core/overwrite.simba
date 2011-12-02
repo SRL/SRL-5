@@ -95,7 +95,7 @@ function rs_GetCompassAngleRadians: Extended;
 var
   tpa: TPointArray;
   atpa: T2DPointArray;
-  i, h, l: Integer;
+  i, h, l, cts: Integer;
   VectorArray: Array of TVector;
   RefPoint: TPoint;
   angles: TExtendedArray;
@@ -103,8 +103,11 @@ var
 begin
   math_2pi := 2*pi;
 
+  cts := GetColorToleranceSpeed;
+  ColorToleranceSpeed(1);
   { Colour of 3 E/S/W dots }
   FindColorsTolerance(tpa, 2370604, 529, 9, 558, 39, 5);
+  ColorToleranceSpeed(cts);
 
   atpa := SplitTPA(tpa, 1);
 
