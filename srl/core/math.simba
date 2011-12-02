@@ -112,17 +112,6 @@ end;
 
 (*
 
-Gaussian Distn
-~~~~~~~~~~~~~~
-
-
-Written by Dr. Steven Beauchemin; Released to Kevin Brightwell (Nava2)
-Calculates numbers within a Gaussian distribution of numbers about the mean
-with +/- the variance (aka. sigma).
-*)
-
-(*
-
 SRL_GaussStd
 ~~~~~~~~~~~~
 
@@ -210,6 +199,29 @@ begin
   __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
     0.252408784, 3.949846138 ];
   SRL_GaussStd := @n2_gauss;
+end;
+
+function GaussBMPolar(): Extended;
+var
+  u, v: Extended;
+  s, r: Extended;
+begin
+  repeat
+    u := rand();
+    v := rand();
+    s := u*u + v*v;
+
+    if ((s = 0) or (s >= 1)) then 
+      continue;
+    
+    r := sqrt(-2 * ln(s) / s);
+    
+    result := u * r;
+
+    if ((result < 0) or (result > 1)) then
+      result := v * r
+
+  until ((result >= 0) and (result <= 1));
 end;
 
 (*
