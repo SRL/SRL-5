@@ -169,8 +169,8 @@ begin
     randSpeed:= (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
     if randSpeed = 0.0 then
       randSpeed := 0.1;
-    X := x + random(rx);
-    Y := y + random(ry);
+    X := x + iGaussRange(0, rx);
+    Y := y + iGaussRange(0, ry);
     WindMouse(cx,cy,x,y,9.0,3.0,10.0/randSpeed,15.0/randSpeed,10.0*randSpeed,10.0*randSpeed);
   {$ENDIF}
 end;
@@ -625,8 +625,8 @@ begin
     exit;
   end;
 
-  o.y := Random(my) * ((Random(2) * 2) - 1);
-  o.x := Random(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
+  o.y := GaussRandom(my) * ((Random(2) * 2) - 1);
+  o.x := GaussRandom(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
 
   case clickType of
     1,2: Mouse(cx + o.x, cy + o.y, 0, 0, clickType = 1);
