@@ -714,7 +714,7 @@ begin
 end;
 
 {$IFNDEF SIMBAMAJOR980}
-  {$IFNDEF SIMBA975}
+  {$IFNDEF SIMBA975}{$IFNDEF SIMBA976}{$IFNDEF SIMBA977}
     {$WARNING ChooseOption is NOT accelerated}
     procedure ocr_FilterUpTextByCharacteristics(bmp: TMufasaBitmap);
     var
@@ -760,7 +760,7 @@ end;
           end;
       end;
     end;
-  {$ENDIF}
+  {$ENDIF}{$ENDIF}{$ENDIF}
 {$ENDIF}
 
 (*
@@ -851,23 +851,21 @@ var
    B,BB: TBox;
    TPA, TPA1, TPA2: TPointArray;
    aTPA, tempatpa: T2DPointArray;
-   I, L, target, bmp,w,h: Integer;
+   I, L, target, bmp,w,h, cts: Integer;
    Colors: TIntegerArray;
 begin
   target := GetImageTarget;
   GetClientDimensions(B.X2, B.Y2);
-  B.X1 := 0;
-  B.Y1 := 0;
-  Dec(B.X2);
-  Dec(B.Y2);
+  B := IntToBox(0, 0, B.X2-1, B.Y2-1);
+  cts := GetColorToleranceSpeed;
+  ColorToleranceSpeed(1);
   FindColorsTolerance(TPA1, 4343893, B.X1, B.Y1, B.X2, B.Y2, 0);
   FindColorsTolerance(TPA2, 3950929, B.X1, B.Y1, B.X2, B.Y2, 0);
   TPA := CombineTPA(TPA1, TPA2);
   If Length(TPA) < 10 Then
     Exit;
-  B.X2 := 0;
-  B.Y2 := 0;
-  aTPA := SplitTPAEx(TPA, 20, 20);
+  B := IntToBox(0, 0, 0, 0);
+  aTPA := SplitTPA(TPA, 10);
   SortATPASize(aTPA, True);
   B := GetTPABounds(aTPA[0]);
 
@@ -880,7 +878,7 @@ begin
 
   FindColorsTolerance(TPA1, 460291, B.X1, B.Y1, B.X2, B.Y2, 24);
 
-  bmp := CreateBitmap(B.X2-B.X1+1, B.Y2-B.Y1+1);
+  bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
   OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
   FastDrawClear(bmp, 0);
@@ -908,6 +906,7 @@ begin
     setlength(TPA,0);
   end;
 
+  ColorToleranceSpeed(cts);
   SetImageTarget(target);
   FreeBitmap(bmp);
 end;
@@ -950,13 +949,13 @@ begin
   if (H < 1) then
     Exit;
   L := High(Texts);
-  for I := 0 To H do
+  for i := 0 To L do
   begin
-    for ii := 0 to L do
-      If Pos(Texts[ii], Options[I].Str) > 0 Then
+    for ii := 0 to H do
+      If Pos(Texts[i], Options[ii].Str) > 0 Then
       begin
         Result := True;
-        B := Options[I].Bounds;
+        B := Options[ii].Bounds;
         case Action of
           ClickLeft: MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 1);
           Move:      MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 3);

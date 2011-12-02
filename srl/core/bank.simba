@@ -810,7 +810,7 @@ begin
     end else if VarType(vType) = varInteger then
       WaitOptionMulti(['Deposit-' + inttostr(vType), 'Deposit'], 200)
     else
-      WaitOptionMulti(['Deposit-All', 'Deposit'], 200);
+      WaitOptionMulti(['Deposit-All', 'All'], 200);
     T := GetSystemTime;
     Wait(RandomRange(200, 300));
     repeat
@@ -1548,7 +1548,7 @@ begin
     ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
   begin
     Mouse(bx, by, 0, 0, False);
-    WaitOptionMulti(['ank B', 'ank', 'nker'], 1000);
+    WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 1000);
     FFlag(0);
     Wait(2000 + Random(500));
     if (Length(Players) > 0) then

@@ -359,7 +359,6 @@ function FindMod: Boolean;
 by: Stupid3ooo
 Description: Results True if a mod is found, then it waits 10-20 mins and logs back in
 *******************************************************************************}
-
 function FindMod: Boolean;
 var
   tX, tY: Integer;
@@ -369,8 +368,8 @@ begin
     LoadSRLBitMaps;
   if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
        (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
-    if (FindBitmapMaskTolerance(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) or
-     (FindBitmapMaskTolerance(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) then
+    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+     (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
     begin
       Result := True;
       AddToSRLLog('******** FOUND MOD ********');

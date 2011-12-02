@@ -215,7 +215,7 @@ procedure SetupSRLStats(ScriptID: integer; UserName, UserPass: string);
 begin
   stats_Timer := GetSystemTime;
   stats_ScriptID := IntToStr(ScriptID);
-  stats_Username := LowerCase(UserName);
+  stats_Username := UserName;
   stats_UserPass := UserPass;
   stats_RandNames := ['Leo', 'Forester', 'Maze', 'P. Pete', 'Evil Bob',
                       'Demon', 'Quiz', 'Mordaut', 'Molly', 'Pinball',
