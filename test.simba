@@ -33,25 +33,25 @@ var
   vals: TIntegerArray;
 
 begin
- {
+ 
   setupn2Gauss();
- }
-  SRL_GaussRand := @weequ_gauss;
-  setLength(vals, 41);
+ 
+//  SRL_GaussRand := @weequ_gauss;
+  setLength(vals, 101);
 
   for i := 0 to 100000 do
   begin
 
-    x := iGaussRange(-20, 20);
-    if (inRange(x, -20, 20)) then
-      inc(vals[x+20]) else
+    x := iGaussRange(-50, 50);
+    if (inRange(x, -50, 50)) then
+      inc(vals[x+50]) else
       inc(err);
     //WriteLn(Format('%3d: iGaussRange(-20, 20) = %d', [i, x]));
   end;
 
   ma := MaxA(vals);
 
-  for i := 0 to 40 do
-    WriteLn(Format('%2.0d:%s [%d]', [i-20, strofchar('=', round(vals[i]*60.0/ma)), vals[i]]));
+  for i := 0 to 100 do
+    WriteLn(Format('%2.0d:%s [%d]', [i-50, strofchar('=', round(vals[i]*60.0/ma)), vals[i]]));
   WriteLn(Format('Errors: %d', [err]));
 end.
