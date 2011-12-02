@@ -29,7 +29,7 @@ begin
 end;
 
 var
-  x,err,i,ma: Integer;
+  x, err, i, ma: Integer;
   vals: TIntegerArray;
 
 begin

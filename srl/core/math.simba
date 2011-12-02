@@ -121,8 +121,29 @@ Calculates numbers within a Gaussian distribution of numbers about the mean
 with +/- the variance (aka. sigma).
 *)
 
+(*
+
+SRL_GaussStd
+~~~~~~~~~~~~
+
+This is a functional pointer. It behaves transparently as a regular function
+would. This function will behave as so: it will return a random Extended 
+normally distributed with a mean of 0 and a standard deviation of 1. 
+
+If you need more flexibility in this (ex. mean of 2), please use GaussRandom
+which converts between the Standard Normal and a custom version.
+
+.. note:
+    by: SRL Development Team
+
+Example:
+
+.. code-block:: pascal
+    
+
+*)
 var
-  SRL_GaussRand: function(u, s:Extended): Extended;
+  SRL_GaussStd: function(): Extended;
 
 
 {
@@ -155,13 +176,15 @@ end;
 n2_gauss
 ~~~~~~~~
 
-Calculates a normal random that is based upon the mean and the standard deviance
-passed into the function.
+Calculates a standard normal value (N(0, 1)).
 
 By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
 
+.. note::
+    by: Nava2
+
 *)
-function n2_gauss(mean, sigma: Extended): Extended;
+function n2_gauss(): Extended;
 var
   r, gauss_rand: Extended;
   i: Integer;
@@ -171,8 +194,7 @@ begin
     r := r + (random(MaxInt)*1.0)/MaxInt;
 
   r := (r-6.0)/4.0 ;
-  gauss_rand:= __gauss_poly(r, r*r);
-  result := mean + sigma*gauss_rand;
+  result := __gauss_poly(r, r*r);
 end;
 
 (*
@@ -183,20 +205,46 @@ SetupN2Gauss
 Sets up the necessary constants for the gaussian functions used in n2_gauss.
 
 *)
-procedure SetupN2Gauss;
+procedure SetupN2Gauss();
 begin
   __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
     0.252408784, 3.949846138 ];
-  SRL_GaussRand := @n2_gauss;
+  SRL_GaussStd := @n2_gauss;
 end;
+
+(*
+  
+GaussRand
+~~~~~~~~~
+
+Calculates a normally distributed point around mean (u) with a standard 
+deviation of dev (o).
+
+..note::
+    by: Nava2
+
+Example:
+
+..code-block:: pascal
+    // shooting arrows simulation:
+    pt := Point(GaussRand(center.x, 0.5), GaussRand(center.y));
+    WriteLn(Format('Hit the target at (%d, %d).', [pt.x, pt.y]));
+
+*)
+
+function GaussRand(mean, dev: Extended): Extended;
+begin
+  result := mean + dev*SRL_GaussStd();
+end;
+
 
 (*
 
 Gauss_Point
 ~~~~~~~~~~~
 
-Calculates a point about cX, cY with radius maxRad. The point is returned in the
-reference parameters oX, oY.
+Calculates a point about cX, cY with radius maxRad. The sangle and eangle are 
+in radians. The point is returned in the reference parameters oX, oY.
 
 .. note::
     by Nava2
@@ -223,10 +271,10 @@ begin
     swap(eAngle, sAngle);
 
   { random angle about the center }
-  angle := sAngle + (eAngle-sAngle)*Random(MaxInt)/MaxInt;
+  angle := sAngle + (eAngle-sAngle)*SRL_GaussStd()/2.0;
 
   { get normal pt about zero, where 68% lie within .5*maxRad }
-  radius := SRL_GaussRand(maxRad,maxRad*SRL_GAUSS_POINT_DEV) - maxRad;
+  radius := GaussRand(maxRad,maxRad*SRL_GAUSS_POINT_DEV) - maxRad;
 
 
   { the shifting distance based on the radius and angle (both rand) }
@@ -266,7 +314,7 @@ begin
   t := 0;
   while ((not valid) and (t < 10)) do 
   begin
-    Result := SRL_GaussRand(mean, dev);
+    Result := GaussRand(mean, dev);
     valid := ((Result >= minI) and (Result <= MaxI));
 
     inc(t);
@@ -327,10 +375,6 @@ begin
     SRL_Warn('GaussBox',Format('Point invalid (%d, %d)', [px, py]), warn_Terminate);
 end;
 
-function GaussRandom(maxValue: Integer): Integer;
-begin
-  Result := iGaussRange(0, maxValue);
-end;
 (*
 MakeSplinePath
 ~~~~~~~~~~~~~~
