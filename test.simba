@@ -62,14 +62,14 @@ begin
 end;
 
 begin
-  setupN2Gauss();
+  setupGauss();
 
   WriteLn('Gauss Box-Muller Polar:');
-  SRL_GaussStd := @GaussBMPolar;
+  SRL_GaussSettings.genStd := @GaussBMPolar;
   plotValues();
 
   WriteLn('Gauss n2_gauss');
-  SRL_GaussStd := @n2_gauss;
+  SRL_GaussSettings.genStd := @n2_gauss;
   plotValues();
 
 

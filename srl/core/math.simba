@@ -11,11 +11,6 @@ Supporting math functions.
 var
    SineArray, Cosearray: array[0..360] of Extended;
    
-{
-  Amount to modify the std dev by.
-}
-const
-  SRL_GAUSS_POINT_DEV = 0.4;
 (*
 LoadCoSineArrays
 ~~~~~~~~~~~~~~~~
@@ -131,18 +126,20 @@ Example:
     
 
 *)
+
+type
+  TSRL_GaussSettings = record
+    genStd: function: Extended;
+    devRange: Extended;
+    devPoint: Extended;
+
+    { static vars } 
+    __NORM_CONST: TExtendedArray;
+    __st_second: Extended;
+  end;
+
 var
-  SRL_GaussStd: function: Extended;
-
-
-
-{
-  Numerically evaluated constants for Normal distribution.
-  Set in `setupN2Gauss`
-}
-var
-  __NORM_CONST: TExtendedArray;
-
+  SRL_GaussSettings: TSRL_GaussSettings;
 
 {
 
@@ -154,11 +151,14 @@ Helper method for cal_normal_random. Does polynomial calculation using the
 }
 function __gauss_poly(r, rsqr: Extended): Extended;
 begin
-  Result := __NORM_CONST[0]*rsqr + __NORM_CONST[1];
-  Result := Result*rsqr + __NORM_CONST[2];
-  Result := Result*rsqr + __NORM_CONST[3];
-  Result := Result*rsqr + __NORM_CONST[4];
-  Result := Result*r;
+  with SRL_GaussSettings do
+  begin
+    Result := __NORM_CONST[0]*rsqr + __NORM_CONST[1];
+    Result := Result*rsqr + __NORM_CONST[2];
+    Result := Result*rsqr + __NORM_CONST[3];
+    Result := Result*rsqr + __NORM_CONST[4];
+    Result := Result*r;
+  end;
 end;
 
 (*
@@ -195,15 +195,20 @@ SetupN2Gauss
 Sets up the necessary constants for the gaussian functions used in n2_gauss.
 
 *)
-var
-  __static_second: Extended;
 
-procedure SetupN2Gauss();
+procedure setupGauss();
 begin
-  __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
-    0.252408784, 3.949846138 ];
-  SRL_GaussStd := @n2_gauss;
-  __static_second := -2;
+  with SRL_GaussSettings do
+  begin
+    genStd := @n2_gauss;
+
+    devPoint := 0.4;
+    devRange := 0.3;
+
+    __st_second := -2;
+    __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
+      0.252408784, 3.949846138 ];
+  end;
 end;
 
 function GaussBMPolar(): Extended;
@@ -216,10 +221,10 @@ begin
   while ((result <= -1) or (result >= 1)) do
   begin
     { the following maintains state about the function, speed optimization. }
-    if (__static_second <> -2) then
+    if (SRL_GaussSettings.__st_second <> -2) then
     begin
-      result := __static_second;
-      __static_second := -2;
+      result := SRL_GaussSettings.__st_second;
+      SRL_GaussSettings.__st_second := -2;
       continue;
     end;
     
@@ -233,7 +238,7 @@ begin
     r := sqrt(-2.0 * log10(s) / s);
     
     result := u * r;
-    __static_second := v*r;
+    SRL_GaussSettings.__st_second := v*r;
   
   end; { end while loop}      
 
@@ -261,7 +266,7 @@ Example:
 
 function GaussRand(mean, dev: Extended): Extended;
 begin
-  result := mean + dev*SRL_GaussStd();
+  result := mean + dev*SRL_GaussSettings.genStd();
 end;
 
 
@@ -298,10 +303,10 @@ begin
     swap(eAngle, sAngle);
 
   { random angle about the center }
-  angle := sAngle + (eAngle-sAngle)*SRL_GaussStd()/2.0;
+  angle := sAngle + (eAngle-sAngle)*SRL_GaussSettings.genStd()/2.0;
 
   { get normal pt about zero, where 68% lie within .5*maxRad }
-  radius := GaussRand(maxRad,maxRad*SRL_GAUSS_POINT_DEV) - maxRad;
+  radius := GaussRand(maxRad,maxRad*SRL_GaussSettings.devPoint) - maxRad;
 
 
   { the shifting distance based on the radius and angle (both rand) }
@@ -336,7 +341,7 @@ var
 begin
   { calculate the mean }
   mean := (maxI+minI)/2.0;
-  dev  := abs(maxI-minI)/2.0 * 0.3;
+  dev  := abs(maxI-minI)/2.0 * SRL_GaussSettings.devRange;
 
   t := 0;
   while ((not valid) and (t < 100)) do 
