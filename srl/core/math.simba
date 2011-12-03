@@ -134,7 +134,6 @@ type
     devPoint: Extended;
 
     { static vars } 
-    __NORM_CONST: TExtendedArray;
     __st_second: Extended;
   end;
 
@@ -149,14 +148,21 @@ Helper method for cal_normal_random. Does polynomial calculation using the
 ..http://en.wikipedia.org/wiki/Horner_scheme
 
 }
+const
+  __gauss_norm_0 = 0.029899776;
+  __gauss_norm_1 = 0.008355968;
+  __gauss_norm_2 = 0.076542912;
+  __gauss_norm_3 = 0.252408784;
+  __gauss_norm_4 = 3.949846138;
+
 function __gauss_poly(r, rsqr: Extended): Extended;
 begin
   with SRL_GaussSettings do
   begin
-    Result := __NORM_CONST[0]*rsqr + __NORM_CONST[1];
-    Result := Result*rsqr + __NORM_CONST[2];
-    Result := Result*rsqr + __NORM_CONST[3];
-    Result := Result*rsqr + __NORM_CONST[4];
+    Result := __gauss_norm_0*rsqr + __gauss_norm_1;
+    Result := Result*rsqr + __gauss_norm_2;
+    Result := Result*rsqr + __gauss_norm_3;
+    Result := Result*rsqr + __gauss_norm_4;
     Result := Result*r;
   end;
 end;
@@ -204,27 +210,27 @@ begin
 
     devPoint := 0.4;
     devRange := 0.3;
-
-    __st_second := -2;
-    __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
-      0.252408784, 3.949846138 ];
   end;
+
+  __st_second := -2.0;
 end;
 
+var
+    __st_second: Extended;
 function GaussBMPolar(): Extended;
 var
   u, v: Extended;
   s, r: Extended;
 begin
-  result := -2
+  result := -2.0;
 
   while ((result <= -1) or (result >= 1)) do
   begin
     { the following maintains state about the function, speed optimization. }
-    if (SRL_GaussSettings.__st_second <> -2) then
+    if (__st_second <> -2) then
     begin
-      result := SRL_GaussSettings.__st_second;
-      SRL_GaussSettings.__st_second := -2;
+      result := __st_second;
+      __st_second := -2;
       continue;
     end;
     
@@ -238,7 +244,7 @@ begin
     r := sqrt(-2.0 * log10(s) / s);
     
     result := u * r;
-    SRL_GaussSettings.__st_second := v*r;
+    __st_second := v*r;
   
   end; { end while loop}      
 
@@ -371,9 +377,23 @@ begin
   Result := Round(GaussRange(minI, maxI));
 end;
 
+(*
+
+GaussRandom
+~~~~~~~~~~~
+
+Computes a normally distributed number in [0, maxExt). Thus, it behaves like 
+Random() would be expected to. But normally distributed about maxExt/2. 
+
+It is a wrapper for `iGaussRange`. 
+
+.. note: 
+    by Nava2
+
+*)
 function GaussRandom(maxExt: Integer): Integer;
 begin
-  Result := iGaussRange(0, maxExt);
+  Result := iGaussRange(0, maxExt-1);
 end;
 
 (*
