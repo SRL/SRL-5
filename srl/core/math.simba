@@ -132,7 +132,8 @@ Example:
 
 *)
 var
-  SRL_GaussStd: function(): Extended;
+  SRL_GaussStd: function: Extended;
+
 
 
 {
@@ -194,11 +195,15 @@ SetupN2Gauss
 Sets up the necessary constants for the gaussian functions used in n2_gauss.
 
 *)
+var
+  __static_second: Extended;
+
 procedure SetupN2Gauss();
 begin
   __NORM_CONST := [ 0.029899776, 0.008355968, 0.076542912,
     0.252408784, 3.949846138 ];
   SRL_GaussStd := @n2_gauss;
+  __static_second := -2;
 end;
 
 function GaussBMPolar(): Extended;
@@ -206,22 +211,32 @@ var
   u, v: Extended;
   s, r: Extended;
 begin
-  repeat
-    u := rand();
-    v := rand();
+  result := -2
+
+  while ((result <= -1) or (result >= 1)) do
+  begin
+    { the following maintains state about the function, speed optimization. }
+    if (__static_second <> -2) then
+    begin
+      result := __static_second;
+      __static_second := -2;
+      continue;
+    end;
+    
+    u := -1 + 2*RandomE;
+    v := -1 + 2*RandomE;
     s := u*u + v*v;
 
     if ((s = 0) or (s >= 1)) then 
       continue;
-    
-    r := sqrt(-2 * ln(s) / s);
+
+    r := sqrt(-2.0 * log10(s) / s);
     
     result := u * r;
+    __static_second := v*r;
+  
+  end; { end while loop}      
 
-    if ((result < 0) or (result > 1)) then
-      result := v * r
-
-  until ((result >= 0) and (result <= 1));
 end;
 
 (*
@@ -321,10 +336,10 @@ var
 begin
   { calculate the mean }
   mean := (maxI+minI)/2.0;
-  dev  := abs(maxI-minI)/2.0 * 0.333;//1.5;
+  dev  := abs(maxI-minI)/2.0 * 0.3;
 
   t := 0;
-  while ((not valid) and (t < 10)) do 
+  while ((not valid) and (t < 100)) do 
   begin
     Result := GaussRand(mean, dev);
     valid := ((Result >= minI) and (Result <= MaxI));
@@ -351,6 +366,10 @@ begin
   Result := Round(GaussRange(minI, maxI));
 end;
 
+function GaussRandom(maxExt: Integer): Integer;
+begin
+  Result := iGaussRange(0, maxExt);
+end;
 
 (*
 
