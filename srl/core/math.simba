@@ -78,6 +78,41 @@ begin;
 end;
 
 
+(*
+RBoolEx
+~~~~~~~
+
+.. code-block:: pascal
+    function RBoolEx(chance: integer): boolean;
+
+Description: Returns a boolean, with a chance of 1 / chance
+
+..note::
+    by Rasta Magician
+*)
+
+function RBoolEx(chance: Integer): Boolean;
+begin
+  Result := (0 = Random(chance));
+end;
+
+(*
+RBool
+~~~~~
+
+.. code-block:: pascal
+    function RBool: boolean;
+
+Description: Returns a boolean, with a 50% chance
+
+.. note::
+    by Rasta Magician
+*)
+function RBool: boolean;
+begin
+  Result := RBoolEx(2);
+end;
+
 type
   TVector = record
     x, y: Extended;
