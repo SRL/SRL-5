@@ -41,7 +41,6 @@
 {$include SRL/SRL/core/mouse.simba}
 {$include SRL/SRL/core/color.simba}
 {$include SRL/SRL/core/players.simba}
-{$include SRL/SRL/core/overwrite.simba}
 
 //----------------------------------------------------------------------------//
 //--                         SRL Level 2 Includes                           --//

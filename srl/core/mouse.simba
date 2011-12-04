@@ -237,6 +237,49 @@ begin
 end;
 
 (*
+MouseBox
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
+
+Moves mouse into a random position in the box. Clicks if told to.
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
+var
+  fx, fy: Integer;
+begin
+  GaussBox(fx, fy, x1, y1, x2, y2);
+
+  case ClickType of
+    mouse_right..mouse_middle : Mouse(fx, fy, 0, 0, clickType);
+    mouse_move : MMouse(fx, fy, 0, 0);
+  else
+    srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
+  end;
+end;
+
+procedure MouseAction(mx, my, rx, ry: Integer; a: fnct_ActionOptions);
+begin
+    case (a) of
+      Move: MMouse(mx, my, rx, ry);
+      ClickLeft: Mouse(mx, my, rx, ry, mouse_left);
+      ClickRight: Mouse(mx, my, rx, ry, mouse_right);
+      ClickMiddle: Mouse(mx, my, rx, ry, mouse_middle);
+    end;
+end;
+
+(*
 SleepAndMoveMouse
 ~~~~~~~~~~~~~~~~~
 
@@ -659,38 +702,6 @@ begin
   end;
 end;
 
-(*
-MouseBox
-~~~~~~~~
-
-.. code-block:: pascal
-
-    procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
-
-Moves mouse into a random position in the box. Clicks if told to.
-
-.. note::
-
-    by Nava2
-
-Example:
-
-.. code-block:: pascal
-
-*)
-procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
-var
-  fx, fy: Integer;
-begin
-  GaussBox(fx, fy, x1, y1, x2, y2);
-
-  case ClickType of
-    mouse_right..mouse_middle : Mouse(fx, fy, 0, 0, clickType);
-    mouse_move : MMouse(fx, fy, 0, 0);
-  else
-    srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
-  end;
-end;
 
 (*
 DragMouse
@@ -716,10 +727,10 @@ begin
   MMouse(StartX, StartY, SRandX, SRandY);
   Wait(150 + Random(20));
   GetMousePos(StartX, StartY);
-  HoldMouse(StartX, StartY, MouseAction(true));
+  HoldMouse(StartX, StartY, mouse_left);
   Wait(250 + Random(320));
   MMouse(EndX, EndY, ERandX, ERandY);
   Wait(250 + Random(120));
   GetMousePos(EndX, EndY);
-  ReleaseMouse(EndX, EndY, MouseAction(true));
+  ReleaseMouse(EndX, EndY, mouse_left);
 end;

@@ -495,11 +495,7 @@ begin
   if FindBitmapMaskTolerance(S, tx, ty, 9, 348, 523, 471, 50, 10) then
   begin
     Result := True;
-    case Action of
-      Move: MMouse(tx, ty + 2, Random(Length(txt) * 5), 4);
-      ClickLeft: Mouse(tx, ty + 2, Random(Length(txt) * 5), 4, True);
-      ClickRight: Mouse(tx, ty + 2, Random(Length(txt) * 5), 4, False);
-    end;
+    MouseAction(tx, ty + 2, Random(Length(txt) * 5), 4, Action);
   end;
   FreeBitmap(S);
 end;
@@ -541,7 +537,7 @@ ClickText
 
 .. code-block:: pascal
 
-    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; Left: Boolean): Boolean;
+    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: Integer): Boolean;
 
 Clicks Text if found in the specified box.
 
@@ -554,7 +550,7 @@ Example
 .. code-block:: pascal
 
 *)
-function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; Left: Boolean): Boolean;
+function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: Integer): Boolean;
 var
   Mask, w, h, tx, ty: Integer;
 begin
@@ -568,7 +564,7 @@ begin
   GetBitmapSize(Mask, W, H);
   FreeBitmap(Mask);
   if(Result)then
-    Mouse(TX + (W div 4), TY + (H div 4), (W div 2), (H div 2), Left);
+    Mouse(TX + (W div 4), TY + (H div 4), (W div 2), (H div 2), button);
 end;
 
 (*
@@ -648,10 +644,7 @@ begin
   if Action = Move then
     Exit;
   GetMousePos(xx,yy);
-  Case Action of
-    ClickLeft : Mouse(xx,yy,0,0,true);
-    ClickRight: Mouse(xx,yy,0,0,false);
-  end;
+  MouseAction(xx, yy, 0, 0, Action);
 end;
 
 (*
@@ -1090,7 +1083,7 @@ Closes any open windows. (In RS not your pc roflmaololz, j/k)
 
 .. note::
 
-    by NaumanAkhlaQ & Narcle & Nava2
+    by NaumanAkhlaQ, Narcle, and Nava2
 
 Example:
 
@@ -1129,19 +1122,19 @@ begin
       begin
         Pa := GetTPABounds(a[ii]);
         if ((Pa.x2 - Pa.x1) > 50) or ((Pa.y2 - Pa.y1) > 50) then Continue;
-        MMouse(RandomRange(Pa.x1, Pa.x2), RandomRange(Pa.y1, Pa.y2), 0, 0);
+        MouseBox(Pa.x1, Pa.y1, Pa.x2, Pa.y2, mouse_move);
         Result := (Pos('lose', GetUpText) > 0) or (Pos('ack', GetUpText) > 0);
         Pa.x2 := GetTimeRunning + 2000;
         while (not Result) and (GetTimeRunning < Pa.x2) do
         begin
-          Wait(10);
+          Wait(16);
           Result := (Pos('lose', GetUpText) > 0);
         end;
         Wait(Random(300));
         if Result then
         begin
           GetMousePos(Pa.x1, Pa.y1);
-          Mouse(Pa.x1, Pa.y1, 0, 0, True);
+          Mouse(Pa.x1, Pa.y1, 0, 0, mouse_left);
           Result := True;
           //Writeln('Close Window Type ' + IntToStr(i));
           Exit;

@@ -296,6 +296,8 @@ type
 var
   SRL_GaussSettings: TSRL_GaussSettings;
 
+var
+    __st_second: Extended;
 {
 
 Helper method for cal_normal_random. Does polynomial calculation using the
@@ -371,8 +373,6 @@ begin
   __st_second := -2.0;
 end;
 
-var
-    __st_second: Extended;
 function GaussBMPolar(): Extended;
 var
   u, v: Extended;
