@@ -340,7 +340,7 @@ By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
 *)
 function n2_gauss(): Extended;
 var
-  r, gauss_rand: Extended;
+  r: Extended;
   i: Integer;
 begin
   r := 0.0;

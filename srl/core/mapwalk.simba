@@ -1128,7 +1128,6 @@ Example:
 function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
 var
   DotColor: Integer;
-  i, h: Integer;
   radius: Integer;
 begin
   case LowerCase(WhatDot) of
