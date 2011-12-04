@@ -132,9 +132,6 @@ type
     genStd: function: Extended;
     devRange: Extended;
     devPoint: Extended;
-
-    { static vars } 
-    __st_second: Extended;
   end;
 
 var
