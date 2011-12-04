@@ -194,18 +194,25 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure ClickMouse2(button: Integer);
+procedure ClickMouse2(button: variant);
 var
   a,b,c : integer;
+  iButton: Integer;
 begin
   GetMousePos(b, c);
-  HoldMouse(b, c, button);
+  if (varType(button) = varBoolean) then
+    if (button) then
+      iButton := mouse_left
+    else 
+      iButton := mouse_right;
+
+  HoldMouse(b, c, iButton);
   repeat
     Wait(20 + Random(30));
     a := a + 1;
   until (a > 4);
   GetMousePos(b, c);
-  ReleaseMouse(b, c, button);
+  ReleaseMouse(b, c, iButton);
   Wait(50+Random(50));
 end;
 
@@ -228,7 +235,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure Mouse(mousex, mousey, ranx, rany: Integer; button: Integer);
+procedure Mouse(mousex, mousey, ranx, rany: Integer; button: variant);
 begin
   MMouse(mousex, mousey, ranx, rany);
   Wait(60 + Random(30));
