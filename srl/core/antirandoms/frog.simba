@@ -80,7 +80,7 @@ Begin
       If InRange(RedCount, 1, 30) Then
       Begin
         WriteLn('Trying to click a frog...');
-        Mouse(Middle.X, Middle.Y, 0, 0, True);
+        Mouse(Middle.X, Middle.Y, 0, 0, mouse_left);
         Wait(2000 + Random(500));
         While IsMoving Do
           Wait(50 + Random(20));
@@ -106,7 +106,7 @@ Begin
     If (Distance(GasHole.X, GasHole.Y, MSCX, MSCY) > 150) Then
     Begin
       WriteLn('Walking to Gas Hole...');
-      Mouse(GasHole.X - 50, GasHole.Y + 30, 10, 10, False);
+      Mouse(GasHole.X - 50, GasHole.Y + 30, 10, 10, mouse_right);
       WaitOption('alk here', 500);
     End;
 End;
@@ -191,10 +191,10 @@ begin
     WriteLn('Moving in cave to point: '+IntToStr(Tries));
     
     Case Tries Of
-      0, 2, 4: Mouse(CenterX, CenterY + 50, 2, 2, True);
-      1:       Mouse(CenterX + 40, CenterY, 2, 2, True);
-      3:       Mouse(CenterX - 40, CenterY, 2, 2, True);
-      5:       Mouse(CenterX, CenterY, 2, 2, True);
+      0, 2, 4: Mouse(CenterX, CenterY + 50, 2, 2, mouse_left);
+      1:       Mouse(CenterX + 40, CenterY, 2, 2, mouse_left);
+      3:       Mouse(CenterX - 40, CenterY, 2, 2, mouse_left);
+      5:       Mouse(CenterX, CenterY, 2, 2, mouse_left);
     End;
     Wait(1900 + Random(200));
     

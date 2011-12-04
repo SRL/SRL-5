@@ -48,7 +48,7 @@ begin
   WTC := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, WTC.X + 2, WTC.Y - 3) > 4) then       //Not standing in
   begin
-    Mouse(WTC.X + 2, WTC.Y - 3, 0, 0, True);                    //Walk to
+    Mouse(WTC.X + 2, WTC.Y - 3, 0, 0, mouse_left);                    //Walk to
     Flag;
   end;
   Wait(2000 + Random(500));                                    //Wait a second
@@ -165,7 +165,7 @@ begin
     MMouse(P.X, P.Y, 0, 0); //hover mouse
     Wait(200 + Random(250)); //uptime
     if (CountColorTolerance(14342657, 7, 7, 100, 25, 70) > 50) then //check blue text
-      Mouse(P.X, P.Y, 0, 0, True) //select
+      Mouse(P.X, P.Y, 0, 0, mouse_left) //select
     else
     begin
       InStrArrEx(LLoc, Locs, I); //Match up indexes
@@ -179,7 +179,7 @@ begin
       if (B.Y2 > MSY2) then
         B.Y2 := MSY2;
       if (SpiralMouse(P.X, P.Y, B.X1, B.Y1, B.X2, B.Y2, 'ppend', 30, 8)) then //hover mouse around til text
-        Mouse(P.X, P.Y, 0, 0, True); //selected in the section
+        Mouse(P.X, P.Y, 0, 0, mouse_left); //selected in the section
     end;
     Exit;
   end;
@@ -195,7 +195,7 @@ begin
     B.Y2 := MSY2;
   WriteLn('Guessing...');
   if (SpiralMouse(P.X, P.Y, B.X1, B.Y1, B.X2, B.Y2, 'ppend', 30, 8)) then
-    Mouse(P.X, P.Y, 0, 0, True); //select random
+    Mouse(P.X, P.Y, 0, 0, mouse_left); //select random
 end;
 
 {*******************************************************************************

@@ -51,17 +51,17 @@ var
 begin
   if FindColor(cx, cy, 237, MMX1, MMY1, MMX2, MMY2) then
   begin
-    Mouse(cx, cy, 0, 0, True);
+    Mouse(cx, cy, 0, 0, mouse_left);
     Flag;
     Wait(1500 + Random(500));
     MMouse(MSCX, MSCY, 0, 0);
     if (not IsUpText('ere')) then
     begin
       Result := True;
-      if IsUpText('ake') then Mouse(MSCX, MSCX, 0, 0, True)
+      if IsUpText('ake') then Mouse(MSCX, MSCX, 0, 0, mouse_left)
       else
       begin
-        Mouse(MSCX, MSCY, 0, 0, False);
+        Mouse(MSCX, MSCY, 0, 0, mouse_right);
         Wait(250 + Random(100));
         Result := ChooseOption('ake');
       end;
@@ -143,7 +143,7 @@ begin
       Wait(200 + Random(50));
       if (CountColorTolerance(648165, 7, 7, 100, 25, 50) > 50) then
       begin
-        Mouse(TTFF.X, TTFF.Y, 0, 0, False);
+        Mouse(TTFF.X, TTFF.Y, 0, 0, mouse_right);
         Wait(100 + Random(200));
         if (ChooseOptionMulti(['alk-to', 'o F', 'k-t', 'Talk'])) then
         begin
@@ -181,7 +181,7 @@ begin
       LogOut;
       Exit;
     end;
-    Mouse(dx - 2, dy + 2, 0, 0, True);
+    Mouse(dx - 2, dy + 2, 0, 0, mouse_left);
     Flag;
     Wait(1500 + Random(500));
 
@@ -294,7 +294,7 @@ begin
           if FindColorsTolerance(D, 2641004, x - 80, y - 80, x + 80, y + 80, 12) then
           begin
             SortTPAFrom(D, Point(x, y));
-            Mouse(D[0].x, D[0].y, 0, 0, False);
+            Mouse(D[0].x, D[0].y, 0, 0, mouse_right);
             Wait(300 + Random(200));
             Result := ChooseOption('Attack');
             if (not Result) then Break;
@@ -389,7 +389,7 @@ begin
     Exit;
   end;
 
-  Mouse(rx, ry, 1, 1, True);
+  Mouse(rx, ry, 1, 1, mouse_left);
   Flag;
   Wait(1500 + Random(500));
 
@@ -400,7 +400,7 @@ begin
       if not B then
       begin
         B := True;
-        Mouse(MSCX, MSCY, 3, 3, False);
+        Mouse(MSCX, MSCY, 3, 3, mouse_left);
       end;
   until TalkToFreakyForester or
        (TimeFromMark(t) > 30000);
@@ -451,7 +451,7 @@ begin
     h     := 33;
   end;
   ForesterCenter(x, y);
-  Mouse(x + 45, y, 0, 0, True);
+  Mouse(x + 45, y, 0, 0, mouse_left);
   Flag;
   Wait(RandomRange(1000, 1500)); //To make sure we stopped walking
 
@@ -478,7 +478,7 @@ begin
     if waitUptextMulti(['Enter', 'nter', 'ortal'], 1000) then
     begin
       getMousePos(x, y);
-      Mouse(x, y, 0, 0, False);
+      Mouse(x, y, 0, 0, mouse_right);
       if (not waitOptionMulti(['Enter', 'nter'], 1000)) then
       begin
         writeln('Forester: Can''t enter the portal.');
@@ -492,7 +492,7 @@ begin
   T := GetSystemTime;
   while (GetSystemTime - T < 20000) do
   begin
-    if WarningScreen then MouseBox(144, 195, 392, 204, 1);
+    if WarningScreen then MouseBox(144, 195, 392, 204, mouse_left);
     Wait(4000 + Random(1000));
     Result := (GetMusic <> 'Pheasant Peasant') or (not InForesterRandom);
     if (Result) then Break;
@@ -549,7 +549,7 @@ begin
   Result := LeaveForester;
   if (not Result) then
   begin
-    Mouse(690, 86, 4, 4, True);
+    Mouse(690, 86, 4, 4, mouse_left);
     Flag;
     Wait(3000 + Random(1000));
     Result := LeaveForester;

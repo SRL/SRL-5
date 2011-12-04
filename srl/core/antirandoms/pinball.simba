@@ -153,7 +153,7 @@ begin
     for II := 0 to High(ATPA) do
     begin
       MiddleTPAEx(ATPA[II], X, Y);
-      Mouse(X, Y, 0, 0, False);
+      Mouse(X, Y, 0, 0, mouse_right);
       Wait(200 + Random(100));
       if (ChooseOptionMulti(['xit C', 'it C', 't Ca'])) then
       begin
@@ -198,7 +198,7 @@ begin
     begin
       if p_ScanPillar(x, y) then
       begin
-        Mouse(x, y, 0, 0, True);
+        Mouse(x, y, 0, 0, mouse_left);
         score := p_GetScore;
         time2 := getsystemtime;
         while (score = p_GetScore) and (getsystemtime - time2 < 10000) do

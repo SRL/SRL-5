@@ -74,7 +74,7 @@ begin
     if (SpiralMouse(P.X, P.Y, MSCX - 20, MSCY - 20, MSCX + 20, MSCY - 20, 'age', 30, 8)) then
     begin
       GetMousePos(P.X, P.Y);
-      Mouse(P.X, P.Y, 0, 0, True);
+      Mouse(P.X, P.Y, 0, 0, mouse_left);
       X := GetSystemTime;
       while ((GetSystemTime - X) < 5000) and (not Pillory_LockScreen) do
         Wait(100);
@@ -289,7 +289,7 @@ begin
     for I := 0 to 2 do
       if (Pillory_GetKey(I) = Target) then
       begin
-        Mouse(208 + (94 * I), 225, 4, 4, True);
+        Mouse(208 + (94 * I), 225, 4, 4, mouse_left);
         Wait(2000 + Random(1000));
         Break;
       end;

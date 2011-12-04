@@ -84,7 +84,7 @@ begin
   Inv := (GetCurrentTab = tab_Inv);
   if (Inv) then Inv := ((not InvEmpty) and (Random(3) > 0));
   if (not Inv) then
-    MouseBox(MSX1, MSY1, MIX2, MIY2, 2)
+    MouseBox(MSX1, MSY1, MIX2, MIY2, mouse_right)
   else
   begin
     SetLength(I, 28);
@@ -94,7 +94,7 @@ begin
     R := RandomRange(1, 28);
     while (not I[R - 1]) do
       R := RandomRange(1, 28);
-    InvMouse(R, 2);
+    InvMouse(R, mouse_right);
   end;
   Inv := False;
   if (Random(3) > 0) then
@@ -161,7 +161,7 @@ begin
   
   if(Click)then
   begin
-    Mouse(Tp.X, TP.Y, 10, 10, True);
+    Mouse(Tp.X, TP.Y, 10, 10, mouse_left);
     Wait(5000 + Random(9000));
     CloseWindow;
   end else
@@ -295,7 +295,7 @@ begin
     if IsUpText('opti') then
     begin
       GetMousePos(x, y);
-      Mouse(x, y, 0, 0, False);
+      Mouse(x, y, 0, 0, mouse_right);
       ChooseOption('Examine');
     end;
     case Random(6) of
@@ -348,7 +348,7 @@ begin
       InvSpots[L] := I;
       Inc(L);
     end;
-  MouseItem(InvSpots[Random(Length(InvSpots))], False);
+  MouseItem(InvSpots[Random(Length(InvSpots))], mouse_right);
   if (not WaitOption('xamine', 375)) then
     if (Random(2) = 0) then
       WaitOption('ancel', 375);
