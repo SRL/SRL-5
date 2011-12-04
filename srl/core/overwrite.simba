@@ -8,70 +8,6 @@ The Overwrite include contains functions that overwrite Simba functions.
 
 *)
 
-(* start math.simba additions *)
-type
-  TVector = record
-    a: Extended;
-    b: Extended;
-    Magnitude: Extended;
-  end;
-
-(*
-fixRad
-~~~~~~
-
-.. code-block:: pascal
-    function fixRad(rad: Extended): Extended;
-
-Returns the periodic rad in the range (0,2PI].
-
-.. note::
-  By Nava2
-
-*)
-function fixRad(rad: Extended): Extended;  // by Nava2
-var
-  math_2pi: Extended;
-begin
-  math_2pi := 2*pi;
-  result := rad;
-
-  while (result >= math_2pi) do
-    result := result - math_2pi;
-
-  while (result < 0) do
-    result := result + math_2pi;
-end;
-
-function AngleBetween(v1, v2: TVector): Extended;
-var
-  a1, a2: Extended;
-begin
-  a1 := ArcTan2(v1.b, v1.a);
-  a2 := ArcTan2(v2.b, v2.a);
-
-  Result := fixRad(a1 - a2)
-end;
-
-
-procedure Normalise(var vect: TVector);
-begin
-  vect.a := vect.a / vect.Magnitude;
-  vect.b := vect.b / vect.Magnitude;
-  vect.Magnitude := 1;
-end;
-
-function CreateVector(Origin, vPoint: TPoint; NormaliseV: Boolean): TVector;
-begin
-  Result.a := vPoint.x - Origin.x;
-  Result.b := 0 - (vPoint.y - Origin.y); // inverts y axis as well
-  Result.Magnitude := Sqrt(Sqr(Result.a) + Sqr(Result.b));
-  if NormaliseV then
-    Normalise(Result);
-end;
-
-(* end math.simba additions *)
-
 (*
 rs_GetCompassAngleRadians
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,10 +35,7 @@ var
   VectorArray: Array of TVector;
   RefPoint: TPoint;
   angles: TExtendedArray;
-  math_2pi: Extended;
 begin
-  math_2pi := 2*pi;
-
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
   { Colour of 3 E/S/W dots }
@@ -140,15 +73,15 @@ begin
 
   for i := 0 to 2 do
   begin
-    if angles[i] > pi then
-      angles[i] := math_2pi - angles[i];
+    if angles[i] > MATH_PI then
+      angles[i] := MATH_2PI - angles[i];
     { compare angle between, > 100 then it's the south dot }
     if angles[i] > radians(100) then
     begin
       case i of
-    0: RefPoint := tpa[2];
-    1: RefPoint := tpa[0];
-    2: RefPoint := tpa[1];
+        0: RefPoint := tpa[2];
+        1: RefPoint := tpa[0];
+        2: RefPoint := tpa[1];
       end;
       { break the loop, we have reference pt. }
       break;
@@ -158,7 +91,7 @@ begin
 
   { Using the south dot to measure compass angle.. }
   Result := ArcTan2(-(RefPoint.Y - 24), RefPoint.X - 543) - Radians(80);
-  Result := fixRad(Result - Pi - 0.05*Pi);
+  Result := fixRad(Result - MATH_PI - 0.05*MATH_PI);
 end;
 
 (*

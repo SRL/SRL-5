@@ -8,6 +8,14 @@ Supporting math functions.
 
 *)
 
+const
+  MATH_PI = 3.14159265358979320;
+  MATH_2PI = MATH_PI * 2.0;
+  MATH_PIOVER2 = MATH_PI / 2.0;
+  MATH_PIOVER3 = MATH_PI / 3.0;
+  MATH_PIOVER4 = MATH_PI / 4.0;
+  MATH_PIOVER6 = MATH_PI / 6.0;
+
 var
    SineArray, Cosearray: array[0..360] of Extended;
    
@@ -68,6 +76,122 @@ var
 begin;
   result := TPAFromText(Txt,Chars,w,h);
 end;
+
+
+type
+  TVector = record
+    x, y: Extended;
+    m: Extended;
+  end;
+
+(*
+fixRad
+~~~~~~
+
+.. code-block:: pascal
+    function fixRad(rad: Extended): Extended;
+
+Returns the periodic rad in the range (0,2PI].
+
+.. note::
+  By Nava2
+
+*)
+function fixRad(rad: Extended): Extended;  // by Nava2
+begin
+  result := rad;
+
+  while (result >= MATH_2PI) do
+    result := result - MATH_2PI;
+
+  while (result < 0) do
+    result := result + MATH_2PI;
+end;
+
+
+(*
+AngleBetween
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AngleBetween(v1, v2: TVector): Extended;
+
+Calculates the angle between two TVector records. This is returned in radians
+(normalized between (0, 2Pi]).
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function AngleBetween(v1, v2: TVector): Extended;
+var
+  a1, a2: Extended;
+begin
+  a1 := ArcTan2(v1.x, v1.y);
+  a2 := ArcTan2(v2.x, v2.y);
+
+  Result := fixRad(a1 - a2)
+end;
+
+
+(*
+Normalize
+~~~~~~~~~
+
+.. code-block:: pascal
+    procedure Normalize(var vect: TVector);
+
+Converts a TVector to normal TVector (|v| = 1). 
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure Normalize(var vect: TVector);
+begin
+  vect.x := vect.x / vect.m;
+  vect.y := vect.y / vect.m;
+  vect.m := 1;
+end;
+
+(*
+CreateVector
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+    function CreateVector(Origin, vPoint: TPoint; NormalizeV: Boolean): TVector;
+
+Creates a `TVector` object. If NormalzseV is true, will set |v| = 1.
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function CreateVector(Origin, vPoint: TPoint; NormalizeV: Boolean): TVector;
+begin
+  Result.x := vPoint.x - Origin.x;
+  Result.y := 0 - (vPoint.y - Origin.y); // inverts y axis as well
+  Result.m := Sqrt(Sqr(Result.x) + Sqr(Result.y));
+  if (NormalizeV) then
+    Normalize(Result);
+end;
+
 
 (*
 GetSplitPt
