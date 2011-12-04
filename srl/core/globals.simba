@@ -143,6 +143,7 @@ const
   srl_OnCustomRC       = 11;  // When custom RC trigger has been given.
   srl_OnExitToLobby    = 12;  // On exit to lobby
   srl_OnLogIn          = 13;  // Right after player has successfully logged in.
+  srl_OnRSUpdate       = 14;  // Called in LoginPlayerToLob if RuneScape updates.
 
 { var SRL_Procs: array [0..12] of procedure();
   Description: Varibles to store user-defined procs to be called in SRL. }
