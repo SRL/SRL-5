@@ -322,6 +322,8 @@ SetupN2Gauss
 Sets up the necessary constants for the gaussian functions used in n2_gauss.
 
 *)
+var
+  __st_second: Extended;
 
 procedure setupGauss();
 begin
@@ -336,8 +338,6 @@ begin
   __st_second := -2.0;
 end;
 
-var
-    __st_second: Extended;
 function GaussBMPolar(): Extended;
 var
   u, v: Extended;
