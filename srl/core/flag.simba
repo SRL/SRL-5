@@ -8,43 +8,53 @@ The Flag include contains all Flag related functions
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Mouse Flag Routines                         --//
-//-----------------------------------------------------------------//
-// * function FlagPresent: Boolean;                                // by Mutant Squirrle
-// * function FlagDistance: Integer;                               // by PPLSUQBAWLZ, and Odie533
-// * function WalkingToFlag(WaitTime: Integer): Boolean;           // by EvilChicken!
-// * function FlagEx(Dist: Integer; RoadColorCheck: Boolean): Boolean; // By Wizzup?, WT-Fakawi, ZephyrsFury, and N1ke!
-// * function MouseFlagEx(X, Y, rX, rY, Xmod, Ymod, FlagDist: Integer; // by EvilChicken!
-// * function MFF(X, Y, Xmod, Ymod: Integer): Boolean;             // by EvilChicken!
-// * function MFNF(X, Y, Xmod, Ymod: Integer): Boolean;            // by EvilChicken!
-// * function FFlag(Dist: Integer): Boolean;                       // by Wizzup?, WT-Fakawi, and ZephyrsFury
-// * function Flag: Boolean;                                       // by Nava2
-// * procedure MouseFlag(X, Y, rX, rY, FlagDist: Integer);         // by EvilChicken!
-
 (*
-FlagColor
-~~~~~~~~~
+FindFlag
+~~~~~~~~
 
 .. code-block:: pascal
 
-    const FlagColor: Integer;
+    function FindFlag(var X, Y: Integer): Boolean;
 
-Stores minimap flag color.
-
+Returns true if the flag is found on the minimap.
 
 .. note::
 
-    by The SRL Devs.
+    by weequ
 
 Example:
 
 .. code-block:: pascal
 
+  if (FindFlag(x, y)) then
+  begin
+    writeln('Flag found');
+    mouse(x, y, 3, 3, true);
+  end;
 *)
-const
-  FlagColor = 3026478;
+function FindFlag(var X, Y: Integer): Boolean;
+var
+  I: Integer;
+  TPA: TPointArray;
+begin
+  Freeze;
+  FindColors(TPA, 65536, MMX1, MMY1, MMX2, MMY2);
+  if (Length(TPA) <= 0) then
+    Exit;
+  for I := 0 to High(TPA) do
+  begin
+    if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = 6381921) then
+    begin
+      Unfreeze;
+      X := TPA[I].x;
+      Y := TPA[I].y;
+      Result := True;
+      Exit;
+    end;
+  end;
+  UnFreeze;
+  Result := False;
+end;
 
 (*
 FlagPresent
@@ -59,7 +69,7 @@ T/F depending on flag exist.
 
 .. note::
 
-    by Mutant Squirrle
+    by weequ
 
 Example:
 
@@ -69,9 +79,9 @@ Example:
 *)
 function FlagPresent: Boolean;
 var
-  x, y: integer;
+  X, Y: Integer;
 begin
-  Result := FindColor(x, y, FlagColor, MMX1, MMY1, MMX2, MMY2);
+  Result := FindFlag(X, Y);
 end;
 
 (*
@@ -87,7 +97,7 @@ Returns distance in pixels your char dot is from flag on mini-map
 
 .. note::
 
-    by PPLSUQBAWLZ/Odie533
+    by weequ
 
 Example:
 
@@ -100,8 +110,8 @@ var
   X, Y: Integer;
 begin
   Result := -1;
-  if (FindColor(X, Y, FlagColor, MMX1, MMY1, MMX2, MMY2)) then
-    Result := Distance(MMCX, MMCY, X + 1, Y + 14);
+  if (FindFlag(X, Y)) then
+    Result := Distance(MMCX, MMCY, X, Y);
 end;
 
 (*
@@ -151,7 +161,7 @@ Waits until Flag is within "Distance" distance.
 
 .. note::
 
-    by Wizzup? / WT-Fakawi / ZephyrsFury modified by N1ke!
+    by Wizzup? / WT-Fakawi / ZephyrsFury / N1ke! / weequ
 
 Example:
 
@@ -165,10 +175,10 @@ var
 begin
   Result := False;
   M := GetSystemTime;
-  while (FindColor(Tx, Ty, FlagColor, MMX1, MMY1, MMX2, MMY2)) do
+  while (FindFlag(Tx, Ty)) do
   begin
     wait(50);
-    D1 := Distance(Tx, Ty + 14, MMCX, MMCY);
+    D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
     begin
       Result := True;
