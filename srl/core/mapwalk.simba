@@ -1125,26 +1125,48 @@ Example:
 *)
 
 // TODO: Constants
+{*******************************************************************************
+function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
+By: euphemism, mormonman
+Description: Results the dots specified by WhatDot in the box x1, y1, x2, y2.
+Usage : 'npc', 'yellow', 'n', 'y' : Yellow Dot;
+        'cape', 'blue', 'team', 't', 'b' : Blue Dot;
+        'item', 'red', 'i', 'r' : Red Dot;
+        'player', 'white', 'p', 'w' : White Dot;
+        'friend', 'green', 'f', 'g' : Green Dot;
+*******************************************************************************}
 function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
 var
-  DotColor: Integer;
-  i, h: Integer;
-  radius: Integer;
+  I, Dif, Radius, Hi, C: Integer;
+  TPA: TPointArray;
 begin
   case LowerCase(WhatDot) of
-    'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
-    'item', 'i', 'red', 'r':	        DotColor := 237;
-    'player', 'p', 'white', 'w':      DotColor := 15527148;
-    'friend', 'f', 'green', 'g':      DotColor := 60160;
-    'team', 't', 'blue', 'b', 'cape': DotColor := 9917996;
-    'clan', 'c', 'orange', 'o':	      DotColor := 1604816;
-    else
-      srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
+    'npc', 'n', 'yellow', 'y': Dif := 4369;
+    'item', 'i', 'red', 'r': Dif := 23;
+    'player', 'p', 'white', 'w': Dif := 1907997;
+    'friend', 'f', 'green', 'g': Dif := 5376;
+    'team', 't', 'blue', 'b', 'cape': Dif := 2171941;
+    {'clan', 'c', 'orange', 'o': Dif := -1;}
+  else
+    srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
-  
-  radius := Max((x2-x1)/2, (y2-y1)/2);
-  FindColorsPie(Result, DotColor, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
-  RAaSTPAEx(Result, 1, 1);
+  Freeze;
+  Radius := Max((x2-x1)/2, (y2-y1)/2);
+  FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
+  Hi := High(TPA);
+  SetLength(Result, Hi + 1);
+  if (Hi < 0) then Exit;
+  C := 0;
+  for I := 0 to Hi do
+  begin
+    if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = Dif) then
+    begin
+      Result[C] := Point(TPA[I].x, TPA[i].y - 2);
+      Inc(C);
+    end;
+  end;
+  Unfreeze;
+  SetLength(Result, C);
 end;
 
 (*
