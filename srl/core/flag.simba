@@ -49,6 +49,7 @@ begin
       X := TPA[I].x;
       Y := TPA[I].y;
       Result := True;
+      UnFreeze;
       Exit;
     end;
   end;
