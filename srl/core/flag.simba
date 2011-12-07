@@ -40,16 +40,18 @@ begin
   Freeze;
   FindColors(TPA, 65536, MMX1, MMY1, MMX2, MMY2);
   if (Length(TPA) <= 0) then
+  begin
+    UnFreeze;
     Exit;
+  end;
   for I := 0 to High(TPA) do
   begin
     if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = 6381921) then
     begin
-      Unfreeze;
+      UnFreeze;
       X := TPA[I].x;
       Y := TPA[I].y;
       Result := True;
-      UnFreeze;
       Exit;
     end;
   end;

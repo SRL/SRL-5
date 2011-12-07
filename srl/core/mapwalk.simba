@@ -1155,7 +1155,11 @@ begin
   FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
   Hi := High(TPA);
   SetLength(Result, Hi + 1);
-  if (Hi < 0) then Exit;
+  if (Hi < 0) then
+  begin
+    UnFreeze;
+    Exit;
+  end;
   C := 0;
   for I := 0 to Hi do
   begin
