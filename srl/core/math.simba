@@ -77,7 +77,6 @@ begin;
   result := TPAFromText(Txt,Chars,w,h);
 end;
 
-
 (*
 RBoolEx
 ~~~~~~~
