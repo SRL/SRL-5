@@ -742,7 +742,7 @@ begin
               SRL_Procs[srl_OnRSUpdate]();
               Exit;
             end;
-            Writeln('Runescape has been updated! Please restart the script.');
+            Writeln('Runescape has been updated! Please restart Simba.');
             TerminateScript;
           end;
       end;
