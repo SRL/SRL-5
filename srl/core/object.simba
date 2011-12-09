@@ -608,6 +608,8 @@ begin
   ClearTPAFromTPA(TPA, TPA3);
   TPA := CombineTPA(TPA3, TPA);
 
+  SortTPAFrom(TPA, Point(MSCX, MSCY));
+
   H := High(TPA);
   for I:=0 to H do
   begin

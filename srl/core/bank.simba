@@ -1522,7 +1522,7 @@ Opens the bank by using Banker.
 .. note::
 
     Author: Home
-    Last Modified: Unknown
+    Last Modified: December 09 by Coh3n
 
 Example:
 
@@ -1533,7 +1533,7 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair: Integer;
+  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair, t: Integer;
 begin
   Result := (LoggedIn) and (BankScreen or PinScreen);
   if (Result) then exit;
@@ -1548,14 +1548,27 @@ begin
     ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
   begin
     Mouse(bx, by, 0, 0, False);
-    WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 1000);
-    FFlag(0);
-    Wait(2000 + Random(500));
-    if (Length(Players) > 0) then
-      if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
-        InPin(Players[CurrentPlayer].Pin);
-    Result := (BankScreen) or (PinScreen);
+
+    if (WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 750)) then
+    begin
+      t := (GetSystemTime + 5000);
+      repeat
+        if (BankScreen) or (PinScreen) then
+        begin
+          Result := true;
+          Break;
+        end;
+        Wait(50);
+      until(GetSystemTime > t);
+
+      if (Length(Players) > 0) then
+        if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
+          InPin(Players[CurrentPlayer].Pin);
+
+      Result := (BankScreen) or (PinScreen);
+    end;
   end;
+
   ColorToleranceSpeed(Speed);
 end;
 

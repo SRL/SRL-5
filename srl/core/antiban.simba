@@ -136,7 +136,7 @@ begin
   if ((VarType(Skill) = varInteger) or (VarType(Skill) = varByte)) then
   begin
 
-    if Skill > 0 then
+    if Skill >= 0 then
       TP := SkillToCoords(Skill)
     else
       repeat
