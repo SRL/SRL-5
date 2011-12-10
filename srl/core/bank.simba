@@ -765,7 +765,7 @@ var
    I, T, x, y: Integer;
    B: TBox;
 begin
-{  BScreen := BankScreen;
+  BScreen := BankScreen;
   if (not(BScreen)) then
     DScreen := DepositScreen;
   if not (BScreen or DScreen) then
@@ -802,7 +802,7 @@ begin
       if (not(FindColor(X, Y, srl_outline_black, B.X1, B.Y1, B.X2, B.Y2))) then
         Continue;
       if (not All) then
-        Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, mouse_left);
+        Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, mouse_left)
       else
         Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, mouse_right);
     end;
@@ -827,7 +827,6 @@ begin
       Wait(50);
     until(GetSystemTime - T > 2000);
   end;
-}
 end;
 
 (*
@@ -1558,13 +1557,25 @@ begin
     ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
   begin
     Mouse(bx, by, 0, 0, mouse_right);
-    WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 1000);
-    FFlag(0);
-    Wait(2000 + Random(500));
-    if (Length(Players) > 0) then
-      if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
-        InPin(Players[CurrentPlayer].Pin);
-    Result := (BankScreen) or (PinScreen);
+
+    if (WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 750)) then
+    begin
+      t := (GetSystemTime + 5000);
+      repeat
+        if (BankScreen) or (PinScreen) then
+        begin
+          Result := true;
+          Break;
+        end;
+        Wait(50);
+      until(GetSystemTime > t);
+
+      if (Length(Players) > 0) then
+        if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
+          InPin(Players[CurrentPlayer].Pin);
+
+      Result := (BankScreen) or (PinScreen);
+    end;
   end;
 
   ColorToleranceSpeed(Speed);
