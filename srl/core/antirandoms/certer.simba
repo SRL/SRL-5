@@ -252,7 +252,7 @@ begin
     GetMousePos(X, Y);
     if (not(PointInBox(Point(X, Y), IntToBox(360, 162, 367, 169)))) then
       MMouse(364, 165, 0,0);
-	ClickMouse2(true);
+	ClickMouse2(mouse_left);
   until(GetSystemTime - M > cert_AnalysisTime) or (not(CerterScreen));
 
   AvgCount := AvgCount div TotalCount;
@@ -330,7 +330,7 @@ begin
     if IsUpTextMultiCustom(['xit', 'ortal']) then
     begin
       GetMousePos(x, y);
-      Mouse(x, y, 0, 0, True);
+      Mouse(x, y, 0, 0, mouse_left);
       FFlag(0);
       Result := True;
       Exit;
@@ -405,7 +405,7 @@ begin
   if length(ATPA) < 1 then
     exit;
   Middle := MiddleTPA(TPA);
-  mouse(middle.x + 10,middle.y+2,1,0,true);
+  Mouse(middle.x + 10,middle.y+2,1,0,mouse_left);
   FFlag(0);
   Wait(2000 + random(500));
   CTS := GetColorToleranceSpeed;
@@ -422,9 +422,9 @@ begin
       if WaitUpText('Talk', 150) then
       begin
         case Random(2) of
-          0 : Mouse(Middle.x, middle.y, 0, 0, True);
+          0 : Mouse(Middle.x, middle.y, 0, 0, mouse_left);
           1 : begin
-                Mouse(Middle.x,middle.y,0,0,false);
+                Mouse(Middle.x,middle.y,0,0,mouse_right);
                 wait(500+random(100));
                 if not ChooseOptionMulti(['to Mi','to Gi','to Ni','alk-to']) then
                   exit;
@@ -492,7 +492,7 @@ begin
     begin
       if FindText(X, Y, Answer, NPCChars, 124, 44, 270, 140) then
       begin
-        Mouse(X, Y, 15, 10, True);
+        Mouse(X, Y, 15, 10, mouse_left);
         WriteLn('Solved Certer: ' + Answer);
         T := GetSystemTime;
         Wait(2000 + Random(1000));
@@ -503,7 +503,7 @@ begin
       Result := FindTextTpa(0, 0, MCX1, MCY1, MCX2, MCY2, 'orrect', NPCChars, Nothing);
       while (ClickContinue(True, True)) do
         Wait(100 + Random(500));
-      Result := (LeaveCerter);//If we can leave the certer, we we're good for sure :)
+      Result := (LeaveCerter); { If we can leave the certer, we we're good for sure :) }
     end;
     
   end;
@@ -511,7 +511,7 @@ begin
   if (Result) then Exit;
 
   if (CerterScreen) then
-    Mouse(445, 40, 5, 5, True);
+    Mouse(445, 40, 5, 5, mouse_left);
   while (LoggedIn) do
   begin
     LogOut;

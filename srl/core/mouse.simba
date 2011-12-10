@@ -18,8 +18,8 @@ var
   LMouse_MissChance: Integer;
   {$ENDIF}
 
-procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer); forward;
-
+const
+  mouse_move = 3;
 (*
 WindMouse
 ~~~~~~~~~
@@ -169,40 +169,10 @@ begin
     randSpeed:= (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
     if randSpeed = 0.0 then
       randSpeed := 0.1;
-    X := x + iGaussRange(0, rx);
-    Y := y + iGaussRange(0, ry);
+    X := x + random(rx);
+    Y := y + random(ry);
     WindMouse(cx,cy,x,y,9.0,3.0,10.0/randSpeed,15.0/randSpeed,10.0*randSpeed,10.0*randSpeed);
   {$ENDIF}
-end;
-
-(*
-MouseAction
-~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function MouseAction(left: boolean): integer;
-
-Converts the (SCAR) boolean for mouse button the the Simba integer for the button
-
-.. note::
-
-    by Simba development
-
-.. note::
-    This should probably be removed.
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function MouseAction(left: boolean): integer;
-begin
-  if left then
-    result := mouse_left
-  else
-    result := mouse_right;
 end;
 
 (*
@@ -211,7 +181,7 @@ ClickMouse2
 
 .. code-block:: pascal
 
-    procedure ClickMouse2(left : boolean);
+    procedure ClickMouse2(button: Integer);
 
 Clicks the mouse in a human way on the current mouse spot.
 
@@ -224,18 +194,25 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure ClickMouse2(left : boolean);
+procedure ClickMouse2(button: variant);
 var
   a,b,c : integer;
+  iButton: Integer;
 begin
   GetMousePos(b, c);
-  HoldMouse(b, c, mouseaction(left));
+  if (varType(button) = varBoolean) then
+    if (button) then
+      iButton := mouse_left
+    else 
+      iButton := mouse_right;
+
+  HoldMouse(b, c, iButton);
   repeat
     Wait(20 + Random(30));
     a := a + 1;
   until (a > 4);
   GetMousePos(b, c);
-  ReleaseMouse(b, c, mouseaction(left));
+  ReleaseMouse(b, c, iButton);
   Wait(50+Random(50));
 end;
 
@@ -245,25 +222,68 @@ Mouse
 
 .. code-block:: pascal
 
-    procedure Mouse(mousex, mousey, ranx, rany: Integer; left: Boolean);
+    procedure Mouse(mousex, mousey, ranx, rany: Integer; button: Integer);
 
 Moves then clicks mouse.
 
 .. note::
 
-    by Mutant Squirrle, with a small fix by hy71194
+    by Mutant Squirrle, Harry
 
 Example:
 
 .. code-block:: pascal
 
 *)
-procedure Mouse(mousex, mousey, ranx, rany: Integer; left: Boolean);
+procedure Mouse(mousex, mousey, ranx, rany: Integer; button: variant);
 begin
   MMouse(mousex, mousey, ranx, rany);
   Wait(60 + Random(30));
-  ClickMouse2(left);
+  ClickMouse2(button);
   Wait(50 + Random(50));
+end;
+
+(*
+MouseBox
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
+
+Moves mouse into a random position in the box. Clicks if told to.
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure MouseBox(x1, y1, x2, y2: Integer; ClickType: Integer);
+var
+  fx, fy: Integer;
+begin
+  GaussBox(fx, fy, x1, y1, x2, y2);
+
+  case ClickType of
+    mouse_right..mouse_middle : Mouse(fx, fy, 0, 0, clickType);
+    mouse_move : MMouse(fx, fy, 0, 0);
+  else
+    srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
+  end;
+end;
+
+procedure MouseAction(mx, my, rx, ry: Integer; a: fnct_ActionOptions);
+begin
+    case (a) of
+      Move: MMouse(mx, my, rx, ry);
+      ClickLeft: Mouse(mx, my, rx, ry, mouse_left);
+      ClickRight: Mouse(mx, my, rx, ry, mouse_right);
+      ClickMiddle: Mouse(mx, my, rx, ry, mouse_middle);
+    end;
 end;
 
 (*
@@ -470,10 +490,7 @@ Spirals the mouse in a circle from the center of the defined box.
 It will continue to spiral until it finds a spiral completely outside
 the box, always skipping points outside.
 Returns the occurance of the UpText into fx, fy.
-PpC: The number of pixels to increase per spiral.
-aInc: The number of stops to make around each spiral.
-Takes some testing to get the right combination of PpC and aInc.
-
+See `SpiralMouseMulti` for more information
 .. note::
 
     by Nava2
@@ -604,7 +621,7 @@ MouseOval
     procedure MouseOval(cx, cy, mx, my, clickType: Integer);
 
 Clicks a random point within an oval shape. The size of the oval is
-defined by cx, cy, mx and my and clickType takes same parameters as MouseBox.
+defined by cx, cy, mx and my and clickType takes same parameters as `MouseBox`.
 
 .. note::
 
@@ -619,18 +636,18 @@ procedure MouseOval(cx, cy, mx, my, clickType: Integer);
 var
   o: TPoint;
 begin
-  if not InRange(clickType, 1, 3) then
+  if not InRange(clickType, 0, 3) then
   begin
     srl_Warn('MouseOval', 'ClickType is NOT a valid number!', warn_AllVersions);
     exit;
   end;
 
-  o.y := GaussRandom(my) * ((Random(2) * 2) - 1);
-  o.x := GaussRandom(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
+  o.y := Random(my) * ((Random(2) * 2) - 1);
+  o.x := Random(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
 
   case clickType of
-    1,2: Mouse(cx + o.x, cy + o.y, 0, 0, clickType = 1);
-    3: MMouse(cx + o.x, cy + o.y, 0, 0);
+    mouse_right..mouse_middle: Mouse(cx + o.x, cy + o.y, 0, 0, clickType);
+    mouse_move: MMouse(cx + o.x, cy + o.y, 0, 0);
   end;
 end;
 
@@ -685,13 +702,13 @@ begin
   GetMousePos(pt.x,pt.y);
   PT := RandomPointBoxEx(pt,inttobox(x1,y1,x2,y2),Dist);
   case ClickType of
-    1 : Mouse(pt.x, pt.y, 0, 0, True);
-    2 : Mouse(pt.x, pt.y, 0, 0, False);
-    3 : MMouse(pt.x, pt.y, 0, 0);
+    mouse_right..mouse_middle : Mouse(pt.x, pt.y, 0, 0, clickType);
+    mouse_move : MMouse(pt.x, pt.y, 0, 0);
   else
     srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
   end;
 end;
+
 
 (*
 DragMouse
@@ -717,10 +734,10 @@ begin
   MMouse(StartX, StartY, SRandX, SRandY);
   Wait(150 + Random(20));
   GetMousePos(StartX, StartY);
-  HoldMouse(StartX, StartY, MouseAction(true));
+  HoldMouse(StartX, StartY, mouse_left);
   Wait(250 + Random(320));
   MMouse(EndX, EndY, ERandX, ERandY);
   Wait(250 + Random(120));
   GetMousePos(EndX, EndY);
-  ReleaseMouse(EndX, EndY, MouseAction(true));
+  ReleaseMouse(EndX, EndY, mouse_left);
 end;

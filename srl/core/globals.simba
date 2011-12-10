@@ -226,7 +226,7 @@ end;
 { type fnct_ActionOptions;
   Description: Action options. }
 type
-  fnct_ActionOptions = (ClickLeft,ClickRight,Move,Nothing);
+  fnct_ActionOptions = (ClickRight,ClickLeft,ClickMiddle,Move,Nothing);
 
 var
 { var ACArr

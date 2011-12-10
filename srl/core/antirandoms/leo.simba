@@ -105,7 +105,7 @@ begin
   LTC := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, LTC.X + 3, LTC.Y + 6) > 4) then
   begin
-    Mouse(LTC.X + 3, LTC.Y + 6, 0, 0, True);
+    Mouse(LTC.X + 3, LTC.Y + 6, 0, 0, mouse_left);
     Wait(RandomRange(700, 1400));
     Flag;
   end;
@@ -130,7 +130,7 @@ begin
   LWT := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, LWT.X, LWT.Y) < 5) then
     Exit;
-  Mouse(LWT.X, LWT.Y, 2, 2, True);
+  Mouse(LWT.X, LWT.Y, 2, 2, mouse_left);
   Wait(RandomRange(300, 500));
   FFlag(0);
   Wait(RandomRange(1500, 2000));
@@ -167,7 +167,7 @@ begin
     begin
       Result := True;
       GetMousePos(DM.X, DM.Y);
-      Mouse(DM.X, DM.Y, 0, 0, True);
+      Mouse(DM.X, DM.Y, 0, 0, mouse_left);
       Wait(RandomRange(2000, 3000));
       ClickContinue(True, True);
       Wait(RandomRange(2000, 3000));
@@ -176,13 +176,13 @@ begin
         B := IntToBox(383 - (II * 48), 218, 431 - (II * 48), 256);
         if (FindColor(P.X, P.Y, srl_OutLine_Black, B.X1, B.Y1, B.X2, B.Y2)) then
         begin
-          Mouse((B.X1 + B.X2) div 2, (B.Y1 + B.Y2) div 2, 2, 2, False);
+          Mouse((B.X1 + B.X2) div 2, (B.Y1 + B.Y2) div 2, 2, 2, mouse_right);
           Wait(RandomRange(400, 600));
           ChooseOption('Deposit-All');
           Wait(RandomRange(600, 800));
         end;
       end;
-      Mouse(434, 40, 0, 0, True);
+      Mouse(434, 40, 0, 0, mouse_left);
       Wait(RandomRange(1200, 1400));
       Exit;
     end;
@@ -208,7 +208,7 @@ begin
   begin
     Result := True;
     GetMousePos(LTT.X, LTT.Y);
-    Mouse(LTT.X, LTT.Y, 0, 0, True);
+    Mouse(LTT.X, LTT.Y, 0, 0, mouse_left);
     Wait(RandomRange(1000, 2000));
     Exit;
   end;
@@ -228,7 +228,7 @@ begin
     begin
       Result := True;
       GetMousePos(LTT.X, LTT.Y);
-      Mouse(LTT.X, LTT.Y, 0, 0, True);
+      Mouse(LTT.X, LTT.Y, 0, 0, mouse_left);
       Wait(RandomRange(1000, 2000));
       Exit;
     end;
@@ -269,7 +269,7 @@ begin
       begin
         GetMousePos(x, y);
         c := InvCount;
-        Mouse(x, y, 0, 0, True);
+        Mouse(x, y, 0, 0, mouse_left);
         Wait(500);
         FFlag(0);
         Wait(1500);
@@ -278,7 +278,7 @@ begin
           ClickContinue(True, True);
           Wait(1000);
           if (FindColor(X, Y, clBlack, 128, 429, 380, 448)) then
-            Mouse(178, 433, 50, 5, True);
+            Mouse(178, 433, 50, 5, mouse_left);
           Wait(RandomRange(1000, 1500));
           while clickContinue(true,True) do
             Wait(500 + random(250));
@@ -339,7 +339,7 @@ begin
       if (not (InRange(CountColorTolerance(14342657, 7, 7, 100, 25, 70), 10, 70))) then Continue;
       GetMousePos(x, y);
       c := InvCount;
-      Mouse(x, y, 0, 0, True);
+      Mouse(x, y, 0, 0, mouse_left);
       Result := True;
       Wait(500);
       FFLag(0);
@@ -415,11 +415,11 @@ begin
       for II := 0 to 4 do
       begin
         BadName := False;
-        Mouse(C.X, C.Y, 2, 2, True);
+        Mouse(C.X, C.Y, 2, 2, mouse_left);
         Leo_WaitForScreen('coffin');
         CofNames[Coffin] := Leo_AnalyzeCoffin2(ExportImageTarget);
         Wait(RandomRange(1000, 2000));
-        Mouse(490, 26, 2, 2, True);
+        Mouse(490, 26, 2, 2, mouse_left);
         for III := 0 to 4 do
           if ((CofNames[III] = CofNames[Coffin]) and (III <> Coffin)) then
             BadName := True;
@@ -468,14 +468,14 @@ begin
         if (CountColorTolerance(14342657, 7, 7, 100, 25, 70) > 100) then
         begin
           GetMousePos(RGS.X, RGS.Y);
-          Mouse(RGS.X, RGS.Y, 0, 0, True);
+          Mouse(RGS.X, RGS.Y, 0, 0, mouse_left);
           Leo_WaitForScreen('');
           GraveNames[I][II] := Leo_AnalyzeGraveStone2(ExportImageTarget);
           if (GraveNames[I][II] = Coffin_empty) then
             GraveNames[I][II] := coffin_error;
           WriteLn('Grave ' + IntToStr(I + 1) + ' ' + IntToStr(II + 1) + ' ' + ToStr(GraveNames[I][II]) + ' identified!');
           Wait(RandomRange(2000, 3000));
-          Mouse(490, 26, 2, 2, True);
+          Mouse(490, 26, 2, 2, mouse_left);
           Break;
         end;
         if (III = High(TPAA)) then
@@ -528,7 +528,7 @@ begin
   begin
     Leo_ToCenter;
     InIntArrayEx(CofNames,II, GraveName[I]);
-    MouseItem(InvLoc[II], False);
+    MouseItem(InvLoc[II], mouse_Right);
     Wait(250 + Random(50));
     ChooseOption('se');
     Wait(RandomRange(500, 800));
@@ -549,7 +549,7 @@ begin
       begin
         III := InvCount;
         GetMousePos(UWG.X, UWG.Y);
-        Mouse(UWG.X, UWG.Y, 0, 0, True);
+        Mouse(UWG.X, UWG.Y, 0, 0, mouse_left);
         T := GetSystemTime;
         while (((GetSystemTime - T) <  15000) and (InvCount = III)) do
           Wait(RandomRange(500, 1500));
@@ -597,7 +597,7 @@ begin
         ClickContinue(True, True);
       Wait(1000);
       if (FindColor(X, Y, 65535, MSX1, MSY1, MSX2, MSY2)) then
-        Mouse(455, 45, 5, 5, True);
+        Mouse(455, 45, 5, 5, mouse_left);
       Wait(RandomRange(1000, 1500));
       if (InvCount > 23) then
         Leo_DepositMausoleum;

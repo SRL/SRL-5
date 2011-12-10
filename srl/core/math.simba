@@ -77,6 +77,40 @@ begin;
   result := TPAFromText(Txt,Chars,w,h);
 end;
 
+(*
+RBoolEx
+~~~~~~~
+
+.. code-block:: pascal
+    function RBoolEx(chance: integer): boolean;
+
+Description: Returns a boolean, with a chance of 1 / chance
+
+..note::
+    by Rasta Magician
+*)
+
+function RBoolEx(chance: Integer): Boolean;
+begin
+  Result := (0 = Random(chance));
+end;
+
+(*
+RBool
+~~~~~
+
+.. code-block:: pascal
+    function RBool: boolean;
+
+Description: Returns a boolean, with a 50% chance
+
+.. note::
+    by Rasta Magician
+*)
+function RBool: boolean;
+begin
+  Result := RBoolEx(2);
+end;
 
 type
   TVector = record
@@ -261,6 +295,8 @@ type
 var
   SRL_GaussSettings: TSRL_GaussSettings;
 
+var
+    __st_second: Extended;
 {
 
 Helper method for cal_normal_random. Does polynomial calculation using the
@@ -303,7 +339,7 @@ By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
 *)
 function n2_gauss(): Extended;
 var
-  r, gauss_rand: Extended;
+  r: Extended;
   i: Integer;
 begin
   r := 0.0;
@@ -322,9 +358,6 @@ SetupN2Gauss
 Sets up the necessary constants for the gaussian functions used in n2_gauss.
 
 *)
-var
-  __st_second: Extended;
-
 procedure setupGauss();
 begin
   with SRL_GaussSettings do

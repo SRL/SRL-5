@@ -109,7 +109,7 @@ var
   SarP: T2DPointArray;
 begin
   cts := GetColorToleranceSpeed;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_HIGH);
   ColorToleranceSpeed(2);
@@ -130,7 +130,7 @@ begin
     if (arP[0].x < MSCX) and (arP[H].x < MSCX) then
     begin
       Writeln('DemonCenter - We are at the edge of the random area, fixing position.');
-      Mouse(MiddleTPA(SarP[Round(F/2)]).x, MiddleTPA(SarP[Round(F/2)]).y + 60, 10, 10, False);
+      Mouse(MiddleTPA(SarP[Round(F/2)]).x, MiddleTPA(SarP[Round(F/2)]).y + 60, 10, 10, mouse_right);
       WaitOption('Walk', 400);
       Wait(2000);
       FFlag(0);
@@ -139,7 +139,7 @@ begin
     if (arP[0].x > MSCX) and (arP[H].x > MSCX) then
     begin
       Writeln('DemonCenter - We are at the edge of the random area, fixing position.');
-      Mouse(MiddleTPA(SarP[F]).x, MiddleTPA(SarP[F]).y + 60, 10, 10, False);
+      Mouse(MiddleTPA(SarP[F]).x, MiddleTPA(SarP[F]).y + 60, 10, 10, mouse_right);
       WaitOption('Walk', 400);
       Wait(2000);
       FFlag(0);
@@ -155,10 +155,10 @@ begin
   Result := Length(arP) > 0;
   P := MiddleTPA(arP);
   if (IsUpText('Walk')) then
-    Mouse(P.X, P.Y + 50, 0, 0, True)
+    Mouse(P.X, P.Y + 50, 0, 0, mouse_left)
   else
   begin
-    Mouse(P.X, P.Y + 50, 0, 0, False);
+    Mouse(P.X, P.Y + 50, 0, 0, mouse_right);
     ChooseOption('Walk');
   end;
   Wait(2000);
@@ -263,7 +263,7 @@ begin
           if WaitUpText('Talk', 150) then
           begin
             GetMousePos(dx, dy);
-            Mouse(dx, dy, 0, 0, false);
+            Mouse(dx, dy, 0, 0, mouse_right);
             Break;
           end;
         end;
@@ -394,7 +394,7 @@ begin
   begin;
     Result := True;
     GetMousePos(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y);
-    Mouse(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y, 0, 0, True);
+    Mouse(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y, 0, 0, mouse_left);
     Flag;
     MarkTime(t);
     while not FindNPCChatText('Sergeant Damien', Nothing) and
@@ -432,7 +432,7 @@ begin
     LogOut;
     Exit;
   end;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_LOW);
   JogIndex := 0;
@@ -472,7 +472,7 @@ begin
       Wait(150 + Random(150));
     end;
   end;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_HIGH);
   Result := (JogIndex > 0) and (StarIndex > 0) and (SitIndex > 0) and (PushIndex > 0);

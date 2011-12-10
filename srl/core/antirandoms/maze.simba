@@ -152,7 +152,7 @@ Begin
       If WaitUpText(Maze_DoorUpText, SRL_MaxWaitTime) Then
       Begin
         Begin                                       //now clicks the Maze_Door
-          Mouse(X, Y, 0, 0, False);
+          Mouse(X, Y, 0, 0, mouse_right);
           WaitOption('pen', SRL_MaxWaitTime);    //always side clicks
         End;
 
@@ -199,7 +199,7 @@ begin
   if Result then
   begin
     GetMousePos(sx, sy);
-    Mouse(sx, sy, 0, 0, True);
+    Mouse(sx, sy, 0, 0, mouse_left);
     Wait(8000);
   end else
   begin
@@ -240,14 +240,14 @@ begin
 
     if (i <> Length(ararP)) then
     begin
-      Mouse(p.x, p.y, 0, 0, True);
+      Mouse(p.x, p.y, 0, 0, mouse_left);
       Wait(8000);
     end else
 
     If SpiralMouse(SX, SY, MSCX - 70, MSCY - 70, MSCX + 70, MSCY + 70,
        'ouch', 5, 5) Then
     Begin
-      Mouse(SX, SY, 0, 0, True);
+      Mouse(SX, SY, 0, 0, mouse_left);
       Result := True;
     End Else
       Writeln('Shrine not found!');
@@ -462,7 +462,7 @@ Begin
             +IntToStr(I)+' / '+IntToStr(High(Paths[Path])));
 
       WriteLn('>> X = ' +IntToStr(Paths[Path][I].X)+', Y = '+IntToStr(Paths[Path][I].Y));
-      Mouse(MMCX + Paths[Path][I].X, MMCY + Paths[Path][I].Y, 2, 2, True);
+      Mouse(MMCX + Paths[Path][I].X, MMCY + Paths[Path][I].Y, 2, 2, mouse_left);
       FFlag(0);                   //^ clicks on the path
 
       While IsMoving And LoggedIn Do

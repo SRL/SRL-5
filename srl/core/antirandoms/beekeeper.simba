@@ -108,7 +108,7 @@ begin           //lwr mid                         lid                           
           Wait(RandomRange(200, 500));
         end;
   c := CountColor(0, MCX1, MCY1, MCX2, MCY2);
-  Mouse(270, 275, 10, 5, True);
+  Mouse(270, 275, 10, 5, mouse_left);
   T := GetSystemTime;
   while (CountColor(0, MCX1, MCY1, MCX2, MCY2) = c) do
   begin

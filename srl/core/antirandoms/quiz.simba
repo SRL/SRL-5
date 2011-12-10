@@ -494,7 +494,7 @@ Begin
     WriteLn('We need to pick ' + ObjInfo[I].Name + ', and it''s use is ' + ObjInfo[I].Use + ' and located at slot ' + IntToStr(I + 1));
     itemBox := QuizItemBox(I + 1);
 
-    Mouse(itemBox.X1 + 5, ItemBox.Y1 + 5, itemBox.X2 - itemBox.X1 - 5, itemBox.Y2- itemBox.Y1 - 5, True);
+    Mouse(itemBox.X1 + 5, ItemBox.Y1 + 5, itemBox.X2 - itemBox.X1 - 5, itemBox.Y2- itemBox.Y1 - 5, mouse_left);
   Except
   End;
 End;
@@ -519,7 +519,7 @@ begin
   QL := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, QL.X + 15, QL.Y) > 7) then
   begin
-    Mouse(QL.X + 15, QL.Y, 0, 0, True);
+    Mouse(QL.X + 15, QL.Y, 0, 0, mouse_left);
     Flag;
   end;
   Wait(1000 + Random(500));
@@ -541,7 +541,7 @@ begin
     begin
       Result := True;
       GetMousePos(QP.X, QP.Y);
-      Mouse(QP.X, QP.Y, 0, 0, True);
+      Mouse(QP.X, QP.Y, 0, 0, mouse_left);
       Wait(RandomRange(5000, 7000));
       Exit;
     end;

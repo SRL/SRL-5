@@ -56,7 +56,7 @@ begin
   WTP := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, WTP.X, WTP.Y) < 4) then
     Exit;
-  Mouse(WTP.X, WTP.Y, 2, 2, True);
+  Mouse(WTP.X, WTP.Y, 2, 2, mouse_left);
   Wait(RandomRange(300, 500));
   FFlag(0);
   Wait(RandomRange(750, 1000));
@@ -94,7 +94,7 @@ begin
     begin
       Result := True;
       GetMousePos(PTT.X, PTT.Y);
-      Mouse(PTT.X, PTT.Y, 0, 0, True);
+      Mouse(PTT.X, PTT.Y, 0, 0, mouse_left);
       Wait(RandomRange(300, 500));
       FFlag(0);
       Wait(RandomRange(300, 500));
@@ -135,7 +135,7 @@ begin
     begin
       Result := True;
       GetMousePos(PPL.X, PPL.Y);
-      Mouse(PPL.X, PPL.Y, 0, 0, True);
+      Mouse(PPL.X, PPL.Y, 0, 0, mouse_left);
       Wait(RandomRange(300, 500));
       FFlag(0);
       Wait(RandomRange(2000, 4000));
@@ -233,7 +233,7 @@ begin
     Exit;
   SortATPASize(TPAA, True);
   P := MiddleTPA(TPAA[0]);
-  Mouse(P.X, P.Y, 0, 0, True);
+  Mouse(P.X, P.Y, 0, 0, mouse_left);
   Wait(RandomRange(3000, 4000));
 end;
 
@@ -274,7 +274,7 @@ begin
     begin
       Result := True;
       GetMousePos(POG.X, POG.Y);
-      Mouse(POG.X, POG.Y, 0, 0, True);
+      Mouse(POG.X, POG.Y, 0, 0, mouse_left);
       Exit;
     end;
   end;
@@ -334,7 +334,7 @@ begin
       LogOut;
       Exit;
     end;
-    Mouse(620, 104, 5, 5, True);
+    Mouse(620, 104, 5, 5, mouse_left);
     Wait(RandomRange(300, 500));
     FFlag(0);
     Wait(RandomRange(300, 500));
@@ -357,7 +357,7 @@ begin
         MouseSpeed := 35;
         Pete_FindAnimal(P.X, P.Y, Animal, ExportImageTarget);
         if (PointInBox(P, IntToBox(MSX1, MSY1, MSX2, MSY2))) then
-          Mouse(P.X, P.Y, 0, 0, False);
+          Mouse(P.X, P.Y, 0, 0, mouse_right);
         MouseSpeed := MS;
         Wait(RandomRange(500, 1000));
         if (ChooseOption('op')) then

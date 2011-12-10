@@ -224,10 +224,10 @@ procedure ClickNorth(AngleHigh: Integer);
 begin
   if (Random(4) = 1) then
   begin
-    Mouse(542, 24, 15, 15, False);
+    Mouse(542, 24, 15, 15, mouse_right);
     WaitOptionMulti(['ace', 'orth'], 1200);
   end else
-    Mouse(542, 24, 15, 15, True);
+    Mouse(542, 24, 15, 15, mouse_left);
 
   SetAngle(AngleHigh);
 end;
@@ -1261,5 +1261,5 @@ begin
     exit;
 
   p := RotatePoint(Point(x, y), rs_GetCompassAngleRadians, MMCX, MMCY);
-  Mouse(p.x, p.y, randX, randY, True);
+  Mouse(p.x, p.y, randX, randY, mouse_left);
 end;

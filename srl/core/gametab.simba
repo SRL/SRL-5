@@ -187,7 +187,7 @@ begin
     Tries := 0;
     while ((Tries < 3) and (not Result)) do
     begin
-      Mouse(tP.X, tP.Y, 0, 0, True);
+      Mouse(tP.X, tP.Y, 0, 0, mouse_left);
 
       T := GetSystemTime;
       while (not Result) and (GetSystemTime - T < 2000) do
@@ -257,7 +257,7 @@ begin
   begin
     Result := FindColorTolerance(x, y, 1777020, b.x1, b.y1, b.x2, b.y2, 2);
     if (Result) then Exit;
-    Mouse(RandomRange(b.x1, b.x2), RandomRange(b.y1, b.y2), 0, 0, True);
+    MouseBox(b.x1, b.y1, b.x2, b.y2, mouse_left);
     Wait(500 + Random(300));
     Inc(i);
   end;
@@ -380,7 +380,7 @@ Begin
     Wait(500 + Random(500));
   end;
   if (RetTrue) xor FindColorTolerance(X, Y, 1777019, 624, 385, 719, 396, 2) then
-    MouseBox(624, 385, 719, 396, 1);
+    MouseBox(624, 385, 719, 396, mouse_left);
 End;
 
 (* 
@@ -1101,7 +1101,7 @@ begin
   TP := EquipmentCoords(I);
   if (WearingItem(I)) then
   begin
-    Mouse(TP.x, TP.y, 5, 5, True);
+    Mouse(TP.x, TP.y, 5, 5, mouse_left);
     Wait(200 + Random(350));
   end;
 end;
@@ -1374,7 +1374,7 @@ function ClearObjective: Boolean;
 begin
   Result := HasObjective;
   if (Result) then
-    Mouse(RandomRange(559, 724), RandomRange(447, 456), 0, 0, True)
+    MouseBox(559, 447, 724, 456, mouse_left)
   else
     srl_Warn('ClearObjective', 'No Objective to Clear', Warn_AllVersions);
 end;
@@ -1412,7 +1412,7 @@ begin
 
   if (not GameTab(tab_Stats)) then exit;
   TP := SkillToCoords(Skill);
-  Mouse(TP.x, TP.y + 3, 2, 2, False);
+  Mouse(TP.x, TP.y + 3, 2, 2, mouse_right);
   WaitOption('bjec', 300 + Random(500));
   Wait(1000 + Random(250));
   if (FindTextTpa(clBlack, 0, 100, 390, 235, 410, 'Enter the skill', UpCharsEx, Nothing)) then
@@ -1458,10 +1458,10 @@ begin
   if (not GameTab(tab_Objectives)) then exit;
   if (HasObjective) and (KeepOld) then exit;
 
-  Mouse(RandomRange(556, 725), RandomRange(422, 432), 0, 0, True);
+  MouseBox(556, 422, 725, 432, mouse_left);
   Wait(400 + Random(350));
   ObjP := ObjectiveCoords(ObjectiveSlot);
-  Mouse(ObjP.x, ObjP.y, 0, 0, True);
+  Mouse(ObjP.x, ObjP.y, 0, 0, mouse_left);
   Result := HasObjective;
 end;
 
@@ -1508,7 +1508,7 @@ begin
   Result := false;
   if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6608616, 10)))  xor (Run)) then
   begin
-    Mouse(715, 95, 10, 10, True);
+    Mouse(715, 95, 10, 10, mouse_left);
     Result := True;
   end;
 end;
@@ -1574,7 +1574,7 @@ begin
   Result := False;
   if (not(IsResting)) then
   begin
-    Mouse(715, 95, 10, 10, False);
+    Mouse(715, 95, 10, 10, mouse_right);
     if (WaitOption('Rest', 300)) then
       Result := WaitFunc(@IsResting, 100, 5000);
   end;
@@ -1690,7 +1690,7 @@ begin
   if (not FindColor(x, y, ClBlack, 7, 460, 69, 474)) then   {if you're in chat}
     if (not ClickContinue(True, True)) then
     begin
-      Mouse(MMCX, MMCY, 2, 2, True);
+      Mouse(MMCX, MMCY, 2, 2, mouse_left);
       Wait(RandomRange(3000, 4000));
     end;
 
@@ -1698,7 +1698,7 @@ begin
   while (not FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
-    MouseBox(605, 258, 623, 277, 1);
+    MouseBox(605, 258, 623, 277, mouse_left);
     Wait(1000 + Random(500));
     Inc(i);
     if (i > 3) then
@@ -1710,10 +1710,10 @@ begin
   end;
 
   If FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing) Then
-    Mouse(386, 172, 30, 10, True);
+    Mouse(386, 172, 30, 10, mouse_left);
 
   if GetColor(255, 178) = BrightnessColor then
-    Mouse(255, 178, 2, 2, True);               //Sets brightness
+    Mouse(255, 178, 2, 2, mouse_left);               //Sets brightness
   Wait(1000 + Random(400));                 //waits for it
 
   FindColors(TPA, ArrowOptions, MSX1, MSY1, MSX2, MSY2);  //finds drop down arrows
@@ -1727,20 +1727,20 @@ begin
 
     if (CountColor(BlueText, TB.X1, TB.Y1, TB.X2, TB.Y2) > 5) then //if its not optimum
     begin
-      Mouse(TP.X, TP.Y, 3, 3, True);
+      Mouse(TP.X, TP.Y, 3, 3, mouse_left);
 
       GetMousePos(X, Y);
       If IntInBox(X, Y, IntToBox(236, 308, 462, 587)) Then
       if (CountColor(ClWhite, 201, 295, 226, 308) > 5) then  //clicks the correct one
       begin
-        MouseBox(201, 295, 226, 308, 1);
+        MouseBox(201, 295, 226, 308, mouse_left);
         Wait(900 + Random(100));
       end;
 
       If Not IntInBox(X, Y, IntToBox(236, 308, 462, 587)) Then
       if (CountColor(ClWhite, TB.X1, TB.Y1 + 20, TB.X2, TB.Y2 + 15) > 5) then  //clicks the correct one
       begin
-        MouseBox(TB.X1, TB.Y1 + 20, TB.X2 - 15, TB.Y2 + 15, 1);
+        MouseBox(TB.X1, TB.Y1 + 20, TB.X2 - 15, TB.Y2 + 15, mouse_left);
         Wait(900 + Random(100));
       end;
 
@@ -1800,13 +1800,13 @@ begin
 
   if (not FindColor(Tx, Ty, 0, 7, 460, 69, 474)) then
     if (not ClickContinue(True, True)) then
-      Mouse(MMCX, MMCY, 2, 2, True);
+      Mouse(MMCX, MMCY, 2, 2, mouse_left);
 
   II := 0;
   while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Graphics Options', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
-    MouseBox(605, 258, 623, 277, 1);
+    MouseBox(605, 258, 623, 277, mouse_left);
     Wait(500 + Random(200));
     Inc(II);
     if (II > 3) then
@@ -1824,7 +1824,7 @@ begin
     begin
       P := Point(140 + ((Brightness - 1) * 31), 185);
       if (GetColor(P.x, P.y) = srl_outline_black) then
-        Mouse(P.x - 2, P.y - 2, 5, 5, True);
+        Mouse(P.x - 2, P.y - 2, 5, 5, mouse_left);
     end;
 
   PosSettings := ['Current', 'All', 'Always', 'Selectively', 'Off', 'On', 'Low',
@@ -1852,16 +1852,16 @@ begin
     Col := Where * 16777008 + 207;
     if (FindColor(Tx, Ty, Col, TB.x1, TB.y1, TB.x2, TB.y2)) then Continue;
 
-    Mouse(TB.x1 + 10, TB.y1 + 3, 10, 5, True);
+    Mouse(TB.x1 + 10, TB.y1 + 3, 10, 5, mouse_left);
     Wait(50 + Random(100));
 
     if (FindColor(Tx, Ty, Col , TB.x1, TB.y2 + 1, TB.x2, TB.y2 + 1 + 51)) then
     begin
-      Mouse(Tx, Ty, 10, 5, True);
+      Mouse(Tx, Ty, 10, 5, mouse_left);
       Wait(50 + Random(100));
       while (CountColor(16777215, 5, 5, 161, 35) > 100) do Wait(100 + Random(50));
     end else
-      Mouse(TB.x1 + 10, TB.y1 + 3, 10, 5, True);
+      Mouse(TB.x1 + 10, TB.y1 + 3, 10, 5, mouse_left);
   end;
 
   Wait(500 + Random(500));
@@ -1910,12 +1910,12 @@ begin
   CloseWindow;
   if (not FindColor(Tx, Ty, 0, 7, 460, 69, 474)) then
     if (not ClickContinue(True, True)) then
-      Mouse(MMCX, MMCY, 2, 2, True);
+      Mouse(MMCX, MMCY, 2, 2, mouse_left);
 
   while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Audio Options', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
-    MouseBox(654, 252, 677, 278, 1);
+    MouseBox(654, 252, 677, 278, mouse_left);
     Wait(500 + Random(200));
     Inc(C);
     if (C > 3) then
@@ -1941,16 +1941,16 @@ begin
     P.x := Round(201.0 + 25.5 * (Settings[II] - 1));
     P.y := Round(1.5 * II * II + 54.5 * II + 118.0);
     if (GetColor(P.x, P.y) <> 16777215) then
-      Mouse(P.x - 6, P.y, 0, 5, True);
+      Mouse(P.x - 6, P.y, 0, 5, mouse_left);
 
     Wait(10 + Random(10));
   end;
 
   if (GetColor(238, 268) = 181) and (SMSetting = Stereo) then
-    Mouse(302, 265, 7, 7, True)
+    Mouse(302, 265, 7, 7, mouse_left)
   else
     if (GetColor(305, 268) = 181) and (SMSetting = Mono) then
-      Mouse(235, 265, 7, 7, True);
+      Mouse(235, 265, 7, 7, mouse_left);
 
   Wait(500 + Random(500));
   CloseWindow;
@@ -2045,11 +2045,11 @@ begin
 
   case EmoteNumber of
     01..20: if (GetColor(723, 226) = 2041131) then
-              Mouse(723, 226, 8, 4, True);
+              Mouse(723, 226, 8, 4, mouse_left);
     21..40: if (GetColor(727, 364) = 1909544) then
-              Mouse(727, 354, 4, 1, True);
+              Mouse(727, 354, 4, 1, mouse_left);
     41..51: if (GetColor(725, 438) = 1909544) then
-              Mouse(725, 438, 5, 5, True);
+              Mouse(725, 438, 5, 5, mouse_left);
   end;
   Wait(300 + Random(200));
   if InRange(EmoteNumber, 21, 40) then
@@ -2065,7 +2065,7 @@ begin
 
   X := 550 + (44 * (Col - 1));
   Y := 219 + (49 * (Row - 1));
-  Mouse(X, Y, 26, 39, True);
+  Mouse(X, Y, 26, 39, mouse_left);
 end;
 
 (*
@@ -2129,7 +2129,7 @@ begin
    Exit;
   if GetColor(63 + (Tab-1)*102, 32) = 8029324 then
   begin
-    Mouse(63 + (Tab-1)*102, 32, 10, 6, true);
+    Mouse(63 + (Tab-1)*102, 32, 10, 6, mouse_left);
     result := true;
   end;
 end;
@@ -2182,7 +2182,7 @@ begin
   TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
   FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
   P := TPA[Random(Length(TPA))];
-  Mouse(P.X, P.Y, 0, 0, True);
+  Mouse(P.X, P.Y, 0, 0, mouse_left);
 end;
 
 (*
@@ -2242,6 +2242,6 @@ begin
   TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
   FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
   P := TPA[Random(Length(TPA))];
-  Mouse(P.X, P.Y, 0, 0, False);
+  Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
 end;

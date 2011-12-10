@@ -119,14 +119,14 @@ Begin
 
   SortATPASize(ATPA, True);  //Sorts the size 'big - first'
   For I := 0 To High(ATPA) Do
-  If MiddleTPAEx(ATPA[I], X, Y) Then    //loops through all tpa's
+  If MiddleTPAEx(ATPA[I], X, Y) Then     {loops through all tpa's}
   Begin
     MMouse(X, Y, 2, 2);
     GetMousePos(X, Y);
     Wait(SRL_MaxWaitTime + Random(100));
     If WaitUpTextMulti(['erva', 'ant'], srl_MaxWaitTime) Then
     Begin
-      Mouse(X, Y, 0, 0, True);       //clicks the servent
+      Mouse(X, Y, 0, 0, mouse_left);       //clicks the servent
       Wait(1400 + Random(1000));
                                               //incase already solved ;)
       If FindNPCChatText('uickly', Nothing) Then
@@ -177,7 +177,7 @@ Begin
   Repeat
     FindColorsTolerance(TPA, 2401230, MSX1, MSY1, MSX2, MSY2, 16); //statue color
     Wait(15);    //to avoid lag
-  Until(Length(TPA) > 1900) Or (TimeFromMark(Mark) > 30000);    //waits until it's in the slot
+  Until(Length(TPA) > 1900) Or (TimeFromMark(Mark) > 30000);    { waits until it's in the slot }
 
   ColorToleranceSpeed(1);
   SetColorSpeed2Modifiers(0.2, 0.2);
@@ -308,7 +308,7 @@ Begin
       FilterPointsDist(TPA, 13.20, 75.00, MMCX, MMCY);
       SortTPAFrom(TPA, TP);  //and so it does not pick up just dropped items
 
-      Mouse(TPA[0].X - 3, TPA[0].Y + 3, 3, 3, True); //walks to it
+      Mouse(TPA[0].X - 3, TPA[0].Y + 3, 3, 3, mouse_left); //walks to it
       Wait(3000 + random(500));
       While IsMoving Do                         //while wallking, some mouse movement
       If Random(2) = 1 Then
@@ -325,7 +325,7 @@ Begin
         SetColorSpeed2Modifiers(0.2, 0.2);
 
         ATPA := SplitTPA(TPA, 8);       //splittpa with dist of 6
-        SortATPAFromFirstPoint(ATPA, Point(MSCX, MSCY));  //sorts all of the ATPA's from mainscreen center
+        SortATPAFromFirstPoint(ATPA, Point(MSCX, MSCY)); { sorts all of the ATPA's from mainscreen center }
 
         For I := 0 To High(ATPA) Do        //loops through
         If MiddleTPAEx(ATPA[I], X, Y) Then
@@ -336,7 +336,7 @@ Begin
           If WaitUpTextMulti(['mall'], srl_MaxWaitTime) Then
           Begin
             GetMousePos(X, Y);
-            Mouse(X, Y, 0, 0, True);     //if success
+            Mouse(X, Y, 0, 0, mouse_left);     //if success
             Break;
           End Else
             Continue;
@@ -368,10 +368,10 @@ Begin
 
     Begin
       Case TempInfo.StatueLoc Of
-        'West' : Mouse(TP.X + 10, TP.Y, 2, 5, True);
-        'East' : Mouse(TP.X - 10, TP.Y, 2, 5, True);
+        'West' : Mouse(TP.X + 10, TP.Y, 2, 5, mouse_left);
+        'East' : Mouse(TP.X - 10, TP.Y, 2, 5, mouse_left);
       Else
-        Mouse(TP.X, TP.Y, 5, 5, True)
+        Mouse(TP.X, TP.Y, 5, 5,mouse_left)
       End;
 
       While IsMoving Do
@@ -380,7 +380,7 @@ Begin
       Wait(500+Random(500));
       OldCount := InvCount;          //stores invcount
       TP := EB_FindFishSpot;          //finds fish spot
-      Mouse(TP.X, TP.Y, 0, 0, True);    //clicks the fish spot
+      Mouse(TP.X, TP.Y, 0, 0, mouse_left);    //clicks the fish spot
       I := 0;
       While (InvCount = OldCount) And (I < 10) Do
       Begin
@@ -427,18 +427,18 @@ Begin
         'ADjRBjo=');
 
   If FindBitmapToleranceIn(RetardedFish, X, Y, MIX1, MIY1, MIX2, MIY2, 20) Then
-    Mouse(X, Y, 2, 2, True);                    //clicks the fish so we can cook
+    Mouse(X, Y, 2, 2, mouse_left);                    //clicks the fish so we can cook
   if (not (rFish.Slot > 0)) then
     Exit;
-  invMouse(rFish.Slot, 3);
+  invMouse(rFish.Slot, mouse_move);
   if waitUpTextMulti(['ish','hing'], 500) then
   begin
     getMousePos(x, y);
-    Mouse(x, y, 2, 2, True);
+    Mouse(x, y, 2, 2, mouse_left);
   end Else                   //clicks the fish so we can cook
   Begin
     WriteLn('Could not find retarded fish in inventory');
-    FreeBitmap(RetardedFish);               //if it's not there..
+    FreeBitmap(RetardedFish);                { if it's not there..}
     Result := False;
     Exit;
   End;
@@ -460,7 +460,7 @@ Begin
     Begin
       GetMousePos(X, Y);
       Result := True;
-      Mouse(X, Y, 0, 0, True);       //clicks on the pot
+      Mouse(X, Y, 0, 0, mouse_left);       //clicks on the pot
       Break;
     End Else
       Continue;
@@ -493,7 +493,7 @@ Begin
 
   ColorToleranceSpeed(2);               //medium speed, accurate
   SetColorSpeed2Modifiers(0.93, 0.28);
-  FindColorsTolerance(TPA, 2960944, MSX1, MSY1, MSX2, MSY2, 11); //find's blck-liek colors
+  FindColorsTolerance(TPA, 2960944, MSX1, MSY1, MSX2, MSY2, 11); { find's blck-liek colors }
 
   ColorToleranceSpeed(1);
   SetColorSpeed2Modifiers(0.2, 0.2);
@@ -510,7 +510,7 @@ Begin
     Wait(SRL_MaxWaitTime + Random(100));
     If WaitUpTextMulti(['vil', 'ob'], srl_MaxWaitTime) Then
     Begin
-      Mouse(X, Y, 0, 0, True);       //clicks on bob
+      Mouse(X, Y, 0, 0, mouse_left);       //clicks on bob
       Result := True;
 
       While IsMoving Do Wait(100);
@@ -588,13 +588,13 @@ Begin
     If WaitUpTextMulti(['orta','Ente','nter','tal'],srl_MaxWaitTime) Then
     Begin
       GetMousePos(X, Y);
-      Mouse(X, Y, 0, 0, True);
+      Mouse(X, Y, 0, 0, mouse_left);
       WriteLn('Found the Portal');        //clicks on portal if found
       FFlag(0);
       Wait(1300 + Random(1000));
                                     //Incase of confirmation thingy
       If FindColor(TX, TY, 2070783, 234, 46, 254, 56) Then
-        Mouse(172, 199, 100, 4, True);
+        Mouse(172, 199, 100, 4, mouse_left);
 
       Break;
     End Else
