@@ -1532,7 +1532,7 @@ Opens the bank by using Banker.
 .. note::
 
     Author: Home
-    Last Modified: Unknown
+    Last Modified: December 09 by Coh3n
 
 Example:
 
@@ -1543,7 +1543,7 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair: Integer;
+  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair, t: Integer;
 begin
   Result := (LoggedIn) and (BankScreen or PinScreen);
   if (Result) then exit;
@@ -1566,6 +1566,7 @@ begin
         InPin(Players[CurrentPlayer].Pin);
     Result := (BankScreen) or (PinScreen);
   end;
+
   ColorToleranceSpeed(Speed);
 end;
 

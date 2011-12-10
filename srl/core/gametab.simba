@@ -719,23 +719,30 @@ Example:
 
 .. code-block:: pascal
 *)
-function GetXP(Skill: Variant): Integer;
+function GetXP(skill: variant): integer;
 var
-  B: TBox;
+  b: TBox;
   p: TPoint;
-  TPA: TPointArray;
+  tpa: TPointArray;
 begin
-  Result := -1;
-  if (not TabExists(tab_Stats)) then exit;
-  GameTab(tab_Stats);
-  if (GetCurrentTab <> tab_Stats) then exit;
-  P := SkillToCoords(Skill);
-  if (P.x < 1) then exit;
-  MMouse(P.x, P.y + 5, 12, 4);
-  if (not WaitFindColors(TPA, 10551295, MIX1, MIY1, MIX2, MIY2, 0, 4000)) then exit;
-  B := GetTPABounds(TPA);
-  Wait(400 + Random(150));
-  Result := StrToIntDef(GetNumbers(GetTextAt(B.X1 + 15, B.Y1 + 15, 0, 1, 4, clBlack, 0, 75, SmallChars)), -1);
+  result := -1;
+
+  if (not gameTab(TAB_STATS)) then
+    exit;
+
+  p := skillToCoords(skill);
+  if (p.x < 1) then
+    exit;
+
+  mmouse(p.x, p.y + 5, 12, 4);
+  wait(400 + random(200));
+
+  if (WaitFindColors(tpa, 921102, MIX1, MIY1, MIX2, MIY2, 0, 3000)) then
+  begin
+    b := getTPABounds(tpa);
+    wait(400 + random(150));
+    result := strToIntDef(getNumbers(getTextAt(b.x1 + 15, b.y1 + 15, 0, 1, 4, 4305653, 0, 75, smallChars)), -1);
+  end;
 end;
 
 (*
@@ -759,8 +766,9 @@ Example:
 *)
 function XPTillNextLevel(Skill: Variant): Integer;
 var
+  TPA: TPointArray;
   P: TPoint;
-  X, Y, tx, ty: Integer;
+  B: TBox;
 begin
   Result := -1;
   if (not TabExists(tab_Stats)) then exit;
@@ -769,10 +777,11 @@ begin
   P := SkillToCoords(Skill);
   if (P.x < 1) then exit;
   MMouse(P.x, P.y + 5, 12, 4);
-  if (not WaitFindColor(x, y, 10551295, MIX1, MIY1, MIX2, MIY2, 0, 4000)) then exit;
+  wait(400 + random(200));
+  if (not WaitFindColors(TPA, 921102, MIX1, MIY1, MIX2, MIY2, 0, 4000)) then exit;
+  B := GetTPABounds(TPA);
   Wait(200 + Random(150));
-  if IsTextInAreaEx(x, y, x + 60, y + 60, tx, ty, 'ainder', 0, SmallChars, False, False, 0, 1, 0) then
-    Result := StrToIntDef(GetNumbers(GetTextAtEx(tx, ty, 0, SmallChars, False, True, 0, 1, 0, 50, False, tr_AllChars)), -1);
+  Result := StrToIntDef(GetNumbers(GetTextAt(B.X1 + 15, B.Y1 + 45, 0, 1, 4, 4305653, 0, 75, SmallChars)), -1);
 end;
 
 (*
