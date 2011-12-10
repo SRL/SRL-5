@@ -127,12 +127,13 @@ Example:
 *)
 procedure HoverSkill(Skill: variant; Click: Boolean);
 var
+  X, Y: Integer;
   TP: TPoint;
   Skills: TStringArray;
   TheSkill: string;
 begin
   if(not(GameTab(tab_Stats))) then exit;
-  
+
   if ((VarType(Skill) = varInteger) or (VarType(Skill) = varByte)) then
   begin
 
@@ -145,7 +146,7 @@ begin
       until(GetSkillLevel(TheSkill) > 1)
 
   end else begin
-  
+
     if(Lowercase(Skill) <> 'random')then
       TP := SkillToCoords(Skill)
     else
@@ -158,12 +159,12 @@ begin
     until (TP.x > 0) and (GetSkillLevel(TheSkill) > 1);
 
   end;
-  
+
   if(Click)then
   begin
-    Mouse(Tp.X, TP.Y, 10, 10, True);
-    Wait(5000 + Random(9000));
-    CloseWindow;
+    Mouse(TP.X, TP.Y, 10, 10, True);
+    if (WaitFindColor(X, Y, 7976927, 485, 5, 510, 30, 5, 5000+Random(9000))) then
+      CloseWindow;
   end else
   begin
      MMouse(TP.x, TP.y, 10, 10);
