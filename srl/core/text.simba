@@ -537,7 +537,7 @@ ClickText
 
 .. code-block:: pascal
 
-    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: Integer): Boolean;
+    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
 
 Clicks Text if found in the specified box.
 
@@ -550,7 +550,7 @@ Example
 .. code-block:: pascal
 
 *)
-function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: Integer): Boolean;
+function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
 var
   Mask, w, h, tx, ty: Integer;
 begin
