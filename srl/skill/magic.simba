@@ -636,7 +636,7 @@ begin
 
   MMouse(SBox.X, SBox.Y, 8, 8);
   GetMousePos(X, Y);
-  HoldMouse(X, Y, mouseaction(True));
+  HoldMouse(X, Y, mouse_left);
   iTime := GetSystemTime + 3000;
   while (GetColor(CBox.X, CBox.Y) = 2041131) do
   begin
@@ -644,7 +644,7 @@ begin
     if (GetSystemTime > iTime) then
       Break;
   end;
-  ReleaseMouse(X, Y, MouseAction(True));
+  ReleaseMouse(X, Y, mouse_left);
   Wait(200+Random(100));
 end;
 
