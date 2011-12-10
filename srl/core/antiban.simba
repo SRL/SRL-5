@@ -117,7 +117,7 @@ and Click = False will 'Hover'. Won't "check" skills where your level is 1.
 .. note::
 
     Author: Dankness/Cheesehunk/Ron/Raymond/ZephyrsFury
-    Last Modified: Unknown
+    Last Modified: December 09 by Coh3n
 
 Example:
 
@@ -153,7 +153,7 @@ begin
     repeat
       Skills := ['attack','defence','strength','hitpoints','mining','smithing','woodcutting','firemaking','magic',
                  'fletching','hunter', 'summoning','fishing','construction','herblore','agility','thieving','crafting',
-                 'ranged','slayer','farming', 'prayer', 'runecrafting', 'cooking'];
+                 'ranged','slayer','farming', 'prayer', 'runecrafting', 'cooking', 'dungeoneering'];
       TheSkill := Skills[Random(Length(Skills))];
       TP := SkillToCoords(TheSkill);
     until (TP.x > 0) and (GetSkillLevel(TheSkill) > 1);
@@ -162,14 +162,11 @@ begin
 
   if(Click)then
   begin
-    Mouse(TP.X, TP.Y, 10, 10, True);
+    Mouse(TP.X, TP.Y, 10, 10, mouse_left);
     if (WaitFindColor(X, Y, 7976927, 485, 5, 510, 30, 5, 5000+Random(9000))) then
       CloseWindow;
   end else
-  begin
-     MMouse(TP.x, TP.y, 10, 10);
-     Wait(1000 + Random(3000));
-  end;
+    MMouse(TP.x, TP.y, 10, 10);
 end;
 
 (*
