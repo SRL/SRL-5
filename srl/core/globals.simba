@@ -177,6 +177,8 @@ const
 { const Antirandoms Constants;
   Description: Constants representing randoms index. }
 const
+  rand_Count = 25;
+
   rand_Leo = 0;
   rand_Forester = 1;
   rand_Maze = 2;
@@ -203,6 +205,10 @@ const
   rand_BirdNest = 22;
   rand_Death = 23;
   rand_RewardBox = 24;
+
+var
+  tmp_RandSolved: array[0..rand_Count-1] of Integer;
+  tmp_RandFailed: array[0..rand_Count-1] of integer;
   
 { type TAutoColorInfo;
   Description: Set of information that can be used in some functions. }

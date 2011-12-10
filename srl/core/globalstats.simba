@@ -25,9 +25,7 @@ var
   stats_Timer: integer;
   stats_RandNames: Array of String;
   stats_RandSolved: Array of Integer;
-  tmp_RandSolved: array of Integer;
   stats_RandFailed: Array of Integer;
-  tmp_RandFailed: array of integer;
   stats_form: TForm;
   stats_txtUser, stats_txtPass, stats_txtEmail: TEdit;
   stats_btnRegister, stats_btnCancel: TButton;
@@ -223,9 +221,7 @@ begin
                       'Certer', 'Mime', 'Frog', 'Trade', 'Mod', 'Fight', 'Lamp',
                       'Bird Nest', 'Death', 'Reward Box'];
   SetArrayLength(stats_RandSolved, Length(stats_RandNames));
-  SetArrayLength(tmp_RandSolved, Length(stats_RandNames));
   SetArrayLength(stats_RandFailed, Length(stats_RandNames));
-  SetArrayLength(tmp_RandFailed, Length(stats_RandNames));
   if ((stats_Username = '') AND (stats_UserPass = '')) AND (StrToBoolDef(GetSettingValue(stats_ShowStatsDialog), True)) then
   begin
     case MessageBox('No Stats account entered, would you like to set one up?', 'SRL Stats', mbYesNoCancel) of
