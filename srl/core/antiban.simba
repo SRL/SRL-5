@@ -163,8 +163,8 @@ begin
   if(Click)then
   begin
     Mouse(TP.X, TP.Y, 10, 10, mouse_left);
-    if (WaitFindColor(X, Y, 7976927, 485, 5, 510, 30, 5, 5000+Random(9000))) then
-      CloseWindow;
+    Wait(3000+Random(3000));
+    CloseWindow;
   end else
     MMouse(TP.x, TP.y, 10, 10);
 end;
@@ -401,6 +401,63 @@ begin
 end;
 
 (*
+LevelUpEx
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LevelUpEx(ClickCont, ClickSkill: Boolean): Boolean;
+
+Returns true if the player has gained a level.  If ClickCont is set to true it
+will click the continue button in the chat box.  If ClickSkill is set to true,
+it will click the skill and exit the window.
+
+.. note::
+
+    Author: Flight
+
+Example:
+
+.. code-block:: pascal
+
+  if (LevelUpEx(false, true)) then
+    inc(Players[CurrentPlayer].Integers[10]);
+*)
+function LevelUpEx(ClickCont, ClickSkill: Boolean): Boolean;
+var
+  i: Integer;
+  Skills: TStringArray;
+begin
+  if (FindNPCChatText('gratu', Nothing) or FindBlackChatMessage('just adva')) then
+  begin
+    ClickContinue(ClickCont, True);
+
+    if (ClickSkill) then
+    begin
+      Wait(RandomRange(50, 110));
+
+      Skills := [
+        'Attack', 'Defence', 'Strength', 'Constitution', 'Mining', 'Smithing',
+        'Woodcutting', 'Firemaking', 'Magic', 'Fletching', 'Hunting', 'Summoning',
+        'Fishing', 'Construction', 'Herblore', 'Agility', 'Thieving', 'Crafting',
+        'Ranged', 'Slayer', 'Farming', 'Prayer', 'Runecrafting', 'Cooking',
+        'Dungeoneering'
+      ];
+
+      for i := 0 to High(Skills) do
+        if IsChatBoxTextBetween(Skills[i], clMessage, 1, 8) then
+          if IsChatBoxTextBetween('Constitution', clMessage, 1, 8) then
+            HoverSkill('HitPoints', True)
+          else
+            HoverSkill(Skills[i], True);
+    end;
+
+    Result := True;
+    WriteLn(Players[CurrentPlayer].Name + ' leveled up!');
+  end;
+end;
+
+(*
 LevelUp
 ~~~~~~~
 
@@ -408,29 +465,21 @@ LevelUp
 
     function LevelUp: Boolean;
 
-Checks if you've leveled up - click Continue and returns True.
+Returns true if the player has gained a level.  Will click the "click to
+continue" button in the chat box.
 
 .. note::
 
-    Author: R1ch
+    Author: Flight
 
 Example:
 
 .. code-block:: pascal
 
-    if LevelUp then
-    Inc(LevelsGained);
-
+  if (LevelUp) then
+    inc(Players[CurrentPlayer].Integers[10]);
 *)
 function LevelUp: Boolean;
-var
-  X, Y: Integer;
 begin
-  if (not(FindColor(X, Y, 0, 7, 460, 69, 474))) then
-    Result:= FindNPCChatText('gratu', Nothing);
-  if (Result) then
-  begin
-    ClickContinue(True, True);
-    WriteLn(Players[CurrentPlayer].Name + ' leveled up');
-  end;
+  Result := LevelUpEx(True, False);
 end;
