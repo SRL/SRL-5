@@ -125,8 +125,8 @@ begin
   CTS := GetColorToleranceSpeed;
   GetColorspeed2Modifiers(TempHue, TempSat);
   ColorToleranceSpeed(2);
-  SetColorSpeed2Modifiers(0.03, 0.21);
-  FindColorsTolerance(TPA, 1262986, MSX1, MSY1, MSX2, MSY2, 8);
+  SetColorSpeed2Modifiers(0.06, 0.26);
+  FindColorsTolerance(TPA, 1588045, MSX1, MSY1, MSX2, MSY2, 6);
   SetColorSpeed2Modifiers(TempHue, TempSat);
   ColorToleranceSpeed(CTS);
   repeat
@@ -264,8 +264,8 @@ begin
   repeat
     Wait(200);
     ColorToleranceSpeed(2);
-    SetColorspeed2Modifiers(0.37, 0.33);
-    if FindColorsTolerance(Tail, 9740459, MSX1+20, MSY1+20, MSX2-20, MSY2-20, 2) then //White tail tip
+    SetColorspeed2Modifiers(1.05, 0.50);
+    if FindColorsTolerance(Tail, 9872814, MSX1+20, MSY1+20, MSX2-20, MSY2-20, 4) then //White tail tip
     begin
       Pheasant := TPAtoATPA(Tail, 25);
       SortATPASize(Pheasant, (Tails = 3) or (Tails = 4));
@@ -283,15 +283,14 @@ begin
         NTails := TPAtoATPA(Tail, 3);
         if (Tails = Length(NTails)) then
         begin
-          SetColorspeed2Modifiers(0.09, 0.74);
+          SetColorspeed2Modifiers(0.10, 0.85);
           case Tails of
-            1: if not InRange(CountColorTolerance(2641004, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 12), 4, 8) then Continue;
-            2: if not InRange(CountColorTolerance(2641004, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 12), 10, 18) then Continue;
-            3: if not InRange(CountColorTolerance(2641004, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 12), 30, 56) then Continue;
-            4: if not InRange(CountColorTolerance(2641004, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 12), 70, 110) then Continue;
-          end;
+            1: if not InRange(CountColorTolerance(4484230, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 26), 4, 8) then Continue;
+            2: if not InRange(CountColorTolerance(4484230, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 26), 10, 18) then Continue;
+            3: if not InRange(CountColorTolerance(4484230, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 26), 30, 56) then Continue;
+            4: if not InRange(CountColorTolerance(4484230, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, 26), 70, 110) then Continue;          end;
           MiddleTPAEx(Pheasant[i], x, y);
-          if FindColorsTolerance(D, 2641004, x - 80, y - 80, x + 80, y + 80, 12) then
+          if FindColorsTolerance(D, 4484230, x - 80, y - 80, x + 80, y + 80, 26) then
           begin
             SortTPAFrom(D, Point(x, y));
             Mouse(D[0].x, D[0].y, 0, 0, mouse_right);
@@ -443,10 +442,10 @@ begin
   Writeln('Forester: Leaving Forester.');
   with Portal do
   begin
-    color := 4895114;
-    hue   := 0.05;
-    sat   := 0.56;
-    tol   := 5;
+    color := 4698250;
+    hue   := 0.06;
+    sat   := 0.64;
+    tol   := 10;
     w     := 37;
     h     := 33;
   end;
@@ -508,7 +507,7 @@ Date: December 17, 2009
 *******************************************************************************}
 function SolveForester: Boolean;
 var
-  Task, t, TempCTS: Integer;
+  Task, t, TempCTS, x, y: Integer;
   TempHue, TempSat: Extended;
   ItemDropped: Boolean;
 begin
@@ -522,6 +521,13 @@ begin
     begin
       DropItem(28);
       ItemDropped := True;
+    end;
+
+    if (ForesterCenter(x, y)) then
+    begin
+      Mouse(x, y, 1, 1, True);
+      Flag;
+      Wait(1500 + Random(500));
     end;
 
     if (not KillPheasant(Task)) then
