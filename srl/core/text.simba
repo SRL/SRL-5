@@ -1109,8 +1109,8 @@ begin
   SetLength(b, 2);
   for I := 0 to 6 do
   begin
-    FindColors(b[0], Col[i*2], MSCX, MSY1, MSX2, MSCY);
-    FindColors(b[1], Col[i*2+1], MSCX, MSY1, MSX2, MSCY);
+    FindColorsTolerance(b[0], Col[i*2], MSCX, MSY1, MSX2, MSCY, 5);
+    FindColorsTolerance(b[1], Col[i*2+1], MSCX, MSY1, MSX2, MSCY, 5);
     l := (High(b[0]) + High(b[1]));
     //Writeln(IntToStr(i) + ' Col1: ' + IntToStr(High(b[0])) + ' Col2: ' + IntToStr(High(b[1])) + ' T: ' + IntToStr(l));
     if InRange(l, 6, 53) or InRange(l, 94, 250) then
