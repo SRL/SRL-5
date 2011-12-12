@@ -130,15 +130,13 @@ begin
     Exit;
   end;
   for I := 0 to High(TPA) do
+  if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = 6381921) then
   begin
-    if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = 6381921) then
-    begin
-      UnFreeze;
-      X := TPA[I].x;
-      Y := TPA[I].y;
-      Result := True;
-      Exit;
-    end;
+    UnFreeze;
+    X := TPA[I].x;
+    Y := TPA[I].y;
+    Result := True;
+    Exit;
   end;
   UnFreeze;
   Result := False;
@@ -263,7 +261,7 @@ var
 begin
   Result := False;
   M := GetSystemTime;
-  while (FindFlag(Tx, Ty)) do
+  while (FindFlag(Tx, Ty)) or (FindFlag(Tx, Ty)) do
   begin
     wait(50);
     D1 := Distance(Tx, Ty, MMCX, MMCY);
