@@ -1531,7 +1531,7 @@ Opens the bank by using Banker.
 .. note::
 
     Author: Home
-    Last Modified: December 09 by Coh3n
+    Last Modified: December 12 by Coh3n
 
 Example:
 
@@ -1542,43 +1542,71 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue, ColHair, t: Integer;
+  NPCBox: TBox;
+  Colors, NPCArray: TPointArray;
+  ATPA: T2DPointArray;
+  MSNPC, NPCPoint: TPoint;
+  TempCTS, C, HiNPC, II, I: Integer;
 begin
-  Result := (LoggedIn) and (BankScreen or PinScreen);
-  if (Result) then exit;
+  Result := (BankScreen) or (PinScreen);
+  if Result then
+    Exit;
 
-  Speed := GetColorToleranceSpeed;
-  ColorToleranceSpeed(2);
-  ColFace := 7774419; // Face Color
-  ColGrey := 6381925; // Grey Color [ Clothes ]
-  ColBlue := 2429979; // Blue Color [ Clothes ]
-  ColHair := 1398163; // Orange Hair [wyn10]
-  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey, ColHair], [5, 5, 5, 5],
-    ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
+  NPCArray := GetMinimapDots('NPC');
+  HiNPC := High(NPCArray);
+
+  if Length(NPCArray) = 0 then
+    Exit;
+
+  SortTPAFrom(NPCArray, Point(MMCX, MMCY));
+
+  for I := 0 to HiNPC do
   begin
-    Mouse(bx, by, 0, 0, mouse_right);
+    NPCPoint := MMToMS(NPCArray[I])
+    if NPCPoint = Point(-1, -1) then
+      Continue;
 
-    if (WaitOptionMulti(['ank B', 'Bank Banker', 'ank', 'nker'], 750)) then
+    NPCBox := IntToBox(NPCPoint.X - 40, NPCPoint.Y - 40, NPCPoint.X + 40, NPCPoint.Y + 40);
+    if PixelShift(NPCBox, 200) > 500 then
+      Continue;
+
+    TempCTS := GetColorToleranceSpeed;
+    ColorToleranceSpeed(2);
+    SetColorSpeed2Modifiers(0.13, 1.52);
+    FindColorsTolerance(Colors, 6067652, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 13);
+    ColorToleranceSpeed(TempCTS);
+
+    ATPA := TPAToATPAEx(Colors, 15, 20);
+    SortATPASize(ATPA, True);
+
+    for II := 0 to High(ATPA) do
     begin
-      t := (GetSystemTime + 5000);
-      repeat
-        if (BankScreen) or (PinScreen) then
+      MSNPC := MiddleTPA(ATPA[II]);
+      MMouse(MSNPC.X, MSNPC.Y, 3, 3);
+
+      if WaitUpTextMulti(['ooth', 'anker'], 200) then
+      begin
+        Mouse(MSNPC.X, MSNPC.Y, 0, 0, False);
+
+        if WaitOptionMulti(['ank B', 'quick'], 300) then
         begin
-          Result := true;
-          Break;
+          MarkTime(c);
+          repeat
+            Wait(RandomRange(50, 100));
+          until (BankScreen) or (PinScreen) or (TimeFromMark(c) > 4500);
+
+          if (Players[CurrentPlayer].Pin <> '') then
+            InPin(Players[CurrentPlayer].Pin);
+
+          if (WaitFunc(@BankScreen, 50, 3000)) then
+          begin
+            Result := True;
+            Exit;
+          end;
         end;
-        Wait(50);
-      until(GetSystemTime > t);
-
-      if (Length(Players) > 0) then
-        if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
-          InPin(Players[CurrentPlayer].Pin);
-
-      Result := (BankScreen) or (PinScreen);
+      end;
     end;
   end;
-
-  ColorToleranceSpeed(Speed);
 end;
 
 (*
