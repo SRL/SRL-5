@@ -127,7 +127,6 @@ Example:
 *)
 procedure HoverSkill(Skill: variant; Click: Boolean);
 var
-  X, Y: Integer;
   TP: TPoint;
   Skills: TStringArray;
   TheSkill: string;
