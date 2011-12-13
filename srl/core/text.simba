@@ -618,7 +618,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function FindTextTpaEx(Color,Tol,xs,ys,xe,ye : integer;var x,y : integer; Txt, Chars : string; Action  :fnct_ActionOptions ) : Boolean;
+function FindTextTPAEx(Color,Tol,xs,ys,xe,ye : integer;var x,y : integer; Txt, Chars : string; Action  :fnct_ActionOptions ) : Boolean;
 var
   TextTPA,SearchTPA, Matches: TPointArray;
   Box : TBox;
@@ -666,7 +666,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function FindTextTpa(Color, Tol, xs, ys, xe, ye: integer; Txt, Chars: string; Action: fnct_ActionOptions): Boolean;
+function FindTextTPA(Color, Tol, xs, ys, xe, ye: integer; Txt, Chars: string; Action: fnct_ActionOptions): Boolean;
 var
   x,y : integer;
 begin
@@ -1084,59 +1084,63 @@ Closes any open windows. (In RS not your pc roflmaololz, j/k)
 .. note::
 
     by NaumanAkhlaQ, Narcle, and Nava2
+    Updated: 12 December 2011 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+  if (BankScreen) then
+    CloseWindow();
 *)
 function CloseWindow: Boolean;
 var
   Col: TIntegerArray;
-  b: T2DPointArray;
+  b: array[0..1] of TPointArray;
   a: T2DPointArray;
   Pa: TBox;
-  I, ii, {h,} l: Integer;
+  i, ii, l: Integer;
 begin
-  Result := CloseBank;
+  if (CloseBank) then
+  begin
+    Result := true;
+    exit;
+  end;
+
   Col := [1118997,  1449250,  {Main typ 1}
           7976927,  4095140,  {Skill}
           6854059,  2902100,  {Quest}
-          4282212, 2503226,  {Main typ 2}
+          4282212,  2503226,  {Main typ 2}
           39423,    13567,    {Red X}
           1514271,  1580837,  {Deposit Box}
           1383457,  2107437];
-  SetLength(b, 2);
-  for I := 0 to 6 do
+
+  for i := 0 to 6 do
   begin
-    FindColorsTolerance(b[0], Col[i*2], MSCX, MSY1, MSX2, MSCY, 5);
-    FindColorsTolerance(b[1], Col[i*2+1], MSCX, MSY1, MSX2, MSCY, 5);
+    FindColorsTolerance(b[0], Col[i * 2], MSCX, MSY1, MSX2, MSCY, 5);
+    FindColorsTolerance(b[1], Col[i * 2 + 1], MSCX, MSY1, MSX2, MSCY, 5);
     l := (High(b[0]) + High(b[1]));
-    //Writeln(IntToStr(i) + ' Col1: ' + IntToStr(High(b[0])) + ' Col2: ' + IntToStr(High(b[1])) + ' T: ' + IntToStr(l));
+
     if InRange(l, 6, 53) or InRange(l, 94, 250) then
     begin
       a := SplitTPA(CombineTPA(b[0], b[1]), 5);
       SortATPAFromFirstPoint(a, Point(507, 14));
-      //DebugATPA(a, '');
-      for ii := 0 to 0 do
+
+      if (length(a) < 1) then
+        Continue;
+
+      for ii := 0 to high(a) do
       begin
         Pa := GetTPABounds(a[ii]);
-        if ((Pa.x2 - Pa.x1) > 50) or ((Pa.y2 - Pa.y1) > 50) then Continue;
+        if ((Pa.x2 - Pa.x1) > 50) or ((Pa.y2 - Pa.y1) > 50) then
+          Continue;
+
         MouseBox(Pa.x1, Pa.y1, Pa.x2, Pa.y2, mouse_move);
-        Result := (Pos('lose', GetUpText) > 0) or (Pos('ack', GetUpText) > 0);
-        Pa.x2 := GetTimeRunning + 2000;
-        while (not Result) and (GetTimeRunning < Pa.x2) do
-        begin
-          Wait(16);
-          Result := (Pos('lose', GetUpText) > 0);
-        end;
-        Wait(Random(300));
-        if Result then
+        if (WaitUptextMulti(['lose', 'ack'], 300)) then
         begin
           GetMousePos(Pa.x1, Pa.y1);
           Mouse(Pa.x1, Pa.y1, 0, 0, mouse_left);
           Result := True;
-          //Writeln('Close Window Type ' + IntToStr(i));
           Exit;
         end;
       end;
