@@ -138,3 +138,39 @@ begin
     Result := -1;
   end;
 end;
+
+{*******************************************************************************
+function SetFightModeByLevel(TrainLowestSkill : Boolean) : Boolean;
+By: Rich
+Description: Changes fight style to train lowest or highest skill depending on
+             TrainLowestSkill.
+Usage example: Attack = 31, Defense = 45, Strength = 26
+               TrainLowestSkill = True -> Strength will be trained
+               TrainLowestSkill = False -> Defense will be trained
+Date: 21st Feb 2011
+*******************************************************************************}
+function SetFightModeByLevel(TrainLowestSkill: Boolean) : Boolean;
+var
+  FM, HL : Integer;
+  S, Skills : TIntegerArray;
+begin
+  Result:= False;
+  if (not LoggedIn) then
+    Exit;
+
+  Skills := [GetSkillLevel('attack'), GetSkillLevel('strength'), GetSkillLevel('defence')];
+  S := [Skills[0], Skills[1], Skills[2]];
+
+  QuickSort(Skills);
+
+  if TrainLowestSkill then
+    HL := Low(Skills)
+  else
+    HL := High(Skills);
+
+  case Skills[HL] of
+    S[0]: Result := SetFightMode(1);
+    S[1]: Result := SetFightMode(2);
+    S[2]: Result := SetFightMode(3);
+  end;
+end;
