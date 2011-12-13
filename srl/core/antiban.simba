@@ -212,6 +212,241 @@ begin
 end;
 
 (*
+SetScreenMouse
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SetScreenMouse(Direction, CameraAngle: Variant): Boolean;
+
+Aligns RS to specified direction and camera angle using the middle mouse button.
+    - Direction: 'n', 's', 'e', 'w' or any degree angle. Accepts 'random'
+      and 'rand', or '' for no movement.
+    - CamerAngle: any number from 1 to 10 (1 = lowest angle), or '1', '10'.
+      Accepts '' for no movement.
+
+.. note::
+
+    by Home & euphemism
+
+Example:
+
+.. code-block:: pascal
+
+*)
+const
+ _DEG_TO_PX = 2.838;
+ _SM_X_AXIS = 511;
+function SetScreenMouse(Direction, CameraAngle: Variant): Boolean;
+var
+  ii: Integer;
+  i, DirectionDeg, StartAngle, Fraction: Extended;
+  AngleStep, DirFalseSet, FractionInt, NumOfSteps, WaitTime, TempMouse, YStart,
+   OffX, X, XChange1, XChange2, Y, YChange1, YChange2: Integer;
+  Left, SetCamera, SetDirection, TopOfScreen: Boolean;
+begin
+  SetCamera := True;
+  SetDirection := True;
+
+  for ii := 0 to 2 do
+  begin
+    Result := False;
+    StartAngle := rs_GetCompassAngleDegrees;
+    DirFalseSet := 0;
+
+    if (StartAngle < 0) or (not LoggedIn) then
+      Exit;
+
+    case VarType(Direction) of
+      varInteger, varDouble: DirectionDeg :=
+        FixD(Direction + 0.0);
+
+      varString:
+        begin
+          i := StrToFloatDef(Direction,-1337);
+          if i = -1337 then
+          begin
+            case LowerCase(Direction) of
+              'n': DirectionDeg := 0;
+              'w': DirectionDeg := 270;
+              's': DirectionDeg := 180;
+              'e': DirectionDeg := 90;
+              'random', 'rand': DirectionDeg := RandomRange(0, 360);
+              '' : SetDirection := False;
+            end;
+          end else
+            DirectionDeg := FixD(i);
+        end;
+    end;
+
+    case VarType(CameraAngle) of
+      varString:
+        begin
+          if CameraAngle = '' then
+            SetCamera := False
+          else
+            CameraAngle := StrToInt(CameraAngle);
+        end;
+    end;
+
+    i := 0.0;
+
+    if ((not SetDirection) and (not SetCamera)) then
+    begin
+      Result := True;
+      Exit
+    end;
+
+    if (((MinE(Abs(StartAngle - DirectionDeg),
+      MinE(Abs(StartAngle - (DirectionDeg + 360)),
+      Abs((StartAngle + 360) - DirectionDeg)))) <= 3.0) and (SetCamera)) then
+    begin
+      SetDirection := False;
+    end;
+
+    if (((MinE(Abs(StartAngle - DirectionDeg),
+      MinE(Abs(StartAngle - (DirectionDeg + 360)),
+      Abs((StartAngle + 360) - DirectionDeg)))) <= 3.0) and (not SetCamera)) then
+    begin
+      Result := True;
+      Exit;
+    end;
+
+    if SetDirection then
+    begin
+      Left := (Round((360 - StartAngle) + DirectionDeg)
+               mod 360 <= Round((StartAngle + 360) - DirectionDeg) mod 360);
+      WaitTime := RandomRange(30, 90);
+
+      if Left then
+      begin
+        DirectionDeg := 360 + DirectionDeg - StartAngle;
+        OffX := - 5;
+      end else
+      begin
+        DirectionDeg := 360 - DirectionDeg + StartAngle;
+        OffX := 5;
+      end;
+
+    end else
+      Left := RBool;
+
+    TempMouse := MouseSpeed;
+
+    if MouseSpeed > 14 then
+      MouseSpeed := RandomRange(14, 15);
+
+    if not SetDirection then
+      Fraction := 1
+    else
+      Fraction := DirectionDeg * _DEG_TO_PX / _SM_X_AXIS
+                  - Floor(DirectionDeg * _DEG_TO_PX / _SM_X_AXIS);
+
+    if Fraction > 0 then
+    begin
+      FractionInt := Round(MSX2 * Fraction);
+
+      if SetDirection then
+      begin
+        XChange1 := RandomRange(0, FractionInt);
+        XChange2 := FractionInt - XChange1;
+        DirFalseSet := 0;
+      end else
+      begin
+        DirFalseSet := RandomRange(7, 511);
+        XChange1 := DirFalseSet;
+        XChange2 := 0;
+        OffX := 0;
+      end;
+
+      NumOfSteps := 10;
+      AngleStep := Ceil((278 / NumOfSteps));
+      TopOfScreen := RBool;
+
+      if SetCamera then
+      begin
+        CameraAngle := NumOfSteps - CameraAngle;
+        if TopOfScreen then
+        begin
+          YStart := RandomRange(MSY1, MSY1 + 55);
+          YChange1 := YStart + RandomRange(278, 280);
+          YChange2 := (CameraAngle * AngleStep) * -1;
+        end else
+        begin
+          YStart := RandomRange(MSY2, MSY2 - 55);
+          YChange1 := YStart - RandomRange(278, 280);
+          YChange2 := ((NumOfSteps - CameraAngle) * AngleStep);
+        end;
+      end else
+      begin
+        YStart := RandomRange(10, 330);
+        YChange1 := YStart;
+        YChange2 := 0;
+      end;
+
+      GetMousePos(X, Y);
+
+      if ii <> 0 then
+        MMouse(X, Y, 0, 0)
+      else
+        if not Left then
+        begin
+          if not ii <> 0 then
+            MMouse(MSX2 - DirFalseSet, YStart, 0, 0)
+          else
+            MMouse(MSX2, Y, 0, 0);
+        end else
+        begin
+          if not ii <> 0 then
+            MMouse(MSX1 + DirFalseSet, YStart, 0, 0)
+          else
+            MMouse(MSX1, Y, 0, 0);
+        end;
+
+      GetMousePos(X, Y);
+      HoldMouse(X, Y, mouse_Middle);
+      Wait(WaitTime);
+
+      if ((ii = 0) and (SetCamera))then
+      begin
+        if not Left then
+        begin
+          MMouse(MSX2 - XChange1, YChange1, 0, 0);
+          Wait(WaitTime);
+          GetMousePos(X, Y);
+          ReleaseMouse(X, Y, mouse_Middle);
+          Wait(WaitTime);
+          HoldMouse(MSX2 - XChange1, Y, mouse_Middle);
+          MMouse(((MSX2 - XChange1) - XChange2 + OffX), Y + YChange2, 0, 0);
+        end else
+        begin
+          MMouse(MSX1 + XChange1, YChange1, 0, 0);
+          Wait(WaitTime);
+          GetMousePos(X, Y);
+          ReleaseMouse(X, Y, mouse_Middle);
+          Wait(WaitTime);
+          HoldMouse(MSX1 + XChange1, Y, mouse_Middle);
+          MMouse(((MSX1 + XChange1) + XChange2 + OffX), Y + YChange2, 0, 0);
+        end;
+      end else
+        if not Left then
+          MMouse(X - (FractionInt + 5), Y, 0, 0)
+        else
+          MMouse(X + (FractionInt - 5), Y, 0, 0);
+
+      Wait(WaitTime);
+      GetMousePos(X, Y);
+      ReleaseMouse(X, Y, mouse_Middle);
+      Wait(WaitTime);
+    end;
+
+    SetCamera := False;
+  end;
+
+  MouseSpeed := TempMouse;
+end;
+
+(*
 RandomMovement
 ~~~~~~~~~~~~~~
 
