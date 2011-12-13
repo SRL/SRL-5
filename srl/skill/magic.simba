@@ -881,10 +881,7 @@ begin
     begin
       Mouse(X, Y, 0, 0, True);
       Result := True;
-    end else
-      Result := True;
-
-    Exit;
+    end;
   end;
 
   Mouse(X, Y, 0, 0, not SInfo.AutoCast);
