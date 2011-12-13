@@ -54,14 +54,13 @@ begin
   Result := -1;
   if (not LoggedIn) then exit;
 
-  for Result := 1 to 16 do
+  for Result := tab_Combat to tab_Logout do
   begin
     tP.X := 535 + (Result - 1) mod 8 * 30;
     tP.Y := 169 + (Result - 1) div 8 * 298;
     if (GetColor(tP.X, tP.Y) = 3775974) then
       Break;
   end;
-  result := result + 20; //SO IT ACTUALLY WORKS WITH THE TABS KTHX
 end;
 
 (*
@@ -105,7 +104,7 @@ begin
 
   if (Tab = tab_LogOut) then
   begin
-    Result := (GetColor(746, 0) = 65536);
+    Result := (GetColor(755, 9) = 3037288);
     Exit;
   end;
 
