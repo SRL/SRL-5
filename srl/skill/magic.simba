@@ -134,7 +134,7 @@ begin
            25.5, 28.5, 30, 60, 30, 31.5, 34.5, 35, 35, 35, 36, 37.5, 76,
            40, 83, 42.5, 89, 90, 180, 75, 80, 80, 85, 90];
 
-  AutoCasts := [1, 2, 5, 8, 9, 17, 26, 28, 30, 31, 32, 34];
+  AutoCasts := [0, 1, 2, 5, 8, 9, 17, 26, 28, 30, 31, 32, 34];
 
   ReqRuneAmt := [
                   TIntegerArray([1]), TIntegerArray([1, 1]), TIntegerArray([3, 2, 1]),
@@ -881,7 +881,9 @@ begin
     begin
       Mouse(X, Y, 0, 0, True);
       Result := True;
-    end;
+    end else
+      Result := True;
+
     Exit;
   end;
 
