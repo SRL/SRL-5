@@ -476,7 +476,11 @@ begin
   if (SRL_Procs[srl_OnLogOut] <> nil) then
     SRL_Procs[srl_OnLogOut]();
   if (not (GameTab(tab_LogOut))) then
-    Exit;
+  begin
+    CloseWindow();
+    if (not (GameTab(tab_LogOut))) then
+      Exit;
+  end;
   Wait(200 + Random(100));
   while (LoggedIn) and (c < 10) do
   begin
