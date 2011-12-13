@@ -201,7 +201,7 @@ SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
       Name := Names[I];
       Level := Levels[I];
       Exp := Exps[I];
-      AutoCast := (not InIntArray(AutoCasts, I));
+      AutoCast := (InIntArray(AutoCasts, I));
       RequiredRunes := ReqRunes[i];
       RequiredRuneAmount := ReqRuneAmt[i];
     end;
