@@ -2245,3 +2245,52 @@ begin
   Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
 end;
+
+(*
+IsMoneyPouchOpen
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsMoneyPouchOpen: Boolean;
+
+Checks if money pouch is open.
+
+.. note ::
+
+    by Home
+
+*)
+function IsMoneyPouchOpen: Boolean;
+var
+ Cols :TIntegerArray;
+ I :Integer;
+begin
+  Cols := [65535, 16777215, 8453888];
+  for I := 0 to 2 do
+    If CountColor(Cols[I],450, 90, 510, 109) > 10 then
+      Result := CountColor(Cols[I],450, 90, 510, 109) > 10;
+end;
+
+(*
+ToggleMoneyPouch
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    ToggleMoneyPouch(Open: Boolean): Boolean;
+
+Opens the money pouch if closed.
+
+.. note ::
+
+    by Home
+
+*)
+function ToggleMoneyPouch(Open: Boolean): Boolean;
+begin
+  Result := IsMoneyPouchOpen <> Open;
+  if (not (Result)) then
+    Exit;
+  MouseBox(528, 94, 533, 107, mouse_Left);
+end;
