@@ -2134,6 +2134,16 @@ begin
   end;
 end;
 
+
+(*
+
+XP Counter
+----------
+
+XP Counter related functions
+
+*)
+
 (*
 ISXPBarOpen
 ~~~~~~~~~~~
@@ -2245,6 +2255,16 @@ begin
   Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
 end;
+
+
+(*
+
+MoneyPouch Tab
+--------------
+
+Money Pouch related functions
+
+*)
 
 (*
 IsMoneyPouchOpen
