@@ -2244,3 +2244,158 @@ begin
   Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
 end;
+
+(*
+IsMoneyPouchOpen
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsMoneyPouchOpen: Boolean;
+
+Checks if money pouch is open.
+
+.. note ::
+
+    by Home
+
+*)
+function IsMoneyPouchOpen: Boolean;
+var
+ Cols :TIntegerArray;
+ I :Integer;
+begin
+  Cols := [65535, 16777215, 8453888];
+  for I := 0 to 2 do
+    If CountColor(Cols[I],450, 90, 510, 109) > 10 then
+      Result := CountColor(Cols[I],450, 90, 510, 109) > 10;
+end;
+
+(*
+ToggleMoneyPouch
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    ToggleMoneyPouch(Open: Boolean): Boolean;
+
+Opens the money pouch if closed.
+
+.. note ::
+
+    by Home
+
+*)
+function ToggleMoneyPouch(Open: Boolean): Boolean;
+begin
+  Result := IsMoneyPouchOpen <> Open;
+  if (not (Result)) then
+    Exit;
+  MouseBox(528, 94, 533, 107, mouse_Left);
+end;
+
+(*
+GetMoneyPouchAmount
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMoneyPouchAmount: LongInt;
+
+Returns amount of coins in pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function GetMoneyPouchAmount: LongInt;
+var
+  Previous: Boolean;
+  TPA: TPointArray;
+  B: TBox;
+  I :Integer;
+  Col :TIntegerArray;
+begin
+  Previous := IsMoneyPouchOpen;
+  if (ToggleMoneyPouch(True)) then
+  WaitFunc(@IsMoneyPouchOpen, 10, 2750);
+  Col := [65535, 65278, 16777215, 8453888];
+  for I := 0 to 3 do
+  if (FindColors(TPA, Col[I], 450, 90, 510, 109)) then
+  begin
+    B := GetTPABounds(TPA);
+    B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
+    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1, B.Y1 - 1, 0, StatChars, False, False, 0, 2, Col[I], 5, False, tr_Digits)), -1);
+    Case I of
+       2: Result := Result * 1000;
+       3: Result := Result * 1000000;
+    end;
+  end;
+  if (not(Previous)) then
+    Wait(RandomRange(500, 1500));
+  ToggleMoneyPouch(Previous);
+end;
+
+(*
+DepositToPouch
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function DepositToPouch :Boolean;
+
+Deposit's coins to pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function DepositToPouch :Boolean;
+var
+ MoneyPoint :TPoint;
+begin
+  Result := False;
+  If FindCoins(MoneyPoint.X, MoneyPoint.Y, 'Inv') then
+    begin
+      MMouse(MoneyPoint.X, MoneyPoint.Y, 3, 3);
+      If WaitUpText('Coins', 500) then
+      begin
+        Mouse(MoneyPoint.X, MoneyPoint.Y, 0, 0, False);
+          Result := WaitOption('Add', 500);
+      end;
+    end;
+end;
+
+(*
+WithdrawFromPouch
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WithdrawFromPouch(Amount :Integer) :Boolean;
+
+Withdraws amount from pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function WithdrawFromPouch(Amount :Integer) :Boolean;
+var
+  T :Integer;
+begin
+  Result := False;
+  MouseBox(528, 94, 533, 107, 2);
+  If WaitOption('draw', 500) then
+  begin
+    T := GetSystemTime + 10000;
+    while (T >= GetSystemTime) and (not (InRange(CountColor(0, 250, 396, 307, 410), 160, 175))) do
+      Wait(50);
+    Wait(RandomRange(75, 400));
+    TypeSend(IntToStr(Amount));
+    Result := True;
+  end;
+end;  
