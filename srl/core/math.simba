@@ -265,8 +265,8 @@ end;
 
 (*
 
-SRL_GaussStd
-~~~~~~~~~~~~
+srl_GaussRand
+~~~~~~~~~~~~~
 
 This is a functional pointer. It behaves transparently as a regular function
 would. This function will behave as so: it will return a random Extended 
@@ -285,18 +285,10 @@ Example:
 
 *)
 
-type
-  TSRL_GaussSettings = record
-    genStd: function: Extended;
-    devRange: Extended;
-    devPoint: Extended;
-  end;
-
 var
-  SRL_GaussSettings: TSRL_GaussSettings;
+  srl_GaussRand: function: Extended;
+  srl_GaussDev_Range, srl_GaussDev_Point: Extended;
 
-var
-    __st_second: Extended;
 {
 
 Helper method for cal_normal_random. Does polynomial calculation using the
@@ -314,14 +306,11 @@ const
 
 function __gauss_poly(r, rsqr: Extended): Extended;
 begin
-  with SRL_GaussSettings do
-  begin
-    Result := __gauss_norm_0*rsqr + __gauss_norm_1;
-    Result := Result*rsqr + __gauss_norm_2;
-    Result := Result*rsqr + __gauss_norm_3;
-    Result := Result*rsqr + __gauss_norm_4;
-    Result := Result*r;
-  end;
+  Result := __gauss_norm_0*rsqr + __gauss_norm_1;
+  Result := Result*rsqr + __gauss_norm_2;
+  Result := Result*rsqr + __gauss_norm_3;
+  Result := Result*rsqr + __gauss_norm_4;
+  Result := Result*r;
 end;
 
 (*
@@ -352,57 +341,43 @@ end;
 
 (*
 
-SetupN2Gauss
+GaussMarsPolar
+~~~~~~~~~~~~~~
+
+Calculates a standard normal value (N(0, 1]).
+
+By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
+
+.. note::
+    Please use `srl_GaussRand` instead of this function directly, feel free to
+    set `srl_GaussRand` to this function if you choose. 
+    Currently, this is the default.
+
+.. note::
+    by: BenLand100
+
+*)
+function GaussMarsPolar(): Extended;
+begin
+  Result := sqrt(-2.0*ln(RandomE()))*cos(2.0*PI*RandomE());
+end;
+
+(*
+
+SetupGauss
 ~~~~~~~~~~~~
 
-Sets up the necessary constants for the gaussian functions used in n2_gauss.
+Sets up the necessary constants for the gaussian functions used in the Gaussian
+math functions internally to SRL.
 
 *)
 procedure setupGauss();
 begin
-  with SRL_GaussSettings do
-  begin
-    genStd := @n2_gauss;
-
-    devPoint := 0.4;
-    devRange := 0.3;
-  end;
-
-  __st_second := -2.0;
+  srl_GaussDev_Point := 0.4;
+  srl_GaussDev_Range := 0.3;
+  srl_GaussRand := @GaussMarsPolar;
 end;
 
-function GaussBMPolar(): Extended;
-var
-  u, v: Extended;
-  s, r: Extended;
-begin
-  result := -2.0;
-
-  while ((result <= -1) or (result >= 1)) do
-  begin
-    { the following maintains state about the function, speed optimization. }
-    if (__st_second <> -2) then
-    begin
-      result := __st_second;
-      __st_second := -2;
-      continue;
-    end;
-    
-    u := -1 + 2*RandomE;
-    v := -1 + 2*RandomE;
-    s := u*u + v*v;
-
-    if ((s = 0) or (s >= 1)) then 
-      continue;
-
-    r := sqrt(-2.0 * log10(s) / s);
-    
-    result := u * r;
-    __st_second := v*r;
-  
-  end; { end while loop}      
-
-end;
 
 (*
   
@@ -419,14 +394,14 @@ Example:
 
 ..code-block:: pascal
     // shooting arrows simulation:
-    pt := Point(GaussRand(center.x, 0.5), GaussRand(center.y));
+    pt := Point(GaussRand(center.x, 0.5), GaussRand(center.y, 0.5));
     WriteLn(Format('Hit the target at (%d, %d).', [pt.x, pt.y]));
 
 *)
 
 function GaussRand(mean, dev: Extended): Extended;
 begin
-  result := mean + dev*SRL_GaussSettings.genStd();
+  result := mean + dev*srl_GaussRand();
 end;
 
 
@@ -463,10 +438,10 @@ begin
     swap(eAngle, sAngle);
 
   { random angle about the center }
-  angle := sAngle + (eAngle-sAngle)*SRL_GaussSettings.genStd()/2.0;
+  angle := sAngle + (eAngle-sAngle)*srl_GaussRand()/2.0;
 
   { get normal pt about zero, where 68% lie within .5*maxRad }
-  radius := GaussRand(maxRad,maxRad*SRL_GaussSettings.devPoint) - maxRad;
+  radius := GaussRand(maxRad,maxRad*srl_GaussDev_Point) - maxRad;
 
 
   { the shifting distance based on the radius and angle (both rand) }
@@ -501,7 +476,7 @@ var
 begin
   { calculate the mean }
   mean := (maxI+minI)/2.0;
-  dev  := abs(maxI-minI)/2.0 * SRL_GaussSettings.devRange;
+  dev  := abs(maxI-minI)/2.0 * srl_GaussDev_Range; 
 
   t := 0;
   while ((not valid) and (t < 100)) do 
@@ -512,7 +487,6 @@ begin
     inc(t);
   end;
   
-//  WriteLn(Format('We done goofed %d times.', [t-1]));
 end;
 
 (*

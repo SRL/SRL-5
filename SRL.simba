@@ -52,6 +52,8 @@
 {$include SRL/SRL/core/timing.simba}
 {$include SRL/SRL/core/SRLlog.simba}
 {$include SRL/SRL/core/chat.simba}
+{$include SRL/SRL/core/bitmaps.simba}
+{$include SRL/SRL/core/amount.simba}
 {$include SRL/SRL/core/gametab.simba}
 
 //----------------------------------------------------------------------------//
@@ -67,8 +69,6 @@
 {$include SRL/SRL/core/autocolor.simba}
 {$include SRL/SRL/core/mapwalk.simba}
 {$include SRL/SRL/core/object.simba}
-{$include SRL/SRL/core/bitmaps.simba}
-{$include SRL/SRL/core/amount.simba}
 {$include SRL/SRL/core/inventory.simba}
 {$include SRL/SRL/core/bank.simba}
 {$include SRL/SRL/core/symbol.simba}
