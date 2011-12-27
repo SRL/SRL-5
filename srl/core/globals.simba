@@ -36,7 +36,7 @@ var
 { var bmpAdmin, bmpMod, Lamp, BoxMask: Integer;
   Description: Global Bitmaps. Need to be Global because of SCAR Memory leaks. }
 var
-  bmpAdmin, bmpMod, Lamp, BookOfKnowledge: Integer;
+  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge: Integer;
 
 { var RoadColor, WaterColor, BankColor: Integer;
   Description: Three variables you will almost always use. :) }
@@ -303,6 +303,9 @@ begin
        'p0+HS6GR+KVwAgAGXFQr');
   bmpAdmin := BitmapFromString(9, 6, 'beNqbp/j9PwcZ6P//FiDJAA' +
        'bIjGvzFOFSaCR+KZwIALniVEk=');
+  bmpFlag := BitmapFromString(5, 10, 'meJzTNPyjCUYawrdD7PUgDDDaD+R' +
+        'C2OpCtUA2EAEZQMTAwHB531oglwEGKOFuXdCPzAUCRgYGAF/8Iog=');
+  SetTransparentColor(bmpFlag, 0);
   Lamp := DTMFromString('78DA6374626260D06164400655530218FE036' +
        '990E87F20603405AAD14255C3C0C0042661A28CF640BE260135EE' +
        '44A809C0740F56738C08A87124428D3590AF8B5F0D00A9150A05');
@@ -311,9 +314,12 @@ begin
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
        'EC3');
   SRLBitmapsLoaded := True;
+  {$IFDEF SIMBA}
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
   SetBitmapName(bmpAdmin,'SRL - Admin bitmap');
+  SetBitmapName(bmpFlag, 'SRL - Flag bitmap');
   SetDTMName(Lamp,'SRL - Lamp bitmap');
+  {$ENDIF}
 end;
 
 (*
@@ -341,6 +347,7 @@ begin
   begin
     FreeBitmap(bmpMod);
     FreeBitmap(bmpAdmin);
+    FreeBitmap(bmpFlag);
     FreeDTM(Lamp);
     FreeDTM(BookOfKnowledge);
     SRLBitmapsLoaded := False;
@@ -439,7 +446,7 @@ end;
 
 { MainScreen, Minimap, Inventory, Chat, Bank boxes as TBox }
 var
-  MSBox, MMBox, MIBox, MCBox, MBBox: TBox;
+  MSBox, MMBox, MIBox, MCBox, MBBox, MFBox: TBox;
 
 (*
 SetupBoxes
@@ -467,6 +474,7 @@ begin
   MIBox := IntToBox(MIX1, MIY1, MIX2, MIY2);
   MCBox := IntToBox(MCX1, MCY1, MCX2, MCY2);
   MBBox := IntToBox(MBX1, MBY1, MBX2, MBY2);
+  MFBox := IntToBox(224, 114, 294, 150);
 end;
 
 
@@ -477,6 +485,9 @@ const
   HP_BAR_TOL = 3;
   HP_BAR_WIDTH = 57;
   HP_BAR_HEIGHT = 7;
+  HP_BAR_COLOR1 = 10240;//Green top
+  HP_BAR_COLOR2 = 9728;//Green bottom
+  HP_BAR_COLOR3 = 132923;//Red
 
 (*
 srl_InFight
@@ -493,7 +504,7 @@ is performing fighting animations to further improve the certainty of results.
 
 .. note::
 
-    by Frement
+    by Narcle
 
 Example:
 
@@ -506,12 +517,19 @@ Example:
     end;
 
 *)
-function srl_InFight: Boolean;
+Function srl_InFight: Boolean;
 var
-  X, Y, HPBarCorner: Integer;
+  T: TPoint;
+  H, I: integer;
+  Colors: TIntegerArray;
+  ATPA: T2DPointArray;
 begin
-  HPBarCorner := DTMFromString('78DA6364646060606540051A108A11CA6504315888' +
-       '50C34C841A26026A988854C348400D33116A588850C34A841A36C26A0046A001D4');
-  Result := FindDTM(HPBarCorner, x, y, MSCX - 40, MSCY - 170, MSCX + 40, MSCY);
-  FreeDTM(HPBarCorner);
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  H := High(Colors);
+  SetArrayLength(ATPA, H+1);
+  T := point((MFBox.x2+MFBox.x1) div 2,(MFBox.y2+MFBox.y1) div 2);
+  for i := 0 to H do
+   with MFBox do
+    FindColorsSpiralTolerance(T.x, T.y, ATPA[i], Colors[i], X1, Y1, X2, Y2, 0);
+  Result := InRange(Length(MergeATPA(ATPA)), 30, 240);
 end;

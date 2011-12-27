@@ -35,7 +35,7 @@ var
 begin
   B := IntToBox(529, 9, 557, 39);
   with B do
-    FindColorsSpiralTolerance(T.x, T.y, TPA,65536,  x1, y1, x2, y2, 0);
+    FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 0);
   if Length(TPA) < 1 then
    Exit;
   M := MiddleBox(B);
@@ -117,29 +117,15 @@ Example:
     mouse(x, y, 3, 3, true);
   end;
 *)
-function FindFlag(var X, Y: Integer): Boolean;
-var
-  I: Integer;
-  TPA: TPointArray;
+Function FindFlag(var X, Y: integer): Boolean;
 begin
-  Freeze;
-  FindColors(TPA, 65536, MMX1, MMY1, MMX2, MMY2);
-  if (Length(TPA) <= 0) then
-  begin
-    UnFreeze;
-    Exit;
-  end;
-  for I := 0 to High(TPA) do
-  if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = 6381921) then
-  begin
-    UnFreeze;
-    X := TPA[I].x;
-    Y := TPA[I].y;
-    Result := True;
-    Exit;
-  end;
-  UnFreeze;
   Result := False;
+  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 60) then
+  begin
+    Result := True;
+    X := X+4;
+    Y := Y+9;
+   end;
 end;
 
 (*

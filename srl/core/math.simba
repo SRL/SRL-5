@@ -781,11 +781,12 @@ MMToMS
 
     function MMToMS(MM: TPoint): TPoint;
 
-Turns a Minimap point into a close MS point.
+Turns a Minimap point into a close MS point. New one compensates for angles.
+(I need to add Y angle change still).
 
 .. note::
 
-    by N1ke!
+    by Narcle
 
 Example:
 
@@ -797,18 +798,15 @@ Example:
     //...
 
 *)
-function MMToMS(MM: TPoint): TPoint;
+Function MMtoMS(mm: TPoint): TPoint;
 var
-  X, Y: Integer;
-  Dis: TPoint;
+  X, Y, Yh: integer;
 begin
-  X := ((MM.X - 647));
-  Y := ((MM.Y - 84));
-
-  Dis := Point( (MMCX - MM.X)*-1, (MMCY - MM.Y)*-1);
-  Result := Point(Round((259.5 + X)+ Dis.X*10), Round((170.0 + Y)+ Dis.Y*6.5));
-
-  If not IntInBox(Result.X, Result.Y, IntToBox(MSX1, MSY1, MSX2, MSY2)) then
+  X := (mm.x-627);
+  Y := (mm.y-85);
+  Yh := round(abs(mm.y-104));
+  Result := Point(Round((X*3.0/(Yh/42+3.0))*((487.0/48.0))+259.5), Round(170.0+Y*(321.0/42.0)));
+  if not PointInBox(Result, MSBox) then
     Result := Point(-1, -1);
 end;
 
