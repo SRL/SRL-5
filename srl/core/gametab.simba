@@ -2243,7 +2243,7 @@ Results True if the XP Bar is showing.
 
 function IsXPBarOpen: Boolean;
 begin
-  Result := CountColor(4081997, 342, 55, 510, 69) > 10;
+  Result := CountColor(4081997, 442, 55, 510, 69) > 10;
 end;
 
 (*
@@ -2278,7 +2278,8 @@ begin
       wait(1);
       Result := Open = IsXPBarOpen;
     until Result or (GetSystemTime > t);
-  end;
+  end else
+    Result := true;
 end;
 
 (*
@@ -2298,21 +2299,17 @@ Returns the number from your XP Bar.
 
 function GetXPBarTotal: LongInt;
 var
-  Previous: Boolean;
   TPA: TPointArray;
   B: TBox;
 begin
-  Previous := IsXPBarOpen;
-  if not ToggleXPBar(True) then
-    Exit;
-  FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
-  B := GetTPABounds(TPA);
-  B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
-  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2,
+  if ToggleXPBar(True) then
+  begin
+    FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
+    B := GetTPABounds(TPA);
+    B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
+    Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2,
                                 0, 5, 4, clWhite, 0, 'XPChars'), Numbers), 0);
-  if (not (Previous)) then
-    Wait(RandomRange(500, 1500));
-  ToggleXPBar(Previous);
+  end;
 end;
 
 (*
