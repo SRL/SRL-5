@@ -2265,6 +2265,7 @@ function ToggleXPBar(Open: Boolean): Boolean;
 var
   TPA: TPointArray;
   P: TPoint;
+  T: Integer;
 begin
   if Open xor IsXPBarOpen then
   begin
