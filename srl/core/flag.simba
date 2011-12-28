@@ -105,7 +105,7 @@ Returns true if the flag is found on the minimap.
 
 .. note::
 
-    by weequ
+    by Narcle
 
 Example:
 
@@ -247,18 +247,17 @@ var
 begin
   Result := False;
   M := GetSystemTime;
-  while (FindFlag(Tx, Ty)) or (FindFlag(Tx, Ty)) do
+  while FindFlag(Tx, Ty) do
   begin
-    wait(50);
     D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
     begin
       Result := True;
       Exit;
     end;
+    Wait(50+random(50));
     if (RoadColorCheck) then
       RoadColorChecker;
-    Wait(100);
     if (GetColor(6, 6) <> clWhite) then
       if (GetSystemTime - M > 5000) then
       begin
@@ -266,7 +265,6 @@ begin
         D2 := D1;
         M := GetSystemTime;
       end;
-    if (Random(20) = 0) then IdleTime(500, 1000, 0.01);
     if SRL_Procs[SRL_AntiBan] <> nil then
       SRL_Procs[SRL_AntiBan]();
   end;

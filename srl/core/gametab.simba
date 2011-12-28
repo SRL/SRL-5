@@ -54,13 +54,14 @@ begin
   Result := -1;
   if (not LoggedIn) then exit;
 
-  for Result := tab_Combat to tab_Logout do
+  for Result := 0 to (tab_LogOut - tab_Combat)-1 do
   begin
-    tP.X := 535 + (Result - tab_Combat) mod 8 * 30;
-    tP.Y := 169 + (Result - tab_Combat) div 8 * 298;
+    tP.X := 535 + Result mod 8 * 30;
+    tP.Y := 169 + Result div 8 * 298;
     if (GetColor(tP.X, tP.Y) = 3775974) then
       Break;
   end;
+  Result := Result + tab_Combat;
 end;
 
 (*
@@ -1612,19 +1613,21 @@ Example:
 *)
 function RunEnergy(Min: Integer): Boolean;
 var
-  T: Integer;
+  T, R: Integer;
   s: String;
 begin
   T := GetSystemTime + 5000;
-  while (T > GetSystemTime) do
-  begin
-    Result := (GetMMLevels('run', s) >= Min);
+  repeat
+    R := GetMMLevels('run', s);
+    Result := (R >= Min);
     if (Result) then
     begin
       SetRun(True);
       Exit;
     end;
-  end;
+    if (R > 0) then
+      Exit;
+  until (T > GetSystemTime);
 end;
 
 (*
@@ -2269,9 +2272,12 @@ begin
     FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
     P := TPA[Random(Length(TPA))];
     Mouse(P.X, P.Y, 0, 0, mouse_left);
-    wait(25+random(25));
+    T := GetSystemTime + 300;
+    repeat
+      wait(1);
+      Result := Open = IsXPBarOpen;
+    until Result or (GetSystemTime > t);
   end;
-  Result := Open = IsXPBarOpen;
 end;
 
 (*
@@ -2296,12 +2302,8 @@ var
   B: TBox;
 begin
   Previous := IsXPBarOpen;
-  if ToggleXPBar(True) then
-  repeat
-    if IsXPBarOpen then
-      Break;
-    wait(10+random(10));
-  until IsXPBarOpen;
+  if not ToggleXPBar(True) then
+    Exit;
   FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
   B := GetTPABounds(TPA);
   B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
