@@ -568,10 +568,14 @@ Begin
   TimeMarker := GetSystemTime;
   while ((GetSystemTime - TimeMarker) < 15000) and FindNPCChatText('Talk to',nothing) do
     wait(500 + random(1000));
-  While GetSystemTime - TimeMarker < 300000 Do
+  While GetSystemTime - TimeMarker < 60000 Do
   Begin
     while (ClickContinue(True, True)) do
+    begin
       Wait(500 + Random(1000));
+      if GetSystemTime - TimeMarker < 60000 then
+        break; //to prevent inf. loop incase false positive
+    end;
     if (FindColor(X, Y, 65535, MCX1, MCY1, MCX2, MCY2)) then
     begin
       SolveQuizQuestion;
