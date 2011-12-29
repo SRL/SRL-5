@@ -148,7 +148,7 @@ const
 { var SRL_Procs: array [0..12] of procedure();
   Description: Varibles to store user-defined procs to be called in SRL. }
 var
-  SRL_Procs: array [0..13] of procedure();
+  SRL_Procs: array [0..14] of procedure();
   SRL_OnFindRandomCall : function(var Cont : boolean) : boolean;
   
 { const GameTab Constants;
@@ -314,12 +314,10 @@ begin
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
        'EC3');
   SRLBitmapsLoaded := True;
-  {$IFDEF SIMBA}
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
   SetBitmapName(bmpAdmin,'SRL - Admin bitmap');
   SetBitmapName(bmpFlag, 'SRL - Flag bitmap');
   SetDTMName(Lamp,'SRL - Lamp bitmap');
-  {$ENDIF}
 end;
 
 (*

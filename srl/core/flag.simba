@@ -247,7 +247,7 @@ var
 begin
   Result := False;
   M := GetSystemTime;
-  while FindFlag(Tx, Ty) do
+  while FindFlag(Tx, Ty) or FindFlag(Tx, Ty) do
   begin
     D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
