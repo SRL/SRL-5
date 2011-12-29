@@ -247,15 +247,19 @@ var
 begin
   Result := False;
   M := GetSystemTime;
-  while FindFlag(Tx, Ty) or FindFlag(Tx, Ty) do
-  begin
+  repeat
+    if not FindFlag(Tx, Ty) then
+      Exit;
     D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
     begin
       Result := True;
       Exit;
     end;
-    Wait(50+random(50));
+    if (D1 > Dist+5) then
+      wait(300+random(50))
+    else
+      wait(50+random(50));
     if (RoadColorCheck) then
       RoadColorChecker;
     if (GetColor(6, 6) <> clWhite) then
@@ -267,8 +271,7 @@ begin
       end;
     if SRL_Procs[SRL_AntiBan] <> nil then
       SRL_Procs[SRL_AntiBan]();
-  end;
-  Wait(RandomRange(200, 400));
+  until not LoggedIn;
 end;
 
 (*
