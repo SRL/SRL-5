@@ -800,12 +800,14 @@ Example:
 *)
 Function MMtoMS(mm: TPoint): TPoint;
 var
-  X, Y, Yh: integer;
+  X, Y: Extended;
+  Yh: integer;
 begin
-  X := (mm.x-627);
-  Y := (mm.y-85);
+  X := (mm.x-626.5);
+  Y := (mm.y-86.5);
   Yh := round(abs(mm.y-104));
-  Result := Point(Round((X*3.0/(Yh/42+3.0))*((487.0/48.0))+259.5), Round(170.0+Y*(321.0/42.0)));
+  Result := Point(Round((X*3.0/(Yh/42+3.0))*((487.0/48.0))+259.5),
+                  Round(170.0+Y*(6.96+(Yh/42.0)*1.46)));
   if not PointInBox(Result, MSBox) then
     Result := Point(-1, -1);
 end;

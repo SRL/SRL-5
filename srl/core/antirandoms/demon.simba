@@ -335,11 +335,9 @@ Description: Performs the correct workout.
 
 function PerformTask(TaskIndex: Integer): Boolean;
 var
-  arP, arAP: TPointArray;
-  arC, arUC: TIntegerArray;
+  arP: TPointArray;
   ararP: T2DPointArray;
-  tmpCTS, i, j, arL, arL2, t: Integer;
-  X, Y, Z: Extended;
+  tmpCTS, i, arL, t: Integer;
 begin
   tmpCTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(2);
@@ -352,30 +350,7 @@ begin
     SetColorSpeed2Modifiers(0.2, 0.2);
     Exit;
   end;
-  {
-  arC := GetColors(arP);
-  arUC := arC;
-  ClearSameIntegers(arUC);
-  arL := High(arUC);
-  arL2 := High(arC);
 
-  for i := 0 to arL do
-  begin
-    ColorToXYZ(arC[i], X, Y, Z);
-
-    if (X >= 6.61) and (X <= 19.45) and (Y >= 7.00) and (Y <= 20.47) and (Z >= 2.28) and (Z <= 6.43) then
-    begin
-      for j := 0 to arL2 do
-      begin
-        if (arUC[i] = arC[j]) then
-        begin
-          SetLength(arAP, Length(arAP) + 1);
-          arAP[High(arAP)] := arP[j];
-        end;
-      end;
-    end;
-  end;
-  }
   ararP := SplitTPAEx(arP, 25, 15);
   arL := High(ararP);
   SetLength(arP, 0);

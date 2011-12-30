@@ -241,7 +241,7 @@ begin
 
       Wait(RandomRange(300, 600));
 
-      if BankScreen then
+      if BankScreen or not PinScreen then
       begin
         Result := True;
         Exit;
@@ -1810,5 +1810,39 @@ begin
       until (DepositScreen) or (T>=30);
     end else
     Writeln('Could not find the deposit box');
+  end;
+end;
+
+(*
+WithdrawFromPouch
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WithdrawFromPouch(Amount :Integer) :Boolean;
+
+Withdraws amount from pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function WithdrawFromPouch(Amount :Integer) :Boolean;
+var
+  T :Integer;
+begin
+  Result := False;
+  MouseBox(528, 94, 533, 107, mouse_Right);
+  If WaitOption('draw', 500) then
+  begin
+    T := GetSystemTime + 10000;
+    repeat
+      wait(50);
+      InPin(Players[CurrentPlayer].Pin);
+    until (T <= GetSystemTime) or (InRange(CountColor(0, 250, 396, 307, 410), 160, 175));
+    Wait(RandomRange(75, 400));
+    TypeSend(IntToStr(Amount));
+    Result := True;
   end;
 end;

@@ -1207,7 +1207,7 @@ var
   Dots: TPointArray;
   B: TBox;
 begin
-  B := IntToBox(33, 22, 24, 18);//Xtop, Ytop, Xbot, Ybot
+  B := IntToBox(32, 23, 24, 17);//Xtop, Ytop, Xbot, Ybot
   Dots := GetMiniMapDotsIn(WhatDot, MMCX-Round(B.x1*1.3), MMCY-Round(B.y1*1.3),
                                     MMCX+Round(B.x2*1.3), MMCY+Round(B.y2*1.3));
   L := Length(Dots);

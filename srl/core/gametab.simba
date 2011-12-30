@@ -110,7 +110,7 @@ begin
   end;
 
   tP := Point(((Tab - 21) mod 8 * 30) + 537, ((Tab - 21) div 8 * 298) + 186);
-  Result := CountColorTolerance(5597817, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 10) < 81; // the count when no icons are overlapping the GameTab.
+  Result := CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 500; // the count when no icons are overlapping the GameTab.
 end;
 
 (*
@@ -2437,8 +2437,10 @@ begin
     end;
   end;
   if (not(Previous)) then
+  begin
     Wait(RandomRange(500, 1500));
-  ToggleMoneyPouch(Previous);
+    ToggleMoneyPouch(Previous);
+  end;
 end;
 
 (*
@@ -2471,35 +2473,3 @@ begin
       end;
     end;
 end;
-
-(*
-WithdrawFromPouch
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function WithdrawFromPouch(Amount :Integer) :Boolean;
-
-Withdraws amount from pouch.
-
-.. note ::
-
-    by Home
-
-*)
-function WithdrawFromPouch(Amount :Integer) :Boolean;
-var
-  T :Integer;
-begin
-  Result := False;
-  MouseBox(528, 94, 533, 107, 2);
-  If WaitOption('draw', 500) then
-  begin
-    T := GetSystemTime + 10000;
-    while (T >= GetSystemTime) and (not (InRange(CountColor(0, 250, 396, 307, 410), 160, 175))) do
-      Wait(50);
-    Wait(RandomRange(75, 400));
-    TypeSend(IntToStr(Amount));
-    Result := True;
-  end;
-end;  
