@@ -54,13 +54,14 @@ begin
   Result := -1;
   if (not LoggedIn) then exit;
 
-  for Result := tab_Combat to tab_Logout do
+  for Result := 0 to (tab_LogOut - tab_Combat)-1 do
   begin
-    tP.X := 535 + (Result - 1) mod 8 * 30;
-    tP.Y := 169 + (Result - 1) div 8 * 298;
+    tP.X := 535 + Result mod 8 * 30;
+    tP.Y := 169 + Result div 8 * 298;
     if (GetColor(tP.X, tP.Y) = 3775974) then
       Break;
   end;
+  Result := Result + tab_Combat;
 end;
 
 (*
@@ -104,12 +105,12 @@ begin
 
   if (Tab = tab_LogOut) then
   begin
-    Result := (GetColor(755, 9) = 3037288);
+    Result := (GetColor(746, 0) = 65536);
     Exit;
   end;
 
   tP := Point(((Tab - 21) mod 8 * 30) + 537, ((Tab - 21) div 8 * 298) + 186);
-  Result := CountColorTolerance(5597817, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 10) < 81; // the count when no icons are overlapping the GameTab.
+  Result := CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 500; // the count when no icons are overlapping the GameTab.
 end;
 
 (*
@@ -261,6 +262,110 @@ begin
     Inc(i);
   end;
 end;
+
+(*
+
+GetWeaponData
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetWeaponData(var WArr: array of TStringArray): Boolean;
+
+Grabs weapon data and puts it into T2DStringArray.  The data is the
+information you get when you mouse over the attack styles of the weapon.  This
+then sets it into a array that can be used to set the fight mode of the weapon.
+It even gets info like 'Crush' or 'Slash' can be useful if the NPC is weak to
+that type of attack.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetWeaponData(var WArr: array of TStringArray): Boolean;
+var
+  x, y, i, ii, H, L: integer;
+  TB: TBox;
+  TP: TPointArray;
+  T: TPoint;
+begin
+  Result := False;
+  if (not LoggedIn) then
+    Exit;
+  GameTab(tab_Combat);
+  for i := 0 to 3 do
+  begin
+    T := Point(680-(i+1) mod 2*85, 270+2 mod (i+1)*28);
+    if CountColor(2070783, T.x - 27, T.y-18, T.x + 40, T.y + 22) > 10 then
+      Inc(L);
+  end;
+  SetArrayLength(WArr, L);
+  for I := 0 to L-1 do
+  begin
+    MMouse(680-(i+1) mod 2*85, 270+2 mod (i+1)*28, 12, 12);
+    wait(100+random(50));
+    WaitFindColor(X, Y, 15133931, MIX1-10, MIY1-10, MIX2+10, MIY2+10, 0, 3000);
+    GetClientDimensions(TB.X2, TB.Y2);
+    TB := IntToBox(0, 0, TB.X2, TB.Y2);
+    FindColors(TP, 15133931, TB.X1, TB.Y1, TB.X2 - 1, TB.Y2 - 1);
+    if (Length(TP) < 1) then
+      Continue;
+    TB := GetTPABounds(TP);
+    H := ((TB.y2-TB.y1)/17)-1;
+    SetArrayLength(WArr[i], H+1);
+    for ii := 0 to H do
+    begin
+      WArr[i][ii] := GetTextAtExWrap(TB.x1+1, TB.y1+2, TB.x2, TB.y1+18, 0, 3, 4, 4305653, 0, smallChars);
+      Debugln(WArr[i][ii]);
+      Result := (WArr[i][ii] <> '');
+      IncEx(TB.Y1, 16);
+    end;
+  end;
+end;
+
+(*
+
+SetWeaponMode
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function SetWeaponMode(Skill: string; WeaponData: array of TStringArray; SetIt: boolean): boolean;
+
+Sets Combat mode depending on WeaponData given.  You can also
+decide to SetIt which will set it to that particular skill or read it to see
+if they are ranging, meleeing or using magic (with staff).
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function SetWeaponMode(Skill: string; WeaponData: array of TStringArray; SetIt: boolean): boolean;
+var
+  i, ii: integer;
+begin
+  for i := 0 to High(WeaponData) do
+   for ii := 0 to High(WeaponData[i]) do
+   if (Pos(Lowercase(skill), Lowercase(WeaponData[i][ii])) <> 0) then
+   begin
+     if SetIt then
+       Result := SetFightMode(i + 1)
+     else
+       Result := True;
+     Exit;
+   end;
+end;
+
 (*
 
 SetCombatType
@@ -281,40 +386,14 @@ Example:
 .. code-block:: pascal
 
 *)
-function SetCombatType(Kind : string): Boolean;
+function SetCombatType(Skill: string): Boolean;
 var
-  x, y, i, ii: integer;
-  Xarr, Yarr: TIntegerArray;
-  TB: TBox;
-  TP: TPointArray;
-
+  WeapArr: array of TStringArray;
 begin
-  Result := False;
-  if (not LoggedIn) then exit;
-  Xarr := [595, 680, 595, 680];
-  Yarr := [270, 270, 325, 325];
-  GameTab(tab_Combat);
-  for I := 0 to 3 do
-  begin
-    MMouse(Xarr[I], Yarr[I], 12, 12);
-    Result := WaitFindColor(X, Y, 10551295, 540, 205, 750, 465, 0, 3000);
-    GetClientDimensions(TB.X2, TB.Y2);
-    TB := IntToBox(0, 0, TB.X2, TB.Y2);
-    FindColors(TP, 10551295, TB.X1, TB.Y1, TB.X2 - 1, TB.Y2 - 1);
-    if (Length(TP) = 0) then exit;
-    TB := GetTPABounds(TP);
-    Inc(TB.Y1);
-    for ii := 0 to 3 do
-    begin
-      if (Pos(Lowercase(Kind), LowerCase(GetTextAtEx(TB.X1 + 1, TB.Y1, 0, SmallChars,
-        False, True, 0, 1, - 1, 30, False, tr_AlphaNumericChars))) <> 0) then
-      begin
-        Result := SetFightMode(I + 1);
-        Exit;
-      end;
-      IncEx(TB.Y1, 13);
-    end;
-  end;
+  if GetWeaponData(WeapArr) then
+    Result := SetWeaponMode(Skill, WeapArr, true)
+  else
+    Result := False;
 end;
 
 (*
@@ -1534,19 +1613,21 @@ Example:
 *)
 function RunEnergy(Min: Integer): Boolean;
 var
-  T: Integer;
+  T, R: Integer;
   s: String;
 begin
   T := GetSystemTime + 5000;
-  while (T > GetSystemTime) do
-  begin
-    Result := (GetMMLevels('run', s) >= Min);
+  repeat
+    R := GetMMLevels('run', s);
+    Result := (R >= Min);
     if (Result) then
     begin
       SetRun(True);
       Exit;
     end;
-  end;
+    if (R > 0) then
+      Exit;
+  until (T > GetSystemTime);
 end;
 
 (*
@@ -2133,6 +2214,16 @@ begin
   end;
 end;
 
+
+(*
+
+XP Counter
+----------
+
+XP Counter related functions
+
+*)
+
 (*
 ISXPBarOpen
 ~~~~~~~~~~~
@@ -2152,7 +2243,7 @@ Results True if the XP Bar is showing.
 
 function IsXPBarOpen: Boolean;
 begin
-  Result := CountColor(clWhite, 342, 55, 510, 69) > 40;
+  Result := CountColor(4081997, 442, 55, 510, 69) > 10;
 end;
 
 (*
@@ -2174,14 +2265,21 @@ function ToggleXPBar(Open: Boolean): Boolean;
 var
   TPA: TPointArray;
   P: TPoint;
+  T: Integer;
 begin
-  Result := IsXPBarOpen <> Open;
-  if (not (Result)) then
-    Exit;
-  TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
-  FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
-  P := TPA[Random(Length(TPA))];
-  Mouse(P.X, P.Y, 0, 0, mouse_left);
+  if Open xor IsXPBarOpen then
+  begin
+    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    P := TPA[Random(Length(TPA))];
+    Mouse(P.X, P.Y, 0, 0, mouse_left);
+    T := GetSystemTime + 300;
+    repeat
+      wait(1);
+      Result := Open = IsXPBarOpen;
+    until Result or (GetSystemTime > t);
+  end else
+    Result := true;
 end;
 
 (*
@@ -2201,21 +2299,17 @@ Returns the number from your XP Bar.
 
 function GetXPBarTotal: LongInt;
 var
-  Previous: Boolean;
   TPA: TPointArray;
   B: TBox;
 begin
-  Previous := IsXPBarOpen;
-  if (ToggleXPBar(True)) then
-    WaitFunc(@IsXPBarOpen, 10, 1500);
-  FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
-  B := GetTPABounds(TPA);
-  B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
-  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2,
+  if ToggleXPBar(True) then
+  begin
+    FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
+    B := GetTPABounds(TPA);
+    B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
+    Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2,
                                 0, 5, 4, clWhite, 0, 'XPChars'), Numbers), 0);
-  if (not (Previous)) then
-    Wait(RandomRange(500, 1500));
-  ToggleXPBar(Previous);
+  end;
 end;
 
 (*
@@ -2243,4 +2337,139 @@ begin
   P := TPA[Random(Length(TPA))];
   Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
+end;
+
+
+(*
+
+MoneyPouch Tab
+--------------
+
+Money Pouch related functions
+
+*)
+
+(*
+IsMoneyPouchOpen
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsMoneyPouchOpen: Boolean;
+
+Checks if money pouch is open.
+
+.. note ::
+
+    by Home
+
+*)
+function IsMoneyPouchOpen: Boolean;
+var
+ Cols :TIntegerArray;
+ I :Integer;
+begin
+  Cols := [65535, 16777215, 8453888];
+  for I := 0 to 2 do
+    If CountColor(Cols[I],450, 90, 510, 109) > 10 then
+      Result := CountColor(Cols[I],450, 90, 510, 109) > 10;
+end;
+
+(*
+ToggleMoneyPouch
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    ToggleMoneyPouch(Open: Boolean): Boolean;
+
+Opens the money pouch if closed.
+
+.. note ::
+
+    by Home
+
+*)
+function ToggleMoneyPouch(Open: Boolean): Boolean;
+begin
+  Result := IsMoneyPouchOpen <> Open;
+  if (not (Result)) then
+    Exit;
+  MouseBox(528, 94, 533, 107, mouse_Left);
+end;
+
+(*
+GetMoneyPouchAmount
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMoneyPouchAmount: LongInt;
+
+Returns amount of coins in pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function GetMoneyPouchAmount: LongInt;
+var
+  Previous: Boolean;
+  TPA: TPointArray;
+  B: TBox;
+  I :Integer;
+  Col :TIntegerArray;
+begin
+  Previous := IsMoneyPouchOpen;
+  if (ToggleMoneyPouch(True)) then
+  WaitFunc(@IsMoneyPouchOpen, 10, 2750);
+  Col := [65535, 65278, 16777215, 8453888];
+  for I := 0 to 3 do
+  if (FindColors(TPA, Col[I], 450, 90, 510, 109)) then
+  begin
+    B := GetTPABounds(TPA);
+    B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
+    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1, B.Y1 - 1, 0, StatChars, False, False, 0, 2, Col[I], 5, False, tr_Digits)), -1);
+    Case I of
+       2: Result := Result * 1000;
+       3: Result := Result * 1000000;
+    end;
+  end;
+  if (not(Previous)) then
+  begin
+    Wait(RandomRange(500, 1500));
+    ToggleMoneyPouch(Previous);
+  end;
+end;
+
+(*
+DepositToPouch
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function DepositToPouch :Boolean;
+
+Deposit's coins to pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function DepositToPouch :Boolean;
+var
+ MoneyPoint :TPoint;
+begin
+  Result := False;
+  If FindCoins(MoneyPoint.X, MoneyPoint.Y, 'Inv') then
+    begin
+      MMouse(MoneyPoint.X, MoneyPoint.Y, 3, 3);
+      If WaitUpText('Coins', 500) then
+      begin
+        Mouse(MoneyPoint.X, MoneyPoint.Y, 0, 0, False);
+          Result := WaitOption('Add', 500);
+      end;
+    end;
 end;

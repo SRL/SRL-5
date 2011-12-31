@@ -159,41 +159,6 @@ begin
     SetChat('off', i);
 end;
 
-(*
-PleaseWait
-~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function PleaseWait : Boolean;
-
-Returns true if 'Please wait...' is in chat
-
-.. note::
-
-    by _ChArMz & Narcle
-
-Example:
-
-.. code-block:: pascal
-
-
-
-*)
-function PleaseWait : Boolean;
-var
-  bTxt, wTxt, SearchTPA, TextTPA, Matches : TPointArray;
-  Height : Integer;
-begin
-  Result := false;
-  FindColors(bTxt, 16711680, MCX1, MCY1, MCX2, MCY2);
-  FindColors(wTxt, 16777215, MCX1, MCY1, MCX2, MCY2);
-  SearchTPA := CombineTPA(bTxt, wTxt);
-  if Length(SearchTPA) < 1 then
-    Exit;
-  TextTPA := LoadTextTPA('ease wai', NPCChars, Height);
-  Result := FindTextTPAinTPA(Height, TextTPA, SearchTPA, Matches);
-end;
 
 (*
 ChatWait
@@ -217,22 +182,17 @@ Example:
 
 *)
 procedure ChatWait;
-var
-  Time: Integer;
 begin
-  Time := GetSystemTime;
   Wait(400 + Random(500));
-  while PleaseWait and ((GetSystemTime - Time) < (10 * 1000)) do
-    Wait(100);
 end;
 
 (*
-ClickContinue
+ClickContinueEx
 ~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function ClickContinue(Click, Wait: Boolean): Boolean;
+    function ClickContinueEx(Click, Wait: Boolean): Boolean;
 
 
 Returns true if the blue 'Click To Continue' text in the chat box is found.
@@ -249,7 +209,7 @@ Example:
 
 
 *)
-function ClickContinue(Click, Wait: Boolean): Boolean;
+function ClickContinueEx(Click, Wait: Boolean): Boolean;
 var
   bTxt, wTxt, SearchTPA, TextTPA, Matches : TPointArray;
   Search2D : T2DPointArray;
@@ -275,15 +235,79 @@ begin
       b := GetTPABounds(Search2D[i]);
       GetMousePos(x, y);
       if PointInBox(Point(x, y), b) then
-        Mouse(x, y, 2, 1, mouse_left)
+        Mouse(x, y, 2, 1, true)
       else
         with b do
-          Mouse(RandomRange(x1, x2), RandomRange(y1 + 2, y2 - 2), 2, 1, mouse_left);
+          Mouse(RandomRange(x1, x2), RandomRange(y1 + 2, y2 - 2), 2, 1, true);
       if Wait then
         ChatWait;
     end;
     if Result then
       Break;
+  end;
+end;
+
+(*
+ClickContinue
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickContinue(SpaceBar, DoWait: Boolean): Boolean;
+
+
+Returns true if the green button in the chat box is found.
+It will SpaceBar if true otherwise will mouse it.  If DoWait = true
+will wait until color count changes.
+
+.. note::
+
+    by _ChArMz & Narcle (Original by EvilChicken!)
+
+Example:
+
+.. code-block:: pascal
+
+
+
+*)
+Function ClickContinue(SpaceBar, DoWait: Boolean): Boolean;
+var
+  TPA: TPointArray;
+  i, C, T: integer;
+  B: TBox;
+  ATPA: T2DPointArray;
+begin
+  if ClickContinueEx(SpaceBar, DoWait) then
+  begin
+    Result := true;
+    Exit;
+  end;
+  C := GetColorToleranceSpeed;
+  SetColorToleranceSpeed(1);
+  FindColorsTolerance(TPA, 11776948, MCX1, MCY1, MCX2, MCY2, 0);//color is constant atm
+  SetColorToleranceSpeed(C);
+  if Length(TPA) < 1 then
+    Exit;
+  ATPA := SplitTPA(TPA, 2);
+  for i := 0 to High(ATPA) do
+  begin
+    B := GetTPABounds(ATPA[i]);
+    if InRange(B.x2-B.x1, 58, 72) then
+    if (CountColorTolerance(1203763, B.x1-5, B.y1+1, B.x2+5, B.y1+15, 37) > 50) then
+    begin
+      C := CountColor(0, MCX1, MCY1, MCX2, MCY2);
+      if SpaceBar then
+        TypeByte(VK_SPACE)
+      else
+        Mouse(B.x1, B.y1, (B.x2-B.x1), 8, true);
+      Result := True;
+      T := GetSystemTime + 10000;
+      if DoWait then
+        while (C = CountColor(0, MCX1, MCY1, MCX2, MCY2)) and (GetSystemTime < T) do
+          Wait(50+random(50));
+      Exit;
+    end;
   end;
 end;
 

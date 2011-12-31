@@ -1174,6 +1174,59 @@ begin
 end;
 
 (*
+GetMMDotsOnMS
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetMMDotsOnMS(WhatDot: String): TPointArray;
+
+Using minimap gets all MM dots assumed to be on Main Screen and returns it as
+a TPA.  You can also use it like Length(GetMMDotsOnMS(WhatDot)) to count how
+many are actually visable. Returns closes to your position first.  Used with
+MMtoMS can be very powerful for searching more precise locations.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+   while (Length(GetMMDotsOnMS('npc')) < 1) and (GetSystemTime < TimeCheck) do
+   begin
+     Wait(100);
+     FindNormalRandoms;
+   end;
+
+*)
+Function GetMMDotsOnMS(WhatDot: String): TPointArray;
+var
+  i, L, c: integer;
+  Dots: TPointArray;
+  B: TBox;
+begin
+  B := IntToBox(32, 23, 24, 17);//Xtop, Ytop, Xbot, Ybot
+  Dots := GetMiniMapDotsIn(WhatDot, MMCX-Round(B.x1*1.3), MMCY-Round(B.y1*1.3),
+                                    MMCX+Round(B.x2*1.3), MMCY+Round(B.y2*1.3));
+  L := Length(Dots);
+  if (L > 0) then
+  begin
+    SetLength(Result, L);
+    for i := 0 to High(Dots) do
+    If InAbstractBox(MMCX-B.x1, MMCY-B.y1, MMCX+B.x1, MMCY-B.y1, MMCX+B.x2,
+                     MMCY+B.y2, MMCX-B.x2, MMCY+B.y2, Dots[i].x, Dots[i].y) then
+    begin
+      Result[c] := Dots[i];
+      Inc(c);
+    end;
+    SetLength(Result, c);
+    SortTPAFrom(Result, Point(MMCX, MMCY));
+  end;
+end;
+
+(*
 GetMiniMapDots
 ~~~~~~~~~~~~~~
 

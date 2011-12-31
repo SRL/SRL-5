@@ -23,12 +23,24 @@ const
 
 {*******************************************************************************
 function InMordaut: Boolean;
-by: Nava2 fixed by NCDS
+by: mormonman
 Description: Finds if your in Mr.Mordaut random
 *******************************************************************************}
 function InMordaut: Boolean;
-Begin
-  Result := (CountColor(128, 258, 358, 352, 372) = 190);
+var
+  dots: TPointArray;
+  pBlack: Integer;
+  midP: Tpoint;
+begin
+  dots := GetMiniMapDots('npc');
+  pBlack := PercentBlackMM;
+  Result := (Length(dots) = 7) and ((pBlack > 60) and (pBlack < 70));
+  if Result then
+  begin
+    midP := MiddleTPA(dots);
+    // distance from center:
+    Result := sqr(midP.x-MMCX) + sqr(midP.y-MMCY) < 38*38;
+  end;
 end;
 
 {*******************************************************************************
