@@ -28,7 +28,7 @@ begin
     case GetCurrentTab of
       tab_Equip: begin
            for WieldAxe := 0 to 8 do
-             if FindTransparentBitmapTolerance(srl_GetBitmap(54-WieldAxe + Integer(WieldAxe = 8) * 64),Ix, Iy, clBlack, 566, 285, 606, 327, 10) then
+             if FindBitmapToleranceIn(srl_GetBitmap(54-WieldAxe + Integer(WieldAxe = 8) * 64),Ix, Iy, 566, 285, 606, 327, 10) then
                Break;
            if I = 0 then
              if not GameTab(tab_Inv) then exit;
@@ -37,7 +37,7 @@ begin
 
       tab_Inv: begin
            for InvAxe := 0 to 8 do
-             if FindTransparentBitmapTolerance(srl_GetBitmap(54 - InvAxe + Integer(InvAxe = 8) * 64), Ix, Iy, clBlack, MIX1, MIY1, MIX2, MIY2, 10) then
+             if FindBitmapToleranceIn(srl_GetBitmap(54 - InvAxe + Integer(InvAxe = 8) * 64), Ix, Iy, MIX1, MIY1, MIX2, MIY2, 10) then
                Break;
            if I = 0 then
              if not GameTab(tab_Equip) then exit;
@@ -84,8 +84,7 @@ var
   tries, x, y: Integer;
   s: string;
 begin
-  if (not (GetLastChatText(s))) then
-    LastChatter(s);
+  s:= GetChatBoxText(8, 255)
   if (Pos(s, 'A bird') <> 0) then
   begin
     repeat

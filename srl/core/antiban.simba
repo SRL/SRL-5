@@ -446,6 +446,46 @@ begin
 end;
 
 (*
+MissMouse
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MissMouse(eX, eY: Integer);
+
+Human-like miss-and-correct mouse movement.
+
+.. note::
+
+    Author: Flight
+    Last Modified: 30 Dec. 2011
+
+Example:
+
+.. code-block:: pascal
+
+    RandomMovement;
+*)
+procedure MissMouse(eX, eY: Integer);
+var
+  randSpeed: extended;
+  X,Y,A,Dist,MP: integer;
+begin
+  A := MouseSpeed;
+  GetMousePos(X, Y);
+  Dist := Distance(X, Y, eX, eY);
+  MP := Round(Dist/150);
+  if MP < 0 then
+    MP := 1;
+
+  randSpeed := (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
+  MMouse(RandomRange(eX-(A*MP), eX+(A*MP)), RandomRange(eY-(A*MP), eY+(A*MP)), 0, 0);
+  GetMousePos(X, Y);
+  MMouse(eX, eY, 0, 0);
+  MouseSpeed := A;
+end;
+
+(*
 RandomMovement
 ~~~~~~~~~~~~~~
 

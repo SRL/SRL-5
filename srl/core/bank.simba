@@ -816,7 +816,7 @@ begin
     end else if VarType(vType) = varInteger then
       WaitOptionMulti(['Deposit-' + inttostr(vType), 'Deposit'], 200)
     else
-      WaitOptionMulti(['Deposit-All', 'All'], 200);
+      WaitOptionMulti(['Deposit-All', 'All', 'osit'], 200);
     T := GetSystemTime;
     Wait(RandomRange(200, 300));
     repeat
