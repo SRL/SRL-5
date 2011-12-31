@@ -120,14 +120,66 @@ Example:
 Function FindFlag(var X, Y: integer): Boolean;
 begin
   Result := False;
-  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 60) then
+  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 75) then
   begin
     Result := True;
-    X := X+4;
-    Y := Y+9;
+    X := X+7;
+    Y := Y+14;
    end;
 end;
 
+(*
+FindFlag2
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindFlag2(var X, Y: Integer): Boolean;
+
+Returns true if the flag is found on the minimap.
+
+.. note::
+
+    by Home
+
+Example:
+
+.. code-block:: pascal
+
+  if (FindFlag2(x, y)) then
+  begin
+    writeln('Flag found');
+    mouse(x, y, 3, 3, true);
+  end;
+*)
+function FindFlag2(var X, Y: Integer): Boolean;
+var
+  KMTarget, ITarget, I, Hi, Map, W, H: Integer;
+  TPA: TPointArray;
+begin
+  Result := False;
+  Map := BitmapFromString(MMX2 - MMX1, MMY2 - MMY1, '');
+  CopyClientToBitmap(Map, MMX1, MMY1, MMX2, MMY2);
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  SetTargetBitmap(Map);
+  GetBitmapSize(Map, W, H);
+  FindColors(TPA, 65536, 0, 0, W - 1, H -1);
+  FilterPointsDist(TPA, 0, 75.5, W / 2, H / 2);
+  Hi := Length(TPA);
+  for I := 0 to Hi - 1 do
+    if ((FastGetPixel(Map, TPA[I].X - 1, TPA[I].Y - 1) - FastGetPixel(Map, TPA[I].X, TPA[I].Y - 1)) = 6381921) then
+    begin
+      Result := True;
+      X := TPA[I].X + MMX1;
+      Y := TPA[I].Y + MMY1;
+      Break;
+    end;
+  FreeTarget(GetImageTarget);
+  FreeBitmap(Map);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+end;
 (*
 FlagPresent
 ~~~~~~~~~~~
@@ -248,7 +300,7 @@ begin
   Result := False;
   M := GetSystemTime;
   repeat
-    if not FindFlag(Tx, Ty) then
+    if (not FindFlag(Tx, Ty)) and (not FindFlag2(Tx, Ty)) then
       Exit;
     D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
@@ -257,7 +309,7 @@ begin
       Exit;
     end;
     if (D1 > Dist+5) then
-      wait(300+random(50))
+      wait(380+random(70))
     else
       wait(50+random(50));
     if (RoadColorCheck) then
