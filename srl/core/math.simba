@@ -1200,9 +1200,9 @@ var
   n: TIntegerArray;
 begin
   Number := LowerCase(Number);
-  n := [ord('k'), 1E3,
-        ord('m'), 1E6,
-        ord('b'), 1E9];
+  n := [ord('k'), 1000,
+        ord('m'), 1000000,
+        ord('b'), 1000000000];
 
   for i := 0 to 2 do
   begin
