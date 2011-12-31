@@ -2473,3 +2473,179 @@ begin
       end;
     end;
 end;
+
+(*
+toolBeltScreen
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function toolBeltScreen : Boolean;
+
+Returns True if the Tool Belt screen is open
+
+.. note::
+
+    by Kyle Undefined
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function toolBeltScreen() : Boolean;
+begin
+  Result := (CountColorTolerance(1158880, 192, 18, 264, 33, 9) > 120);
+end;
+
+(*
+itemSlotFilled
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function itemSlotFilled : Boolean;
+
+Returns True if the current tool slot is filled
+
+.. note::
+
+    by Kyle Undefined
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function itemSlotFilled() : Boolean;
+var
+  TPA : TPointArray;
+  tmpCTS : Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(1.86, 0.06);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, 5855064, 211, 199, 298, 273, 9);
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  Result := Length(TPA) > 0;
+end;
+
+(*
+openToolBelt
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure toolBeltScreen;
+
+Opens the Tool Belt
+
+.. note::
+
+    by Kyle Undefined
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure openToolBelt();
+begin
+  MouseBox(691, 413, 732, 453, 1);
+  Wait(RandomRange(250, 750));
+end;
+
+(*
+setCategory
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure setCategory(Category : string);
+
+Sets the category of items to be shown
+
+.. note::
+
+    by Kyle Undefined
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure setCategory(Category : string);
+var
+  catBox : TBox;
+  TPA : TPointArray;
+  tmpCTS : Integer;
+begin
+  case(LowerCase(Category))of
+    'general' : catBox := IntToBox(161, 86, 188, 107);
+    'fishing' : catBox := IntToBox(219, 86, 246, 104);
+    'crafting' : catBox := IntToBox(275, 87, 305, 104);
+    'farming' : catBox := IntToBox(332, 88, 359, 105);
+  end;
+
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.34, 0.80);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, 1810641, catBox.X1, catBox.Y1, catBox.X2, catBox.Y2, 9);
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if(not(Length(TPA) > 0))then
+    MouseBox(catBox.X1, catBox.Y1, catBox.X2, catBox.Y2, 1);
+end;
+
+(*
+checkToolBeltFor
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function checkToolBeltFor(Category, Tool : string) : Boolean;
+
+Returns True if the tool is in Tool Belt for the appropriate category
+
+.. note::
+
+    by Kyle Undefined
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function checkToolBeltFor(Category, Tool : string) : Boolean;
+var
+  I, catCount : Integer;
+begin
+  if(not(toolBeltScreen()))then
+    openToolBelt();
+  setCategory(Category);
+
+  case(LowerCase(Category))of
+    'general', 'crafting' : catCount := 13;
+    'fishing' : catCount := 8;
+    'farming' : catCount := 5;
+  end;
+
+  for I := 1 to catCount do
+  begin
+    if(not(FindTextTpa(1158880, 9, 167, 146, 352, 161, Tool, SmallChars, Nothing)))then
+    begin
+      Mouse((375 + 397) / 2, (147 + 163) / 2, 1, 1, True);
+      Wait(RandomRange(250, 750))
+    end else
+      Break;
+  end;
+
+  Result := itemSlotFilled;
+end;
