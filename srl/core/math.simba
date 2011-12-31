@@ -1172,3 +1172,52 @@ begin
   until (b < 3);
 end;
 
+
+
+(*
+CashStrToInt
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+    function CondensedStrToInt(Number: string): Integer;
+
+Converts between '100k' representation to 1000000. 
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+    foo := CashStrToInt('2b');
+
+*)
+function CashStrToInt(Number: string): Integer;
+var
+  p, i: Integer;
+  n: TIntegerArray;
+begin
+  Number := LowerCase(Number);
+  n := [ord('k'), 1E3,
+        ord('m'), 1E6,
+        ord('b'), 1E9];
+
+  for i := 0 to 2 do
+  begin
+    p := Pos(chr(n[i*2]), Number);
+    if (p <> 0) then
+    begin
+      Delete(Number, p, Length(Number));
+      try
+        Result := Round(StrToFloat(Number) * n[(i*2) + 1]);
+      except
+        Writeln(Format('This caused error in StrToFloat (%s): %s',
+                       [n[i*2], Number]));
+      end;
+      Exit;
+    end;
+  end;
+  Result := StrToIntDef(Number, 0);
+end;
