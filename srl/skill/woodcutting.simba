@@ -88,18 +88,20 @@ begin
   if (Pos(s, 'A bird') <> 0) then
   begin
     repeat
-      if not (FindObj(x, y, 'Take Bird', 3952984, 10)) or
-        not (FindObj(x, y, 'Take Bird', 1713706, 10)) or
-        not (FindObj(x, y, 'Take Bird', 1581604, 10)) then
+    x:= MSCX;
+    y:= MSCY;
+      if not (FindObj(x, y, 'Take Bird', 3163721 , 10)) or
+        not (FindObj(x, y, 'Take Bird', 4673617 , 10)) or
+        not (FindObj(x, y, 'Take Bird', 3032134 , 10)) then
       begin
         KeyDown(VK_LEFT);
         Wait(700 + Random(500));
         KeyUp(VK_LEFT);
         Wait(400 + Random(300));
       end;
-      if not (FindObj(x, y, 'Take Bird', 3952984, 10)) or
-        not (FindObj(x, y, 'Take Bird', 1713706, 10)) or
-        not (FindObj(x, y, 'Take Bird', 1581604, 10)) then
+      if not (FindObj(x, y, 'Take Bird', 3163721 , 10)) or
+        not (FindObj(x, y, 'Take Bird', 4673617 , 10)) or
+        not (FindObj(x, y, 'Take Bird', 3032134 , 10)) then
       begin
         x := 648;
         y := 83;
@@ -109,9 +111,9 @@ begin
         Flag;
         Wait(200 + Random(100));
       end;
-      if (FindObj(x, y, 'Take Bird', 3952984, 10)) or
-        (FindObj(x, y, 'Take Bird', 1713706, 10)) or
-        (FindObj(x, y, 'Take Bird', 1581604, 10)) then
+      if (FindObj(x, y, 'Take Bird', 3163721 , 10)) or
+        (FindObj(x, y, 'Take Bird', 4673617 , 10)) or
+        (FindObj(x, y, 'Take Bird', 3032134 , 10)) then
       begin
         WriteLn('Birds Nest Found');
         Wait(450 + Random(400));
@@ -129,9 +131,9 @@ begin
         ChooseOption('Examine');
         Exit;
       end;
-    until (FindObj(x, y, 'Take Bird', 3952984, 10)) or
-      (FindObj(x, y, 'Take Bird', 1713706, 10)) or
-      (FindObj(x, y, 'Take Bird', 1581604, 10)) or (tries > 5)
+    until (FindObj(x, y, 'Take Bird', 3163721 , 10)) or
+      (FindObj(x, y, 'Take Bird', 4673617 , 10)) or
+      (FindObj(x, y, 'Take Bird', 3032134 , 10)) or (tries > 5)
   end;
 end;
 
