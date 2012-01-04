@@ -15,7 +15,7 @@ end;
 procedure HoldMouse(x, y: Integer; button : integer);
 begin
   if button = mouse_left then
-    SmartHoldMousePlus(x,y,1)    mouse
+    SmartHoldMousePlus(x,y,1)
   else if button = mouse_middle then
     SmartHoldMousePlus(x,y,2)
   else if button = mouse_right then
