@@ -956,7 +956,9 @@ begin
     Exit;
   end;
 
-  if (Amount = 0) then
+  if (Amount = -1) then
+    Result := WaitOptionMulti(['Withdraw-All but', 'l b'], 300)
+  else if (Amount = 0) then
     Result := WaitOptionMulti(['Withdraw-All', 'w-A'], 300)
   else
     Result := WaitOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)] , 300);
