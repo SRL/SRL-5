@@ -286,7 +286,8 @@ OrderWorlds
 
     Procedure OrderWorlds(by: string; Descending: boolean);
 
-Orders worlds by 'by' in order 'Descending', Check function for valid params of 'by', Descending = true means the left button
+Orders worlds by 'by' in order 'Descending', Check function for valid params of
+'by', Descending = true means the left button
 
 ..note::
 
@@ -306,18 +307,26 @@ var
   TB: TBox;
 begin
   Arr := [TStringArray(['world', 'w', 'worlds']), TStringArray(['players', 'pl', 'player']), TStringArray(['activity', 'location', 'loc', 'act']),
-         TStringArray(['ls', 'lootshare']), TStringArray(['type', 't']), TStringArray(['ping', 'pi'])];
-  for I := 0 To High(Arr) do
-  if InStrArr(Lowercase(By), Arr[i], False) then
-    Break;
-  FindColorsTolerance(TPA, SRL_WS_ARROWCOLOR, 92, 0, 716, 200, 1);
-  ATPA := SplitTPA(TPA, 2);
-  SortATPAFromFirstPoint(ATPA, Point(92, 166));
-  if Length(ATPA) < (I * 2) then
-    Exit;
-  TB := GetTPABounds(ATPA[(I * 2) + Integer(Descending)]);
-  MouseBox(TB.x1, TB.y1, TB.x2, TB.y2, mouse_left);
-  Result := true;
+          TStringArray(['type', 't']), TStringArray(['ls', 'lootshare']), TStringArray(['ping', 'pi'])];
+
+  for I := 0 to High(Arr) do
+  begin
+    if (InStrArr(Lowercase(By), Arr[i], False)) then
+    begin
+      FindColorsTolerance(TPA, SRL_WS_ARROWCOLOR, 92, 0, 716, 200, 1);
+
+      ATPA := SplitTPA(TPA, 2);
+      SortATPAFromFirstPoint(ATPA, Point(92, 166));
+
+      if (Length(ATPA) < (I * 2)) then
+        Exit;
+
+      TB := GetTPABounds(ATPA[(I * 2) + Integer(Descending)]);
+      MouseBox(TB.x1 + 2, TB.y1 + 2, TB.x2, TB.y2, 1);
+
+      Result := True;
+    end;
+  end;
 end;
 
 
