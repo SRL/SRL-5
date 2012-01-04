@@ -410,6 +410,84 @@ begin
 end;
 
 (*
+GetBankItemAmount
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetBankIndexItemAmount(const Index: Integer): Integer;
+
+Returns the amount of an item in the bank at bank index, Index.
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetBankIndexItemAmount(13);
+*)
+function GetBankIndexItemAmount(const Index: Integer): Integer;
+begin
+  Result := getAmountBox(BankIndexToMSBox(Index));
+end;
+
+(*
+GetBankItemAmount
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetBankItemAmount(const Row, Col: Integer): Integer;
+
+Returns the amount of an item in the bank at bank screen coordinates (Row, Col).
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetBankItemAmount(0, 5);
+*)
+function GetBankItemAmount(const Row, Col: Integer): Integer;
+begin
+  Result := GetBankIndexItemAmount(BankPointToBankIndex(Point(Row, Col)));
+end;
+
+(*
+GetMSBankItemAmount
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMSBankItemAmount(const x, y: Integer): Integer;
+
+Returns the amount of an item in the bank at main screen coordinates x, y.
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetMSBankItemAmount(250, 100);
+*)
+function GetMSBankItemAmount(const x, y: Integer): Integer;
+begin
+  Result := GetBankIndexItemAmount(BankPointToBankIndex(MSTPointToBankPoint(Point(x, y))));
+end;
+
+(*
 DepositItemBox
 ~~~~~~~~~~~~~~
 
