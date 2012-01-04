@@ -2493,7 +2493,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function toolBeltScreen() : Boolean;
+function ToolBeltScreen() : Boolean;
 begin
   Result := (CountColorTolerance(1158880, 192, 18, 264, 33, 9) > 120);
 end;
@@ -2517,7 +2517,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function itemSlotFilled() : Boolean;
+function ItemSlotFilled() : Boolean;
 var
   TPA : TPointArray;
   tmpCTS : Integer;
@@ -2553,7 +2553,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure openToolBelt();
+procedure OpenToolBelt();
 begin
   MouseBox(691, 413, 732, 453, 1);
   Wait(RandomRange(250, 750));
@@ -2578,7 +2578,7 @@ Example:
 .. code-block:: pascal
 
 *)
-procedure setCategory(Category : string);
+procedure SetCategory(Category : string);
 var
   catBox : TBox;
   TPA : TPointArray;
@@ -2623,7 +2623,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function checkToolBeltFor(Category, Tool : string) : Boolean;
+function CheckToolBeltFor(Category, Tool : string) : Boolean;
 var
   I, catCount : Integer;
 begin
@@ -2648,4 +2648,4 @@ begin
   end;
 
   Result := itemSlotFilled;
-end;
+end;
