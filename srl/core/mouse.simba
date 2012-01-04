@@ -47,52 +47,55 @@ var
   lastX, lastY: integer;
   sqrt2, sqrt3, sqrt5: extended;
 begin
-  sqrt2:= sqrt(2);
-  sqrt3:= sqrt(3);
-  sqrt5:= sqrt(5);
-  while hypot(xs - xe, ys - ye) > 1 do
-  begin
-    dist:= hypot(xs - xe, ys - ye);
-    wind:= minE(wind, dist);
-    if dist >= targetArea then
+  try
+    sqrt2:= sqrt(2);
+    sqrt3:= sqrt(3);
+    sqrt5:= sqrt(5);
+    while hypot(xs - xe, ys - ye) > 1 do
     begin
-      windX:= windX / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
-      windY:= windY / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
-    end else
-    begin
-      windX:= windX / sqrt2;
-      windY:= windY / sqrt2;
-      if (maxStep < 3) then
+      dist:= hypot(xs - xe, ys - ye);
+      wind:= minE(wind, dist);
+      if dist >= targetArea then
       begin
-        maxStep:= random(3) + 3.0;
+        windX:= windX / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
+        windY:= windY / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
       end else
       begin
-        maxStep:= maxStep / sqrt5;
+        windX:= windX / sqrt2;
+        windY:= windY / sqrt2;
+        if (maxStep < 3) then
+        begin
+          maxStep:= random(3) + 3.0;
+        end else
+        begin
+          maxStep:= maxStep / sqrt5;
+        end;
       end;
+      veloX:= veloX + windX;
+      veloY:= veloY + windY;
+      veloX:= veloX + gravity * (xe - xs) / dist;
+      veloY:= veloY + gravity * (ye - ys) / dist;
+      if hypot(veloX, veloY) > maxStep then
+      begin
+        randomDist:= maxStep / 2.0 + random(round(maxStep) div 2);
+        veloMag:= sqrt(veloX * veloX + veloY * veloY);
+        veloX:= (veloX / veloMag) * randomDist;
+        veloY:= (veloY / veloMag) * randomDist;
+      end;
+      lastX:= Round(xs);
+      lastY:= Round(ys);
+      xs:= xs + veloX;
+      ys:= ys + veloY;
+      if (lastX <> Round(xs)) or (lastY <> Round(ys)) then
+        MoveMouse(Round(xs), Round(ys));
+      step:= hypot(xs - lastX, ys - lastY);
+      wait(round((maxWait - minWait) * (step / maxStep) + minWait));
+      lastdist:= dist;
     end;
-    veloX:= veloX + windX;
-    veloY:= veloY + windY;
-    veloX:= veloX + gravity * (xe - xs) / dist;
-    veloY:= veloY + gravity * (ye - ys) / dist;
-    if hypot(veloX, veloY) > maxStep then
-    begin
-      randomDist:= maxStep / 2.0 + random(round(maxStep) div 2);
-      veloMag:= sqrt(veloX * veloX + veloY * veloY);
-      veloX:= (veloX / veloMag) * randomDist;
-      veloY:= (veloY / veloMag) * randomDist;
-    end;
-    lastX:= Round(xs);
-    lastY:= Round(ys);
-    xs:= xs + veloX;
-    ys:= ys + veloY;
-    if (lastX <> Round(xs)) or (lastY <> Round(ys)) then
-      MoveMouse(Round(xs), Round(ys));
-    step:= hypot(xs - lastX, ys - lastY);
-    wait(round((maxWait - minWait) * (step / maxStep) + minWait));
-    lastdist:= dist;
+    if (Round(xe) <> Round(xs)) or (Round(ye) <> Round(ys)) then
+      MoveMouse(Round(xe), Round(ye));
+  except
   end;
-  if (Round(xe) <> Round(xs)) or (Round(ye) <> Round(ys)) then
-    MoveMouse(Round(xe), Round(ye));
 end;
 
 (*
