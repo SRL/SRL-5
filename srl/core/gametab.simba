@@ -62,6 +62,8 @@ begin
       Break;
   end;
   Result := Result + tab_Combat;
+  if BankScreen then
+    Result := tab_Inv;
 end;
 
 (*
@@ -102,6 +104,13 @@ begin
     SRL_Warn('TabExists', 'Tab ' + IntToStr(Tab) + ' is not a valid tab number.', warn_AllVersions);
     Exit;
   end;
+
+  if (Tab = tab_Inv) then
+    if BankScreen then
+    begin
+      Result := True;
+      Exit;
+    end;
 
   if (Tab = tab_LogOut) then
   begin
