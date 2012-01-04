@@ -246,10 +246,12 @@ Example:
 .. code-block:: pascal
 
 *)
-function PlayerWorked(player : integer) : integer;
+function PlayerWorked(player: integer): integer;
 begin
-  result := Players[player].Worked;
-  if Player = CurrentPlayer then
-    if (PlayerStartTime > 0) then // if it's been set at all
-      result := result + (GetSystemTime - PlayerStartTime);
+  if (player = currentPlayer) then
+    if (playerStartTime > 0) then // if it's been set at all
+      incEx(players[player].worked, (getSystemTime - playerStartTime));
+
+  playerStartTime := getSystemTime();
+  result := players[player].worked;
 end;
