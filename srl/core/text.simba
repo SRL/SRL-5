@@ -664,57 +664,6 @@ begin
     end;
 end;
 
-{$IFNDEF SIMBAMAJOR980}
-  {$IFNDEF SIMBA975}{$IFNDEF SIMBA976}{$IFNDEF SIMBA977}
-    {$WARNING ChooseOption is NOT accelerated}
-    procedure ocr_FilterUpTextByCharacteristics(bmp: TMufasaBitmap);
-    var
-      x,y: Integer;
-    begin
-     for y := 0 to bmp.Height - 2 do
-      for x := 0 to bmp.Width - 2 do
-       begin
-         if bmp.fastgetpixel(x,y) = clPurple then
-           continue;
-         if bmp.fastgetpixel(x,y) = clBlack then
-           continue;
-         if (bmp.fastgetpixel(x,y) <> bmp.fastgetpixel(x+1,y+1)) and
-              (bmp.fastgetpixel(x+1,y+1) <> clpurple) then
-           bmp.fastsetpixel(x,y,{clAqua}0);
-       end;
-     for y := bmp.Height - 1 downto 1 do
-       for x := bmp.Width - 1 downto 1 do
-       begin
-        if bmp.fastgetpixel(x,y) <> clPurple then
-          continue;
-        if bmp.fastgetpixel(x,y) = bmp.fastgetpixel(x-1,y-1) then
-        begin
-          bmp.fastsetpixel(x,y,clSilver);
-          continue;
-        end;
-        if bmp.fastgetpixel(x-1,y-1) = 0 then
-          bmp.fastsetpixel(x,y,clSilver);
-       end;
-      for y := bmp.Height - 2 downto 0 do
-        for x := bmp.Width - 2 downto 0 do
-        begin
-          if bmp.fastgetpixel(x,y) = clPurple then
-            continue;
-          if bmp.fastgetpixel(x,y) = clBlack then
-            continue;
-         if (bmp.fastgetpixel(x,y) = bmp.fastgetpixel(x+1,y+1) ) then
-           continue;
-         if bmp.fastgetpixel(x+1,y+1) <> clPurple then
-          begin
-           bmp.fastsetpixel(x,y,0); // 0 was clOlive
-           continue;
-          end;
-      end;
-    end;
-  {$ENDIF}{$ENDIF}{$ENDIF}
-{$ENDIF}
-
-
 (*
 FindNPCChatText
 ~~~~~~~~~~~~~~~
