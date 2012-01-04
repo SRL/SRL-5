@@ -15,21 +15,25 @@ end;
 procedure HoldMouse(x, y: Integer; button : integer);
 begin
   if button = mouse_left then
-    SmartHoldMouse(x, y, true)
+    SmartHoldMousePlus(x,y,1)    mouse
+  else if button = mouse_middle then
+    SmartHoldMousePlus(x,y,2)
   else if button = mouse_right then
-    SmartHoldMouse(x,y,false)
+    SmartHoldMousePlus(x,y,3)
   else
-    raiseexception(ercustomerror,'Unknown mouse button in SmartHoldMouse');
+    raiseexception(ercustomerror,'Unknown mouse button in SmartHoldMousePlus');
 end;
 
 procedure ReleaseMouse(x, y: Integer; button : integer);
 begin
   if button = mouse_left then
-    SmartReleaseMouse(x, y, true)
+    SmartReleaseMousePlus(x,y,1)
+  else if button = mouse_middle then
+    SmartReleaseMousePlus(x,y,2)
   else if button = mouse_right then
-    SmartReleaseMouse(x,y,false)
+    SmartReleaseMousePlus(x,y,3)
   else
-    raiseexception(ercustomerror,'Unknown mouse button in SmartReleaseMouse');
+    raiseexception(ercustomerror,'Unknown mouse button in SmartReleaseMousePlus');
 end;
 
 procedure KeyUp(key: Byte);
