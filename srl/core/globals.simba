@@ -303,9 +303,8 @@ begin
        'p0+HS6GR+KVwAgAGXFQr');
   bmpAdmin := BitmapFromString(9, 6, 'beNqbp/j9PwcZ6P//FiDJAA' +
        'bIjGvzFOFSaCR+KZwIALniVEk=');
-  bmpFlag := BitmapFromString(8, 15, 'meJxjYEAHmoZ/ti7oxxTUEL4dYq9' +
-        'HjDhQEFMcIogmDhdEFkcWAaP9QHEYG4rUhWqBgkAEZCAjoPbL+9Zi' +
-        'upMO4sBAwyoOBIwMDAC5ID/e');
+  bmpFlag := BitmapFromString(5, 9, 'meJxjlPzLwHAHjA7oqOvD2HVANphb' +
+        'B0YMq5etA3OhgBJub8cEZC4QMDIwAAAqyRb1');
   SetTransparentColor(bmpFlag, 0);
   Lamp := DTMFromString('78DA6374626260D06164400655530218FE036' +
        '990E87F20603405AAD14255C3C0C0042661A28CF640BE260135EE' +
