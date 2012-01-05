@@ -184,7 +184,7 @@ ClickMouse2
 
 .. code-block:: pascal
 
-    procedure ClickMouse2(button: Integer);
+    procedure ClickMouse2(button: variant);
 
 Clicks the mouse in a human way on the current mouse spot.
 
@@ -202,8 +202,7 @@ var
   a,b,c : integer;
   iButton: Integer;
 begin
-  GetMousePos(b, c);
-
+  { Eventually, should be made to just use Integers }
   if (varType(button) = varBoolean) then
   begin
     if (button) then
@@ -212,6 +211,10 @@ begin
       iButton := mouse_right;
   end else
     iButton := button;
+  
+  if (iButton = mouse_move) then Exit; { we aren't actually clicking! }
+
+  GetMousePos(b, c);
 
   HoldMouse(b, c, iButton);
   repeat
@@ -229,9 +232,9 @@ Mouse
 
 .. code-block:: pascal
 
-    procedure Mouse(mousex, mousey, ranx, rany: Integer; button: Integer);
+    procedure Mouse(mousex, mousey, ranx, rany: Integer; button: variant);
 
-Moves then clicks mouse.
+Moves then clicks mouse (will only move if 'mouse_move' passed). 
 
 .. note::
 
