@@ -120,11 +120,11 @@ Example:
 Function FindFlag(var X, Y: integer): Boolean;
 begin
   Result := False;
-  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 75) then
+  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 60) then
   begin
     Result := True;
-    X := X+7;
-    Y := Y+14;
+    X := X+4;
+    Y := Y+8;
    end;
 end;
 
@@ -205,7 +205,7 @@ function FlagPresent: Boolean;
 var
   X, Y: Integer;
 begin
-  Result := FindFlag(X, Y);
+  Result := FindFlag(X, Y) or FindFlag2(X, Y);
 end;
 
 (*
@@ -234,7 +234,7 @@ var
   X, Y: Integer;
 begin
   Result := -1;
-  if (FindFlag(X, Y)) then
+  if (FindFlag(X, Y)) or (FindFlag2(X, Y)) then
     Result := Distance(MMCX, MMCY, X, Y);
 end;
 
