@@ -34,7 +34,7 @@ begin
   begin
     if (BeeScreen) then Break;
     ClickContinue(True, True);
-    FindTextTpa(0, 0, MCX1, MCY1, MCX2, MCY2, 'Yeah', NPCChars, ClickLeft);
+    FindTextTpa(13158600, 5, MCX1, MCY1, MCX2, MCY2, 'Yeah', upChars, ClickLeft);
     Wait(100 + Random(500));
   end;
   Result := BeeScreen;
@@ -136,14 +136,47 @@ end;
 
 {*******************************************************************************
 function SolveBeeKeeper: Boolean;
-By: Lord Saturn & ZephyrsFury
+By: NCDS & Lord Saturn & ZephyrsFury
 Description: Solves the Bee Keeper Random.
 *******************************************************************************}
 
 function SolveBeeKeeper: Boolean;
 var
-  Tries: Integer;
+  Tries, cts, x, y, i, m: Integer;
+  arr: TPointArray;
 begin
+  writeln('is this being called?');
+  //init talk with bee keeper if necessarry
+  if (not Bee_Convo) then
+  begin
+    writeln('searching for bee keeper');
+    cts := getColorTolerancespeed;
+    ColorToleranceSpeed(2);
+    setColorspeed2Modifiers(0.50, 0.17);
+    FindColorsSpiralTolerance(mscx, mscy, arr, 9540504, msx1, msy1, msx2, msy2, 5);
+    writeln(inttostr(length(arr)));
+    if Length(arr) < 1 then
+      Exit;
+
+    removeDistTPointArray(mscx, mscy, 40, arr, true);
+    m := iAbs(Round(sqrt(Length(arr))*0.75));
+    writeln('looping points and m is '+inttostr(m)+'.');
+
+    for i := 0 to High(arr) do
+      if (i mod m <> 0) then
+        continue
+      else begin
+        MMouse(arr[i].x, arr[i].y, 2, 2);
+        if waitUpTextMulti(['ee keeper', 'eeper', 'ee ke'], 500) then
+        begin
+          getMousePos(x, y);
+          Mouse(x, y, 0, 0, True);
+          Break;
+        end;
+      end;
+    colorToleranceSpeed(cts);
+  end;
+
   for Tries := 0 to 3 do
   begin
 

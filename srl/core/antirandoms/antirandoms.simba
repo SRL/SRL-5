@@ -633,7 +633,7 @@ begin
     Name := 'quiz';
     Music := ['the quiz master', 'book of', 'of spell', 'k of s'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @InQuizRandom;
     Texts := ['uiz', 'uiz'];
     TextColors := [128, 0];
     TextFonts := [NPCChars, NPCChars];
@@ -703,7 +703,7 @@ begin
     Name := 'sandwich lady';
     Music := ['snack attack'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @Sandwich_InRandom;
     Texts := ['andwich'];
     TextColors := [128];
     TextFonts := [NPCChars];
@@ -715,7 +715,7 @@ begin
   with TeleRandoms[12] do    //
   begin
     Name := 'bee keeper';
-    Music := ['horizon'];
+    Music := ['Nightfall', 'Workshop', 'Horizon', 'Scape Soft'];
     TypeID := [2];
     IsInRandom := nil;
     Texts := ['keeper'];
@@ -731,7 +731,7 @@ begin
     Name := 'pillory';
     Music := [];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @Pillory_InRandom;
     Texts := ['swinging', 'pillory'];
     TextColors := [127, 0];
     TextFonts := [NPCChars, NPCChars];
@@ -759,7 +759,7 @@ begin
     Name := 'abyssal teleport';
     Music := ['into the abyss'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @InAbyss;
     Texts := ['appendage'];
     TextColors := [128];
     TextFonts := [NPCChars];
