@@ -145,22 +145,22 @@ var
   Tries, cts, x, y, i, m: Integer;
   arr: TPointArray;
 begin
-  writeln('is this being called?');
+  //writeln('is this being called?');
   //init talk with bee keeper if necessarry
   if (not Bee_Convo) then
   begin
-    writeln('searching for bee keeper');
+    //writeln('searching for bee keeper');
     cts := getColorTolerancespeed;
     ColorToleranceSpeed(2);
     setColorspeed2Modifiers(0.50, 0.17);
     FindColorsSpiralTolerance(mscx, mscy, arr, 9540504, msx1, msy1, msx2, msy2, 5);
-    writeln(inttostr(length(arr)));
+    //writeln(inttostr(length(arr)));
     if Length(arr) < 1 then
       Exit;
 
     removeDistTPointArray(mscx, mscy, 40, arr, true);
     m := iAbs(Round(sqrt(Length(arr))*0.75));
-    writeln('looping points and m is '+inttostr(m)+'.');
+    //writeln('looping points and m is '+inttostr(m)+'.');
 
     for i := 0 to High(arr) do
       if (i mod m <> 0) then
