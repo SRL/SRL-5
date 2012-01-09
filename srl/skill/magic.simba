@@ -10,21 +10,22 @@ spell sorting selected.
 
 // Rune constants
 const
-  rune_Air    = 0;
-  rune_Body   = 1;
-  rune_Mind   = 2;
-  rune_Earth  = 3;
-  rune_Fire   = 4;
-  rune_Water  = 5;
-  rune_Chaos  = 6;
-  rune_Law    = 7;
+  rune_Air = 0;
+  rune_Body = 1;
+  rune_Mind = 2;
+  rune_Earth = 3;
+  rune_Fire = 4;
+  rune_Water = 5;
+  rune_Chaos = 6;
+  rune_Law = 7;
   rune_Cosmic = 8;
-  rune_Death  = 9;
+  rune_Death = 9;
   rune_Nature = 10;
-  rune_Blood  = 11;
-  rune_Soul   = 12;
+  rune_Blood = 11;
+  rune_Soul = 12;
   rune_Astral = 13;
-  rune_Count  = 14;
+  rune_Armadyl = 14;
+  rune_Count = 15;
 
 // Contains info about a certain spell
 type
@@ -112,19 +113,19 @@ begin
             'magic dart', 'earth blast', 'fire blast', 'saradomin strike',
             'claws of guthix', 'flames of zamorak', 'wind wave',
             'water wave', 'vulnerability', 'earth wave',
-            'enfeeble', 'fire wave', 'entangle', 'stun', 'charge',
+            'enfeeble', 'fire wave', 'storm of armadyl', 'entangle', 'stun', 'charge',
             'wind surge', 'teleport block', 'water surge', 'earth surge',
             'fire surge'];
 
   Levels := [1, 1, 3, 5, 9, 11, 13, 17, 19, 20, 23, 29, 35, 39,
              41, 47, 50, 50, 50, 53, 59, 60, 60, 60, 62, 65,
-             66, 70, 73, 75, 79, 80, 80, 81, 85, 85, 90, 95];
+             66, 70, 73, 75, 77, 79, 80, 80, 81, 85, 85, 90, 95];
 
   Exps := [3.5, 5.5, 13, 7.5, 9.5, 21, 11.5, 13.5, 29, 30, 16.5, 19.5, 22.5, 24.5,
            25.5, 28.5, 30, 60, 30, 31.5, 34.5, 35, 35, 35, 36, 37.5, 76,
-           40, 83, 42.5, 89, 90, 180, 75, 80, 80, 85, 90];
+           40, 83, 42.5, 70, 89, 90, 180, 75, 80, 80, 85, 90];
 
-  AutoCasts := [0, 1, 2, 5, 8, 9, 17, 26, 28, 30, 31, 32, 34];
+  AutoCasts := [0, 1, 2, 5, 8, 9, 17, 26, 29, 30, 34, 36, 37, 38];
 
   ReqRuneAmt := [
                   TIntegerArray([1]), TIntegerArray([1, 1]), TIntegerArray([3, 2, 1]),
@@ -137,7 +138,7 @@ begin
                   TIntegerArray([2, 2, 4 {Staff of Saradomin}]), TIntegerArray([1, 2, 4 {Staff of Guthx or Void Knight Mace}]),
                   TIntegerArray([4, 2, 1 {Staff of Zamorak}]), TIntegerArray([5, 1]), TIntegerArray([7, 5, 1]),
                   TIntegerArray([5, 5, 1]), TIntegerArray([7, 5, 1]), TIntegerArray([8, 8, 1]),
-                  TIntegerArray([7, 5, 1]), TIntegerArray([5, 5, 4]), TIntegerArray([12, 12, 1]),
+                  TIntegerArray([7, 5, 1]), TIntegerArray([1]), TIntegerArray([5, 5, 4]), TIntegerArray([12, 12, 1]),
                   TIntegerArray([3, 3, 3]), TIntegerArray([7, 1, 1]), TIntegerArray([1, 1, 1]),
                   TIntegerArray([10, 7, 1, 1]), TIntegerArray([10, 7, 1, 1]), TIntegerArray([10, 7, 1, 1])
                 ];
@@ -173,6 +174,7 @@ begin
                 TIntegerArray([rune_Earth, rune_Air, rune_Blood]), {}
                 TIntegerArray([rune_Earth, rune_Water, rune_Soul]), {}
                 TIntegerArray([rune_Fire, rune_Air, rune_Blood]), {}
+                TIntegerArray([rune_Armadyl]),
                 TIntegerArray([rune_Earth, rune_Water, rune_Nature]), {}
                 TIntegerArray([rune_Earth, rune_Water, rune_Soul]), {}
                 TIntegerArray([rune_Fire, rune_Blood, rune_Air]), {}
@@ -855,14 +857,14 @@ begin
           'charge water orb', 'lvl-4 enchant', 'watchtower teleport', 'fire blast', 'charge earth orb', 'bones to peaches',
           'saradomin strike', 'claws of guthix', 'flames of zamorak', 'trollheim teleport', 'wind wave', 'charge fire orb',
           'teleport to ape atoll', 'water wave', 'charge air orb', 'vulnerability', 'lvl-5 enchant', 'earth wave', 'enfeeble',
-          'teleother lumbridge', 'fire wave', 'entangle', 'stun', 'charge', 'wind surge', 'teleother falador', 'teleport block', 'water surge',
+          'teleother lumbridge', 'fire wave', 'storm of armadyl', 'entangle', 'stun', 'charge', 'wind surge', 'teleother falador', 'teleport block', 'water surge',
           'lvl-6 enchant', 'earth surge', 'teleother camelot', 'fire surge'];
 
       BookSort_Combat:
         t_spArr := ['wind rush', 'wind strike', 'water strike', 'earth strike', 'fire strike', 'confuse', 'weaken', 'curse', 'wind bolt', 'water bolt',
           'earth bolt', 'fire bolt', 'bind', 'crumble undead', 'wind blast', 'water blast', 'earth blast', 'fire blast', 'iban blast',
           'snare', 'magic dart', 'wind wave', 'water wave', 'earth wave', 'fire wave', 'saradomin strike', 'claws of guthix',
-          'flames of zamorak', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block', 'lvl-1 enchant',
+          'flames of zamorak', 'storm of armadyl', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block', 'lvl-1 enchant',
           'lvl-2 enchant', 'lvl-3 enchant', 'lvl-4 enchant', 'lvl-5 enchant', 'lvl-6 enchant', 'enchant crossbow bolt', 'superheat item', 'charge water orb',
           'charge earth orb', 'charge fire orb', 'charge air orb', 'low level alchemy', 'high level alchemy', 'telekinetic grab', 'bones to bananas',
           'bones to peaches', 'lumbridge home teleport', 'mobilising armies teleport', 'varrock teleport', 'lumbridge teleport', 'falador teleport',
@@ -874,10 +876,10 @@ begin
           'teleport to house', 'camelot teleport', 'ardougne teleport', 'watchtower teleport', 'trollheim teleport', 'teleport to ape atoll',
           'teleother lumbridge', 'teleother falador', 'teleother camelot', 'low level alchemy', 'high level alchemy', 'telekinetic grab', 'bones to bananas',
           'bones to peaches', 'lvl-1 enchant', 'lvl-2 enchant', 'lvl-3 enchant', 'lvl-4 enchant', 'lvl-5 enchant', 'lvl-6 enchant', 'enchant crossbow bolt', 'superheat item',
-          'charge water orb', 'charge earth orb', 'charge fire orb', 'charge air orb', 'wind strike', 'water strike', 'earth strike', 'fire strike', 'confuse',
+          'charge water orb', 'charge earth orb', 'charge fire orb', 'charge air orb', 'wind rush', 'wind strike', 'water strike', 'earth strike', 'fire strike', 'confuse',
           'weaken', 'curse', 'wind bolt', 'water bolt', 'earth bolt', 'fire bolt', 'bind', 'crumble undead', 'wind blast', 'water blast', 'earth blast',
           'fire blast', 'iban blast', 'snare', 'magic dart', 'wind wave', 'water wave', 'earth wave', 'fire wave', 'saradomin strike', 'claws of guthix',
-          'flames of zamorak', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block'];
+          'flames of zamorak', 'storm of armadyl', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block'];
 
       else begin
         Inc(Fail);
@@ -896,10 +898,11 @@ begin
       Break;
   end; // for-loop
 
+  Writeln('SpellAvailable: Length(t_spArr) = '+toStr(length(t_spArr)));
 
   if (not InStrArr(Spell, t_spArr, False)) then
   begin
-    SRL_Warn('SpellAvailable', 'Incorrect spell', warn_AllVersions);
+    SRL_Warn('SpellAvailable', 'Incorrect spell ('+Spell+')', warn_AllVersions);
     Exit;
   end;
 
@@ -929,33 +932,33 @@ begin
   end;
 
   if (length(srl_magic_CurSet) > 0) then
+  begin
+    Writeln('SpellAvailable: srl_magic_CurSet := '+toStr(srl_magic_CurSet));
+
     for I := 0 to 3 do
       if (not srl_magic_CurSet[I]) then
         for II := 0 to High(SpellModes[I])do
           if (InStrArrEx(SpellModes[I][II].Name, t_spArr, P)) then
             DeleteValueInStrArray(t_spArr, P);
+  end;
 
-  Writeln('SpellAvailable: t_spArr := '+toStr(t_spArr));
+  // Remove crossbow enchant spell from array since it doesn't appear in F2P
+  if (InStrArrEx('enchant crossbow bolt', t_spArr, II)) then
+    if (Lowercase(Spell) <> 'enchant crossbow bolt') then
+      if (Length(Players) <= 0) then
+        SRL_Warn('SpellAvailable', 'DeclarePlayers needs to be called!', WARN_ALLVERSIONS)
+      else
+        if (not Players[CurrentPlayer].Member) then
+          DeleteValueInStrArray(t_spArr, II);
 
+  // Has to be AFTER the crossbow enchant removal so P is set properly
   if (not InStrArrEx(Spell, t_spArr, P)) then
   begin
     SRL_Warn('SpellAvailable', 'Cast function error', warn_AllVersions);
     Exit;
   end;
 
-  if (InStrArrEx('enchant crossbow bolt', t_spArr, II)) then
-    if (P > II) then
-    begin
-      CTS := GetColorToleranceSpeed;
-      ColorToleranceSpeed(2);
-      SetColorSpeed2Modifiers(0.02, 0.70);
-
-      if (CountColorTolerance(1147846, MIX1, MIY1, MIX2, MIY2, 13) < 14) then
-        Dec(P);
-
-      ColorToleranceSpeed(CTS);
-      SetColorSpeed2Modifiers(0.2, 0.2);
-    end;
+  // Writeln('SpellAvailable: t_spArr := '+toStr(t_spArr));
 
   ScrollB := (GetColor(734, 207) = 5794936); // True if scrollbar is present
 
