@@ -636,8 +636,9 @@ begin
   Result := -1;
   if not GameTab(Tab_Magic) then
     Exit;
+
   for Result := 0 to 2 do
-   if (GetColor(676+(Result*19), 441) = 16711422) then //16777215 OLD COLOR
+   if (GetColor(676+(Result*19), 441) = 16711422) then
    begin
      srl_magic_BookSortedBy := result;
      Exit;
@@ -842,6 +843,8 @@ begin
     else
       Sort := srl_magic_BookSortedBy;
 
+    Writeln('SpellAvailable: Spell book sorted by '+toStr(Sort));
+
     case Sort of
       BookSort_Level:
         t_spArr := ['lumbridge home teleport', 'wind rush', 'wind strike', 'confuse', 'enchant crossbow bolt', 'water strike', 'lvl-1 enchant',
@@ -906,15 +909,16 @@ begin
     Exit;
   end;
 
-  if (BookSortedBy = BookSort_Level) then
-    SortBook(BookSort_Level);
+  if (BookSortedBy = BOOKSORT_LEVEL) then
+    SortBook(BOOKSORT_LEVEL);
 
   if (srl_magic_BookSortedBy = -1) or (not srl_magic_CheckSpellsOnce) then
   begin
     SpellsAvailable;
+
     I := SpellIsSort(Spell);
 
-    if not srl_magic_CurSet[I] then
+    if (not srl_magic_CurSet[I]) then
     begin
       srl_magic_CurSet[I] := True;
       SetSpellMode(srl_magic_CurSet[SPELLMODE_COMBAT],
@@ -928,8 +932,10 @@ begin
     for I := 0 to 3 do
       if (not srl_magic_CurSet[I]) then
         for II := 0 to High(SpellModes[I])do
-          if InStrArrEx(SpellModes[I][II].Name, t_spArr, P)then
+          if (InStrArrEx(SpellModes[I][II].Name, t_spArr, P)) then
             DeleteValueInStrArray(t_spArr, P);
+
+  Writeln('SpellAvailable: t_spArr := '+toStr(t_spArr));
 
   if (not InStrArrEx(Spell, t_spArr, P)) then
   begin
@@ -938,16 +944,18 @@ begin
   end;
 
   if (InStrArrEx('enchant crossbow bolt', t_spArr, II)) then
-   if (P > II)then
-   begin
-     CTS := GetColorToleranceSpeed;
-     ColorToleranceSpeed(2);
-     SetColorSpeed2Modifiers(0.02, 0.70);
-     if (CountColorTolerance(1147846, MIX1, MIY1, MIX2, MIY2, 13) < 14) then
-       Dec(P);
-     ColorToleranceSpeed(CTS);
-     SetColorSpeed2Modifiers(0.2, 0.2);
-   end;
+    if (P > II) then
+    begin
+      CTS := GetColorToleranceSpeed;
+      ColorToleranceSpeed(2);
+      SetColorSpeed2Modifiers(0.02, 0.70);
+
+      if (CountColorTolerance(1147846, MIX1, MIY1, MIX2, MIY2, 13) < 14) then
+        Dec(P);
+
+      ColorToleranceSpeed(CTS);
+      SetColorSpeed2Modifiers(0.2, 0.2);
+    end;
 
   ScrollB := (GetColor(734, 207) = 5794936); // True if scrollbar is present
 
@@ -957,8 +965,7 @@ begin
     Coords.Y1 := P div 6 * 24 + 217;
     Coords.X2 := Coords.X1 + 15;
     Coords.Y2 := Coords.Y1 + 15;
-  end else
-  begin
+  end else begin
     Coords.X1 := P mod 7 * 24 + 562;
     Coords.Y1 := P div 7 * 24 + 217;
     Coords.X2 := Coords.X1 + 15;
