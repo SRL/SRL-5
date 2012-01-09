@@ -318,7 +318,7 @@ begin
       wait(50+random(50));
     if (RoadColorCheck) then
       RoadColorChecker;
-    if (GetColor(6, 6) <> clWhite) then
+    if (GetColor(6, 6) <> 13092807) then // border of the loading message
       if (GetSystemTime - M > 5000) then
       begin
         if (D1 = D2) then Exit;
