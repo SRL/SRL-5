@@ -177,14 +177,14 @@ begin
   begin
     X := TPA[1].x - 4 + Random(8);
     Y := TPA[1].y - 4 + Random(8);
-    HoldMouse(X, Y, mouseaction(True));
+    HoldMouse(X, Y, mouse_left);
     S := GetSystemTime;
     while GetColor(TPA[0].x, TPA[0].y) <> srl_outline_black do
       if GetSystemTime - S > 3500 then
         Break
       else
         Wait(10);
-    ReleaseMouse(X, Y, MouseAction(True));
+    ReleaseMouse(X, Y, mouse_left);
   end;
 end;
 
