@@ -39,7 +39,7 @@ type
   SpellMode = array of TSpell;
 
 var
-  // Stores all the spells, after using SetupSpells (SpellModes[SpellMode_Combat][I])
+  // Stores all the spells, after using SetupSpells (SpellModes[SPELLMODE_COMBAT][I])
   SpellModes: array of SpellMode;
 
   // Is set to true if the spells are setup
@@ -59,10 +59,10 @@ const
   TotalSpells = 65;
 
   // For the in-game spellmodes
-  SpellMode_Combat = 0;
-  SpellMode_Teleport = 1;
-  SpellMode_Misc = 2;
-  SpellMode_Skill = 3;
+  SPELLMODE_COMBAT = 0;
+  SPELLMODE_TELEPORT = 1;
+  SPELLMODE_MISC = 2;
+  SPELLMODE_SKILL = 3;
   SpellMode_All = 10;
 
   // For the in-game magic book sorts
@@ -104,7 +104,7 @@ begin
   SetArrayLength(SpellModes, 4);
   srl_magic_BookSortedBy := -1;
 
-  // SpellMode_Combat
+  // SPELLMODE_COMBAT
   Names := ['wind rush', 'wind strike', 'confuse', 'water strike', 'earth strike',
             'weaken', 'fire strike', 'wind bolt', 'curse', 'bind',
             'water bolt', 'earth bolt', 'fire bolt', 'crumble undead',
@@ -183,10 +183,10 @@ begin
                 TIntegerArray([rune_Fire, rune_Air, rune_Blood, rune_Death])
               ];
 
-  SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
+  SetArrayLength(SpellModes[SPELLMODE_COMBAT], GetArrayLength(Names));
   H := High(Names);
   for I:=0 to H do
-    with SpellModes[SpellMode_Combat][I] do
+    with SpellModes[SPELLMODE_COMBAT][I] do
     begin
       Name := Names[I];
       Level := Levels[I];
@@ -197,7 +197,7 @@ begin
     end;
 
 
-  // SpellMode_Teleport
+  // SPELLMODE_TELEPORT
   Names := ['lumbridge home teleport', 'mobilising armies teleport',
             'varrock teleport', 'lumbridge teleport',
             'falador teleport', 'teleport to house',
@@ -235,10 +235,10 @@ begin
                 TIntegerArray([rune_Soul, rune_Law])
               ];
 
-  SetArrayLength(SpellModes[SpellMode_Teleport], GetArrayLength(Names));
+  SetArrayLength(SpellModes[SPELLMODE_TELEPORT], GetArrayLength(Names));
   H := High(Names);
   for I:=0 to High(Names)do
-    with SpellModes[SpellMode_Teleport][I] do
+    with SpellModes[SPELLMODE_TELEPORT][I] do
     begin
       Name := Names[I];
       Level := Levels[I];
@@ -249,7 +249,7 @@ begin
     end;
 
 
-  // SpellMode_Misc
+  // SPELLMODE_MISC
   Names := ['bones to bananas', 'low level alchemy', 'telekinetic grab',
             'high level alchemy', 'bones to peaches'];
 
@@ -270,10 +270,10 @@ begin
                 TIntegerArray([rune_Water, rune_Earth, rune_Nature])
               ];
 
-  SetArrayLength(SpellModes[SpellMode_Misc], GetArrayLength(Names));
+  SetArrayLength(SpellModes[SPELLMODE_MISC], GetArrayLength(Names));
   H := High(Names);
   for I:=0 to High(Names)do
-    with SpellModes[SpellMode_Misc][I] do
+    with SpellModes[SPELLMODE_MISC][I] do
     begin
       Name := Names[I];
       Level := Levels[I];
@@ -284,7 +284,7 @@ begin
     end;
 
 
-  // SpellMode_Skill
+  // SPELLMODE_SKILL
   Names := ['enchant crossbow bolt', 'lvl-1 enchant', 'lvl-2 enchant',
             'superheat item', 'lvl-3 enchant', 'charge water orb',
             'lvl-4 enchant', 'charge earth orb', 'charge fire orb',
@@ -316,10 +316,10 @@ begin
                 TIntegerArray([rune_Earth, rune_Fire, rune_Cosmic])
               ];
 
-  SetArrayLength(SpellModes[SpellMode_Skill], GetArrayLength(Names));
+  SetArrayLength(SpellModes[SPELLMODE_SKILL], GetArrayLength(Names));
   H := High(Names);
   for I:=0 to High(Names) do
-    with SpellModes[SpellMode_Skill][I] do
+    with SpellModes[SPELLMODE_SKILL][I] do
     begin
       Name := Names[I];
       Level := Levels[I];
@@ -894,20 +894,19 @@ begin
   end; // for-loop
 
 
-  if not InStrArr(Spell, t_spArr, False)then
+  if (not InStrArr(Spell, t_spArr, False)) then
   begin
     SRL_Warn('SpellAvailable', 'Incorrect spell', warn_AllVersions);
     Exit;
   end;
 
-  if not InIntArray([SpellMode_Combat, SpellMode_Teleport,
-                     SpellMode_Misc, SpellMode_Skill], SpellIsSort(Spell))then
+  if (not InIntArray([SPELLMODE_COMBAT, SPELLMODE_TELEPORT, SPELLMODE_MISC, SPELLMODE_SKILL], SpellIsSort(Spell))) then
   begin
     SRL_Warn('SpellAvailable', 'Incorrect spellkind', warn_AllVersions);
     Exit;
   end;
 
-  if BookSortedBy = BookSort_Level then
+  if (BookSortedBy = BookSort_Level) then
     SortBook(BookSort_Level);
 
   if (srl_magic_BookSortedBy = -1) or (not srl_magic_CheckSpellsOnce) then
@@ -918,10 +917,10 @@ begin
     if not srl_magic_CurSet[I] then
     begin
       srl_magic_CurSet[I] := True;
-      SetSpellMode(srl_magic_CurSet[SpellMode_Combat],
-                   srl_magic_CurSet[SpellMode_Teleport],
-                   srl_magic_CurSet[SpellMode_Misc],
-                   srl_magic_CurSet[SpellMode_Skill]);
+      SetSpellMode(srl_magic_CurSet[SPELLMODE_COMBAT],
+                   srl_magic_CurSet[SPELLMODE_TELEPORT],
+                   srl_magic_CurSet[SPELLMODE_MISC],
+                   srl_magic_CurSet[SPELLMODE_SKILL]);
     end;
   end;
 
