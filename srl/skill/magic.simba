@@ -902,7 +902,7 @@ begin
 
   if (not InIntArray([SPELLMODE_COMBAT, SPELLMODE_TELEPORT, SPELLMODE_MISC, SPELLMODE_SKILL], SpellIsSort(Spell))) then
   begin
-    SRL_Warn('SpellAvailable', 'Incorrect spellkind', warn_AllVersions);
+    SRL_Warn('SpellAvailable', 'Incorrect spell type', warn_AllVersions);
     Exit;
   end;
 
@@ -931,13 +931,13 @@ begin
           if InStrArrEx(SpellModes[I][II].Name, t_spArr, P)then
             DeleteValueInStrArray(t_spArr, P);
 
-  if not InStrArrEx(Spell, t_spArr, P)then
+  if (not InStrArrEx(Spell, t_spArr, P)) then
   begin
     SRL_Warn('SpellAvailable', 'Cast function error', warn_AllVersions);
     Exit;
   end;
 
-  if InStrArrEx('enchant crossbow bolt', t_spArr, II)then
+  if (InStrArrEx('enchant crossbow bolt', t_spArr, II)) then
    if (P > II)then
    begin
      CTS := GetColorToleranceSpeed;
@@ -965,7 +965,7 @@ begin
     Coords.Y2 := Coords.Y1 + 15;
   end;
 
-  if (ScrollB)and(P > 53)then
+  if (ScrollB) and (P > 53) then
   begin
     ScrollSpellBook(False);
     Coords.Y1 := Coords.Y1 - 80;
@@ -975,23 +975,28 @@ begin
 
   si := GetSpellInfo(Spell);
   ss := Copy(si.Name, 2, 3);
+
   if (not (WaitUpText(ss, 500))) then
     MouseBox(Coords.X1, Coords.Y1, Coords.X2, Coords.Y2, 3);
+
   T := GetSystemTime + 2000;
   while (GetSystemTime < T) do
     if FindColor(X, Y, 2070783, MIX1, MIY1, MIX2, MIY2) then
       Break;
+
   colArr := GetColors(TPAFromBox(Coords));
   ClearSameIntegers(colArr);
   CTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(2);
   SetColorSpeed2Modifiers(0.72, 1.05);
+
   for II := 0 to High(colArr) do
   begin
     if (SimilarColors(colArr[II], 3292228, 3)) then Continue;
     ColorToHSL(colArr[II], H, S, L);
     Lum := MaxE(Lum, L);
   end;
+
   SetColorSpeed2Modifiers(0.2, 0.2);
   ColorToleranceSpeed(CTS);
   Result := (Lum > 40.0);
