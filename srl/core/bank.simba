@@ -768,6 +768,59 @@ begin
 end;
 
 (*
+QuickDeposit
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function QuickDeposit(Which: Integer): Boolean;
+
+Uses the quick deposit buttons in the bottom right of the bank.  Valid
+arguments for 'Which' are:
+    * SRL_DEPOSIT_ALL
+    * SRL_DEPOSIT_COINS
+    * SRL_DEPOSIT_EQUIPMENT
+    * SRL_DEPOSIT_FOLLOWER
+
+.. note::
+
+    Author: ZephyrsFury & Quickmarch & Shuttleu
+    Last Modified: January 08, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    QuickDeposit(SRL_DEPOSIT_COINS);
+*)
+const
+  SRL_DEPOSIT_ALL = 0;
+  SRL_DEPOSIT_COINS = 1;
+  SRL_DEPOSIT_EQUIPMENT = 2;
+  SRL_DEPOSIT_FOLLOWER = 3;
+
+procedure QuickDeposit(Which: Integer);
+var
+  StartX: Integer;
+begin
+  if (BankScreen) or (DepositScreen) then
+  begin
+    case Which of
+      SRL_DEPOSIT_ALL:       StartX := 365;
+      SRL_DEPOSIT_COINS:     StartX := 400;
+      SRL_DEPOSIT_EQUIPMENT: StartX := 435;
+      SRL_DEPOSIT_FOLLOWER:  StartX := 475;
+
+      else
+        SRL_Warn('QuickDeposit', 'Invalid deposit method ', WARN_ALLVERSIONS);
+    end;
+
+    Mouse(StartX - 58 * Integer(DepositScreen), 307 - 29 * Integer(DepositScreen), 15, 10, True);
+    Wait(200 + Random(300));
+  end;
+end;
+
+(*
 DepositAll
 ~~~~~~~~~~
 
@@ -775,42 +828,29 @@ DepositAll
 
     function DepositAll: Boolean;
 
-Deposits all items in your inventory
+Deposits all items in your inventory.
 
 .. note::
 
-    Author: ZephyrsFury & Quickmarch
-    Last Modified: Unknown
+    Author: Shuttleu
+    Last Modified: January 08, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
-    if InvFull then
-    DepositAll;
+    DepositAll();
 *)
 function DepositAll: Boolean;
-var
-  T, X, Y: Integer;
-  BScreen, DScreen: Boolean;
 begin
-  Result := false;
-  BScreen := BankScreen;
-  if (not(BScreen)) then
-    DScreen := DepositScreen;
-  if (BScreen) or (DScreen) then
-    if (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) then
-    begin
-      Mouse(360 - 50 * Integer(DScreen), 305 - 30 * Integer(DScreen), 15, 10, mouse_left);
-      Wait(200 + Random(300));
-      T := GetSystemTime;
-      while (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) and (GetSystemTime - T < 2000) do
-        Wait(100);
-      Result := (InvEmpty) or (not(FindColor(X, Y, srl_outline_black, 98, 68, 436, 257)) and (DScreen));
-    end else begin
-      srl_Warn('DepositAll', 'No items to deposit ', warn_AllVersions);
-      result := true;
-    end;
+  if (InvEmpty) then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  QuickDeposit(SRL_DEPOSIT_ALL);
+  Result := WaitFunc(@InvEmpty, 50, 3000);
 end;
 
 (*
