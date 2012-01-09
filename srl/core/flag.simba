@@ -297,19 +297,23 @@ function FlagEx(Dist: Integer; RoadColorCheck: Boolean): Boolean;
 var
   Tx, Ty, M, D1, D2: Integer;
 begin
+  Wait(randomRange(400, 200));
   Result := False;
   M := GetSystemTime;
   repeat
     if (not FindFlag(Tx, Ty)) and (not FindFlag2(Tx, Ty)) then
+    begin
+      Result := true;
       Exit;
+    end;
     D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
     begin
       Result := True;
       Exit;
     end;
-    if (D1 > Dist+5) then
-      wait(380+random(70))
+    if (D1 > Dist+12) then
+      wait(450+random(70))
     else
       wait(50+random(50));
     if (RoadColorCheck) then
