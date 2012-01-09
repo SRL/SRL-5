@@ -434,7 +434,7 @@ procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer);
 begin
   if (wVersion >= WarnSensitivity) then
     if (wVersion <> warn_Debug) then
-      WriteLn('** Warning in ' + ProcName + ': ' + ErrorMessage + '**')
+      WriteLn('** Warning in ' + ProcName + ': ' + ErrorMessage + ' **')
     else
       WriteLn('Debugging ' + ProcName + ': ' + ErrorMessage);
   if wVersion = warn_Terminate then
