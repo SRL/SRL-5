@@ -54,6 +54,7 @@ var
 
   // Set to true by the scripter to avoid needless mouse movement after casting spells like alchemy and superheating }
   srl_magic_CheckSpellsOnce: boolean;
+  srl_magic_Checked: boolean;
 
 const
   // Number of spells in your spellbook
@@ -845,7 +846,7 @@ begin
     else
       Sort := srl_magic_BookSortedBy;
 
-    Writeln('SpellAvailable: Spell book sorted by '+toStr(Sort));
+    // Writeln('SpellAvailable: Spell book sorted by '+toStr(Sort));
 
     case Sort of
       BookSort_Level:
@@ -898,7 +899,7 @@ begin
       Break;
   end; // for-loop
 
-  Writeln('SpellAvailable: Length(t_spArr) = '+toStr(length(t_spArr)));
+  // Writeln('SpellAvailable: Length(t_spArr) = '+toStr(length(t_spArr)));
 
   if (not InStrArr(Spell, t_spArr, False)) then
   begin
@@ -915,8 +916,9 @@ begin
   if (BookSortedBy = BOOKSORT_LEVEL) then
     SortBook(BOOKSORT_LEVEL);
 
-  if (srl_magic_BookSortedBy = -1) or (not srl_magic_CheckSpellsOnce) then
+  if (not srl_magic_CheckSpellsOnce) or (not srl_magic_Checked) then
   begin
+    srl_magic_Checked := true;
     SpellsAvailable;
 
     I := SpellIsSort(Spell);
@@ -933,7 +935,7 @@ begin
 
   if (length(srl_magic_CurSet) > 0) then
   begin
-    Writeln('SpellAvailable: srl_magic_CurSet := '+toStr(srl_magic_CurSet));
+    // Writeln('SpellAvailable: srl_magic_CurSet := '+toStr(srl_magic_CurSet));
 
     for I := 0 to 3 do
       if (not srl_magic_CurSet[I]) then
@@ -986,7 +988,7 @@ begin
   si := GetSpellInfo(Spell);
   ss := Copy(si.Name, 2, 3);
 
-  if (not (WaitUpText(ss, 500))) then
+  if (not (WaitUptext(ss, 500))) then
     MouseBox(Coords.X1, Coords.Y1, Coords.X2, Coords.Y2, 3);
 
   T := GetSystemTime + 2000;
