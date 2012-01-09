@@ -1094,6 +1094,63 @@ begin
 end;
 
 (*
+TPAWalk
+~~~~~~~
+
+.. code-block:: pascal
+
+    function TPAWalk(color, tol, offsetX, offsetY: integer; sortFrom: TPoint): boolean;
+
+Uses a simple TPA sorting method to walk to a spot on the minimap.
+    * color: the color to be found on the minimap
+    * tol: the tolerance on color
+    * offsetX: the offset to click on the X coordinate of the found color
+    * offsetY: the offset to click on the Y coordinate of the found color
+    * sortFrom: the point on the minimap to sort found colors from
+
+.. note::
+
+    by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  if (not TPAWalk(1234567, 10, 0, 0, point(MMX1, MMY1)) then
+    if (not radialWalkTolerance({parameters here}) then
+      writeln('failed to TPA and radial walk');
+*)
+function TPAWalk(color, tol, offsetX, offsetY: integer; sortFrom: TPoint): boolean;
+var
+  i, x, y: integer;
+  TPA: TPointArray;
+begin
+  result := false;
+
+  if (findColorsTolerance(TPA, color, MMX1, MMY1, MMX2, MMY2, tol)) then
+  begin
+    sortTPAFrom(TPA, sortFrom);
+
+    for i := 0 to high(TPA) do
+    begin
+      x := TPA[i].x;
+      y := TPA[i].y;
+
+      if (not rs_OnMinimap(x, y)) then
+        continue;
+
+      mouse(x + offsetX, y + offsetY, 3, 3, mouse_left);
+
+      if (waitFunc(@flag, 50, 3000)) then
+      begin
+        result := true;
+        exit;
+      end;
+    end;
+  end;
+end;
+
+(*
 GetMiniMapDotsIn
 ~~~~~~~~~~~~~~~~
 
