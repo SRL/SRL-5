@@ -831,16 +831,9 @@ var
 begin
   if not LoggedIn then
     Exit;
+
   if not SpellSetUp then
     SetupSpells;
-
-  {
-  if (FindColor(X, Y, 2070783, MIX1, MIY1, MIX2, MIY2)) then
-  begin
-    MouseBox(MMX1, MMY1, MMX2, MMY2, 3);
-    Wait(100+Random(300));
-  end;
-  }
 
   for I := 0 to 1 do
   begin
@@ -883,33 +876,34 @@ begin
           'fire blast', 'iban blast', 'snare', 'magic dart', 'wind wave', 'water wave', 'earth wave', 'fire wave', 'saradomin strike', 'claws of guthix',
           'flames of zamorak', 'wind surge', 'water surge', 'earth surge', 'fire surge', 'vulnerability', 'enfeeble',  'entangle', 'stun', 'charge', 'teleport block'];
 
-      else
-      begin
+      else begin
         Inc(Fail);
-        MouseBox(MIX1, MIY2-30, MIX2, MIY2-20, 3);
+        MouseBox(MIX1, MIY2 - 30, MIX2, MIY2 - 20, 3);
         Wait(200 + random(100));
+
         if (Fail = 2) then
         begin
-          SRL_Warn('Cast', 'Invalid BookSort', warn_AllVersions);
+          SRL_Warn('SpellAvailable', 'Invalid BookSort', warn_AllVersions);
           Exit;
         end;
       end;
     end; // case
 
-    if (Fail = 0) then Break;
-  end; //for-loop
+    if (Fail = 0) then
+      Break;
+  end; // for-loop
 
 
   if not InStrArr(Spell, t_spArr, False)then
   begin
-    srl_Warn('Cast', 'Incorrect spell', warn_AllVersions);
+    SRL_Warn('SpellAvailable', 'Incorrect spell', warn_AllVersions);
     Exit;
   end;
 
   if not InIntArray([SpellMode_Combat, SpellMode_Teleport,
                      SpellMode_Misc, SpellMode_Skill], SpellIsSort(Spell))then
   begin
-    srl_Warn('Cast', 'Incorrect spellkind', warn_AllVersions);
+    SRL_Warn('SpellAvailable', 'Incorrect spellkind', warn_AllVersions);
     Exit;
   end;
 
@@ -920,6 +914,7 @@ begin
   begin
     SpellsAvailable;
     I := SpellIsSort(Spell);
+
     if not srl_magic_CurSet[I] then
     begin
       srl_magic_CurSet[I] := True;
@@ -939,7 +934,7 @@ begin
 
   if not InStrArrEx(Spell, t_spArr, P)then
   begin
-    srl_Warn('Cast', 'Cast function error', warn_AllVersions);
+    SRL_Warn('SpellAvailable', 'Cast function error', warn_AllVersions);
     Exit;
   end;
 
