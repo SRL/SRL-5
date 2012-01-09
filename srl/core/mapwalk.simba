@@ -925,6 +925,7 @@ Same as RadialWalk, but with a tolerance.
 .. note::
 
     by Coh3n
+    Last modified: Jan. 08, 2012 by Coh3n
 
 Example:
 
@@ -947,8 +948,7 @@ begin
     for i := 0 to h do
       if MFNF(TPA[i].x, TPA[i].y, modX, modY) then
       begin
-        FFlag(10);
-        Result := True;
+        Result := WaitFunc(@Flag, 50, 500);
         Exit;
       end;
   end;
