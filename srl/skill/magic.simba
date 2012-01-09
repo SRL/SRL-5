@@ -1,29 +1,14 @@
-//-----------------------------------------------------------------//
-//--                     SRL Resource Library                    --//
-//--                        Magic routines                       --//
-//-----------------------------------------------------------------//
-// * procedure SetupSpells;                                        // by N1ke!
-// * procedure DebugSpellVars(SpellMode: Integer);                 // by N1ke!
-// * function GetSpellInfo(Spell: string): TSpell;                 // by N1ke!
-// * function SpellIsSort(Spell: string): Integer;                 // by N1ke!
-// * function SpellsAvaible: TBooleanArray;                        // by N1ke!, modified by marpis, fix by Cigue
-// * procedure ClickSpellMode(Which: Integer);                     // by N1ke!
-// * procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean); // by N1ke!
-// * function BookSortedBy: Integer;                               // by N1ke!
-// * procedure SortBook(By: Integer);                              // by N1ke!
-// * function DefCastIs: Boolean;                                  // by N1ke!
-// * procedure ToggleDefCast(SetTo: Boolean);                      // by N1ke!
-// * procedure ScrollSpellBook(Up: Boolean);                       // by N1ke!
-// * function SpellAvailable(var Coords: TBox; Spell: string): Boolean; // by N1ke!
-// * function Cast(Spell: string; AutoCast: Boolean): Boolean;     // by N1ke!
-// * procedure SetupMagic;                                          // by SRL
+(*
+Magic
+=====
 
-{ var srl_magic_CheckSpellsOnce
-  Description: Set to true by the scripter to avoid needless mouse movement
-               after casting spells like alchemy and superheating }
-var
-  srl_magic_CheckSpellsOnce: boolean;
+The Magic include contains a few useful functions to aid in scripting for the
+magic skill.  Mose are used to properly cast spells so it will work with any
+spell sorting selected.
 
+*)
+
+// Rune constants
 const
   rune_Air    = 0;
   rune_Body   = 1;
@@ -41,8 +26,7 @@ const
   rune_Astral = 13;
   rune_Count  = 14;
 
-{ type TSpell;
-  Description: Contains info about a certain spell. }
+// Contains info about a certain spell
 type
   TSpell = record
     Name: string;
@@ -52,56 +36,62 @@ type
     RequiredRunes: array of Integer;
     RequiredRuneAmount: array of Integer;
   end;
-
-{ type SpellMode;
-  Description: An array of TSpell }
   SpellMode = array of TSpell;
 
 var
-{ var SpellModes
-  Description: Stores all the spells, after using SetupSpells.
-               Use as SpellModes[SpellMode_Combat][I] example..}
+  // Stores all the spells, after using SetupSpells (SpellModes[SpellMode_Combat][I])
   SpellModes: array of SpellMode;
 
-{ var SpellSetUp
-  Description: Is set to true if the spells are setup}
-  SpellSetUp: Boolean;
+  // Is set to true if the spells are setup
+  SpellSetup: Boolean;
 
-{ var srl_magic_BookSortedBy
-  Description: Stores the sort method of the current spellbook}
+  // Stores the sort method of the current spellbook
   srl_magic_BookSortedBy: integer;
 
-{ var srl_magic_CurSet
-  Description: Stores which spells are available}
+  // Stores which spells are available
   srl_magic_CurSet: TBooleanArray;
 
-Const
-{ const TotalSpells
-  Description: Number of spells in your spellbook}
+  // Set to true by the scripter to avoid needless mouse movement after casting spells like alchemy and superheating }
+  srl_magic_CheckSpellsOnce: boolean;
+
+const
+  // Number of spells in your spellbook
   TotalSpells = 65;
 
-{ const SpellMode_
-  Description: consts for the in-game spellmodes
-               note: SpellMode_All stands for all of them}
+  // For the in-game spellmodes
   SpellMode_Combat = 0;
   SpellMode_Teleport = 1;
   SpellMode_Misc = 2;
   SpellMode_Skill = 3;
   SpellMode_All = 10;
 
-{ const BookSort_
-  Description: consts for the in-game magic book sorts}
+  // For the in-game magic book sorts
   BookSort_Level = 0;
   BookSort_Combat = 1;
   BookSort_Teleport = 2;
 
-{*******************************************************************************
-procedure SetupSpells;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Sets the SpellModes var to match the runescape spells.
-*******************************************************************************}
+(*
+SetupSpells
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetupSpells;
+
+Sets the SpellModes var to match the runescape spells.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: Unknown
+
+Example:
+
+.. code-block:: pascal
+
+    if (not SpellSetup) then
+      SetupSpells();
+*)
 procedure SetupSpells;
 var
   I, H: Integer;
@@ -114,7 +104,7 @@ begin
   SetArrayLength(SpellModes, 4);
   srl_magic_BookSortedBy := -1;
 
-  {SpellMode_Combat}
+  // SpellMode_Combat
   Names := ['wind rush', 'wind strike', 'confuse', 'water strike', 'earth strike',
             'weaken', 'fire strike', 'wind bolt', 'curse', 'bind',
             'water bolt', 'earth bolt', 'fire bolt', 'crumble undead',
@@ -193,7 +183,7 @@ begin
                 TIntegerArray([rune_Fire, rune_Air, rune_Blood, rune_Death])
               ];
 
-SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
+  SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
   H := High(Names);
   for I:=0 to H do
     with SpellModes[SpellMode_Combat][I] do
@@ -207,7 +197,7 @@ SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
     end;
 
 
-  {SpellMode_Teleport}
+  // SpellMode_Teleport
   Names := ['lumbridge home teleport', 'mobilising armies teleport',
             'varrock teleport', 'lumbridge teleport',
             'falador teleport', 'teleport to house',
@@ -259,7 +249,7 @@ SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
     end;
 
 
-  {SpellMode_Misc}
+  // SpellMode_Misc
   Names := ['bones to bananas', 'low level alchemy', 'telekinetic grab',
             'high level alchemy', 'bones to peaches'];
 
@@ -294,7 +284,7 @@ SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
     end;
 
 
-  {SpellMode_Skill}
+  // SpellMode_Skill
   Names := ['enchant crossbow bolt', 'lvl-1 enchant', 'lvl-2 enchant',
             'superheat item', 'lvl-3 enchant', 'charge water orb',
             'lvl-4 enchant', 'charge earth orb', 'charge fire orb',
@@ -342,22 +332,32 @@ SetArrayLength(SpellModes[SpellMode_Combat], GetArrayLength(Names));
   SpellSetUp := True;
 end;
 
-{*******************************************************************************
-procedure DebugSpellVars(SpellMode: Integer);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Prints out the SpellModes var.
-Valid parameters are
-  SpellMode_Combat
-  SpellMode_Teleport
-  SpellMode_Misc
-  SpellMode_Skill
-  SpellMode_All
+(*
+DebugSpellVars
+~~~~~~~~~~~~~~
 
-for example, DebugSpellVars(SpellMode_Combat); would only
-print out the combat spells.
-*******************************************************************************}
+.. code-block:: pascal
+
+    procedure DebugSpellVars(SpellMode: Integer);
+
+Debugs the SpellMode global variable.  Valid arguements for SpellMode:
+    * SPELLMODE_COMBAT
+    * SPELLMODE_TELEPORT
+    * SPELLMODE_MISC
+    * SPELLMODE_SKILL
+    * SPELLMODE_ALL
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    DebugSpellVars(SPELLBOOK_ALL);
+*)
 procedure DebugSpellVars(SpellMode: Integer);
 var
   I, II, r, iii, Total: Integer;
@@ -427,20 +427,39 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function GetSpellInfo(Spell: string): TSpell;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Gets a spells info from the SpellModes var and results
-in a TSpell type.
-*******************************************************************************}
+(*
+GetSpellInfo
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetSpellInfo(Spell: string): TSpell;
+
+Returns the TSpell type of the spell 'Spell'.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    var
+      Spell: TSpell;
+    begin
+      Spell := GetSpellInfo('superheat item');
+      //...
+    end;
+*)
 function GetSpellInfo(Spell: string): TSpell;
 var
   I, II: Integer;
 begin
   if not SpellSetUp then
     SetupSpells;
+
   for I := 0 to 3 do
    for II := 0 to High(SpellModes[I])do
      if (Lowercase(Spell) = SpellModes[I][II].Name) then
@@ -450,14 +469,28 @@ begin
      end;
 end;
 
-{*******************************************************************************
-function SpellIsSort(Spell: string): Integer;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Results what kind of sort the spell is..
-Example of use - if (SpellIsSort('water strike') = SpellMode_Combat)then
-*******************************************************************************}
+(*
+SpellIsSort
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SpellIsSort(Spell: string): Integer;
+
+Results what kind of sort the spell is.  For example,
+SpellIsSort('water strike') will return SPELLMODE_COMBAT.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    Sort := SpellIsSort('water strike');
+*)
 function SpellIsSort(Spell: string): Integer;
 var
   II: Integer;
@@ -468,58 +501,99 @@ begin
        Exit;
 end;
 
-{*******************************************************************************
-Function SpellsAvailable: TBooleanArray;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Results which sort of spells are available.
-  Result[0] = SpellMode_Combat
-  Result[1] = SpellMode_Teleport
-  Result[2] = SpellMode_Misc
-  Result[3] = SpellMode_Skill
-*******************************************************************************}
+(*
+SpellsAvailable
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SpellsAvailable: TBooleanArray;
+
+Results which sort of spells are available.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    Spells := SpellsAvailable();
+*)
 function SpellsAvailable: TBooleanArray;
 var
   I: Integer;
 begin
   if not GameTab(Tab_Magic)then
     Exit;
+
   SetArrayLength(Result, 4);
   for I := 0 to 3 do
-   if (GetColor(592+(I*20), 441) = 16711422) then //16777215 OLD COLOR
+   if (GetColor(592+(I*20), 441) = 16711422) then
      Result[I] := True;
 
   srl_magic_CurSet := result;
 end;
 
-{*******************************************************************************
-procedure ClickSpellMode(Which: Integer);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Clicks the given parameter.
-Valid parameters are
-  SpellMode_Combat
-  SpellMode_Teleport
-  SpellMode_Misc
-  SpellMode_Skill
-*******************************************************************************}
+(*
+ClickSpellMode
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure ClickSpellMode(Which: Integer);
+
+Clicks the spell mode 'Which'.  Valid arguements are:
+    * SPELLMODE_COMBAT
+    * SPELLMODE_TELEPORT
+    * SPELLMODE_MISC
+    * SPELLMODE_SKILL
+    * SPELLMODE_ALL
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    ClickSpellMode(SPELLMODE_COMBAT);
+*)
 procedure ClickSpellMode(Which: Integer);
 begin
   if not GameTab(Tab_Magic)then
     Exit;
+
   Mouse(583+(Which*21), 441, 12, 16, True);
   Wait(70+Random(70));
 end;
 
-{*******************************************************************************
-Procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Sets the spellmodes on and off for each mode.
-*******************************************************************************}
+(*
+SetSpellMode
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean);
+
+Sets the spell modes on or off for each mode.  True will turn it on, false will
+turn it off.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    SetSpellMode(true, false, false, true);
+*)
 procedure SetSpellMode(Combat, Teleport, Misc, Skill: Boolean);
 var
   I: Integer;
@@ -528,22 +602,35 @@ begin
   BoolArr[0] := SpellsAvailable;
   BoolArr[1] := [Combat, Teleport, Misc, Skill];
 
-  for I:=0 to High(BoolArr[0]) do
-   if not (BoolArr[0][I] = BoolArr[1][I]) then
-     ClickSpellMode(I);
+  for I := 0 to High(BoolArr[0]) do
+    if not (BoolArr[0][I] = BoolArr[1][I]) then
+      ClickSpellMode(I);
 end;
 
-{*******************************************************************************
-function BookSortedBy: Integer;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Results how the book is sorted.
-Possible results are
-  BookSort_Level = 0
-  BookSort_Combat = 1
-  BookSort_Teleport = 2
-*******************************************************************************}
+(*
+BookSortedBy
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function BookSortedBy: Integer;
+
+Results how the book is sorted. Possible results are
+    * BOOKSORT_LEVEL = 0
+    * BOOKSORT_COMBAT = 1
+    * BOOKSORT_TELEPORT = 2
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    SortedBy := BookSortedBy();
+*)
 function BookSortedBy: Integer;
 begin
   Result := -1;
@@ -557,46 +644,90 @@ begin
    end;
 end;
 
-{*******************************************************************************
-procedure SortBook(By: Integer);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Sorts the book from given parameter.
-Valid parameters are
-  BookSort_Level = 0
-  BookSort_Combat = 1
-  BookSort_Teleport = 2
-*******************************************************************************}
+(*
+SortBook
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SortBook(By: Integer);
+
+Sorts the spell book by the given parameter.  Valid arguments are:
+    * BOOKSORT_LEVEL
+    * BOOKSORT_COMBAT
+    * BOOKSORT_TELEPORT
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    SortBook(BOOKSORT_LEVEL);
+*)
 procedure SortBook(By: Integer);
 begin
   if (not GameTab(Tab_Magic)) or (BookSortedBy = By) then
     Exit;
+
   Mouse(676+(By*19), 441, 12, 16, True);
   srl_magic_BookSortedBy := By;
 end;
 
-{*******************************************************************************
-Function DefCastIs: Boolean;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Results if defensive casting is enabled.
-*******************************************************************************}
+(*
+DefCastIs
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function DefCastIs: Boolean;
+
+Results true if defensive casting is enabled.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    if (DefCastIs()) then
+      Writeln('We are defensive casting!');
+*)
 function DefCastIs: Boolean;
 begin
   if not Gametab(tab_Magic) then
     Exit;
+
   Result := (LoggedIn) and (GetColor(563, 441) = 16711422);
 end;
 
-{*******************************************************************************
-procedure ToggleDefCast(SetTo: Boolean);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Turns defensive casting on/off.
-*******************************************************************************}
+(*
+ToggleDefCast
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure ToggleDefCast(SetTo: Boolean);
+
+Turns defensive casting on/off.  True turns it on, false off.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    ToggleDefCast(false);
+*)
 procedure ToggleDefCast(SetTo: Boolean);
 begin
   if (not Gametab(tab_Magic)) or (DefCastIs = SetTo) then
@@ -606,13 +737,27 @@ begin
   Wait(70+Random(70));
 end;
 
-{*******************************************************************************
-procedure ScrollSpellBook(Up: Boolean);
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Scrolls the spellbook, up or down.
-*******************************************************************************}
+(*
+ScrollSpellBook
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure ScrollSpellBook(Up: Boolean);
+
+Scrolls the spell book up or down.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    ScrollSpellBook(true);
+*)
 procedure ScrollSpellBook(Up: Boolean);
 var
   iTime, X, Y: Integer;
@@ -631,12 +776,13 @@ begin
     SBox := Point(723, 421);
   end;
 
-  if not (GetColor(CBox.X, CBox.Y) = 2041131)then //2106924
+  if not (GetColor(CBox.X, CBox.Y) = 2041131)then
     Exit;
 
   MMouse(SBox.X, SBox.Y, 8, 8);
   GetMousePos(X, Y);
   HoldMouse(X, Y, mouse_left);
+
   iTime := GetSystemTime + 3000;
   while (GetColor(CBox.X, CBox.Y) = 2041131) do
   begin
@@ -644,20 +790,35 @@ begin
     if (GetSystemTime > iTime) then
       Break;
   end;
+
   ReleaseMouse(X, Y, mouse_left);
   Wait(200+Random(100));
 end;
 
-{*******************************************************************************
-function SpellAvailable(var Coords: TBox; Spell: string): Boolean;
-By: N1ke! modified by marpis, fixed by Cigue (8th July 2010)
-Rev: 40
-Date: 12 Sep 09
-Description: Results true if the given spell is available and can be
-casted. Also stores coords in a TBox var where the spell is located.
-Will work however the spells are sorted, visable or not(Will enable
-the spells sort if not enabled).
-*******************************************************************************}
+(*
+SpellAvailable
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SpellAvailable(var Coords: TBox; Spell: string): Boolean;
+
+Results true if the given spell is available and can be casted. Also stores
+coords in a TBox var where the spell is located. Will work however the spells
+are sorted, visable or not (will enable the spells sort if not enabled).
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    if (SpellAvailable(b, 'superheat item')) then
+      mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_left);
+*)
 function SpellAvailable(var Coords: TBox; Spell: string): Boolean;
 var
   t_spArr: TstringArray;
@@ -842,16 +1003,30 @@ begin
   Result := (Lum > 40.0);
 end;
 
-{*******************************************************************************
-Function Cast(Spell: string; AutoCast: Boolean): Boolean;
-By: N1ke!
-Rev: 39
-Date: 12 Sep 09
-Description: Results true if the spell given is clicked.
-if Autocast is true, it'll toggle the spell to autocast.
-Will work however the spells are sorted, visable or not(Will enable
-the spells sort if not enabled).
-*******************************************************************************}
+(*
+Cast
+~~~~
+
+.. code-block:: pascal
+
+    function Cast(Spell: string; AutoCast: Boolean): Boolean;
+
+Results true if the spell given is clicked. If Autocast is true, it'll toggle
+the spell to autocast. Will work however the spells are sorted, visable or not
+(will enable the spells sort if not enabled).
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    if (Cast('superheat item', false)) then
+      Writeln('Casted Superheat Item!');
+*)
 function Cast(Spell: string; AutoCast: Boolean): Boolean;
 var
   X, Y: Integer;
@@ -891,11 +1066,27 @@ begin
     Result := WaitUpTextMulti(['Cast', 'ast', 'Cas'], 500+Random(100));
 end;
 
-{*******************************************************************************
-procedure SetupMagic;
-By: SRL
-Description: Declares Global Bitmaps.
-*******************************************************************************}
-procedure SetupMagic;
+(*
+SetupMagic
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetupMagic();
+
+Sets up the magic skill.
+
+.. note::
+
+    Author: N1ke!
+    Last Modified: 12 Sept. 09 by N1ke!
+
+Example:
+
+.. code-block:: pascal
+
+    SetupMagic();
+*)
+procedure SetupMagic();
 begin
 end;
