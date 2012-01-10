@@ -1,15 +1,4 @@
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               � Smart Painting routines                     --//
-//-----------------------------------------------------------------//
-// Procedure ClearCanvas(canvas: TCanvas; w, h: integer);          //
-// Procedure ClearRSCanvas(canvas: TCanvas);                       //
-// Procedure SMART_DrawDotsEx(Clear: boolean; pixels: TPointArray; color: TColor);
-// Procedure SMART_DrawDots(Dots: TPointArray);                    //
-// Procedure SMART_DrawBoxEx(Clear: boolean; Box: TBox; color: TColor);
-// procedure SMART_DrawBox(Box: TBox);                             //
-// procedure SMART_DrawText(x, y: Integer; font, Text: string; Color:TColor);
-//-----------------------------------------------------------------//
+
 
 var
   SMART_Canvas: TBitmap;
@@ -23,34 +12,21 @@ begin
   SMART_DebugSetup := true;
 end;
 
-{*******************************************************************************
-Procedure ClearCanvas(canvas: TCanvas; w, h: integer);
-Contributors: Sir R. Magician, mastaraymond
-Description: Clears a canvas of dimensions (w, h)
-*******************************************************************************}
-Procedure ClearCanvas(canvas: TCanvas; w, h: integer);
+procedure ClearCanvas(canvas: TCanvas; w, h: integer);
 var
   CleanBMP: integer;
 begin
-
   CleanBMP := BitmapFromString(w, h, '');
-
-  DrawBitmap(CleanBMP,Canvas,0,0);
+  DrawBitmap(CleanBMP, Canvas, 0, 0);
 
   try
     FreeBitmap(CleanBMP);
   except
     writeln('SMART BITMAP NOT FREED');
   end;
-
 end;
 
-{*******************************************************************************
-Procedure ClearRSCanvas(canvas: TCanvas);
-Contributors: Sir R. Magician
-Description: Clears a canvas of RS dimensions
-*******************************************************************************}
-Procedure ClearRSCanvas(canvas: TCanvas);
+procedure ClearRSCanvas(canvas: TCanvas);
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
@@ -58,12 +34,16 @@ begin
   ClearCanvas(canvas, MIX2 + 100, MIY2 + 100);
 end;
 
-{*******************************************************************************
-Procedure SMART_DrawDotsEx(Clear: boolean; pixels: TPointArray; color: TColor);
-Contributors: Sir R. Magician
-Description: Draws an ATPA onto the SMART Debug canvas
-*******************************************************************************}
-procedure DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
+procedure SMART_ClearCanvas;
+begin
+{$IFDEF SMART}
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+  ClearRSCanvas(SMART_Canvas.canvas);
+{$ENDIF}
+end;
+
+procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
 {$IFDEF SMART}
 var
   i, h, color : integer;
@@ -71,7 +51,7 @@ begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
 
-  if Clear then ClearRSCanvas(SMART_Canvas.canvas);
+  if Clear then SMART_ClearCanvas;
 
   for h := 0 to High(pixels) do
   begin
@@ -91,17 +71,11 @@ begin
       SMART_Canvas.canvas.LineTo(pixels[h][i].x, pixels[h][i].y);
     end;
   end;
-
 {$ELSE}
 begin
 {$ENDIF}
 end;
 
-{*******************************************************************************
-Procedure SMART_DrawDotsEx(Clear: boolean; pixels: TPointArray; color: TColor);
-Contributors: Sir R. Magician, caused, mastaraymond
-Description: Draws a TPA onto the SMART Debug canvas
-*******************************************************************************}
 procedure SMART_DrawDotsEx(Clear: boolean; pixels: TPointArray; color: TColor);
 {$IFDEF SMART}
 var
@@ -111,7 +85,7 @@ begin
     SMART_SetupDebug();
 
   SMART_Canvas.canvas.Pen.Color := color;
-  if Clear then ClearRSCanvas(SMART_Canvas.canvas);
+  if Clear then SMART_ClearCanvas;
 
   for i:= 0 to high(pixels) do
   begin
@@ -122,38 +96,47 @@ begin
 {$ELSE}
 begin
 {$ENDIF}
-
 end;
 
-{*******************************************************************************
-Procedure SMART_DrawDots(Dots: TPointArray);
-Contributors: Sir R. Magician
-Description: Draws a TPA onto the SMART Debug canvas
-*******************************************************************************}
 procedure SMART_DrawDots(Dots: TPointArray);
 begin
   SMART_DrawDotsEx(True, Dots, clRed);
 end;
 
-{*******************************************************************************
-procedure SMART_DrawBoxEx(Clear: boolean; Box: TBox; color: TColor);
-Contributors: Sir R. Magician, caused, mastaraymond
-Description: Draws a TBox onto the SMART Debug canvas
-*******************************************************************************}
-procedure SMART_DrawBoxEx(Clear: boolean; Box: TBox; color: TColor);
+procedure SMART_DrawBoxesEx(Clear: Boolean; TBA: TBoxArray; Color: Integer);
 {$IFDEF SMART}
+var
+  i, colour: Integer;
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
 
-  SMART_Canvas.canvas.Pen.Color := color;
-  if Clear then ClearRSCanvas(SMART_Canvas.canvas);
+  if Clear then SMART_ClearCanvas;
 
-  SMART_Canvas.canvas.moveto(Box.x1,Box.y1);
-  SMART_Canvas.canvas.LineTo(Box.x2,Box.y1);
-  SMART_Canvas.canvas.LineTo(Box.x2,Box.y2);
-  SMART_Canvas.canvas.LineTo(Box.x1,Box.y2);
-  SMART_Canvas.canvas.LineTo(Box.x1,Box.y1);
+  if (Length(TBA) < 1) then Exit;
+  for i := 0 to High(TBA) do
+  begin
+    if (Color > 0) then
+    begin
+      SMART_Canvas.canvas.Pen.Color := color;
+    end else
+    begin
+      colour := i div 5 + i mod 5;
+      case colour of
+        0 : SMART_Canvas.canvas.Pen.Color := clWhite;
+        1 : SMART_Canvas.canvas.Pen.Color := clYellow;
+        2 : SMART_Canvas.canvas.Pen.Color := clBlue;
+        3 : SMART_Canvas.canvas.Pen.Color := clLime;
+        4 : SMART_Canvas.canvas.Pen.Color := clGreen;
+      end;
+    end;
+
+    SMART_Canvas.canvas.moveto(TBA[i].x1,TBA[i].y1);
+    SMART_Canvas.canvas.LineTo(TBA[i].x2,TBA[i].y1);
+    SMART_Canvas.canvas.LineTo(TBA[i].x2,TBA[i].y2);
+    SMART_Canvas.canvas.LineTo(TBA[i].x1,TBA[i].y2);
+    SMART_Canvas.canvas.LineTo(TBA[i].x1,TBA[i].y1);
+  end;
 
 {$ELSE}
 begin
@@ -161,11 +144,16 @@ begin
 
 end;
 
-{*******************************************************************************
-Procedure SMART_DrawBox(Box: TBox);
-Contributors: Sir R. Magician
-Description: Draws a TBox onto the SMART Debug canvas
-*******************************************************************************}
+procedure SMART_DrawBoxes(TBA: TBoxArray);
+begin
+  SMART_DrawBoxesEx(True, TBA, clRed);
+end;
+
+procedure SMART_DrawBoxEx(Clear: boolean; Box: TBox; color: TColor);
+begin
+  SMART_DrawBoxesEx(Clear, [Box], color);
+end;
+
 procedure SMART_DrawBox(Box: TBox);
 begin
   SMART_DrawBoxEx(True, Box, clRed);
@@ -180,11 +168,89 @@ begin
   SMART_DrawBoxEx(Clear, Box, Color);
 end;
 
-{*******************************************************************************
-procedure SMART_DrawTextEx(Clear: Boolean; x, y: Integer; font, Text: string; Color: TColor);
-Contributors: Jukka, Shuttleu
-Description: Draws text onto the SMART Debug canvas at position x, y
-*******************************************************************************}
+procedure SMART_DrawLine(Clear: Boolean; TP1, TP2: TPoint; Color: TColor);
+begin
+{$IFDEF SMART}
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+
+  SMART_Canvas.canvas.Pen.Color := Color;
+
+  if Clear then SMART_ClearCanvas;
+
+  SMART_Canvas.canvas.moveto(TP1.x,TP1.y);
+  SMART_Canvas.canvas.LineTo(TP2.x,TP2.y);
+{$ENDIF}
+end;
+
+procedure SMART_DrawCircleEx(Clear: Boolean; Center: TPoint; Radius: Integer; Fill: Boolean; Color: TColor);
+{$IFDEF SMART}
+var
+  TPA: TPointArray;
+begin
+  TPA := TPAFromBox(IntToBox(Center.X - Radius, Center.Y - Radius, Center.X + Radius, Center.Y + Radius));
+  FilterPointsPie(TPA, 0, 360, -1, Radius, Center.X, Center.Y);
+  if not Fill then FilterPointsDist(TPA, Radius-1, Radius, Center.X, Center.Y);
+  if (Length(TPA) < 1) then Exit;
+  SMART_DrawDotsEx(Clear, TPA, Color);
+{$ELSE}
+begin
+{$ENDIF}
+end;
+
+procedure SMART_DrawCircle(Center: TPoint; Radius: Integer);
+begin
+  SMART_DrawCircleEx(True, Center, Radius, False, clRed);
+end;
+
+procedure SMART_DrawDotEx(Clear: Boolean; Point: TPoint; Big: Boolean; color: TColor);
+begin
+  if Big then
+    SMART_DrawCircleEx(Clear, Point, 11, True, Color)
+  else
+    SMART_DrawCircleEx(Clear, Point, 4, True, Color);
+end;
+
+procedure SMART_DrawDot(Point: TPoint);
+begin
+  SMART_DrawDotEx(True, Point, False, clRed);
+end;
+
+procedure SMART_DrawPolygonsEx(Clear: Boolean; Polygons: T2DPointArray; color: TColor);
+{$IFDEF SMART}
+var
+  i, h, Hi: Integer;
+begin
+  if Clear then SMART_ClearCanvas;
+  if (Length(Polygons) < 1) then Exit;
+  for h := 0 to High(Polygons) do
+  begin
+    Hi := High(Polygons[h]);
+    if (Hi < 2) then Exit;
+    for i := 0 to Hi - 1 do
+      SMART_DrawLine(False, Polygons[h][i], Polygons[h][i+1], color);
+    SMART_DrawLine(False, Polygons[h][Hi], Polygons[h][0], color);
+  end;
+{$ELSE}
+begin
+{$ENDIF}
+end;
+
+procedure SMART_DrawPolygons(Polygons: T2DPointArray);
+begin
+  SMART_DrawPolygonsEx(True, Polygons, clRed);
+end;
+
+procedure SMART_DrawPolygonEx(Clear: Boolean; Vertices: TPointArray; color: TColor);
+begin
+  SMART_DrawPolygonsEx(Clear, [Vertices], color);
+end;
+
+procedure SMART_DrawPolygon(Vertices: TPointArray);
+begin
+  SMART_DrawPolygonEx(True, Vertices, clRed);
+end;
+
 procedure SMART_DrawTextEx(Clear: Boolean; x, y: Integer; font, Text: string; Color:TColor);
 var
   i, height: integer;
@@ -199,11 +265,6 @@ begin
   SMART_DrawDotsEx(Clear, tpa, Color);
 end;
 
-{*******************************************************************************
-procedure SMART_DrawText(x, y: Integer; font, Text: string; Color: TColor);
-Contributors: Shuttleu
-Description: Draws text onto the SMART Debug canvas at position x, y
-*******************************************************************************}
 procedure SMART_DrawText(x, y: Integer; font, Text: string; Color:TColor);
 begin
   SMART_DrawTextEx(False, x, y, font, Text, Color);
