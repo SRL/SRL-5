@@ -103,7 +103,7 @@ begin
   SMART_DrawDotsEx(True, Dots, clRed);
 end;
 
-procedure SMART_DrawBoxesEx(Clear: Boolean; TBA: TBoxArray; Color: Integer);
+procedure SMART_DrawBoxes(Clear: Boolean; TBA: TBoxArray; Color: Integer);
 {$IFDEF SMART}
 var
   i, colour: Integer;
@@ -141,17 +141,11 @@ begin
 {$ELSE}
 begin
 {$ENDIF}
-
-end;
-
-procedure SMART_DrawBoxes(TBA: TBoxArray);
-begin
-  SMART_DrawBoxesEx(True, TBA, clRed);
 end;
 
 procedure SMART_DrawBoxEx(Clear: boolean; Box: TBox; color: TColor);
 begin
-  SMART_DrawBoxesEx(Clear, [Box], color);
+  SMART_DrawBoxes(Clear, [Box], color);
 end;
 
 procedure SMART_DrawBox(Box: TBox);
@@ -176,79 +170,61 @@ begin
 
   SMART_Canvas.canvas.Pen.Color := Color;
 
-  if Clear then SMART_ClearCanvas;
+  if (Clear) then
+    SMART_ClearCanvas;
 
   SMART_Canvas.canvas.moveto(TP1.x,TP1.y);
   SMART_Canvas.canvas.LineTo(TP2.x,TP2.y);
 {$ENDIF}
 end;
 
-procedure SMART_DrawCircleEx(Clear: Boolean; Center: TPoint; Radius: Integer; Fill: Boolean; Color: TColor);
+procedure SMART_DrawCircle(Clear: Boolean; Center: TPoint; Radius: Integer; Fill: Boolean; Color: TColor);
 {$IFDEF SMART}
 var
   TPA: TPointArray;
 begin
   TPA := TPAFromBox(IntToBox(Center.X - Radius, Center.Y - Radius, Center.X + Radius, Center.Y + Radius));
   FilterPointsPie(TPA, 0, 360, -1, Radius, Center.X, Center.Y);
-  if not Fill then FilterPointsDist(TPA, Radius-1, Radius, Center.X, Center.Y);
-  if (Length(TPA) < 1) then Exit;
-  SMART_DrawDotsEx(Clear, TPA, Color);
+
+  if (not Fill) then
+    FilterPointsDist(TPA, Radius-1, Radius, Center.X, Center.Y);
+
+  if (Length(TPA) >= 1) then
+    SMART_DrawDotsEx(Clear, TPA, Color);
 {$ELSE}
 begin
 {$ENDIF}
 end;
 
-procedure SMART_DrawCircle(Center: TPoint; Radius: Integer);
+procedure SMART_DrawDot(Clear: Boolean; Point: TPoint; Color: TColor);
 begin
-  SMART_DrawCircleEx(True, Center, Radius, False, clRed);
+  SMART_DrawCircle(Clear, Point, 1, true, Color);
 end;
 
-procedure SMART_DrawDotEx(Clear: Boolean; Point: TPoint; Big: Boolean; color: TColor);
-begin
-  if Big then
-    SMART_DrawCircleEx(Clear, Point, 11, True, Color)
-  else
-    SMART_DrawCircleEx(Clear, Point, 1, True, Color);
-end;
-
-procedure SMART_DrawDot(Point: TPoint);
-begin
-  SMART_DrawDotEx(True, Point, False, clRed);
-end;
-
-procedure SMART_DrawPolygonsEx(Clear: Boolean; Polygons: T2DPointArray; color: TColor);
+procedure SMART_DrawPolygons(Clear: Boolean; Polygons: T2DPointArray; color: TColor);
 {$IFDEF SMART}
 var
   i, h, Hi: Integer;
 begin
-  if Clear then SMART_ClearCanvas;
-  if (Length(Polygons) < 1) then Exit;
+  if (Clear) then
+    SMART_ClearCanvas;
+
+  if (Length(Polygons) < 1) then
+    Exit;
+
   for h := 0 to High(Polygons) do
   begin
     Hi := High(Polygons[h]);
     if (Hi < 2) then Exit;
+
     for i := 0 to Hi - 1 do
       SMART_DrawLine(False, Polygons[h][i], Polygons[h][i+1], color);
+
     SMART_DrawLine(False, Polygons[h][Hi], Polygons[h][0], color);
   end;
 {$ELSE}
 begin
 {$ENDIF}
-end;
-
-procedure SMART_DrawPolygons(Polygons: T2DPointArray);
-begin
-  SMART_DrawPolygonsEx(True, Polygons, clRed);
-end;
-
-procedure SMART_DrawPolygonEx(Clear: Boolean; Vertices: TPointArray; color: TColor);
-begin
-  SMART_DrawPolygonsEx(Clear, [Vertices], color);
-end;
-
-procedure SMART_DrawPolygon(Vertices: TPointArray);
-begin
-  SMART_DrawPolygonEx(True, Vertices, clRed);
 end;
 
 (*
@@ -300,9 +276,9 @@ begin
     begin
       Numb := ((i + 1) * H);
 
-      SMART_DrawDotEx(false, Point(TTP[b].x + Placement.x, TTP[b].y + Numb), false, Colour);
+      SMART_DrawDot(false, Point(TTP[b].x + Placement.x, TTP[b].y + Placement.y + Numb), Colour);
       if (Shadow) then
-        SMART_DrawDotEx(false, Point(TTP[b].x + Placement.x + 1, TTP[b].y + Numb + 1), false, 131072);
+        SMART_DrawDot(false, Point(TTP[b].x + Placement.x + 1, TTP[b].y + + Placement.y + Numb + 1), 131072);
     end;
   end;
 end;
