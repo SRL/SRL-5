@@ -208,7 +208,7 @@ begin
   if Big then
     SMART_DrawCircleEx(Clear, Point, 11, True, Color)
   else
-    SMART_DrawCircleEx(Clear, Point, 4, True, Color);
+    SMART_DrawCircleEx(Clear, Point, 1, True, Color);
 end;
 
 procedure SMART_DrawDot(Point: TPoint);
@@ -251,21 +251,68 @@ begin
   SMART_DrawPolygonEx(True, Vertices, clRed);
 end;
 
-procedure SMART_DrawTextEx(Clear: Boolean; x, y: Integer; font, Text: string; Color:TColor);
+(*
+SMART_DrawTextMulti
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
+
+Draws text on the SMART canvas.  Used mainly for progress reports.  Parameters
+are as follows:
+    * Clear: Clear the SMART canvas before drawing
+    * Shadow: if set to true, will add a shadow to the text
+    * TP: the string array of what to be printed; each element is a different line
+    * Placement: the point to start the text drawing
+    * Font: the font to use (see Simba/Fonts/)
+    * Colour: the color of the font
+
+.. note::
+
+    Author: Flight & Coh3n
+    Last Modified: January 10th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DrawTextMulti(['Time Run: '+TimeRunning', 'Logs Chopped: 10'], Point(10, 10), LoginChars, clRed, true);
+*)
+procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
 var
-  i, height: integer;
-  tpa: tpointarray;
+  i, b, h, TPH, Numb: Integer;
+  TTP: TPointArray;
 begin
-  tpa := LoadTextTPA(text,font,height);
-  for i:= 0 to high(tpa) do
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+
+  if (Clear) then
+    SMART_ClearCanvas();
+
+  TPH := High(TP);
+
+  for i := 0 to TPH do
   begin
-    tpa[i].x := tpa[i].x + x;
-    tpa[i].y := tpa[i].y + y;
+    TTP := LoadTextTPA(TP[i], Font, h);
+
+    for b := 0 to High(TTP) do
+    begin
+      Numb := ((i + 1) * H);
+
+      SMART_DrawDotEx(false, Point(TTP[b].x + Placement.x, TTP[b].y + Numb), false, Colour);
+      if (Shadow) then
+        SMART_DrawDotEx(false, Point(TTP[b].x + Placement.x + 1, TTP[b].y + Numb + 1), false, 131072);
+    end;
   end;
-  SMART_DrawDotsEx(Clear, tpa, Color);
 end;
 
-procedure SMART_DrawText(x, y: Integer; font, Text: string; Color:TColor);
+procedure SMART_DrawTextEx(Clear: Boolean; x, y: Integer; font, Text: string; Color: TColor);
+begin
+  SMART_DrawTextMulti(Clear, true, [Text], Point(x, y), font, Color);
+end;
+
+procedure SMART_DrawText(x, y: Integer; font, Text: string; Color: TColor);
 begin
   SMART_DrawTextEx(False, x, y, font, Text, Color);
 end;
