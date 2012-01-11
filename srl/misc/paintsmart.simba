@@ -12,35 +12,30 @@ begin
   SMART_DebugSetup := true;
 end;
 
-procedure ClearCanvas(canvas: TCanvas; w, h: integer);
+procedure SMART_ClearCanvasArea(w, h: integer; Position: TPoint);
+{$IFDEF SMART}
 var
   CleanBMP: integer;
 begin
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+
   CleanBMP := BitmapFromString(w, h, '');
-  DrawBitmap(CleanBMP, Canvas, 0, 0);
+  DrawBitmap(CleanBMP, SMART_Canvas.Canvas, Position.x , Position.y);
 
   try
     FreeBitmap(CleanBMP);
   except
-    writeln('SMART BITMAP NOT FREED');
+    Writeln('SMART_ClearCanvasArea: Couldn''t free CleanBMP');
   end;
-end;
-
-procedure ClearRSCanvas(canvas: TCanvas);
+{$ELSE}
 begin
-  if (not SMART_DebugSetup) then
-    SMART_SetupDebug();
-
-  ClearCanvas(canvas, MIX2 + 100, MIY2 + 100);
+{$ENDIF}
 end;
 
 procedure SMART_ClearCanvas;
 begin
-{$IFDEF SMART}
-  if (not SMART_DebugSetup) then
-    SMART_SetupDebug();
-  ClearRSCanvas(SMART_Canvas.canvas);
-{$ENDIF}
+  SMART_ClearCanvasArea(MIX2 + 100, MIY2 + 100, Point(0, 0));
 end;
 
 procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
