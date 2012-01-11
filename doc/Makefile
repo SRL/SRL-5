@@ -6,9 +6,13 @@ core =	amount animation antiban autocolor bank bitmaps chat \
 		object players timing symbol \
 		text worldswitcher
 
+skill =	 magic
+
 all:
 	@python docgen.py `echo $(core) | sed -r \
 		's/(\w+)/..\/srl\/core\/\1.simba/g'` > /dev/null
+	@python docgen.py `echo $(skill) | sed -r \
+		's/(\w+)/..\/srl\/skill\/\1.simba/g'` > /dev/null
 	@make -C sphinx/ html
 
 clean:
