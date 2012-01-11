@@ -866,7 +866,7 @@ begin
     TPA := ATPA[i];
     tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
     SortATPAFromFirstPointX(tempatpa, Point(0, 0));
-    Result[i].Str := GetTextATPA(tempatpa, 4, 'SmallChars');
+    Result[i].Str := GetTextATPA(tempatpa, 4, 'UpCharsEx');
     BB := GetTPABounds(ATPA[i]);
     Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
     setlength(tempatpa,0);
