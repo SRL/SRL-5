@@ -228,7 +228,7 @@ SMART_DrawTextMulti
 
 .. code-block:: pascal
 
-procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
+  procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
 
 Draws text on the SMART canvas.  Used mainly for progress reports.  Parameters
 are as follows:
@@ -286,6 +286,39 @@ end;
 procedure SMART_DrawText(x, y: Integer; font, Text: string; Color: TColor);
 begin
   SMART_DrawTextEx(False, x, y, font, Text, Color);
+end;
+
+(*
+SMART_DrawBitmap
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure SMART_DrawBitmap(Clear: Boolean; Bitmap: Integer; Placement: TPoint);
+
+Draws a bitmap (Bitmap) on the SMART canvas at given coordinates (Placement).
+Will clear the canvas beforehand if specified to do so (Clear).
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: January 10th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DrawBitmap(true, bmp, point(5, 5));
+*)
+procedure SMART_DrawBitmap(Clear: Boolean; Bitmap: Integer; Placement: TPoint);
+begin
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+
+  if (Clear) then
+    SMART_ClearCanvas();
+
+  DrawBitmap(Bitmap, SMART_Canvas.Canvas, Placement.X, Placement.Y);
 end;
 
 procedure SMART_FreeDebug();
