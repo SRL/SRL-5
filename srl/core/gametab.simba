@@ -217,6 +217,63 @@ end;
 
 (*
 
+FTab
+~~~~~~~
+
+.. code-block:: pascal
+
+    function FTab(Tab: Integer): Boolean;
+
+Instead of clicking the Tab this uses the F keys to instantly switch to the tab.
+Only works with Inv, Equip, Prayer, Magic and Combat tabs (F1-F5).
+Returns True if the Tab exists.
+
+.. note::
+
+    by Narcle
+
+.. code-block:: pascal
+
+    const
+      tab_Combat = 21;
+      tab_Inv = 25;
+      tab_Equip = 26;
+      tab_Prayer = 27;
+      tab_Magic = 28;
+
+.. note::
+    Please use the constants and not the numbers! They may change any interface update.
+
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function FTab(Tab: integer): boolean;
+var
+  T: integer;
+begin
+  if (GetCurrentTab = Tab) then
+  begin
+    result := true;
+    Exit;
+  end;
+  Case Tab of
+    tab_Inv: t := 1;
+    tab_Equip: t := 2;
+    tab_Prayer: t := 3;
+    tab_Magic: t := 4;
+    tab_Combat: t := 5;
+    else
+      writeln('Tab '+inttostr(tab)+' isn''t a valid option.');
+  end;
+  TypeByte(111+T)
+  Result := GetCurrentTab = Tab;
+end;
+
+(*
+
 Gametab 1
 ---------
 

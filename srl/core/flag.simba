@@ -297,7 +297,7 @@ function FlagEx(Dist: Integer; RoadColorCheck: Boolean): Boolean;
 var
   Tx, Ty, M, D1, D2: Integer;
 begin
-  Wait(randomRange(400, 200));
+  Wait(randomRange(400, 600));
   Result := False;
   M := GetSystemTime;
   repeat
