@@ -806,16 +806,16 @@ begin
   if (BankScreen) or (DepositScreen) then
   begin
     case Which of
-      SRL_DEPOSIT_ALL:       StartX := 365;
-      SRL_DEPOSIT_COINS:     StartX := 400;
-      SRL_DEPOSIT_EQUIPMENT: StartX := 435;
-      SRL_DEPOSIT_FOLLOWER:  StartX := 475;
+      SRL_DEPOSIT_ALL:       StartX := 362;
+      SRL_DEPOSIT_EQUIPMENT: StartX := 395;
+      SRL_DEPOSIT_FOLLOWER:  StartX := 431;
+      SRL_DEPOSIT_COINS:     StartX := 467;
 
       else
         SRL_Warn('QuickDeposit', 'Invalid deposit method ', WARN_ALLVERSIONS);
     end;
 
-    Mouse(StartX - 58 * Integer(DepositScreen), 307 - 29 * Integer(DepositScreen), 15, 10, True);
+    Mouse(StartX - 58 * Integer(DepositScreen), 303 - 29 * Integer(DepositScreen), 15, 10, True);
     Wait(200 + Random(300));
   end;
 end;
