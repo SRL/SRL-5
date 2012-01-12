@@ -586,7 +586,7 @@ begin
 
     for b := 0 to High(TTP) do
     begin
-      Numb := ((i + 1) * H);
+      Numb := (i * H);
 
       SMART_DrawDot(false, Point(TTP[b].x + Placement.x, TTP[b].y + Placement.y + Numb), Colour);
       if (Shadow) then
