@@ -696,6 +696,7 @@ begin
        364: Actions := ['Error Connecting.',                 20000,    9,    'Terminate',     'Error Connecting'];
       1057: Actions := ['Too many incorrect logins.',    5 * 60000,    2,    'PlayerFalse',   'Too many logins'];
        732: Actions := ['Runescape has been updated.',           0,    0,    'RSUpdate',      'RS Updated'];
+       591: Actions := ['Client token changed.',                 0,    0,    'RSUpdate',      'Client Token Changed'];
        777: Actions := ['Login limit exceeded.',             20000,   10,    '',              'Waiting for login.'];
     end;
                              {Respond}
