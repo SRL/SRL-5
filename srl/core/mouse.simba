@@ -581,7 +581,7 @@ DidRedClick
 
     function DidRedClick: Boolean;
 
-Checks for the Yellow X after a Click, Times out after 500 ms
+Checks for the Red X after a Click, Times out after 500 ms
 
 .. note::
 
