@@ -315,13 +315,13 @@ begin
                IntToBox(575, 310, 630, 345), IntToBox(660, 310, 710, 345)];
   b := cmbBoxes[oFightMode - 1];
 
-  if (not(GetColor(674, 334) = 2070783)) and (oFightMode = 4) then
+  if (oFightMode = 4) and (not FindColor(x, y, 2070783, 660, 310, 710, 345)) then
     b := cmbBoxes[2];
 
   i := 0;
   while (i < 4) do
   begin
-    Result := FindColorTolerance(x, y, 1777020, b.x1, b.y1, b.x2, b.y2, 2);
+    Result := FindColorTolerance(x, y, 1323362, b.x1, b.y1, b.x2, b.y2, 2);
     if (Result) then Exit;
     MouseBox(b.x1, b.y1, b.x2, b.y2, mouse_left);
     Wait(500 + Random(300));
@@ -523,7 +523,7 @@ Begin
     GameTab(tab_Combat);
     Wait(500 + Random(500));
   end;
-  if (RetTrue) xor FindColorTolerance(X, Y, 1777019, 624, 385, 719, 396, 2) then
+  if (RetTrue) xor FindColorTolerance(X, Y, 1125209, 624, 385, 719, 396, 2) then
     MouseBox(624, 385, 719, 396, mouse_left);
 End;
 
@@ -2296,9 +2296,9 @@ ISXPBarOpen
 
 .. code-block:: pascal
 
-    function IsXPBarOpen: Boolean;
+    function IsXPBarOpen(CounterNum: integer): Boolean;
 
-Results True if the XP Bar is showing.
+Results True if the XP Bar is showing. Counter number 1 to 3
 
 .. note::
 
@@ -2307,9 +2307,46 @@ Results True if the XP Bar is showing.
 *)
 
 
-function IsXPBarOpen: Boolean;
+function IsXPBarOpen(CounterNum: integer): Boolean;
 begin
-  Result := CountColor(4081997, 442, 55, 510, 69) > 10;
+  Result := CountColor(14474460, 481, 10+(CounterNum-1)*22, 489, 22+(CounterNum-1)*22) > 6;
+end;
+
+(*
+ToggleXPBarEx
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ToggleXPBarEx(Open: Boolean; CounterNum: integer): Boolean;
+
+Opens or closes the XP Bar, true if had to toggle.
+Counter number 1 to 3
+
+.. note::
+    by Narcle & IceFire908
+
+*)
+
+function ToggleXPBarEx(Open: Boolean; CounterNum: integer): Boolean;
+var
+  TPA: TPointArray;
+  P: TPoint;
+  T: Integer;
+begin
+  if Open xor IsXPBarOpen(CounterNum) then
+  begin
+    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    P := TPA[Random(Length(TPA))];
+    Mouse(P.X, P.Y, 0, 0, mouse_left);
+    T := GetSystemTime + 300;
+    repeat
+      wait(1);
+      Result := Open = IsXPBarOpen(CounterNum);
+    until Result or (GetSystemTime > t);
+  end else
+    Result := true;
 end;
 
 (*
@@ -2326,26 +2363,38 @@ Opens or closes the XP Bar, true if had to toggle.
     by Narcle & IceFire908
 
 *)
-
 function ToggleXPBar(Open: Boolean): Boolean;
+begin
+  Result := ToggleXPBarEx(Open, 1);
+end;
+
+(*
+GetXPBar
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetXPBar(CounterNum: integer): LongInt;
+
+Returns the number from your XP Bar.
+Counter number 1 to 3
+
+.. note::
+
+    by Narcle & IceFire908
+*)
+Function GetXPBar(CounterNum: integer): LongInt;
 var
   TPA: TPointArray;
-  P: TPoint;
-  T: Integer;
+  B: TBox;
 begin
-  if Open xor IsXPBarOpen then
+  if ToggleXPBarEx(true, CounterNum) then
   begin
-    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
-    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
-    P := TPA[Random(Length(TPA))];
-    Mouse(P.X, P.Y, 0, 0, mouse_left);
-    T := GetSystemTime + 300;
-    repeat
-      wait(1);
-      Result := Open = IsXPBarOpen;
-    until Result or (GetSystemTime > t);
-  end else
-    Result := true;
+    FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
+    B := GetTPABounds(TPA);
+    Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2,
+                                   0, 1, 4, 14474460, 0, XPChars), Numbers), 0);
+  end;
 end;
 
 (*
@@ -2364,18 +2413,8 @@ Returns the number from your XP Bar.
 *)
 
 function GetXPBarTotal: LongInt;
-var
-  TPA: TPointArray;
-  B: TBox;
 begin
-  if ToggleXPBar(True) then
-  begin
-    FindColorsTolerance(TPA, clWhite, 342, 55, 510, 69, 1);
-    B := GetTPABounds(TPA);
-    B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
-    Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2,
-                                0, 5, 4, clWhite, 0, 'XPChars'), Numbers), 0);
-  end;
+  Result := GetXPBar(1);
 end;
 
 (*
