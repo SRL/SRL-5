@@ -2476,16 +2476,23 @@ Returns amount of coins in pouch.
 
 .. note ::
 
-    by Home
+    by Home & Richard
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetMoneyPouchAmount();
 
 *)
-function GetMoneyPouchAmount: LongInt;
+function GetMoneyPouchAmount: Integer;
 var
   Previous: Boolean;
   TPA: TPointArray;
   B: TBox;
   I :Integer;
   Col :TIntegerArray;
+  Money :String;
 begin
   Previous := IsMoneyPouchOpen;
   if (ToggleMoneyPouch(True)) then
@@ -2496,11 +2503,13 @@ begin
   begin
     B := GetTPABounds(TPA);
     B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
-    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1, B.Y1 - 1, 0, StatChars, False, False, 0, 2, Col[I], 5, False, tr_Digits)), -1);
-    Case I of
-       2: Result := Result * 1000;
-       3: Result := Result * 1000000;
-    end;
+    Money := (GetTextAtEx(B.X1 - 1, B.Y1 - 1, 0, StatChars, False, False, 0, 2, Col[I], 5, False, tr_AllChars));
+    Result := StrToIntDef(GetNumbers(Money), -1);
+    If Pos('K', Money) > 0 then
+      Result := Result * 1000;
+    If Pos('M', Money) > 0 then
+      Result := Result * 1000000;
+    break;
   end;
   if (not(Previous)) then
   begin
