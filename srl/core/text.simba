@@ -826,16 +826,16 @@ begin
   B := IntToBox(0, 0, B.X2-1, B.Y2-1);
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
-  FindColorsTolerance(TPA1, 4343893, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 3950929, B.X1, B.Y1, B.X2, B.Y2, 0);
+  FindColorsTolerance(TPA1, 1842204, B.X1, B.Y1, B.X2, B.Y2, 0);
+  FindColorsTolerance(TPA2, 2302755, B.X1, B.Y1, B.X2, B.Y2, 0);
   TPA := CombineTPA(TPA1, TPA2);
   If Length(TPA) < 10 Then
     Exit;
+
   B := IntToBox(0, 0, 0, 0);
   aTPA := SplitTPA(TPA, 10);
   SortATPASize(aTPA, True);
   B := GetTPABounds(aTPA[0]);
-
   //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
   Colors := [14342147, 14079443, 3832268, 9677229, 840143{, 710915}];
 
@@ -855,7 +855,6 @@ begin
   GetbitmapSize(bmp,w,h);
   SetTargetBitmap(bmp);  // new target for findcolorstolerance.
   findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
-
   ATPA := SplitTPAEx(TPA, 15, 2);
   L := High(ATPA);
   SortATPAFromFirstPointY(ATPA, Point(w/2,0));
