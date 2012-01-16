@@ -104,7 +104,7 @@ Example:
 
 .. code-block:: pascal
 
-    SMART_ClearCanvasArea(IntToBox(10, 10, 50, 50));
+    SMART_ClearCanvasArea();
 *)
 procedure SMART_ClearCanvas;
 var

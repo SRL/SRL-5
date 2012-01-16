@@ -723,14 +723,14 @@ begin
     TP := Point(TP.x + 15,TP.y + 12);
   CTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(0);
-  if not FindColors(TPA, 65535, TP.x - 2, TP.y - 2, TP.x + 15, TP.y + 15) then
+  if not FindColors(TPA, 36095, TP.x - 2, TP.y - 2, TP.x + 15, TP.y + 15) then
   begin
     ColorToleranceSpeed(CTS);
     exit;
   end;
   Box := GetTPABounds(TPA);
   Result := StrToIntDef(GetNumbers(GetTextAtEx(Box.x1 - 2, Box.y1 -1, 100,
-    StatChars, False, True, 0, 3,65535, 3, True, tr_Digits)), -1);
+    StatChars, False, True, 0, 3, 36095, 3, True, tr_Digits)), -1);
   ColorToleranceSpeed(CTS);
 end;
 
@@ -881,7 +881,7 @@ begin
   mmouse(p.x, p.y + 5, 12, 4);
   wait(400 + random(200));
 
-  if (WaitFindColors(tpa, 921102, MIX1, MIY1, MIX2, MIY2, 0, 3000)) then
+  if (WaitFindColors(tpa, 15133931, MIX1, MIY1, MIX2, MIY2, 0, 3000)) then
   begin
     b := getTPABounds(tpa);
     wait(400 + random(150));
@@ -922,7 +922,7 @@ begin
   if (P.x < 1) then exit;
   MMouse(P.x, P.y + 5, 12, 4);
   wait(400 + random(200));
-  if (not WaitFindColors(TPA, 921102, MIX1, MIY1, MIX2, MIY2, 0, 4000)) then exit;
+  if (not WaitFindColors(TPA, 15133931, MIX1, MIY1, MIX2, MIY2, 0, 4000)) then exit;
   B := GetTPABounds(TPA);
   Wait(200 + Random(150));
   Result := StrToIntDef(GetNumbers(GetTextAt(B.X1 + 15, B.Y1 + 45, 0, 1, 4, 4305653, 0, 75, SmallChars)), -1);

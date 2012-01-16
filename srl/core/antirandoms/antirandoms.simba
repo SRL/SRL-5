@@ -399,7 +399,7 @@ skill: Skill to use with lamp eg. 'strength', 'attack', etc.
 
 function FindLamp(skill: string): Boolean;
 var
-  LampTime, X, Y, I: Integer;
+  LampTime, X, Y, I, T: Integer;
 begin
   GameTab(tab_Inv);
   if not SRLBitmapsLoaded then
@@ -459,7 +459,9 @@ begin
     end;
     Mouse(416, 281, 7, 1, mouse_left);
     Wait(1111 + Random(150) + Random(150));
-    while ClickContinue(true,true) do
+
+    T := (GetSystemTime + 5000);
+    while ClickContinue(true, true) and (GetSystemTime < T) do
       wait(500+random(100));
   end;
 end;
