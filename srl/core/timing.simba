@@ -751,6 +751,52 @@ begin
 end;
 
 (*
+WaitFuncEx
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+
+Calls Func with arguments Args every WaitPerLoop milliseconds for a max of
+MaxWait milliseconds. Func can return any basic types (boolean, string,
+integer). Boolean: Returns it. String: Returns true if string equals 'true'.
+Integer: Returns true unless it equals 0.
+
+.. note::
+
+  by Dgby714
+
+Example:
+
+.. code-block:: pascal
+
+  var
+    V: TVariantArray;
+  begin
+    V := [0, 0, 16711680, 4, 4, 500, 500];
+    WriteLn(WaitFuncEx('FindColorEx', V, 10 + Random(15), 1000));
+  end.
+*)
+function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+var
+  T: integer;
+  Temp: variant;
+begin
+  T := GetSystemTime + MaxWait;
+  while (GetSystemTime < T) do
+  begin
+    Temp := CallProc(Func, Args);
+    if (not (VarType(Temp) = varString)) then
+      Temp := ToStr(Temp);
+    Result := StrToBoolDef(Temp, False);
+    if (Result) then
+      Exit;
+    Wait(WaitPerLoop);
+  end;
+end;
+
+(*
 WaitFunc
 ~~~~~~~~
 
