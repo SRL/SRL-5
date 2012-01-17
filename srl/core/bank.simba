@@ -997,15 +997,23 @@ begin
   end;
 
   if (Amount = -1) then
-    Result := WaitOptionMulti(['Withdraw-All but', 'l b'], 300)
-  else if (Amount = 0) then
-    Result := WaitOptionMulti(['Withdraw-All', 'w-A'], 300)
-  else
-    Result := WaitOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)] , 300);
+  begin
+    if (WaitOptionMultiEx(['Withdraw-All but', 'l b'], 'All', Nothing, 300)) then
+      Result := ChooseOptionMulti(['Withdraw-All but', 'l b']);
+  end else
+    if (Amount = 0) then
+    begin
+      if (WaitOptionMultiEx(['Withdraw-All', 'w-A'], 'All', Nothing, 300)) then
+        Result := ChooseOptionMulti(['Withdraw-All', 'w-A']);
+    end else
+      if (WaitOptionMultiEx(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)], 'All', Nothing, 300)) then
+        Result := ChooseOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)]);
 
   if (not (Result)) and (Amount > 0) then
   begin
-    MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_right);
+    if (not OptionsExist(['Choose Option', 'oose O', 'hoose'], nothing)) then
+      MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_right);
+
     if WaitOptionMulti(['Withdraw-X', 'w-X'], 500) then
     begin
        X := GetSystemTime + 10000;
