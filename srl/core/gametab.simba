@@ -2291,7 +2291,7 @@ XP Counter related functions
 *)
 
 (*
-ISXPBarOpen
+ISXPBarOpenEx
 ~~~~~~~~~~~
 
 .. code-block:: pascal
@@ -2307,9 +2307,31 @@ Results True if the XP Bar is showing. Counter number 1 to 3
 *)
 
 
-function IsXPBarOpen(CounterNum: integer): Boolean;
+function IsXPBarOpenEx(CounterNum: integer): Boolean;
 begin
   Result := CountColor(14474460, 481, 10+(CounterNum-1)*22, 489, 22+(CounterNum-1)*22) > 6;
+end;
+
+
+(*
+ISXPBarOpen
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsXPBarOpen: Boolean;
+
+Results True if the XP Bar is showing.
+Added for compatability
+
+.. note::
+
+    by Narcle & IceFire908
+
+*)
+function IsXPBarOpen: Boolean;
+begin
+  Result := IsXPBarOpenEx(1);
 end;
 
 (*
@@ -2334,7 +2356,7 @@ var
   P: TPoint;
   T: Integer;
 begin
-  if Open xor IsXPBarOpen(CounterNum) then
+  if Open xor IsXPBarOpenEx(CounterNum) then
   begin
     TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
     FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
@@ -2343,7 +2365,7 @@ begin
     T := GetSystemTime + 300;
     repeat
       wait(1);
-      Result := Open = IsXPBarOpen(CounterNum);
+      Result := Open = IsXPBarOpenEx(CounterNum);
     until Result or (GetSystemTime > t);
   end else
     Result := true;
