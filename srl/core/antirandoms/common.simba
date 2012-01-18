@@ -164,7 +164,7 @@ function AreTalking: Boolean;
 var
    x, y: integer;
 begin
-  Result := FindColor(x, y, 128, 150, 250, 500, 380);
+  Result := FindColor(x, y, 1577999, 140, 340, 370, 370);
 end;
 
 {*******************************************************************************
