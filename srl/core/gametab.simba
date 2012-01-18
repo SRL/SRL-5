@@ -490,7 +490,7 @@ begin
     exit;
   Wait(100 + Random(100));
   Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680, 229, 718, 245, 0,
-                                   3, 4, 3907053, 20, XPChars), Numbers), -1);
+                                   3, 4, 3907053, 20, UpChars), Numbers), -1);
 end;
 
 (*
@@ -2415,7 +2415,7 @@ begin
   begin
     FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
     B := GetTPABounds(TPA);
-    S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, XPChars), ' ', '');
+    S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, UpChars), ' ', '');
     P := Pos('xp', S);
     if P > 0 then
       Result := StrToIntDef(ExtractFromStr(Copy(s, P, Length(S)), Numbers), 0)
