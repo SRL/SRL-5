@@ -816,7 +816,7 @@ Example:
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
    B,BB: TBox;
-   TPA, TPA1, TPA2: TPointArray;
+   TPA, TPA1: TPointArray;
    aTPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
    Colors: TIntegerArray;
@@ -826,9 +826,7 @@ begin
   B := IntToBox(0, 0, B.X2-1, B.Y2-1);
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
-  FindColorsTolerance(TPA1, 1842204, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 2302755, B.X1, B.Y1, B.X2, B.Y2, 0);
-  TPA := CombineTPA(TPA1, TPA2);
+  FindColorsTolerance(TPA, 16711422, B.X1, B.Y1, B.X2, B.Y2, 0);
   If Length(TPA) < 10 Then
     Exit;
 
