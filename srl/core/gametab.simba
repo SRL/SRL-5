@@ -492,7 +492,7 @@ begin
     exit;
   Wait(100 + Random(100));
   Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680, 229, 718, 245, 0,
-                                    3, 4, 3907053, 20, XPChars), Numbers), -1);
+                                   3, 4, 3907053, 20, XPChars), Numbers), -1);
 end;
 
 (*
