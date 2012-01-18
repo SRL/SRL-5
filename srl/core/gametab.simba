@@ -484,8 +484,6 @@ Example:
 
 *)
 function GetCombatLevel: Integer;
-var
-  x, y: Integer;
 begin
   Result := -1;
   if not Gametab(tab_Combat) then
