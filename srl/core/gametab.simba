@@ -476,6 +476,7 @@ Returns the players combat level.
 .. note::
 
     by Nielsie95
+    Updated 1/18/2012 by Narcle
 
 Example:
 
@@ -490,8 +491,8 @@ begin
   if not Gametab(tab_Combat) then
     exit;
   Wait(100 + Random(100));
-  if IsTextInAreaEx(590, 225, 690, 245, x, y, 'Combat', 0, StatChars, False, False, 0, 2, 2070783) then
-    Result := StrToIntDef(Trim(GetTextAtEx(x, y, 0, StatChars, False, False, 0, 2, 2070783, 20, True, tr_Digits)), -1);
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680, 229, 718, 245, 0,
+                                    3, 4, 3907053, 20, XPChars), Numbers), -1);
 end;
 
 (*
