@@ -79,7 +79,9 @@ const
   SKILL_CONSTRUCTION  = 22;
   SKILL_SUMMONING     = 23;
   SKILL_DUNGEONEERING = 24;
-  SKILL_NONE          = 25;
+  SKILL_ALLCOMBAT     = 25;
+  SKILL_EVERYSKILL    = 26;
+  SKILL_NONE          = 27;
 
 // * Antirandom const
 { var UseSandwichSolver, UseBoxSolver, UseCerterSolve: Boolean;
