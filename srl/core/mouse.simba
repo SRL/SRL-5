@@ -278,12 +278,10 @@ var
 begin
   GaussBox(fx, fy, x1, y1, x2, y2);
 
-  case ClickType of
-    mouse_right..mouse_middle : Mouse(fx, fy, 0, 0, clickType);
-    mouse_move : MMouse(fx, fy, 0, 0);
+  if InRange(ClickType, mouse_Right, mouse_move) then
+    Mouse(fx, fy, 0, 0, clickType)
   else
     srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
-  end;
 end;
 
 procedure MouseAction(mx, my, rx, ry: Integer; a: fnct_ActionOptions);

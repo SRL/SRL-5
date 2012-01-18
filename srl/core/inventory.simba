@@ -381,7 +381,7 @@ begin
     MouseBox(Max(CurrPT.x-random(2),TB.x1),Max(CurrPT.y-random(2),TB.y1),
              Min(CurrPT.x+random(2),TB.x2),Min(CurrPT.y+random(2),TB.y2),Action) //LOL Pro-human much!
   else
-    MouseBoxEx(TB.X1, TB.Y1, TB.X2, TB.Y2,14, Action);
+    MouseBox(TB.X1, TB.Y1, TB.X2, TB.Y2, Action);
 end;
 
 (*
