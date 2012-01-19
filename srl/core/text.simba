@@ -958,9 +958,6 @@ begin
     MMouse(Max(B.X1 - 50, 0), Max(B.Y1 - 50, 0), 40, B.Y2 - B.Y1);
     Wait(200 + Random(100));
   end;
-
-  if (not result) and (Action <> Nothing) then
-    ChooseOptionMultiEx(['Cancel', 'ancel', 'ncel'], 'All', clickLeft);
 end;
 
 (*
