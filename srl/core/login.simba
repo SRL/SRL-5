@@ -24,7 +24,7 @@ procedure NextPlayer(Active: Boolean); forward;
 procedure RandomNextPlayer(Active: Boolean); forward;
 
 const
-  UBx1 = 276; // Username tBox - in use now
+  UBx1 = 279; // Username tBox - in use now
   UBy1 = 180;
   UBx2 = 486;
   UBy2 = 190;
