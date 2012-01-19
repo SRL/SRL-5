@@ -816,7 +816,7 @@ Example:
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
    B,BB: TBox;
-   TPA, TPA1: TPointArray;
+   TPA, TPA1, TPA2: TPointArray;
    aTPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
    Colors: TIntegerArray;
@@ -826,23 +826,39 @@ begin
   B := IntToBox(0, 0, B.X2-1, B.Y2-1);
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
-  FindColorsTolerance(TPA, 16711422, B.X1, B.Y1, B.X2, B.Y2, 0);
-  If Length(TPA) < 10 Then
+  FindColorsTolerance(TPA1, 131843, B.X1, B.Y1, B.X2, B.Y2, 0);
+  FindColorsTolerance(TPA2, 3682593, B.X1, B.Y1, B.X2, B.Y2, 0);
+  TPA := CombineTPA(TPA1, TPA2);
+  If Length(TPA) < 100 Then
+  begin
+    ColorToleranceSpeed(cts);
     Exit;
+  end;
 
-  B := IntToBox(0, 0, 0, 0);
   aTPA := SplitTPA(TPA, 10);
-  SortATPASize(aTPA, True);
-  B := GetTPABounds(aTPA[0]);
+  For i := 0 to High(ATPA) do
+  begin
+    B := GetTPABounds(ATPA[i]);
+    if ((B.x2-B.x1) > 90) and ((B.y2-B.y1) > 18) then
+      Break
+    else
+      B := IntToBox(0, 0, 0, 0);
+  end;
+
+  If (B.x2 = 0) then
+  begin
+    ColorToleranceSpeed(cts);
+    Exit;
+  end;
+
   //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
-  Colors := [14342147, 14079443, 3832268, 9677229, 840143{, 710915}];
+  Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
 
   SetLength(aTPA, Length(Colors));
   for i := 0 to High(Colors) do
     FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
   TPA := MergeATPA(aTPA);
   FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
-
   bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
   OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
