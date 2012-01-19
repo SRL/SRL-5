@@ -667,9 +667,10 @@ function InChat(Text: string): Boolean;
 var
   s: string;
 begin
- if (not (GetLastChatText(s))) then
+  if (not (GetLastChatText(s))) then
     LastChatter(s);
-  Result := (Pos(Text, s) > 0);
+
+  Result := (Pos(LowerCase(Text), Lowercase(s)) > 0);
 end;
 
 (*
