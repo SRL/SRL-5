@@ -27,6 +27,9 @@ const
   Bank_WG = 'wgb'; // (Warrior guild bank)
   Bank_FG = 'fgb'; // (Fishing guild bank)
 
+  SRL_BANK_SW = 20;   // Soul Wars chest
+  SRL_BANK_CW = 21;   // Castle Wars chest
+  SRL_BANK_B  = 22;   // Burthrope chest (outside warriors guild)
 (*
 BankScreen
 ~~~~~~~~~~
@@ -1973,4 +1976,165 @@ begin
     TypeSend(IntToStr(Amount));
     Result := True;
   end;
+end;
+
+(*
+OpenBankChestEdge
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenBankChestEdge(Location: String): Boolean;
+
+Opens the bank.
+Valid arguments are:
+SRL_BANK_SW (Soul Wars Bank)
+
+.. note::
+
+    Author: -daazndagger-  (kept WT-Fakawi's structure)
+    Last Modified: 18/01/2012
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankChestEdge(SRL_BANK_SW) then
+    Withdraw(...);
+*)
+function OpenBankChestEdge(Location: Integer): Boolean;
+var
+  bo, i, l, c, z: Integer;
+  Info: TVariantArray;
+  Chests: TPointArray;
+  AChests: T2DPointArray;
+  UpText: TStringArray;
+  B: TBox;
+begin
+  result := false;
+  if (not LoggedIn) then
+    Exit;
+  if BankScreen or PinScreen then
+  begin
+    Result := True;
+    Exit;
+  end;
+  UpText := ['Bank', 'chest', 'nk che'];
+                   {              0          1         2        3     4     5      6       7       8   9     10   }
+  case Location of {            Sort X     Sort Y     Color    Tol   Hue   Sat   Count  SplitTPA?  W   H   Compass}
+    SRL_BANK_SW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'w'];
+    SRL_BANK_CW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
+    SRL_BANK_B  :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
+
+    else
+    begin
+      srl_Warn('OpenBankChestEdge', 'Unknown bank: '+IntToStr(Location), warn_AllVersions);    //will output loc as int (no longer string)
+      Exit;
+    end;
+  end;
+
+  MakeCompass(Info[10]);
+  //SetAngle(SRL_ANGLE_HIGH);  //??
+  z := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Info[4], Info[5]);
+
+  FindColorsSpiralTolerance(Info[0], Info[1], Chests, Info[2], MSX1, MSY1, MSX2, MSY2, Info[3]);
+  ColorToleranceSpeed(z);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  { Split to ATPA. }
+  if Info[7] then
+    AChests := SplitTPA(Chests, 3)
+  else
+    AChests := TPAtoATPA(Chests, 10);
+
+  Chests := [];
+
+  { Go through ATPA. }
+  l := GetArrayLength(AChests) -1;
+  for i := 0 to l do
+  begin
+    { Too few pixels. }
+    if (Length(AChests[i]) < Info[6]) then
+      Continue;
+
+    { Too small TPA bounds. }
+    B := GetTPABounds(AChests[i]);
+    If ((B.X2 - B.X1) < Info[8]) Or ((B.Y2 - B.Y1) < Info[9]) Then
+      Continue;
+
+    Inc(bo);
+    SetArrayLength(Chests, bo);
+    Chests[bo-1] :=  MiddleBox(GetTPABounds(AChests[i]));
+
+  end;
+
+  SortTPAFrom(Chests, Point(Info[0], Info[1]));
+
+  l := GetArrayLength(Chests) -1;
+  for i := 0 to l do
+  begin
+
+    MMouse(Chests[i].X, Chests[i].Y, 3, 3);
+    if WaitUpTextMulti(UpText, 1000) Then
+    begin
+      GetMousePos(Chests[i].X, Chests[i].Y);
+      Case Random(4) of
+        0, 1, 2: Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_left);
+        3: begin
+             Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_right);
+             if not WaitOptionMulti(['Use', 'se'], 1000) then Exit;
+        end;
+      end;
+      FFLag(0);
+      MarkTime(c);
+      repeat
+        Wait(100);
+      until (BankScreen) or (PinScreen) or (TimeFromMark(c) > 10000);
+      Wait(Random(300));
+      if (HowManyPlayers > 0) then
+        if (Players[CurrentPlayer].Pin <> '') then
+          InPin(Players[CurrentPlayer].Pin);
+      Result := (BankScreen) or (PinScreen);
+      if (Result) then Exit;
+    end;
+  end;
+end;
+
+(*
+OpenBankChest
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenBankChest(WhichBank): Boolean;
+
+Opens the bank if possible.
+Valid arguments are:
+SRL_BANK_SW (Soul Wars Bank)
+
+.. note::
+
+    Author: SRL Dev Team
+    Last Modified: 18/01/2012
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankChest(SRL_BANK_SW) then
+    Withdraw(...);
+*)
+function OpenBankChest(WhichBank: Integer): Boolean;
+begin
+  result := false;
+  if BankScreen or PinScreen then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  Result := OpenBankChestEdge(WhichBank);
+
 end;
