@@ -2081,9 +2081,9 @@ begin
     if WaitUpTextMulti(UpText, 1000) Then
     begin
       GetMousePos(Chests[i].X, Chests[i].Y);
-      Case Random(4) of
-        0, 1, 2: Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_left);
-        3: begin
+      Case Random(9) of
+        0..7: Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_left);
+        8: begin
              Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_right);
              if not WaitOptionMulti(['Use', 'se'], 1000) then Exit;
         end;
