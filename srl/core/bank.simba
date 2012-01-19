@@ -1986,9 +1986,10 @@ OpenBankChestEdge
 
     function OpenBankChestEdge(Location: String): Boolean;
 
-Opens the bank.
-Valid arguments are:
-SRL_BANK_SW (Soul Wars Bank)
+Opens the bank.  Valid arguments are:
+    * SRL_BANK_SW (Soul Wars Bank)
+    * SRL_BANK_CW (Castle Wars Bank)
+    * SRL_BANK_B (Burthrope)
 
 .. note::
 
@@ -2110,9 +2111,10 @@ OpenBankChest
 
     function OpenBankChest(WhichBank): Boolean;
 
-Opens the bank if possible.
-Valid arguments are:
-SRL_BANK_SW (Soul Wars Bank)
+Opens the bank.  Valid arguments are:
+    * SRL_BANK_SW (Soul Wars Bank)
+    * SRL_BANK_CW (Castle Wars Bank)
+    * SRL_BANK_B (Burthrope)
 
 .. note::
 
