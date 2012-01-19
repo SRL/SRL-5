@@ -1011,7 +1011,7 @@ begin
 
   if (not (Result)) and (Amount > 0) then
   begin
-    if (not OptionsExist(['Choose Option', 'oose O', 'hoose'], nothing)) then
+    if (not OptionsExist(['Withdraw', 'ithdraw', 'draw'], nothing)) then
       MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_right);
 
     if WaitOptionMulti(['Withdraw-X', 'w-X'], 500) then
