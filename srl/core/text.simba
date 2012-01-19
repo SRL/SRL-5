@@ -26,7 +26,7 @@ const
 Type
   TOptions = Record
     Str: string;
-    Bounds: TBox;
+    Bounds, BigBox: TBox;
   end;
 
 function CloseBank: Boolean; Forward;
@@ -815,7 +815,7 @@ Example:
 *)
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
-   B,BB: TBox;
+   B,BB, BigBox: TBox;
    TPA, TPA1, TPA2: TPointArray;
    aTPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
@@ -851,6 +851,8 @@ begin
     Exit;
   end;
 
+  BigBox := B;
+
   //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
   Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
 
@@ -874,12 +876,13 @@ begin
   SortATPAFromFirstPointY(ATPA, Point(w/2,0));
 
   SetArrayLength(Result, Length(ATPA));
+  Result[0].BigBox := BigBox;
   for i := 0 to high(ATPA) do
   begin
     TPA := ATPA[i];
     tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
     SortATPAFromFirstPointX(tempatpa, Point(0, 0));
-    Result[i].Str := GetTextATPA(tempatpa, 4, 'UpCharsEx');
+    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx');
     BB := GetTPABounds(ATPA[i]);
     Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
     setlength(tempatpa,0);
@@ -919,7 +922,7 @@ Example:
 function ChooseOptionMultiEx(Texts: TStringArray; TextType: String; Action: fnct_ActionOptions): Boolean;
 var
    B: TBox;
-   i, H, ii, L: Integer;
+   i, H, ii, L, x: Integer;
    T: TPoint;
    Options: array of TOptions;
 begin
@@ -951,11 +954,13 @@ begin
         Exit;
       end;
   end;
-  B := IntToBox(Options[0].Bounds.X1, Options[0].Bounds.Y1,
-                Options[H].Bounds.X2, Options[H].Bounds.Y2);//to mmouse away
+  B := Options[0].BigBox;//to mmouse away
   if Action <> Nothing then
   begin
-    MMouse(Max(B.X1 - 50, 0), Max(B.Y1 - 50, 0), 40, B.Y2 - B.Y1);
+    x := Max(B.X1 - 52, 0);
+    if x = 0 then
+      x := B.X2+10;
+    MMouse(x, Max(B.Y1 - 50, 0), 40, B.Y2-B.Y1);
     Wait(200 + Random(100));
   end;
 end;
