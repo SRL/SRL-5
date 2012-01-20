@@ -104,7 +104,7 @@ Example:
 
 .. code-block:: pascal
 
-    SMART_ClearCanvasArea();
+    SMART_ClearCanvas();
 *)
 procedure SMART_ClearCanvas;
 var
