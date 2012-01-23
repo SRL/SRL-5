@@ -1,51 +1,185 @@
 (*
-Flag
-====
+Minimap
+=======
 
-The Flag include contains all Flag related functions
+The Minimap include contains all igeneral Minimap related functions
 
 .. contents::
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Mouse Flag Routines                         --//
-//-----------------------------------------------------------------//
-// * function FlagPresent: Boolean;                                // by Mutant Squirrle
-// * function FlagDistance: Integer;                               // by PPLSUQBAWLZ, and Odie533
-// * function WalkingToFlag(WaitTime: Integer): Boolean;           // by EvilChicken!
-// * function FlagEx(Dist: Integer; RoadColorCheck: Boolean): Boolean; // By Wizzup?, WT-Fakawi, ZephyrsFury, and N1ke!
-// * function MouseFlagEx(X, Y, rX, rY, Xmod, Ymod, FlagDist: Integer; // by EvilChicken!
-// * function MFF(X, Y, Xmod, Ymod: Integer): Boolean;             // by EvilChicken!
-// * function MFNF(X, Y, Xmod, Ymod: Integer): Boolean;            // by EvilChicken!
-// * function FFlag(Dist: Integer): Boolean;                       // by Wizzup?, WT-Fakawi, and ZephyrsFury
-// * function Flag: Boolean;                                       // by Nava2
-// * procedure MouseFlag(X, Y, rX, rY, FlagDist: Integer);         // by EvilChicken!
-
 (*
-FlagColor
-~~~~~~~~~
+rs_GetCompassAngleRadians
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    const FlagColor: Integer;
+    function rs_GetCompassAngleRadians: Extended;
 
-Stores minimap flag color.
-
+Returns the compass angle in radians.
 
 .. note::
 
-    by The SRL Devs.
+    by Narcle
 
 Example:
 
 .. code-block:: pascal
 
 *)
-const
-  FlagColor = 3026478;
+Function rs_GetCompassAngleRadians: Extended;
+var
+  TPA: TPointArray;
+  T, M: TPoint;
+  B: TBox;
+begin
+  B := IntToBox(529, 9, 557, 39);
+  with B do
+    FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 0);
+  if Length(TPA) < 1 then
+   Exit;
+  M := MiddleBox(B);
+  T := MiddleTPA(TPA);
+  Result := ArcTan2(-(T.Y - M.Y), T.X - M.X+0.5) + Radians(90);
+  Result := fixRad(Result - Pi);
+end;
 
+(*
+rs_GetCompassAngleDegrees
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_GetCompassAngleDegrees: Extended;
+
+Returns the compass angle in degrees.
+
+.. note::
+
+    by Wizzup?
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function rs_GetCompassAngleDegrees: Extended;
+begin
+  Result := Degrees(rs_GetCompassAngleRadians());
+end;
+
+
+(*
+rs_OnMinimap
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function rs_OnMinimap(x, y: Integer): Boolean;
+
+Checks wether the specified point is on the minimap.
+
+.. note::
+
+    by Raymond
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function rs_OnMinimap(x, y: Integer): Boolean;
+begin
+  Result := InCircle(x, y, MMCX, MMCY, 73);
+end;
+
+(*
+FindFlag
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindFlag(var X, Y: Integer): Boolean;
+
+Returns true if the flag is found on the minimap.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+  if (FindFlag(x, y)) then
+  begin
+    writeln('Flag found');
+    mouse(x, y, 3, 3, true);
+  end;
+*)
+Function FindFlag(var X, Y: integer): Boolean;
+begin
+  Result := False;
+  if FindBitmapToleranceIn(bmpFlag, X, Y, MMX1, MMY1, MMX2, MMY2, 75) then
+  begin
+    Result := True;
+    X := X+7;
+    Y := Y+14;
+   end;
+end;
+
+(*
+FindFlag2
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindFlag2(var X, Y: Integer): Boolean;
+
+Returns true if the flag is found on the minimap.
+
+.. note::
+
+    by Home
+
+Example:
+
+.. code-block:: pascal
+
+  if (FindFlag2(x, y)) then
+  begin
+    writeln('Flag found');
+    mouse(x, y, 3, 3, true);
+  end;
+*)
+function FindFlag2(var X, Y: Integer): Boolean;
+var
+  KMTarget, ITarget, I, Hi, Map, W, H: Integer;
+  TPA: TPointArray;
+begin
+  Result := False;
+  Map := BitmapFromString(MMX2 - MMX1, MMY2 - MMY1, '');
+  CopyClientToBitmap(Map, MMX1, MMY1, MMX2, MMY2);
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  SetTargetBitmap(Map);
+  GetBitmapSize(Map, W, H);
+  FindColors(TPA, 65536, 0, 0, W - 1, H -1);
+  FilterPointsDist(TPA, 0, 75.5, W / 2, H / 2);
+  Hi := Length(TPA);
+  for I := 0 to Hi - 1 do
+    if ((FastGetPixel(Map, TPA[I].X - 1, TPA[I].Y - 1) - FastGetPixel(Map, TPA[I].X, TPA[I].Y - 1)) = 6381921) then
+    begin
+      Result := True;
+      X := TPA[I].X + MMX1;
+      Y := TPA[I].Y + MMY1;
+      Break;
+    end;
+  FreeTarget(GetImageTarget);
+  FreeBitmap(Map);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+end;
 (*
 FlagPresent
 ~~~~~~~~~~~
@@ -59,7 +193,7 @@ T/F depending on flag exist.
 
 .. note::
 
-    by Mutant Squirrle
+    by weequ
 
 Example:
 
@@ -69,9 +203,9 @@ Example:
 *)
 function FlagPresent: Boolean;
 var
-  x, y: integer;
+  X, Y: Integer;
 begin
-  Result := FindColor(x, y, FlagColor, MMX1, MMY1, MMX2, MMY2);
+  Result := FindFlag(X, Y) or FindFlag2(X, Y);
 end;
 
 (*
@@ -87,7 +221,7 @@ Returns distance in pixels your char dot is from flag on mini-map
 
 .. note::
 
-    by PPLSUQBAWLZ/Odie533
+    by weequ
 
 Example:
 
@@ -100,8 +234,8 @@ var
   X, Y: Integer;
 begin
   Result := -1;
-  if (FindColor(X, Y, FlagColor, MMX1, MMY1, MMX2, MMY2)) then
-    Result := Distance(MMCX, MMCY, X + 1, Y + 14);
+  if (FindFlag(X, Y)) or (FindFlag2(X, Y)) then
+    Result := Distance(MMCX, MMCY, X, Y);
 end;
 
 (*
@@ -151,7 +285,7 @@ Waits until Flag is within "Distance" distance.
 
 .. note::
 
-    by Wizzup? / WT-Fakawi / ZephyrsFury modified by N1ke!
+    by Wizzup? / WT-Fakawi / ZephyrsFury / N1ke! / weequ
 
 Example:
 
@@ -163,32 +297,37 @@ function FlagEx(Dist: Integer; RoadColorCheck: Boolean): Boolean;
 var
   Tx, Ty, M, D1, D2: Integer;
 begin
+  Wait(randomRange(400, 600));
   Result := False;
   M := GetSystemTime;
-  while (FindColor(Tx, Ty, FlagColor, MMX1, MMY1, MMX2, MMY2)) do
-  begin
-    wait(50);
-    D1 := Distance(Tx, Ty + 14, MMCX, MMCY);
+  repeat
+    if (not FindFlag(Tx, Ty)) and (not FindFlag2(Tx, Ty)) then
+    begin
+      Result := true;
+      Exit;
+    end;
+    D1 := Distance(Tx, Ty, MMCX, MMCY);
     if (D1 <= Dist) then
     begin
       Result := True;
       Exit;
     end;
+    if (D1 > Dist+12) then
+      wait(450+random(70))
+    else
+      wait(50+random(50));
     if (RoadColorCheck) then
       RoadColorChecker;
-    Wait(100);
-    if (GetColor(6, 6) <> clWhite) then
+    if (GetColor(6, 6) <> 13092807) then // border of the loading message
       if (GetSystemTime - M > 5000) then
       begin
         if (D1 = D2) then Exit;
         D2 := D1;
         M := GetSystemTime;
       end;
-    if (Random(20) = 0) then IdleTime(500, 1000, 0.01);
     if SRL_Procs[SRL_AntiBan] <> nil then
       SRL_Procs[SRL_AntiBan]();
-  end;
-  Wait(RandomRange(200, 400));
+  until not LoggedIn;
 end;
 
 (*
@@ -235,7 +374,7 @@ begin
     IncEx(P.X, Xmod + Random(rX));
     IncEx(P.Y, Ymod + Random(rY));
     if not rs_OnMiniMap(P.X, P.Y) then Continue;
-    Mouse(P.X, P.Y, 0, 0, True);
+    Mouse(P.X, P.Y, 0, 0, mouse_left);
     Result := WaitFunc(@FlagPresent, 50, 3000);
     if (Result) then break;
   end;

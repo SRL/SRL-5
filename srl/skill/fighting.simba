@@ -20,90 +20,183 @@ begin
   Result := (GetSkillInfo('hitpoints', False) - GetSkillInfo('hitpoints', True));
 end;
 
-{*****************************************************************************
-function InFight: Boolean;
-By: Frement
-Description: Returns as True if player is in a fight.
+(*
+InFight
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InFight: Boolean;
+
+Returns as True if player is in a fight.
 See "srl_FindFight;" in /core/Globals.scar for more info.
-*****************************************************************************}
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+    while InFight do
+    begin
+      CheckHP;
+      EatFood;
+    end;
+
+*)
 function InFight: Boolean;
 begin
   Result := srl_InFight;
 end;
 
-{*****************************************************************************
-function IsFightAt(x, y: Integer): Boolean;
-By: Frement
-Description: Results True if a mainscreen HP bar is found near point X, Y.
+(*
+OthersInFight
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function OthersInFight: Boolean;
+
+Results true if something else (NPC or Player) is InFight not including
+your own HP Bar (InFight).  So if your HP Bar is still showing but there
+is none else up this will Result true.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+    if not InFight or not OthersInFight then
+      Break;//Out of wait fight loop
+
+*)
+Function OthersInFight: Boolean;
+var
+  x, y, i: integer;
+  Colors: TIntegerArray;
+begin
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  for i := 0 to High(Colors) do
+    if FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MFBox.X1, MSY2, 0) or
+       FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MSX2, MFBox.Y1, 0) or
+       FindColorTolerance(x, y, Colors[i], MFBox.X2, MSY1, MSX2, MSY2, 0) or
+       FindColorTolerance(x, y, Colors[i], MSX1, MFBox.Y2, MSX2, MSY2, 0) then
+    begin
+      Result := True;
+      Exit;
+    end;
+end;
+
+(*
+IsFightAt
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsFightAt(x, y: Integer): Boolean;
+
+Results True if a mainscreen HP bar is found near point X, Y.
 See srl_InFight in Globals.scar for more info.
-*****************************************************************************}
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+    if IsFightAt(x, y) then
+      Continue;
+
+*)
 function IsFightAt(var X, Y: Integer): Boolean;
 var
-  HPBarCorner: Integer;
+  B: TBox;
+  H, I: integer;
+  ATPA: T2DPointArray;
+  Colors: TIntegerArray;
 begin
-  HPBarCorner := DTMFromString('78DA6364646060606540051A108A11CA6504315888' +
-       '50C34C841A26026A988854C348400D33116A588850C34A841A36C26A0046A001D4');
-  Result := FindDTM(HPBarCorner, X, Y, X - 30, Y - 30, X + 30, Y + 30);
-  FreeDTM(HPBarCorner);
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  H := High(Colors);
+  SetArrayLength(ATPA, H+1);
+  B := IntToBox(x-20, y-40, x+20, y+10);
+  for i := 0 to H do
+   with B do
+    FindColorsSpiralTolerance(x, y, ATPA[i], Colors[i], Max(X1, MSX1), Max(Y1, MSY1), X2, Y2, 0);
+  Result := Length(MergeATPA(ATPA)) > 0;
 end;
 
-{*******************************************************************************
-function FightNPC(Colors: TIntegerArray; Tol, TimeOut: Integer): Boolean;
-By: WT-Fakawi & Cazax
-Description: Fights NPC. Input an array of colors. (May be the same colors),
-tol = tolerance, TimeOut = amount of time before clicking on next NPC
-*******************************************************************************}
-function FightNPC(Colors: TIntegerArray; Tol, TimeOut: Integer): Boolean;
-var
-  X, Y, Mark: Integer;
-begin
-  Result := False;
-  if (not LoggedIn) or (FindDead) then exit;
-  if FindObjCustom(X, Y, ['ttack'], Colors, Tol) then
-  begin
-    Result := True;
-    GetMousePos(X, Y);
-    Mouse(X, Y, 0, 0, True);
-    Wait(1000 + Random(500));
-    FFlag(10);
-    Mark := GetSystemTime;
-    while (InFight) and (TimeFromMark(Mark) < TimeOut) and (not FindNormalRandoms) do
-    begin
-      Wait(1000 + Random(500));
-      if (srl_Procs[srl_AntiBan] <> nil) then
-        srl_Procs[srl_AntiBan]();
-    end;
-  end;
-end;
+(*
+FindAllHPBars
+~~~~~~~~~~~
 
-{*******************************************************************************
-function FindAllHPBars(Sx, Sy, x1, y1, x2, y2: Integer): TBoxArray;
-By: Cazax
-Description: Finds all the HP bars (the TPAs of them) in the box formed by
+.. code-block:: pascal
+
+    function FindAllHPBars(Sx, Sy, x1, y1, x2, y2: Integer): TBoxArray;
+
+Finds all the HP bars (the TPAs of them) in the box formed by
  x1, y1, x2, y2. Recommended to set Sx and Sy to MSCX and MSCY, so Result[0]
  is your own Bar or the closest one to you.
-*******************************************************************************}
+
+.. note::
+
+    by Cazax & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function FindAllHPBars(Sx, Sy, x1, y1, x2, y2: Integer): TBoxArray;
 var
-  a, b : TPointArray;
+  Colors: TIntegerArray;
   ATPA : T2DPointArray;
+  TPA : TPointArray;
   H, I : Integer;
 begin
-  FindColorsSpiralTolerance(Sx, Sy, a, 10496, x1, y1, x2, y2, 0);
-  FindColorsSpiralTolerance(Sx, Sy, b, 198716, x1, y1, x2, y2, 0);
-  ATPA := TPAToATPAEx(CombineTPA(a, b), 55, 7);
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  H := High(Colors);
+  SetArrayLength(ATPA, H+1);
+  for i := 0 to H do
+    FindColorsSpiralTolerance(Sx, Sy, ATPA[i], Colors[i], X1, Y1, X2, Y2, 0);
+  TPA := MergeATPA(ATPA);
+  if Length(TPA) < 1 then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, HP_BAR_WIDTH , HP_BAR_HEIGHT);
   H := High(ATPA);
   SetLength(Result, Length(ATPA));
   for I := 0 to H do
     Result[i] := GetTPABounds(ATPA[i]);
 end;
 
-{*******************************************************************************
-function GetHits(Sx, Sy, x1, y1, x2, y2: Integer): TIntegerArray;
-By: n3ss3s & Cazax
-Description: Finds all HP percents of the HP bars in x1, y1, x2, y2.
+(*
+GetHits
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetHits(Sx, Sy, x1, y1, x2, y2: Integer): TIntegerArray;
+
+Finds all HP percents of the HP bars in x1, y1, x2, y2.
  READ THE DESCRIPTION OF FindAllHPBars!
-*******************************************************************************}
+
+.. note::
+
+    by n3ss3s & Cazax
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function GetHitsIn(Sx, Sy, x1, y1, x2, y2: Integer): TIntegerArray;
 var
    E: Extended;
@@ -136,5 +229,41 @@ begin
     Result := TIA[bar];
   except
     Result := -1;
+  end;
+end;
+
+{*******************************************************************************
+function SetFightModeByLevel(TrainLowestSkill : Boolean) : Boolean;
+By: Rich
+Description: Changes fight style to train lowest or highest skill depending on
+             TrainLowestSkill.
+Usage example: Attack = 31, Defense = 45, Strength = 26
+               TrainLowestSkill = True -> Strength will be trained
+               TrainLowestSkill = False -> Defense will be trained
+Date: 21st Feb 2011
+*******************************************************************************}
+function SetFightModeByLevel(TrainLowestSkill: Boolean) : Boolean;
+var
+  HL : Integer;
+  S, Skills : TIntegerArray;
+begin
+  Result:= False;
+  if (not LoggedIn) then
+    Exit;
+
+  Skills := [GetSkillLevel('attack'), GetSkillLevel('strength'), GetSkillLevel('defence')];
+  S := [Skills[0], Skills[1], Skills[2]];
+
+  QuickSort(Skills);
+
+  if TrainLowestSkill then
+    HL := Low(Skills)
+  else
+    HL := High(Skills);
+
+  case Skills[HL] of
+    S[0]: Result := SetFightMode(1);
+    S[1]: Result := SetFightMode(2);
+    S[2]: Result := SetFightMode(3);
   end;
 end;

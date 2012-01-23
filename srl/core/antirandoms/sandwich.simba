@@ -60,7 +60,7 @@ begin
     'kebab':
         Info := [4091012, 25, 150, 0.02, 0.5];
     'chocolate bar':
-        Info := [1914204, 15, 150, 0.04, 0.14];
+        Info := [2244463, 10, 150, 0.19, 0.64];
     else
     begin
       WriteLn('Sandwich Lady: Unknown target: '+s+'!');
@@ -90,7 +90,7 @@ begin
             if IntInBox(x, y, IntToBox(83, 135, 460, 270)) then
             begin
               //WriteLn(Length(q[i]));
-              Mouse(x, y, 6, 6, True);
+              Mouse(x, y, 6, 6, mouse_left);
               x := GetSystemTime;
               while Sandwich_InMenu and ((GetSystemTime - x) < 15000) do Wait(100);
               Result := True;
@@ -190,7 +190,7 @@ begin
         end;
         if (Length(z) = 1) then
         begin
-          Mouse(z[0].x, z[0].y, 6, 6, True);
+          Mouse(z[0].x, z[0].y, 6, 6, mouse_left);
           x := GetSystemTime;
           while Sandwich_InMenu and ((GetSystemTime - x) < 15000) do Wait(100);
           Result := True;
@@ -255,7 +255,7 @@ begin
     end
     else if FindObjRecordEx(x, y, aci, MSX1, MSY1, MSX2, MSY2, False, False) then
     begin
-      Mouse(x, y, 0, 0, False);
+      Mouse(x, y, 0, 0, mouse_right);
       Wait(100 + Random(200));
       ChooseOptionMulti(['Talk','lk-to','to Sand']);
       Wait(500);
@@ -312,7 +312,7 @@ begin
            Wait(500 + Random(1000))
       else if FindObjRecordEx(x, y, aci, MSX1, MSY1, MSX2, MSY2, False, False) then
       begin
-        Mouse(x, y, 0, 0, False);
+        Mouse(x, y, 0, 0, mouse_right);
         Wait(100 + Random(200));
         ChooseOption('Enter');
         Wait(500);

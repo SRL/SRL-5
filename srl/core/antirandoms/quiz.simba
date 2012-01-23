@@ -70,10 +70,10 @@ Begin
   Begin
     Name := 'Trout Fish Big';
     Use := 'Edible';
-    Count := 165;
-    Width := 23;
-    Height := 15;
-    TotalCount := 330;
+    Count := 191;
+    Width := 25;
+    Height := 16;
+    TotalCount := 370;
     CoverPercentage := 50.0;
   End;
 
@@ -81,10 +81,10 @@ Begin
   Begin
     Name := 'Trout Fish Small';
     Use := 'Edible';
-    Count := 105;
-    Width := 18;
-    Height := 11;
-    TotalCount := 205;
+    Count := 123;
+    Width := 19;
+    Height := 13;
+    TotalCount := 228;
     CoverPercentage := 52.0;
   End;
 
@@ -92,10 +92,10 @@ Begin
   Begin
     Name := 'Tuna Fish Big';
     Use := 'Edible';
-    Count := 225;
-    Width := 23;
-    Height := 15;
-    TotalCount := 365;
+    Count := 255;
+    Width := 24;
+    Height := 16;
+    TotalCount := 401;
     CoverPercentage := 61.0;
   End;
 
@@ -103,10 +103,10 @@ Begin
   Begin
     Name := 'Tuna Fish Small';
     Use := 'Edible';
-    Count := 140;
-    Width := 18;
-    Height := 12;
-    TotalCount := 220;
+    Count := 166;
+    Width := 19;
+    Height := 13;
+    TotalCount := 254;
     CoverPercentage := 63.0;
   End;
 
@@ -114,9 +114,9 @@ Begin
   Begin
     Name := 'Necklace Small';
     Use := 'Jewelry';
-    Count := 80;
-    Width := 17;
-    Height := 10;
+    Count := 91;
+    Width := 18;
+    Height := 11;
     TotalCount := 170;
     CoverPercentage := 47.0;
   End;
@@ -125,10 +125,10 @@ Begin
   Begin
     Name := 'Necklace Big';
     Use := 'Jewelry';
-    Count := 128;
-    Width := 21;
-    Height := 13;
-    TotalCount := 275;
+    Count := 137;
+    Width := 22;
+    Height := 14;
+    TotalCount := 308;
     CoverPercentage := 46.0;
   End;
 
@@ -136,10 +136,10 @@ Begin
   Begin
     Name := 'Ring Small';
     Use := 'Jewelry';
-    Count := 90;
-    Width := 13;
-    Height := 9;
-    TotalCount := 125;
+    Count := 112;
+    Width := 14;
+    Height := 11;
+    TotalCount := 154;
     CoverPercentage := 72.0;
   End;
 
@@ -147,10 +147,10 @@ Begin
   Begin
     Name := 'Ring Big';
     Use := 'Jewelry';
-    Count := 148;
+    Count := 172;
     Width := 17;
-    Height := 12;
-    TotalCount := 213;
+    Height := 14;
+    TotalCount := 243;
     CoverPercentage := 70;
   End;
 
@@ -158,10 +158,10 @@ Begin
   Begin
     Name := 'Shield Small';
     Use := 'Armour';
-    Count := 78;
-    Width := 13;
+    Count := 95;
+    Width := 14;
     Height := 8;
-    TotalCount := 104;
+    TotalCount := 122;
     CoverPercentage := 76.0;
   End;
 
@@ -169,10 +169,10 @@ Begin
   Begin
     Name := 'Shield Big';
     Use := 'Armour';
-    Count := 123;
-    Width := 16;
-    Height := 10;
-    TotalCount := 172;
+    Count := 147;
+    Width := 17;
+    Height := 11;
+    TotalCount := 201;
     CoverPercentage := 71.0;
   End;
 
@@ -180,10 +180,10 @@ Begin
   Begin
     Name := 'Spade';
     Use := 'Tool';
-    Count := 95;
-    Width := 23;
-    Height := 14;
-    TotalCount := 304;
+    Count := 162;
+    Width := 30;
+    Height := 17;
+    TotalCount := 508;
     CoverPercentage := 31.5;
   End;
 
@@ -191,10 +191,10 @@ Begin
   Begin
     Name := 'Sword Small';
     Use := 'Weapon';
-    Count := 36;
-    Width := 15;
-    Height := 10;
-    TotalCount := 142;
+    Count := 42;
+    Width := 18;
+    Height := 11;
+    TotalCount := 176;
     CoverPercentage := 25.0;
   End;
 
@@ -202,10 +202,10 @@ Begin
   Begin
     Name := 'Sword Big';
     Use := 'Weapon';
-    Count := 55;
-    Width := 21;
-    Height := 13;
-    TotalCount := 239;
+    Count := 65;
+    Width := 23;
+    Height := 14;
+    TotalCount := 278;
     CoverPercentage := 23.0;
   End;
 
@@ -213,14 +213,14 @@ Begin
   Begin
     Name := 'Shears Small';
     Use := 'Tool';
-    Count := 122;
-    Width := 20;
-    Height := 12;
-    TotalCount := 243;
+    Count := 142;
+    Width := 21;
+    Height := 13;
+    TotalCount := 270;
     CoverPercentage := 50.0;
   End;
 
-  With QuizItems[14] Do
+  With QuizItems[14] Do //Does this still exist?
   Begin
     Name := 'Shears Big';
     Use := 'Tool';
@@ -231,25 +231,14 @@ Begin
     CoverPercentage := 49.0;
   End;
 
-  With QuizItems[15] Do
-  Begin
-    Name := 'BattleAxe Big';
-    Use := 'Weapon';
-    Count := 108;
-    Width := 21;
-    Height := 13;
-    TotalCount := 275;
-    CoverPercentage := 38.0;
-  End;
-
   With QuizItems[16] Do
   Begin
     Name := 'BattleAxe Big';
     Use := 'Weapon';
-    Count := 108;
-    Width := 21;
-    Height := 13;
-    TotalCount := 275;
+    Count := 119;
+    Width := 23;
+    Height := 14;
+    TotalCount := 317;
     CoverPercentage := 38.0;
   End;
 
@@ -257,10 +246,10 @@ Begin
   Begin
     Name := 'BattleAxe Small';
     Use := 'Weapon';
-    Count := 68;
-    Width := 16;
-    Height := 10;
-    TotalCount := 171;
+    Count := 78;
+    Width := 18;
+    Height := 11;
+    TotalCount := 200;
     CoverPercentage := 40.0;
   End;
 
@@ -268,10 +257,10 @@ Begin
   Begin
     Name := 'Helmet Small';
     Use := 'Weapon';
-    Count := 246;
-    Width := 16;
-    Height := 17;
-    TotalCount := 285;
+    Count := 279;
+    Width := 17;
+    Height := 18;
+    TotalCount := 322;
     CoverPercentage := 85.5;
   End;
 
@@ -279,10 +268,10 @@ Begin
   Begin
     Name := 'Helmet Big';
     Use := 'Weapon';
-    Count := 388;
-    Width := 21;
+    Count := 428;
+    Width := 22;
     Height := 22;
-    TotalCount := 465;
+    TotalCount := 508;
     CoverPercentage := 83.5;
   End;
 End;
@@ -505,7 +494,7 @@ Begin
     WriteLn('We need to pick ' + ObjInfo[I].Name + ', and it''s use is ' + ObjInfo[I].Use + ' and located at slot ' + IntToStr(I + 1));
     itemBox := QuizItemBox(I + 1);
 
-    Mouse(itemBox.X1 + 5, ItemBox.Y1 + 5, itemBox.X2 - itemBox.X1 - 5, itemBox.Y2- itemBox.Y1 - 5, True);
+    Mouse(itemBox.X1 + 5, ItemBox.Y1 + 5, itemBox.X2 - itemBox.X1 - 5, itemBox.Y2- itemBox.Y1 - 5, mouse_left);
   Except
   End;
 End;
@@ -530,7 +519,7 @@ begin
   QL := MiddleTPA(TPA);
   if (Distance(MMCX, MMCY, QL.X + 15, QL.Y) > 7) then
   begin
-    Mouse(QL.X + 15, QL.Y, 0, 0, True);
+    Mouse(QL.X + 15, QL.Y, 0, 0, mouse_left);
     Flag;
   end;
   Wait(1000 + Random(500));
@@ -552,7 +541,7 @@ begin
     begin
       Result := True;
       GetMousePos(QP.X, QP.Y);
-      Mouse(QP.X, QP.Y, 0, 0, True);
+      Mouse(QP.X, QP.Y, 0, 0, mouse_left);
       Wait(RandomRange(5000, 7000));
       Exit;
     end;
@@ -579,10 +568,14 @@ Begin
   TimeMarker := GetSystemTime;
   while ((GetSystemTime - TimeMarker) < 15000) and FindNPCChatText('Talk to',nothing) do
     wait(500 + random(1000));
-  While GetSystemTime - TimeMarker < 300000 Do
+  While GetSystemTime - TimeMarker < 60000 Do
   Begin
     while (ClickContinue(True, True)) do
+    begin
       Wait(500 + Random(1000));
+      if GetSystemTime - TimeMarker < 60000 then
+        break; //to prevent inf. loop incase false positive
+    end;
     if (FindColor(X, Y, 65535, MCX1, MCY1, MCX2, MCY2)) then
     begin
       SolveQuizQuestion;

@@ -22,7 +22,9 @@
 //----------------------------------------------------------------------------//
 
 // For development:
-{$DEFINE CompileSRL}
+//{$DEFINE CompileSRL}
+
+{$DEFINE SRL5}
 
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
@@ -39,7 +41,6 @@
 {$include SRL/SRL/core/mouse.simba}
 {$include SRL/SRL/core/color.simba}
 {$include SRL/SRL/core/players.simba}
-{$include SRL/SRL/core/overwrite.simba}
 
 //----------------------------------------------------------------------------//
 //--                         SRL Level 2 Includes                           --//
@@ -51,6 +52,8 @@
 {$include SRL/SRL/core/timing.simba}
 {$include SRL/SRL/core/SRLlog.simba}
 {$include SRL/SRL/core/chat.simba}
+{$include SRL/SRL/core/bitmaps.simba}
+{$include SRL/SRL/core/amount.simba}
 {$include SRL/SRL/core/gametab.simba}
 
 //----------------------------------------------------------------------------//
@@ -66,8 +69,6 @@
 {$include SRL/SRL/core/autocolor.simba}
 {$include SRL/SRL/core/mapwalk.simba}
 {$include SRL/SRL/core/object.simba}
-{$include SRL/SRL/core/bitmaps.simba}
-{$include SRL/SRL/core/amount.simba}
 {$include SRL/SRL/core/inventory.simba}
 {$include SRL/SRL/core/bank.simba}
 {$include SRL/SRL/core/symbol.simba}
@@ -195,6 +196,7 @@ begin
   Smart_SuperDetail := false;
   {$ENDIF}
 
+  SetupGauss();
 end;
 
 {$ifdef CompileSRL}

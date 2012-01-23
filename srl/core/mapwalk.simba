@@ -128,7 +128,7 @@ begin
     Exit;
   end;
   Left := (Round((360 - StartAngle) + DirectionDeg) mod 360 <= Round((StartAngle + 360) - DirectionDeg) mod 360);
-  KeyDown((Byte(not Left) * 2) + 37);
+  KeyDown((Integer(not Left) * 2) + 37);
   Wait(10);
   MarkTime(Mark);
   i := 0.0;
@@ -179,8 +179,8 @@ Example:
 // TODO: fix doc for this.
 // Allows one to use ClickNorth without waiting 1s every time.
 const
-  SRL_ANGLE_LOW   = 0;
-  SRL_ANGLE_HIGH  = 1;
+  SRL_ANGLE_HIGH  = 0;
+  SRL_ANGLE_LOW   = 1;
   SRL_ANGLE_NONE  = 2;
 
 // TODO: Check if 1000ms wait is necessary
@@ -222,14 +222,14 @@ Example:
 *)
 procedure ClickNorth(AngleHigh: Integer);
 begin
-  if (rs_GetCompassAngleDegrees <> 0) then
-    if (Random(4) = 1) then
-    begin
-      Mouse(542, 24, 15, 15, False);
-      WaitOptionMulti(['ace', 'orth'], 1200);
-    end else
-      Mouse(542, 24, 15, 15, True);
-    SetAngle(AngleHigh);
+  if (Random(4) = 1) then
+  begin
+    Mouse(542, 24, 15, 15, mouse_right);
+    WaitOptionMulti(['ace', 'orth'], 1200);
+  end else
+    Mouse(542, 24, 15, 15, mouse_left);
+
+  SetAngle(AngleHigh);
 end;
 
 {$DEFINE WALL_ANGLELEFT}
@@ -925,6 +925,7 @@ Same as RadialWalk, but with a tolerance.
 .. note::
 
     by Coh3n
+    Last modified: Jan. 08, 2012 by Coh3n
 
 Example:
 
@@ -947,8 +948,7 @@ begin
     for i := 0 to h do
       if MFNF(TPA[i].x, TPA[i].y, modX, modY) then
       begin
-        FFlag(10);
-        Result := True;
+        Result := WaitFunc(@Flag, 50, 500);
         Exit;
       end;
   end;
@@ -1094,6 +1094,63 @@ begin
 end;
 
 (*
+TPAWalk
+~~~~~~~
+
+.. code-block:: pascal
+
+    function TPAWalk(color, tol, offsetX, offsetY: integer; sortFrom: TPoint): boolean;
+
+Uses a simple TPA sorting method to walk to a spot on the minimap.
+    * color: the color to be found on the minimap
+    * tol: the tolerance on color
+    * offsetX: the offset to click on the X coordinate of the found color
+    * offsetY: the offset to click on the Y coordinate of the found color
+    * sortFrom: the point on the minimap to sort found colors from
+
+.. note::
+
+    by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  if (not TPAWalk(1234567, 10, 0, 0, point(MMX1, MMY1)) then
+    if (not radialWalkTolerance({parameters here}) then
+      writeln('failed to TPA and radial walk');
+*)
+function TPAWalk(color, tol, offsetX, offsetY: integer; sortFrom: TPoint): boolean;
+var
+  i, x, y: integer;
+  TPA: TPointArray;
+begin
+  result := false;
+
+  if (findColorsTolerance(TPA, color, MMX1, MMY1, MMX2, MMY2, tol)) then
+  begin
+    sortTPAFrom(TPA, sortFrom);
+
+    for i := 0 to high(TPA) do
+    begin
+      x := TPA[i].x;
+      y := TPA[i].y;
+
+      if (not rs_OnMinimap(x, y)) then
+        continue;
+
+      mouse(x + offsetX, y + offsetY, 3, 3, mouse_left);
+
+      if (waitFunc(@flag, 50, 3000)) then
+      begin
+        result := true;
+        exit;
+      end;
+    end;
+  end;
+end;
+
+(*
 GetMiniMapDotsIn
 ~~~~~~~~~~~~~~~~
 
@@ -1125,30 +1182,104 @@ Example:
 *)
 
 // TODO: Constants
+{*******************************************************************************
+function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
+By: euphemism, mormonman
+Description: Results the dots specified by WhatDot in the box x1, y1, x2, y2.
+Usage : 'npc', 'yellow', 'n', 'y' : Yellow Dot;
+        'cape', 'blue', 'team', 't', 'b' : Blue Dot;
+        'item', 'red', 'i', 'r' : Red Dot;
+        'player', 'white', 'p', 'w' : White Dot;
+        'friend', 'green', 'f', 'g' : Green Dot;
+*******************************************************************************}
 function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
 var
-  DotColor: Integer;
-  i, h: Integer;
+  I, Dif, Radius, Hi, C: Integer;
+  TPA: TPointArray;
 begin
   case LowerCase(WhatDot) of
-    'npc', 'n', 'yellow', 'y':	      DotColor := 61937;
-    'item', 'i', 'red', 'r':	      DotColor := 237;
-    'player', 'p', 'white', 'w':      DotColor := 15527148;
-    'friend', 'f', 'green', 'g':      DotColor := 60160;
-    'team', 't', 'blue', 'b', 'cape': DotColor := 9917996;
-    'clan', 'c', 'orange', 'o':	      DotColor := 1604816;
-    else
-      srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
+    'npc', 'n', 'yellow', 'y': Dif := 4369;
+    'item', 'i', 'red', 'r': Dif := 23;
+    'player', 'p', 'white', 'w': Dif := 1907997;
+    'friend', 'f', 'green', 'g': Dif := 5376;
+    'team', 't', 'blue', 'b', 'cape': Dif := 2171941;
+    {'clan', 'c', 'orange', 'o': Dif := -1;}
+  else
+    srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
-  FindColorsPie(Result, DotColor, 0, 0, 360, 0, 76, x1, y1, x2, y2, MMCX, MMCY);
-  RAaSTPAEx(Result, 1, 1);
-  if (Length(Result) < 1) then Exit;
-  if (inStrArr(WhatDot, ['player', 'p', 'white', 'w'], false)) then
+  Freeze;
+  Radius := Max((x2-x1)/2, (y2-y1)/2);
+  FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
+  Hi := High(TPA);
+  SetLength(Result, Hi + 1);
+  if (Hi < 0) then
   begin
-    h := High(Result)-1;
-    for i := 0 to h do
-      Result[i] := Result[i+1];
-    SetLength(Result, h+1);
+    UnFreeze;
+    Exit;
+  end;
+  C := 0;
+  for I := 0 to Hi do
+  begin
+    if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = Dif) then
+    begin
+      Result[C] := Point(TPA[I].x, TPA[i].y - 2);
+      Inc(C);
+    end;
+  end;
+  Unfreeze;
+  SetLength(Result, C);
+end;
+
+(*
+GetMMDotsOnMS
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetMMDotsOnMS(WhatDot: String): TPointArray;
+
+Using minimap gets all MM dots assumed to be on Main Screen and returns it as
+a TPA.  You can also use it like Length(GetMMDotsOnMS(WhatDot)) to count how
+many are actually visable. Returns closes to your position first.  Used with
+MMtoMS can be very powerful for searching more precise locations.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+   while (Length(GetMMDotsOnMS('npc')) < 1) and (GetSystemTime < TimeCheck) do
+   begin
+     Wait(100);
+     FindNormalRandoms;
+   end;
+
+*)
+Function GetMMDotsOnMS(WhatDot: String): TPointArray;
+var
+  i, L, c: integer;
+  Dots: TPointArray;
+  B: TBox;
+begin
+  B := IntToBox(32, 23, 24, 17);//Xtop, Ytop, Xbot, Ybot
+  Dots := GetMiniMapDotsIn(WhatDot, MMCX-Round(B.x1*1.3), MMCY-Round(B.y1*1.3),
+                                    MMCX+Round(B.x2*1.3), MMCY+Round(B.y2*1.3));
+  L := Length(Dots);
+  if (L > 0) then
+  begin
+    SetLength(Result, L);
+    for i := 0 to High(Dots) do
+    If InAbstractBox(MMCX-B.x1, MMCY-B.y1, MMCX+B.x1, MMCY-B.y1, MMCX+B.x2,
+                     MMCY+B.y2, MMCX-B.x2, MMCY+B.y2, Dots[i].x, Dots[i].y) then
+    begin
+      Result[c] := Dots[i];
+      Inc(c);
+    end;
+    SetLength(Result, c);
+    SortTPAFrom(Result, Point(MMCX, MMCY));
   end;
 end;
 
@@ -1240,5 +1371,5 @@ begin
     exit;
 
   p := RotatePoint(Point(x, y), rs_GetCompassAngleRadians, MMCX, MMCY);
-  Mouse(p.x, p.y, randX, randY, True);
+  Mouse(p.x, p.y, randX, randY, mouse_left);
 end;

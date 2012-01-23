@@ -140,9 +140,9 @@ begin
   begin
     if (InIntArray(RB_SkipArray, II)) then Continue;
     if (II < L + 1) then
-      Text := LoadTextTPA(Players[CurrentPlayer].BoxRewards[II], UpChars, H)
+      Text := LoadTextTPA(Players[CurrentPlayer].BoxRewards[II], UpCharsEx, H)
     else
-      Text := LoadTextTPA('box', UpChars, H);
+      Text := LoadTextTPA('box', UpCharsEx, H);
 
     FindColorsTolerance(TPA, 2070783, 35, 69, 362, 311, 3);
     ATPA := SplitTPAEx(TPA, 3, 1);
@@ -164,7 +164,7 @@ begin
       Wait(RandomRange(30, 60));
 
       t := (getSystemTime + 5000);
-      HoldMouse(X, y, mouseaction(True));
+      HoldMouse(X, y, mouse_left);
       while (GetColor(P.X, P.Y) <> Col) and (GetColor(385, 70) = 592137) and (not(Result)) do
       begin
         if (getSystemTime > t) then
@@ -173,7 +173,7 @@ begin
         Result := FindTextTPAInTPA(H, Text, TPA, xTPA);
         Wait(RandomRange(40, 50));
       end;
-      ReleaseMouse(X, Y, mouseaction(True));
+      ReleaseMouse(X, Y, mouse_left);
     end;
     if (Result) then
     begin
@@ -211,17 +211,16 @@ begin
   if (not(FindColorTolerance(fX, fY, 4329061 , MIX1, MIY1, MIX2, MIY2, 22))) then
     Exit;
 
-  { DTM updated 10th Januray 2010 - marpis }
-  bDTM := DTMFromString('78DA63F467626098CDC8800A98C0244C94D11' +
-       '9C8EF21A0C601C89F40408D19903F8F801A47207F0901357E40FE' +
-       '62DC6A5880180087DB0562');
+  { DTM updated 30th October 2011 - NCDS }
+  bDTM := DTMFromString('mbQAAAHicY2VgYHBiYmBwBGJTIPYHYm8gfgoUvwrEr4H4HRDfBeI0f'
+                         +'mcgyYSC/zNgAkYsGAwAOH0Hlg==');
 
   for I := 1 to 28 do
   begin
     B := InvBox(I);
     if FindItemEx(fx, fy, 'dtm', bDTM, B, []) then
     begin
-      InvMouse(I, 3);
+      InvMouse(I, mouse_move);
       Wait(RandomRange(100, 150));
       Result := IsUpText('ando');
       BoxInvSlot := i;
@@ -238,10 +237,10 @@ begin
     Players[CurrentPlayer].BoxRewards := ['XP'];
 
   GetMousePos(fx, fy);
-  Mouse(fx, fy, 0, 0, True);
+  Mouse(fx, fy, 0, 0, mouse_left);
 
   Result := False;
-  Text := LoadTextTPA('hoose', UpChars, Height);
+  Text := LoadTextTPA('hoose', UpCharsEx, Height);
   Time := GetTimeRunning + 10000;
 
   while (not Result and (GetTimeRunning < Time)) do
@@ -269,7 +268,7 @@ begin
     Exit;
   end;
 
-  Mouse(B.X1, B.Y1, 0, 0, True);
+  Mouse(B.X1, B.Y1, 0, 0, mouse_left);
   Time := GetTimeRunning + 2000;
   Result := False;
 
@@ -288,7 +287,7 @@ begin
     Exit;
   end;
 
-  MouseBox(413, 171, 469, 200, 1);
+  MouseBox(413, 171, 469, 200, mouse_left);
   Time := GetSystemTime;
 
   while (CountColorTolerance(1317148, B.x1 - 10, B.y1 - 10, B.x1 + 10, B.y1 + 10, 3) > 50) and (GetSystemTime - Time < 5000) do
@@ -332,10 +331,12 @@ begin
   if (not LoggedIn) then
     Exit;
 
-  DTM := DTMFromString('mggAAAHicY2NgYHBmYmAwA2IHIPYHYi8oO5iRgSEAiN2A2A+Io4A4'+
-                       'BohnR4oBdTFhwZiAH4gZcWAIAADG1gTB');
+  DTM := DTMFromString('78DA639CC6C4C0F0940105CC891603D38C503' +
+       'EE322A09A7BA86AC2857830D5BC425533355C1455CD74A09A8FA8' +
+       '6A5A7D8551D57403D5BC25600E48CD7D543593C3D0D44C02AAB98' +
+       '5AAA62B400455CD0CA09ADB04EC9A0054F31E554DB31916373F23' +
+       '60CE224C35186E9E836917BA1A00409C1D23');
   SetDTMName(DTM, 'Mystery Box');
-
 
   if (FindDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
   begin
@@ -344,7 +345,7 @@ begin
     begin
       Result := True;
       GetMousePos(x, y);
-      Mouse(x, y, 0, 0, True);
+      Mouse(x, y, 0, 0, mouse_left);
       Wait(RandomRange(200, 500));
       Writeln('Clicked mystery box');
     end;
@@ -358,7 +359,6 @@ function FindMod: Boolean;
 by: Stupid3ooo
 Description: Results True if a mod is found, then it waits 10-20 mins and logs back in
 *******************************************************************************}
-
 function FindMod: Boolean;
 var
   tX, tY: Integer;
@@ -368,8 +368,8 @@ begin
     LoadSRLBitMaps;
   if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
        (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
-    if (FindBitmapMaskTolerance(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) or
-     (FindBitmapMaskTolerance(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15, 5)) then
+    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+     (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
     begin
       Result := True;
       AddToSRLLog('******** FOUND MOD ********');
@@ -399,7 +399,7 @@ skill: Skill to use with lamp eg. 'strength', 'attack', etc.
 
 function FindLamp(skill: string): Boolean;
 var
-  LampTime, X, Y, I: Integer;
+  LampTime, X, Y, I, T: Integer;
 begin
   GameTab(tab_Inv);
   if not SRLBitmapsLoaded then
@@ -412,39 +412,39 @@ begin
     TakeScreen('Lamp Random Solved');
     AddToSRLLog('******** SOLVED LAMP RANDOM ********');
     WriteLn('******** SOLVED LAMP RANDOM ********');
-    Mouse(X, Y, 4, 4, True);
+    Mouse(X, Y, 4, 4, mouse_left);
     Wait(1500 + Random(500));
     MarkTime(LampTime);
     for I := 1 to 4 do
     begin
       case (LowerCase(Skill)) of
-        'attack': Mouse(81, 108, 12, 12, True);
-        'strength': Mouse(139, 108, 12, 12, True);
-        'ranged': Mouse(196, 108, 12, 12, True);
-        'magic': Mouse(257, 108, 12, 12, True);
-        'defence': Mouse(319, 108, 12, 12, True);
-        'crafting', 'craft': Mouse(376, 108, 12, 12, True);
-        'hitpoints', 'hp': Mouse(436, 108, 12, 12, True);
-        'prayer', 'pray': Mouse(81, 166, 12, 12, True);
-        'agility': Mouse(141, 166, 12, 12, True);
-        'herblore': Mouse(199, 166, 12, 12, True);
-        'thieving', 'thief': Mouse(258, 166, 12, 12, True);
-        'fishing', 'fish': Mouse(325, 166, 12, 12, True);
-        'runecraft', 'runecrafting': Mouse(375, 166, 12, 12, True);
-        'slayer', 'slay': Mouse(436, 166, 12, 12, True);
-        'farming', 'farm': Mouse(83, 220, 12, 12, True);
-        'mining', 'mine': Mouse(137, 220, 12, 12, True);
-        'smithing', 'smith': Mouse(197, 220, 12, 12, True);
-        'hunting', 'hunt', 'hunter': Mouse(257, 220, 12, 12, True);
-        'cooking', 'cook': Mouse(318, 220, 12, 12, True);
-        'firemaking', 'fire': Mouse(378, 220, 12, 12, True);
-        'woodcutting', 'wc': Mouse(439, 220, 12, 12, True);
-        'fletching', 'fletch': Mouse(141, 277, 12, 12, True);
-        'construction': Mouse(195, 277, 12, 12, True);
-        'summoning': Mouse(266, 277, 12, 12, True);
-        'dungeoneering': Mouse(320, 277, 12, 12, True);
+        'attack': Mouse(81, 108, 12, 12, mouse_left);
+        'strength': Mouse(139, 108, 12, 12, mouse_left);
+        'ranged': Mouse(196, 108, 12, 12, mouse_left);
+        'magic': Mouse(257, 108, 12, 12, mouse_left);
+        'defence': Mouse(319, 108, 12, 12, mouse_left);
+        'crafting', 'craft': Mouse(376, 108, 12, 12, mouse_left);
+        'hitpoints', 'hp': Mouse(436, 108, 12, 12, mouse_left);
+        'prayer', 'pray': Mouse(81, 166, 12, 12, mouse_left);
+        'agility': Mouse(141, 166, 12, 12, mouse_left);
+        'herblore': Mouse(199, 166, 12, 12, mouse_left);
+        'thieving', 'thief': Mouse(258, 166, 12, 12, mouse_left);
+        'fishing', 'fish': Mouse(325, 166, 12, 12, mouse_left);
+        'runecraft', 'runecrafting': Mouse(375, 166, 12, 12, mouse_left);
+        'slayer', 'slay': Mouse(436, 166, 12, 12, mouse_left);
+        'farming', 'farm': Mouse(83, 220, 12, 12, mouse_left);
+        'mining', 'mine': Mouse(137, 220, 12, 12, mouse_left);
+        'smithing', 'smith': Mouse(197, 220, 12, 12, mouse_left);
+        'hunting', 'hunt', 'hunter': Mouse(257, 220, 12, 12, mouse_left);
+        'cooking', 'cook': Mouse(318, 220, 12, 12, mouse_left);
+        'firemaking', 'fire': Mouse(378, 220, 12, 12, mouse_left);
+        'woodcutting', 'wc': Mouse(439, 220, 12, 12, mouse_left);
+        'fletching', 'fletch': Mouse(141, 277, 12, 12, mouse_left);
+        'construction': Mouse(195, 277, 12, 12, mouse_left);
+        'summoning': Mouse(266, 277, 12, 12, mouse_left);
+        'dungeoneering': Mouse(320, 277, 12, 12, mouse_left);
       else
-        Mouse(438, 113, 12, 12, True);
+        Mouse(438, 113, 12, 12, mouse_left);
       end;
       Wait(750 + Random(200) + Random(100));
       if FindColorTolerance(X, Y, 5602449, 41, 75, 470, 302, 30) then Break;
@@ -457,9 +457,11 @@ begin
       end;
       ClickToContinue;
     end;
-    Mouse(416, 281, 7, 1, True);
+    Mouse(416, 281, 7, 1, mouse_left);
     Wait(1111 + Random(150) + Random(150));
-    while ClickContinue(true,true) do
+
+    T := (GetSystemTime + 5000);
+    while ClickContinue(true, true) and (GetSystemTime < T) do
       wait(500+random(100));
   end;
 end;
@@ -499,7 +501,7 @@ function FindDwarvenPopup: Boolean;
 begin
   Result := False;
   // Parts of red X, checked in two different spots to reduce false-positives
-  if (GetColor(485, 40) = 2569093) then 
+  if (GetColor(485, 40) = 2569093) then
     if (GetColor(488, 40) = 11189720) then
     begin
       Result := True;
@@ -507,7 +509,7 @@ begin
       AddToSRLLog('******** FOUND POPUP ********');
       WriteLn('******** FOUND POPUP ********');
       // Box around the X, to close it.
-      MouseBox(482, 35, 492, 44, 1); 
+      MouseBox(482, 35, 492, 44, mouse_left);
       Wait(1000+Random(3000));
     end;
 end;
@@ -633,7 +635,7 @@ begin
     Name := 'quiz';
     Music := ['the quiz master', 'book of', 'of spell', 'k of s'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @InQuizRandom;
     Texts := ['uiz', 'uiz'];
     TextColors := [128, 0];
     TextFonts := [NPCChars, NPCChars];
@@ -703,7 +705,7 @@ begin
     Name := 'sandwich lady';
     Music := ['snack attack'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @Sandwich_InRandom;
     Texts := ['andwich'];
     TextColors := [128];
     TextFonts := [NPCChars];
@@ -715,7 +717,7 @@ begin
   with TeleRandoms[12] do    //
   begin
     Name := 'bee keeper';
-    Music := ['horizon'];
+    Music := ['Nightfall', 'Workshop', 'Horizon', 'Scape Soft'];
     TypeID := [2];
     IsInRandom := nil;
     Texts := ['keeper'];
@@ -731,7 +733,7 @@ begin
     Name := 'pillory';
     Music := [];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @Pillory_InRandom;
     Texts := ['swinging', 'pillory'];
     TextColors := [127, 0];
     TextFonts := [NPCChars, NPCChars];
@@ -759,7 +761,7 @@ begin
     Name := 'abyssal teleport';
     Music := ['into the abyss'];
     TypeID := [2];
-    IsInRandom := nil;
+    IsInRandom := @InAbyss;
     Texts := ['appendage'];
     TextColors := [128];
     TextFonts := [NPCChars];

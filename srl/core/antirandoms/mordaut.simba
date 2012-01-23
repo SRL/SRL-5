@@ -23,12 +23,24 @@ const
 
 {*******************************************************************************
 function InMordaut: Boolean;
-by: Nava2 fixed by NCDS
+by: mormonman
 Description: Finds if your in Mr.Mordaut random
 *******************************************************************************}
 function InMordaut: Boolean;
-Begin
-  Result := (CountColor(128, 258, 358, 352, 372) = 190);
+var
+  dots: TPointArray;
+  pBlack: Integer;
+  midP: Tpoint;
+begin
+  dots := GetMiniMapDots('npc');
+  pBlack := PercentBlackMM;
+  Result := (Length(dots) = 7) and ((pBlack > 60) and (pBlack < 70));
+  if Result then
+  begin
+    midP := MiddleTPA(dots);
+    // distance from center:
+    Result := sqr(midP.x-MMCX) + sqr(midP.y-MMCY) < 38*38;
+  end;
 end;
 
 {*******************************************************************************
@@ -105,7 +117,7 @@ begin
     if (High(aPts) = -1) then Break;
     SortATPAFromFirstPoint(aPts, P);
     MiddleTPAEx(aPts[0], mx, my);
-    Mouse(mx, my, 0, 2, True);
+    Mouse(mx, my, 0, 2, mouse_right);
     Flag;
 
     MakeCompass(RandomRange(A - 6, A + 6));
@@ -127,7 +139,7 @@ begin
       if IsUpText('oor') then
       begin
         GetMousePos(mx, my);
-        Mouse(mx, my, 0, 0, True);
+        Mouse(mx, my, 0, 0, mouse_left);
         Flag;
         T := GetSystemTime;
         while (InMordaut) and (GetSystemTime - T < 15000) do
@@ -288,7 +300,7 @@ begin
         end;
     end;
     Wait(RandomRange(1500, 2000));
-    Mouse(Sx1 + Random(Sx2 - Sx1), Sy1 + Random(Sy2 - Sy1), 0, 0, true);
+    Mouse(Sx1 + Random(Sx2 - Sx1), Sy1 + Random(Sy2 - Sy1), 0, 0, mouse_left);
     S := S + IntToStr(Slots[i]) + ' ';
   end;
   Writeln(Copy(S, 1, Length(S) - 1)  + '.');
@@ -328,16 +340,16 @@ begin
       M_BigPuzzle;
       Wait(RandomRange(1000, 2000));
       if FindDTM(HandDTM, x, y, MSX1, MSY1, MSX2, MSY2) then
-        Mouse(x - 3, y - 3, 7, 7, True);
+        Mouse(x - 3, y - 3, 7, 7, mouse_left);
     end else
       if (CountColor(0, 165, 142, 357, 183) = 322) then
       begin
         Writeln('[Mordaut] Found Small Puzzle');
         case M_SmallPuzzle of
-          3: Mouse(RandomRange(91, 131), RandomRange(220, 252), 0, 0, True);
-          4: Mouse(RandomRange(187, 227), RandomRange(220, 252), 0, 0, True);
-          5: Mouse(RandomRange(290, 315), RandomRange(220, 252), 0, 0, True);
-          6: Mouse(RandomRange(379, 419), RandomRange(220, 252), 0, 0, True);
+          3: MouseBox(91, 220, 131, 252, mouse_left);
+          4: MouseBox(187, 220, 227, 252, mouse_left);
+          5: MouseBox(290, 220, 315, 252, mouse_left);
+          6: MouseBox(379, 220, 419, 252, mouse_left);
         end;
       end;
     

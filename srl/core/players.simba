@@ -12,7 +12,7 @@ Player Management
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
-//--                » PlayerArray Routines                       --//
+//--                ï¿½ PlayerArray Routines                       --//
 //-----------------------------------------------------------------//
 // * function  LoggedIn: Boolean;                                  // by WT-Fakawi
 // * procedure NumberOfPlayers(Number: Integer);                   // by BenLand100 & Wizzup?
@@ -79,7 +79,9 @@ const
   SKILL_CONSTRUCTION  = 22;
   SKILL_SUMMONING     = 23;
   SKILL_DUNGEONEERING = 24;
-  SKILL_NONE          = 25;
+  SKILL_ALLCOMBAT     = 25;
+  SKILL_EVERYSKILL    = 26;
+  SKILL_NONE          = 27;
 
 // * Antirandom const
 { var UseSandwichSolver, UseBoxSolver, UseCerterSolve: Boolean;
@@ -246,9 +248,14 @@ Example:
 .. code-block:: pascal
 
 *)
-function PlayerWorked(player : integer) : integer;
+function PlayerWorked(player: integer): integer;
 begin
-  result := Players[player].Worked;
-  if Player = CurrentPlayer then
-    result := result + (GetSystemTime - PlayerStartTime);
+  if (player = currentPlayer) then
+    if (playerStartTime > 0) then // if it's been set at all
+    begin
+      incEx(players[player].worked, (getSystemTime - playerStartTime));
+      playerStartTime := getSystemTime;
+    end;
+
+  result := players[player].worked;
 end;

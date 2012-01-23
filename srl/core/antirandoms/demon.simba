@@ -12,6 +12,15 @@
 // * function SolveDemon: Boolean;                                 // * by Sumilion
 //-----------------------------------------------------------------//
 
+type
+  TSign = record
+    Color, Tol: Integer;
+    hm, sm: Extended;
+  end;
+
+var
+  Sign: TSign;
+
 {*******************************************************************************
 function Demon_InRandom: Boolean;
 by: TRiLeZ
@@ -26,9 +35,8 @@ begin
   ColorToleranceSpeed(1);
   if (CountDots('npc') = 1) then
     if (not (TabExists(tab_Magic))) then
-      if (CountColorTolerance(15986930, MMX1, MMY1, MMX2, MMY2, 18) >= 750) then //white fences
-        if (not (GetColor(504, 348) = 657930)) then //Arrow in chat box
-        Result := True;
+      result := (CountColorTolerance(15986929, MMX1, MMY1, MMX2, MMY2, 18) >= 700); //white fences
+      //Result := (CountColor(7913190, 197, 351, 316, 366) = 266);
   ColorToleranceSpeed(TempCTS);
 end;
 
@@ -46,9 +54,9 @@ var
   i, j, x, y: Integer;
 begin
   ColorToleranceSpeed(2);
-  SetColorspeed2Modifiers(0.12, 0.16);
+  SetColorspeed2Modifiers(sign.hm, sign.sm);
   try
-    FindColorsSpiralTolerance(MSX1, MSCY, arP, 6257516, MSX1, MSY1, MSX2, MSY2, 10);
+    FindColorsSpiralTolerance(MSX1, MSCY, arP, sign.color, MSX1, MSY1, MSX2, MSY2, sign.tol);
     if (Length(arP) = 0) then Exit;
 
     ararP := SplitTPA(arP, 10);
@@ -109,7 +117,7 @@ var
   SarP: T2DPointArray;
 begin
   cts := GetColorToleranceSpeed;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_HIGH);
   ColorToleranceSpeed(2);
@@ -130,7 +138,7 @@ begin
     if (arP[0].x < MSCX) and (arP[H].x < MSCX) then
     begin
       Writeln('DemonCenter - We are at the edge of the random area, fixing position.');
-      Mouse(MiddleTPA(SarP[Round(F/2)]).x, MiddleTPA(SarP[Round(F/2)]).y + 60, 10, 10, False);
+      Mouse(MiddleTPA(SarP[Round(F/2)]).x, MiddleTPA(SarP[Round(F/2)]).y + 60, 10, 10, mouse_right);
       WaitOption('Walk', 400);
       Wait(2000);
       FFlag(0);
@@ -139,7 +147,7 @@ begin
     if (arP[0].x > MSCX) and (arP[H].x > MSCX) then
     begin
       Writeln('DemonCenter - We are at the edge of the random area, fixing position.');
-      Mouse(MiddleTPA(SarP[F]).x, MiddleTPA(SarP[F]).y + 60, 10, 10, False);
+      Mouse(MiddleTPA(SarP[F]).x, MiddleTPA(SarP[F]).y + 60, 10, 10, mouse_right);
       WaitOption('Walk', 400);
       Wait(2000);
       FFlag(0);
@@ -155,10 +163,10 @@ begin
   Result := Length(arP) > 0;
   P := MiddleTPA(arP);
   if (IsUpText('Walk')) then
-    Mouse(P.X, P.Y + 50, 0, 0, True)
+    Mouse(P.X, P.Y + 50, 0, 0, mouse_left)
   else
   begin
-    Mouse(P.X, P.Y + 50, 0, 0, False);
+    Mouse(P.X, P.Y + 50, 0, 0, mouse_right);
     ChooseOption('Walk');
   end;
   Wait(2000);
@@ -182,13 +190,16 @@ var
   b: TBox;
 begin
   ColorToleranceSpeed(2);
-  SetColorspeed2Modifiers(0.12, 0.16);
-  FindColorsSpiralTolerance(MSX1, MSCY, arP, 6257516, MSX1, MSY1, MSX2, MSY2, 10);
+  SetColorspeed2Modifiers(sign.hm, sign.sm);
+  FindColorsSpiralTolerance(MSX1, MSCY, arP, sign.color, MSX1, MSY1, MSX2, MSY2, sign.tol);
 
   ararP := TPAtoATPA(arP, 45);
   if (Length(ararP) <> 4) then
+  begin
+    writeln(Length(ararP));
     Exit;
-
+  end;
+  writeln(Length(ararP));
   MinLength := 999;
   for i := 0 to High(ararP) do
   begin
@@ -263,7 +274,7 @@ begin
           if WaitUpText('Talk', 150) then
           begin
             GetMousePos(dx, dy);
-            Mouse(dx, dy, 0, 0, false);
+            Mouse(dx, dy, 0, 0, mouse_right);
             Break;
           end;
         end;
@@ -324,17 +335,15 @@ Description: Performs the correct workout.
 
 function PerformTask(TaskIndex: Integer): Boolean;
 var
-  arP, arAP: TPointArray;
-  arC, arUC: TIntegerArray;
+  arP: TPointArray;
   ararP: T2DPointArray;
-  tmpCTS, i, j, arL, arL2, t: Integer;
-  X, Y, Z: Extended;
+  tmpCTS, i, arL, t: Integer;
 begin
   tmpCTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(2);
-  SetColorSpeed2Modifiers(0.06, 0.15);
+  SetColorSpeed2Modifiers(sign.hm, sign.sm);
 
-  if not(FindColorsTolerance(arP, 2971495, MSX1, MSY1, MSX2, MSY2, 11)) then
+  if not(FindColorsTolerance(arP, sign.Color, MSX1, MSY1, MSX2, MSY2, sign.Tol)) then
   begin
     Writeln('Failed to find the signs, no object found.');
     ColorToleranceSpeed(tmpCTS);
@@ -342,43 +351,22 @@ begin
     Exit;
   end;
 
-  arC := GetColors(arP);
-  arUC := arC;
-  ClearSameIntegers(arUC);
-  arL := High(arUC);
-  arL2 := High(arC);
-
-  for i := 0 to arL do
-  begin
-    ColorToXYZ(arC[i], X, Y, Z);
-
-    if (X >= 6.61) and (X <= 19.45) and (Y >= 7.00) and (Y <= 20.47) and (Z >= 2.28) and (Z <= 6.43) then
-    begin
-      for j := 0 to arL2 do
-      begin
-        if (arUC[i] = arC[j]) then
-        begin
-          SetLength(arAP, Length(arAP) + 1);
-          arAP[High(arAP)] := arP[j];
-        end;
-      end;
-    end;
-  end;
-
-  ararP := SplitTPAEx(arAP, 10, 10);
+  ararP := SplitTPAEx(arP, 25, 15);
   arL := High(ararP);
   SetLength(arP, 0);
 
   for i := 0 to arL do
   begin
-    if (Length(ararP[i]) < 100) then Continue;
-    if (Length(ararP[i]) > 250) then Continue;
+    writeln('ararP: '+inttostr(Length(ararP[i])));
+    if (Length(ararP[i]) < 1) then Continue;
+    if (Length(ararP[i]) > 200) then Continue;
     SetLength(arP, Length(arP) + 1);
     arP[High(arP)] := MiddleTPA(ararP[i]);
   end;
 
   SortTPAFrom(arP, Point(MSX1, MSCY));
 
+  writeln(inttostr((Length(arP))));
   if (not (InRange(Length(arP), 3, 5))) then
   begin
     Writeln('Wrong Array Length, failed to find the mat.');
@@ -394,14 +382,14 @@ begin
   begin;
     Result := True;
     GetMousePos(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y);
-    Mouse(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y, 0, 0, True);
+    Mouse(arP[TaskIndex - 1].x, arP[TaskIndex - 1].y, 0, 0, mouse_left);
     Flag;
     MarkTime(t);
     while not FindNPCChatText('Sergeant Damien', Nothing) and
          (TimeFromMark(t) < 20000) do
       Wait(100 + Random(100));
 
-    if (TimeFromMark(t) > 20000) then
+    if (TimeFromMark(t) > 30000) then
     begin
       Writeln('Task Timeout');
       ColorToleranceSpeed(tmpCTS);
@@ -432,7 +420,7 @@ begin
     LogOut;
     Exit;
   end;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_LOW);
   JogIndex := 0;
@@ -444,12 +432,15 @@ begin
   begin
     JogIndex := 0; StarIndex := 0; SitIndex := 0; PushIndex := 0;
     try
+      writeln('going to wait');
       while (not NoSignObstruction) do
       begin
         Wait(20 + Random(10));
         if (TimeFromMark(t) >= 120000) then Break;
       end;
+      writeln('iding signs');
       IdentifySigns(JogIndex, StarIndex, SitIndex, PushIndex);
+      writeln('done checking signs');
     except end;
     if ((JogIndex = 0) or (StarIndex = 0) or (SitIndex = 0) or (PushIndex = 0)) then
     begin
@@ -472,7 +463,7 @@ begin
       Wait(150 + Random(150));
     end;
   end;
-  Mouse(543, 24, 12, 12, true);
+  Mouse(543, 24, 12, 12, mouse_left);
   Wait(150 + Random(200));
   SetAngle(SRL_ANGLE_HIGH);
   Result := (JogIndex > 0) and (StarIndex > 0) and (SitIndex > 0) and (PushIndex > 0);
@@ -502,12 +493,21 @@ var
   JogIndex, StarIndex, SitIndex, PushIndex, t: Integer;
 begin
   Result := false;
+  with Sign do
+  begin
+    Color := 6455408;
+    Tol := 12;
+    sm := 0.16;
+    hm := 0.18;
+  end;
   TakeScreen('Found Demon');
   ClickContinue(True, True);
   SetAngle(SRL_ANGLE_HIGH);
   MarkTime(t);
   MakeCompass('N');
   repeat;
+    if (not demon_InRandom) then
+      Exit;
     Task := demon_GetTask;
     Writeln(Task);
 
@@ -545,7 +545,7 @@ begin
   Wait(10000);
   while (ClickContinue(True, True)) do
     Wait(500 + Random(500));
-  t := GetSystemTime + 15000;
+  t := GetSystemTime + 30000;
   while (GetSystemTime < t) and Demon_InRandom do
     wait(100+random(200));
   if GetSystemTime > t then

@@ -31,17 +31,22 @@ Var
 
 {*******************************************************************************
 procedure TakeScreen(reason: String);
-by: Mutant Squirrle edit yakman
+by: Mutant, Squirrle, Yakman, & Harry
 Description: Takes a screenshot if the global Screenshots is true,
 Adds +TimeRunning+ to the path, so no screenshots will overwrite each other.
 Adds '.bmp' to the end, will not crash the script if it goes wrong.
+Todo: Make PNG when Simba supports it properly.
 *******************************************************************************}
-
 procedure TakeScreen(Reason: string);
 begin
   if(not Screenshots)then Exit;
   try
-   SaveScreenshot(SRLSavePath + reason + ' ' + TimeRunning + '.bmp');
+
+   if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
+     SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
+   else
+     SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
+
    WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
   except
    Writeln('Failed to save screenshot of: ' + reason);
@@ -159,7 +164,7 @@ function AreTalking: Boolean;
 var
    x, y: integer;
 begin
-  Result := FindColor(x, y, 128, 150, 250, 500, 380);
+  Result := FindColor(x, y, 1577999, 140, 340, 370, 370);
 end;
 
 {*******************************************************************************
@@ -181,7 +186,7 @@ begin
   if (FindColorsTolerance(Pts, 39401, 553, 242, 729, 264, 0)) then
   begin
     B := GetTPABounds(Pts);
-    Result := Trim(GetTextAtEx(B.X1 - 1, 245, 0, UpChars, False, False, 0, 1, 39401, 50, False, tr_AllChars));
+    Result := Trim(GetTextAtEx(B.X1 - 1, 245, 0, UpCharsEx, False, False, 0, 1, 39401, 50, False, tr_AllChars));
   end;
 end;
 

@@ -7,7 +7,7 @@ The Symbol include contains minimap symbol related functions.
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
-//--               » Symbol Routines                             --//
+//--               ï¿½ Symbol Routines                             --//
 //-----------------------------------------------------------------//
 // * function LoadSymbolBitmapColor(Name: String): Integer;        // * by Stupid3ooo, WT-Fakawi, Bebemycat2, Ron, and StarBlaster100
 // * function GetSymbolColorIn(var rx, ry: Integer; Name: string; xs, ys, xe, ye: Integer): Integer; // * by Starblaster100 based off of the ideas of Stupid3000
@@ -629,13 +629,20 @@ begin
          'TomBhAEVAnkAo0FGg5SDADYtlua');
         result:= 11713980;
       end;
-    'summoning store':
+    'summoning obelisk':
       begin
        SymbolBitmap := BitmapFromString(15, 5, 'beNpj42Nm4zt87CwE2SVP1' +
          'XaoKeidC0SeUTWfHj4AiixetgYoCCSBKuGKgSKVNc1AZXMO3AOpWf' +
          '8EqBiiEaIFrhioEigCRJPnrAAqBqJjl98BEVAlxFigGmSTIVqAtgM' +
          'VAI0FqgeSEBMwFQNVAo0FigPVgxjrnwB1Obj4IBQDAImMdLM=');
         result:= 10325360;
+      end;
+    'summoning store':
+      begin
+       SymbolBitmap := BitmapFromString(15, 5, 'meJyzicq0QUKMDAzIyAZVFk3ZAVS' +
+         'AVQtQJGrCfCA6gA0gqweyFyxY8OjFi5MPvwLVb9uyEVM9muLJ377C' +
+         '1WNqgRgOABDhZzk=');
+        result:= 9697013;
       end;
     'resting spot', 'rest':
       begin

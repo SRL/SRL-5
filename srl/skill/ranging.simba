@@ -12,15 +12,36 @@
 var
   headcolorar, tailcolor: Integer;
 
-{*******************************************************************************
+(*
+ArrowAmount
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ArrowAmount: Integer;
+
+Returns the number of equiped arrows or equiped knives.
+
+.. note::
+
+    by masquerader & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 function ArrowAmount: Integer;
-By: masquerader
-Description: Returns the number of equiped arrows.
-*******************************************************************************}
-function ArrowAmount: Integer;
+var
+  K: integer;
 begin
   GameTab(tab_Equip);
-  Result := GetAmount(673, 249);
+  K := GetAmountBox(IntToBox(566, 284, 606, 321));
+  if K > 1 then
+    Result := K
+  else
+    Result := GetAmountBox(IntToBox(660, 240, 720, 282));
 end;
 
 {*******************************************************************************

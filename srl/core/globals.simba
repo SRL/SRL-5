@@ -36,7 +36,7 @@ var
 { var bmpAdmin, bmpMod, Lamp, BoxMask: Integer;
   Description: Global Bitmaps. Need to be Global because of SCAR Memory leaks. }
 var
-  bmpAdmin, bmpMod, Lamp, BookOfKnowledge: Integer;
+  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge: Integer;
 
 { var RoadColor, WaterColor, BankColor: Integer;
   Description: Three variables you will almost always use. :) }
@@ -143,11 +143,12 @@ const
   srl_OnCustomRC       = 11;  // When custom RC trigger has been given.
   srl_OnExitToLobby    = 12;  // On exit to lobby
   srl_OnLogIn          = 13;  // Right after player has successfully logged in.
+  srl_OnRSUpdate       = 14;  // Called in LoginPlayerToLob if RuneScape updates.
 
 { var SRL_Procs: array [0..12] of procedure();
   Description: Varibles to store user-defined procs to be called in SRL. }
 var
-  SRL_Procs: array [0..13] of procedure();
+  SRL_Procs: array [0..14] of procedure();
   SRL_OnFindRandomCall : function(var Cont : boolean) : boolean;
   
 { const GameTab Constants;
@@ -176,6 +177,8 @@ const
 { const Antirandoms Constants;
   Description: Constants representing randoms index. }
 const
+  rand_Count = 25;
+
   rand_Leo = 0;
   rand_Forester = 1;
   rand_Maze = 2;
@@ -202,6 +205,10 @@ const
   rand_BirdNest = 22;
   rand_Death = 23;
   rand_RewardBox = 24;
+
+var
+  tmp_RandSolved: array[0..rand_Count-1] of Integer;
+  tmp_RandFailed: array[0..rand_Count-1] of integer;
   
 { type TAutoColorInfo;
   Description: Set of information that can be used in some functions. }
@@ -225,7 +232,7 @@ end;
 { type fnct_ActionOptions;
   Description: Action options. }
 type
-  fnct_ActionOptions = (ClickLeft,ClickRight,Move,Nothing);
+  fnct_ActionOptions = (ClickRight,ClickLeft,ClickMiddle,Move,Nothing);
 
 var
 { var ACArr
@@ -296,9 +303,11 @@ begin
        'p0+HS6GR+KVwAgAGXFQr');
   bmpAdmin := BitmapFromString(9, 6, 'beNqbp/j9PwcZ6P//FiDJAA' +
        'bIjGvzFOFSaCR+KZwIALniVEk=');
-  Lamp := DTMFromString('78DA6374626260D06164400655530218FE036' +
-       '990E87F20603405AAD14255C3C0C0042661A28CF640BE260135EE' +
-       '44A809C0740F56738C08A87124428D3590AF8B5F0D00A9150A05');
+  bmpFlag := BitmapFromString(8, 15, 'meJxjYEAHIpr/F8yYgSkozPfE3ty' +
+        'cGHGgIKY4RBBNHC6ILI4sAkYngOIwNhQJ8bUBBYEIyEBGQO37tm3D' +
+        'dCcdxIGBhlUcCBgZGAA27Tt3');
+  SetTransparentColor(bmpFlag, 0);
+  Lamp := DTMFromString('mbQAAAHicY2VgYMhhYmBIBeJcIK5kgvA5GBkYWIGYEYi5gZgPiKdOFgGqZkLB/AyYgBELBgMANmADtw==');
   BookOfKnowledge := DTMFromString('78DA63CC65626078C480028A7273183480342' +
        '310FF0702C64CA09AAB0C6880094C3242798CE540FE2D026ACA80' +
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
@@ -306,6 +315,7 @@ begin
   SRLBitmapsLoaded := True;
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
   SetBitmapName(bmpAdmin,'SRL - Admin bitmap');
+  SetBitmapName(bmpFlag, 'SRL - Flag bitmap');
   SetDTMName(Lamp,'SRL - Lamp bitmap');
 end;
 
@@ -334,6 +344,7 @@ begin
   begin
     FreeBitmap(bmpMod);
     FreeBitmap(bmpAdmin);
+    FreeBitmap(bmpFlag);
     FreeDTM(Lamp);
     FreeDTM(BookOfKnowledge);
     SRLBitmapsLoaded := False;
@@ -423,7 +434,7 @@ procedure srl_Warn(ProcName, ErrorMessage: String; wVersion: Integer);
 begin
   if (wVersion >= WarnSensitivity) then
     if (wVersion <> warn_Debug) then
-      WriteLn('** Warning in ' + ProcName + ': ' + ErrorMessage + '**')
+      WriteLn('** Warning in ' + ProcName + ': ' + ErrorMessage + ' **')
     else
       WriteLn('Debugging ' + ProcName + ': ' + ErrorMessage);
   if wVersion = warn_Terminate then
@@ -432,7 +443,7 @@ end;
 
 { MainScreen, Minimap, Inventory, Chat, Bank boxes as TBox }
 var
-  MSBox, MMBox, MIBox, MCBox, MBBox: TBox;
+  MSBox, MMBox, MIBox, MCBox, MBBox, MFBox: TBox;
 
 (*
 SetupBoxes
@@ -460,6 +471,7 @@ begin
   MIBox := IntToBox(MIX1, MIY1, MIX2, MIY2);
   MCBox := IntToBox(MCX1, MCY1, MCX2, MCY2);
   MBBox := IntToBox(MBX1, MBY1, MBX2, MBY2);
+  MFBox := IntToBox(224, 114, 294, 150);
 end;
 
 
@@ -470,6 +482,9 @@ const
   HP_BAR_TOL = 3;
   HP_BAR_WIDTH = 57;
   HP_BAR_HEIGHT = 7;
+  HP_BAR_COLOR1 = 10240;//Green top
+  HP_BAR_COLOR2 = 9728;//Green bottom
+  HP_BAR_COLOR3 = 132923;//Red
 
 (*
 srl_InFight
@@ -486,7 +501,7 @@ is performing fighting animations to further improve the certainty of results.
 
 .. note::
 
-    by Frement
+    by Narcle
 
 Example:
 
@@ -499,12 +514,19 @@ Example:
     end;
 
 *)
-function srl_InFight: Boolean;
+Function srl_InFight: Boolean;
 var
-  X, Y, HPBarCorner: Integer;
+  T: TPoint;
+  H, I: integer;
+  Colors: TIntegerArray;
+  ATPA: T2DPointArray;
 begin
-  HPBarCorner := DTMFromString('78DA6364646060606540051A108A11CA6504315888' +
-       '50C34C841A26026A988854C348400D33116A588850C34A841A36C26A0046A001D4');
-  Result := FindDTM(HPBarCorner, x, y, MSCX - 40, MSCY - 170, MSCX + 40, MSCY);
-  FreeDTM(HPBarCorner);
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  H := High(Colors);
+  SetArrayLength(ATPA, H+1);
+  T := point((MFBox.x2+MFBox.x1) div 2,(MFBox.y2+MFBox.y1) div 2);
+  for i := 0 to H do
+   with MFBox do
+    FindColorsSpiralTolerance(T.x, T.y, ATPA[i], Colors[i], X1, Y1, X2, Y2, 0);
+  Result := InRange(Length(MergeATPA(ATPA)), 30, 240);
 end;

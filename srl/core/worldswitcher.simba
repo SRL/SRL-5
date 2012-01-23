@@ -5,24 +5,6 @@ Worldswitcher
 The Worldswitcher include contains all kinds of functions to control the built-in RS world switcher.
 
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » WorldSwitch routines                        --//
-//-----------------------------------------------------------------//
-// * function WorldScreen: Boolean;                                // by Narcle
-// * function OpenWorldScreen: Boolean;                            // by Bionicle1800
-// * function UpdateWorlds: Boolean;                               // by mixster & Nava2
-// * procedure LoadWorldArrays;                                    // by Narcle
-// * function FindWorld(W: integer): Boolean;                      // by Narcle
-// * function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean; // by Narcle
-// * function WS_CurrentWorld(var World: Integer): Boolean;        // by IceFire908
-// * function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean; // by Narcle
-// * function FindWorld(W: integer): Boolean;                      // by Narcle fixed by Shuttleu
-// * function SelectWorld(WorldNumber: Integer): Boolean;          // by Narcle & ZephyrsFury
-// * function RandomWorld(Members, PvP: Boolean): Integer;         // by Narcle & mixster
-// * function ChangeWorld(W: Integer): Boolean;                    // by Nava2
-// * Procedure OrderWorlds(by: string; Descending: boolean);       // by NaumanAkhlaQ
-// * Function ChooseWorldBy(SettingsNames:TStringArray; SettingsDescending: TBooleanArray; Members, PVP: boolean): boolean; // by Rasta Magician
 
 type
   TWorld = record
@@ -304,7 +286,8 @@ OrderWorlds
 
     Procedure OrderWorlds(by: string; Descending: boolean);
 
-Orders worlds by 'by' in order 'Descending', Check function for valid params of 'by', Descending = true means the left button
+Orders worlds by 'by' in order 'Descending', Check function for valid params of
+'by', Descending = true means the left button
 
 ..note::
 
@@ -324,18 +307,26 @@ var
   TB: TBox;
 begin
   Arr := [TStringArray(['world', 'w', 'worlds']), TStringArray(['players', 'pl', 'player']), TStringArray(['activity', 'location', 'loc', 'act']),
-         TStringArray(['ls', 'lootshare']), TStringArray(['type', 't']), TStringArray(['ping', 'pi'])];
-  for I := 0 To High(Arr) do
-  if InStrArr(Lowercase(By), Arr[i], False) then
-    Break;
-  FindColorsTolerance(TPA, SRL_WS_ARROWCOLOR, 92, 0, 716, 200, 1);
-  ATPA := SplitTPA(TPA, 2);
-  SortATPAFromFirstPoint(ATPA, Point(92, 166));
-  if Length(ATPA) < (I * 2) then
-    Exit;
-  TB := GetTPABounds(ATPA[(I * 2) + Byte(Descending)]);
-  MouseBox(TB.x1, TB.y1, TB.x2, TB.y2, 1);
-  Result := true;
+          TStringArray(['type', 't']), TStringArray(['ls', 'lootshare']), TStringArray(['ping', 'pi'])];
+
+  for I := 0 to High(Arr) do
+  begin
+    if (InStrArr(Lowercase(By), Arr[i], False)) then
+    begin
+      FindColorsTolerance(TPA, SRL_WS_ARROWCOLOR, 92, 0, 716, 200, 1);
+
+      ATPA := SplitTPA(TPA, 2);
+      SortATPAFromFirstPoint(ATPA, Point(92, 166));
+
+      if (Length(ATPA) < (I * 2)) then
+        Exit;
+
+      TB := GetTPABounds(ATPA[(I * 2) + Integer(Descending)]);
+      MouseBox(TB.x1 + 2, TB.y1 + 2, TB.x2, TB.y2, 1);
+
+      Result := True;
+    end;
+  end;
 end;
 
 
@@ -435,14 +426,14 @@ begin
   Debugln('SCROLLINFO: CurPos: '+ToStr(CurPos)+' WPos: '+ToStr(WPos)+' H+1: '+ToSTr(H+1)+' SPos: '+ToStr(SPos));
   if InRange(SPos, CurPos - BarHeight, CurPos + BarHeight) then
   begin//if its too close the scroll bar won't move to correct position
-    if (CurPos < ((SB.y1+BarHeight div 2)+ (SB.y2-SB.y1-BarHeight) div 2)) then//half point
-      Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SB.y2, 0, 0, true)
+    if (CurPos < ((SB.y1+BarHeight/2)+ (SB.y2-SB.y1-BarHeight)/2)) then//half point
+      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y2, 0, 0, mouse_left)
     else
-      Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SB.y1, 0, 0, true);
+      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y1, 0, 0, mouse_left);
   end;
 
   //Writeln('SPos := '+ToStr(SPos));
-  Mouse((SB.x1 + (SB.x2-SB.x1) div 2), SPos, 0, 0, true);
+  Mouse((SB.x1 + (SB.x2-SB.x1)/2), SPos, 0, 0, mouse_left);
   wait(300+Random(100));
   Result := IsTextInAreaEx(84, 134, 134, 440, p.X, p.Y, IntToStr(W) + ' ', 0, StatChars, False, False, -1, 2, TextColor);
 end;
@@ -553,7 +544,7 @@ begin
           if FindColor(xx, yy, 6316128, x-20, y-2, x+20, y+2) then
           begin
             GetMousePos(x, y);
-            Mouse(x, y, 0, 0, true);
+            Mouse(x, y, 0, 0, mouse_left);
             if FindColor(xx, yy, 19890, x-20, y-2, x+20, y+2) then
             begin
               Writeln('World '+inttostr(W)+' selected.');
@@ -690,7 +681,7 @@ begin
       Continue;
     if (PVP)xor(GetColor(589, 156+18*i) <> 1251528) then
       Continue;
-    MouseBox(79, 148+18*i, 685, 165+18*i, 1);
+    MouseBox(79, 148+18*i, 685, 165+18*i, mouse_left);
     for c := 0 to 4 do
     begin
       wait(200);

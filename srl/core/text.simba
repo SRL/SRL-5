@@ -21,6 +21,14 @@ const
   clTrade   = clPurple;
   clFriend  = 128;
 
+{ type TOptions
+  Descripts: Choose option record.  }
+Type
+  TOptions = Record
+    Str: string;
+    Bounds, BigBox: TBox;
+  end;
+
 function CloseBank: Boolean; Forward;
 
 (*
@@ -449,52 +457,6 @@ begin
   Result := StrToIntDef(Between('l: ', ')', GetUpText), -1);
 end;
 
-(*
-FindNPCChatText
-~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
-
-Finds a text said by a NPC in chat. If found it'll perform action,
-where action can be:
-Nothing - Just return wether its found
-Move - Just move the mouse to it
-Clickleft - Movemouse & Clickmouse left
-Clickright - MoveMouse & Clickmouse right
-
-.. note::
-
-    by Kernel Klink and Nielsie95
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
-var
-  tx, ty, S: Integer;
-begin
-  Result := False;
-  if txt = '' then
-  begin
-    srl_Warn('FindNPCChatText', 'txt is empty', warn_AllVersions);
-    Exit;
-  end;
-  S := CreateBitmapMaskFromText(txt, NPCChars);
-  if FindBitmapMaskTolerance(S, tx, ty, 9, 348, 523, 471, 50, 10) then
-  begin
-    Result := True;
-    case Action of
-      Move: MMouse(tx, ty + 2, Random(Length(txt) * 5), 4);
-      ClickLeft: Mouse(tx, ty + 2, Random(Length(txt) * 5), 4, True);
-      ClickRight: Mouse(tx, ty + 2, Random(Length(txt) * 5), 4, False);
-    end;
-  end;
-  FreeBitmap(S);
-end;
 
 (*
 FindText
@@ -533,7 +495,7 @@ ClickText
 
 .. code-block:: pascal
 
-    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; Left: Boolean): Boolean;
+    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
 
 Clicks Text if found in the specified box.
 
@@ -546,7 +508,7 @@ Example
 .. code-block:: pascal
 
 *)
-function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; Left: Boolean): Boolean;
+function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
 var
   Mask, w, h, tx, ty: Integer;
 begin
@@ -560,7 +522,7 @@ begin
   GetBitmapSize(Mask, W, H);
   FreeBitmap(Mask);
   if(Result)then
-    Mouse(TX + (W div 4), TY + (H div 4), (W div 2), (H div 2), Left);
+    Mouse(TX + (W div 4), TY + (H div 4), (W div 2), (H div 2), button);
 end;
 
 (*
@@ -614,7 +576,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function FindTextTpaEx(Color,Tol,xs,ys,xe,ye : integer;var x,y : integer; Txt, Chars : string; Action  :fnct_ActionOptions ) : Boolean;
+function FindTextTPAEx(Color,Tol,xs,ys,xe,ye : integer;var x,y : integer; Txt, Chars : string; Action  :fnct_ActionOptions ) : Boolean;
 var
   TextTPA,SearchTPA, Matches: TPointArray;
   Box : TBox;
@@ -640,10 +602,7 @@ begin
   if Action = Move then
     Exit;
   GetMousePos(xx,yy);
-  Case Action of
-    ClickLeft : Mouse(xx,yy,0,0,true);
-    ClickRight: Mouse(xx,yy,0,0,false);
-  end;
+  MouseAction(xx, yy, 0, 0, Action);
 end;
 
 (*
@@ -665,7 +624,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function FindTextTpa(Color, Tol, xs, ys, xe, ye: integer; Txt, Chars: string; Action: fnct_ActionOptions): Boolean;
+function FindTextTPA(Color, Tol, xs, ys, xe, ye: integer; Txt, Chars: string; Action: fnct_ActionOptions): Boolean;
 var
   x,y : integer;
 begin
@@ -706,6 +665,235 @@ begin
 end;
 
 (*
+FindNPCChatText
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
+
+Finds a text said by a NPC in chat. If found it'll perform action,
+where action can be:
+Nothing - Just return wether its found
+Move - Just move the mouse to it
+Clickleft - Movemouse & Clickmouse left
+Clickright - MoveMouse & Clickmouse right
+
+.. note::
+
+    by Kernel Klink, Nielsie95 & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
+var
+  BlackTPA, WhiteTPA, TPA, mTPA: TPointArray;
+  i, ii, cts, Height, c, H: integer;
+  TextATPA, ATPA: T2DPointArray;
+  B: TBox;
+  TSA: TStringArray;
+begin
+  cts := GetColorToleranceSpeed;
+  SetColorToleranceSpeed(1);
+  FindColors(WhiteTPA, 13158600, MCX1, MCY1, MCX2, MCY2);
+  FindColors(BlackTPA, 0, MCX1, MCY1, MCX2, MCY2);
+  SetColorToleranceSpeed(cts);
+  TPA := CombineTPA(BlackTPA, WhiteTPA);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := SplitTPAEx(TPA, MCX2-MCX1, 1);
+  TSA := Explode(' ', txt);
+  SetArrayLength(TextATPA, Length(TSA));
+  for i := 0 to High(TSA) do
+    TextATPA[i] := LoadTextTPA(TSA[i], UpChars, Height);
+  H := High(TextATPA);
+  for i := 0 to High(ATPA) do
+  begin
+    c := 0;
+    for ii := 0 to H do
+    if FindTextTPAinTPA(Height, TextATPA[ii], ATPA[i], mTPA) then
+      Inc(c);
+    Result := (c = H+1);
+    if Result then
+    begin
+      B := GetTPABounds(ATPA[i]);
+      with B do
+      case Action of
+        Move: MMouse(X1, Y1 + 2, X2-X1, 4);
+        ClickLeft: Mouse(X1, Y1 + 2, X2-X1, 4, True);
+        ClickRight: Mouse(X1, Y1 + 2, X2-X1, 4, False);
+      end;
+    end;
+  end;
+end;
+
+(*
+SortATPAFromFirstPointY
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SortATPAFromFirstPointY(var a: T2DPointArray; const From: TPoint);
+
+Sorts the Y coords of the ATPA.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SortATPAFromFirstPointY(var a: T2DPointArray; const From: TPoint);
+var
+   i, l: Integer;
+   DistArr: TIntegerArray;
+begin
+  l := High(a);
+  if (l < 0) then Exit;
+  SetLength(DistArr, l + 1);
+  for i := 0 to l do
+    DistArr[i] := Round(Sqr(From.y - a[i][0].y));
+  QuickATPASort(DistArr, a, 0, l, True);
+end;
+
+(*
+SortATPAFromFirstPointX
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SortATPAFromFirstPointX(var a: T2DPointArray; const From: TPoint);
+
+Sorts the X coords of the ATPA.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SortATPAFromFirstPointX(var a: T2DPointArray; const From: TPoint);
+var
+   i, l: Integer;
+   DistArr: TIntegerArray;
+begin
+  l := High(a);
+  if (l < 0) then Exit;
+  SetLength(DistArr, l + 1);
+  for i := 0 to l do
+    DistArr[i] := Round(Sqr(From.x - a[i][0].x));
+  QuickATPASort(DistArr, a, 0, l, True);
+end;
+
+(*
+GetChooseOptions
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetChooseOptions(TextType: string): Array of TOptions;
+
+Gets the texe from the options menu.
+
+.. note::
+
+    by Wizzup? & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function GetChooseOptions(TextType: string): Array of TOptions;
+var
+   B,BB, BigBox: TBox;
+   TPA, TPA1, TPA2: TPointArray;
+   aTPA, tempatpa: T2DPointArray;
+   I, L, target, bmp,w,h, cts: Integer;
+   Colors: TIntegerArray;
+begin
+  target := GetImageTarget;
+  GetClientDimensions(B.X2, B.Y2);
+  B := IntToBox(0, 0, B.X2-1, B.Y2-1);
+  cts := GetColorToleranceSpeed;
+  ColorToleranceSpeed(1);
+  FindColorsTolerance(TPA1, 131843, B.X1, B.Y1, B.X2, B.Y2, 0);
+  FindColorsTolerance(TPA2, 3682593, B.X1, B.Y1, B.X2, B.Y2, 0);
+  TPA := CombineTPA(TPA1, TPA2);
+  If Length(TPA) < 100 Then
+  begin
+    ColorToleranceSpeed(cts);
+    Exit;
+  end;
+
+  aTPA := SplitTPA(TPA, 10);
+  For i := 0 to High(ATPA) do
+  begin
+    B := GetTPABounds(ATPA[i]);
+    if ((B.x2-B.x1) > 90) and ((B.y2-B.y1) > 18) then
+      Break
+    else
+      B := IntToBox(0, 0, 0, 0);
+  end;
+
+  If (B.x2 = 0) then
+  begin
+    ColorToleranceSpeed(cts);
+    Exit;
+  end;
+
+  BigBox := B;
+
+  //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
+  Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
+
+  SetLength(aTPA, Length(Colors));
+  for i := 0 to High(Colors) do
+    FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
+  TPA := MergeATPA(aTPA);
+  FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
+  bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
+  OffsetTPA(TPA, Point(-B.X1, -B.Y1));
+  OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
+  FastDrawClear(bmp, 0);
+  DrawTPABitmap(bmp, TPA, clRed);
+  DrawTPABitmap(bmp, TPA1, clPurple);
+  ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
+  GetbitmapSize(bmp,w,h);
+  SetTargetBitmap(bmp);  // new target for findcolorstolerance.
+  findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
+  ATPA := SplitTPAEx(TPA, 15, 2);
+  L := High(ATPA);
+  SortATPAFromFirstPointY(ATPA, Point(w/2,0));
+
+  SetArrayLength(Result, Length(ATPA));
+  Result[0].BigBox := BigBox;
+  for i := 0 to high(ATPA) do
+  begin
+    TPA := ATPA[i];
+    tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
+    SortATPAFromFirstPointX(tempatpa, Point(0, 0));
+    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx');
+    BB := GetTPABounds(ATPA[i]);
+    Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
+    setlength(tempatpa,0);
+    setlength(TPA,0);
+  end;
+  ColorToleranceSpeed(cts);
+  SetImageTarget(target);
+  FreeBitmap(bmp);
+end;
+
+(*
 ChooseOptionMultiEx
 ~~~~~~~~~~~~~~~~~~~
 
@@ -733,57 +921,32 @@ Example:
 *)
 function ChooseOptionMultiEx(Texts: TStringArray; TextType: String; Action: fnct_ActionOptions): Boolean;
 var
-   B,OptionBox: TBox;
-   TPA, TPA1, TPA2, TextTPA: TPointArray;
-   aTPA: T2DPointArray;
-   I, H, HH, ii, L: Integer;
-   Colors,SearchCols: TIntegerArray;
+   B: TBox;
+   i, H, ii, L, x: Integer;
+   T: TPoint;
+   Options: array of TOptions;
 begin
   Result := False;
-  GetClientDimensions(B.X2, B.Y2);
-  B.X1 := 0;
-  B.Y1 := 0;
-  Dec(B.X2);
-  Dec(B.Y2);
-  FindColorsTolerance(TPA1, 4343893, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 3950929, B.X1, B.Y1, B.X2, B.Y2, 0);
-  TPA := CombineTPA(TPA1, TPA2);
-  If Length(TPA) < 10 Then
+  Options := GetChooseOptions(TextType);
+  if (Length(Options) < 1) then
     Exit;
-  B.X2 := 0;
-  B.Y2 := 0;
-  aTPA := SplitTPAEx(TPA, 20, 20);
-  SortATPASize(aTPA, True);
-  B := GetTPABounds(aTPA[0]);
-  Colors := [13034990, 4231423, 2070783, 65535, 16776960, 9812166, 16777215];
-  TextType := LowerCase(TextType);
-  case TextType of
-    'action', 'player': SearchCols := [0,5,6];
-    'item'  : SearchCols := [1,2];
-    'npc'   : SearchCols := [3];
-    'object': SearchCols := [4];
-    else
-      SearchCols := [0,1,2,3,4,5,6];
-  end;
-  L := High(SearchCols);
-  SetLength(aTPA,l+1);
-  for i := 0 to l do
-    FindColorsTolerance(aTPA[I], Colors[SearchCols[I]], B.X1, B.Y1, B.X2, B.Y2, 3);
-  TPA := MergeATPA(aTPA);
-  aTPA := SplitTPAEx(TPA, 15, 1);
-  L := High(aTPA);
-  H := High(Texts);
-  SortATPAFromFirstPoint(ATPA, Point(OptionBox.X1, optionbox.y1));
-  for I :=0 To H do
+  H := High(Options);
+  L := High(Texts);
+  for i := 0 To L do
   begin
-    TextTPA := LoadTextTPA(Texts[i], UpChars, HH);
-    for ii := 0 to L do
-      If FindTextTPAInTPA(HH, TextTPA, aTPA[ii], TPA) Then
+    for ii := 0 to H do
+      If Pos(Texts[i], Options[ii].Str) > 0 Then
       begin
         Result := True;
+        B := Options[ii].Bounds;
+        GetMousePos(T.x, T.y);
         case Action of
-          ClickLeft: MouseBoxEx(B.x1 + 5, TPA[0].Y, B.x2 - 5, TPA[0].Y + 5,5, 1);
-          Move:      MouseBoxEx(B.x1 + 5, TPA[0].Y, B.x2 - 5, TPA[0].Y + 5,5, 3);
+          ClickLeft: if PointInBox(T, B) then
+                         ClickMouse2(true)
+                       else
+                         MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 1);
+          Move: if not PointInBox(T, B) then
+                  MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 3);
           Nothing:   begin end;
           else
             srl_warn('ChooseOptionMultiEx', 'ClickRight not a valid click for RS menus!', warn_AllVersions);
@@ -791,14 +954,15 @@ begin
         Exit;
       end;
   end;
+  B := Options[0].BigBox;//to mmouse away
   if Action <> Nothing then
   begin
-    MMouse(B.X1 - 50, B.Y1 - 50, 40, B.Y2 - B.Y1);
+    x := Max(B.X1 - 52, 0);
+    if x = 0 then
+      x := B.X2+10;
+    MMouse(x, Max(B.Y1 - 50, 0), 40, B.Y2-B.Y1);
     Wait(200 + Random(100));
   end;
-
-  if (not result) then
-    chooseOptionMultiEx(['Cancel', 'ancel', 'ncel'], 'All', clickLeft);
 end;
 
 (*
@@ -915,60 +1079,64 @@ Closes any open windows. (In RS not your pc roflmaololz, j/k)
 
 .. note::
 
-    by NaumanAkhlaQ & Narcle & Nava2
+    by NaumanAkhlaQ, Narcle, and Nava2
+    Updated: 12 December 2011 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+  if (BankScreen) then
+    CloseWindow();
 *)
 function CloseWindow: Boolean;
 var
   Col: TIntegerArray;
-  b: T2DPointArray;
+  b: array[0..1] of TPointArray;
   a: T2DPointArray;
   Pa: TBox;
-  I, ii, {h,} l: Integer;
+  i, ii, l: Integer;
 begin
-  Result := CloseBank;
+  if (CloseBank) then
+  begin
+    Result := true;
+    exit;
+  end;
+
   Col := [1118997,  1449250,  {Main typ 1}
           7976927,  4095140,  {Skill}
           6854059,  2902100,  {Quest}
-          4282212, 2503226,  {Main typ 2}
+          4282212,  2503226,  {Main typ 2}
           39423,    13567,    {Red X}
           1514271,  1580837,  {Deposit Box}
           1383457,  2107437];
-  SetLength(b, 2);
-  for I := 0 to 6 do
+
+  for i := 0 to 6 do
   begin
-    FindColors(b[0], Col[i*2], MSCX, MSY1, MSX2, MSCY);
-    FindColors(b[1], Col[i*2+1], MSCX, MSY1, MSX2, MSCY);
+    FindColorsTolerance(b[0], Col[i * 2], MSCX, MSY1, MSX2, MSCY, 5);
+    FindColorsTolerance(b[1], Col[i * 2 + 1], MSCX, MSY1, MSX2, MSCY, 5);
     l := (High(b[0]) + High(b[1]));
-    //Writeln(IntToStr(i) + ' Col1: ' + IntToStr(High(b[0])) + ' Col2: ' + IntToStr(High(b[1])) + ' T: ' + IntToStr(l));
+
     if InRange(l, 6, 53) or InRange(l, 94, 250) then
     begin
       a := SplitTPA(CombineTPA(b[0], b[1]), 5);
       SortATPAFromFirstPoint(a, Point(507, 14));
-      //DebugATPA(a, '');
-      for ii := 0 to 0 do
+
+      if (length(a) < 1) then
+        Continue;
+
+      for ii := 0 to high(a) do
       begin
         Pa := GetTPABounds(a[ii]);
-        if ((Pa.x2 - Pa.x1) > 50) or ((Pa.y2 - Pa.y1) > 50) then Continue;
-        MMouse(RandomRange(Pa.x1, Pa.x2), RandomRange(Pa.y1, Pa.y2), 0, 0);
-        Result := (Pos('lose', GetUpText) > 0) or (Pos('ack', GetUpText) > 0);
-        Pa.x2 := GetTimeRunning + 2000;
-        while (not Result) and (GetTimeRunning < Pa.x2) do
-        begin
-          Wait(10);
-          Result := (Pos('lose', GetUpText) > 0);
-        end;
-        Wait(Random(300));
-        if Result then
+        if ((Pa.x2 - Pa.x1) > 50) or ((Pa.y2 - Pa.y1) > 50) then
+          Continue;
+
+        MouseBox(Pa.x1, Pa.y1, Pa.x2, Pa.y2, mouse_move);
+        if (WaitUptextMulti(['lose', 'ack'], 300)) then
         begin
           GetMousePos(Pa.x1, Pa.y1);
-          Mouse(Pa.x1, Pa.y1, 0, 0, True);
+          Mouse(Pa.x1, Pa.y1, 0, 0, mouse_left);
           Result := True;
-          //Writeln('Close Window Type ' + IntToStr(i));
           Exit;
         end;
       end;

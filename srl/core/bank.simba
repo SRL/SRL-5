@@ -8,39 +8,6 @@ The Bank include contains Bank finders, and all banking routines.
 
 *)
 
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--                 Bank Routines                               --//
-//-----------------------------------------------------------------//
-// * function BankScreen: Boolean;                                 // * by SRL Dev Team
-// * function DepositScreen: Boolean;                              // * by Shuttleu
-// * function PinScreen: Boolean;                                  // * by NaumanAkhlaq
-// * function InPin(Pin: string): Boolean;                         // * by ZephyrsFury and Nava2
-// * function BankIndexToBankPoint(Ind: Integer): TPoint;          // * by Wizzup
-// * function BankPointToIndex(P: TPoint): Integer;                // * by Wizzup
-// * function BankIndexToMSBox(Ind: Integer): TBox;                // * by Wizzup
-// * function MSTPointToBankIndex(P: TPoint): Integer;             // * by Wizzup
-// * function DepositItemBox: TBox;                                // * by ZephyrsFury
-// * procedure Fixbank                                             // * by lordsaturn & Nava2
-// * function FixBankTab: Boolean;                                 // * by Wizzup?
-// * function CurrentBankTab: Integer;                             // * by Narcle
-// * function ExistsBankTab(T: Integer): Boolean;                  // * by Narcle
-// * function BankTab(T: Integer): Boolean;                        // * by Narcle
-// * procedure SearchBank(Item: string);                           // * by ZephyrsFury
-// * procedure Deposit(SlotFrom, SlotTo: Integer; vType: Variant); // * by PPLSUQBAWLZ / Stupid3ooo
-// * function WithdrawEx(Col, Row, Amount: Integer; Uptexts: TStringArray): Boolean; // * by Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
-// * procedure Withdraw(Col, Row, Amount: Integer);                // * by Starblaster100, Town, Wizzup? and Narcle
-// * procedure DepositAll;                                         // * by ZephyrsFury
-// * procedure Notes(SwitchOn: Boolean);                           // * by lordsaturn, idea by R1ch
-// * procedure CloseBank;                                          // * by Starblaster100
-// * function OpenBankQuiet(WhichBank:string):Boolean;             // * by WT-Fakawi
-// * function OpenBankGlass(WhichBank:String; ChangeCompass:Boolean): Boolean; // * By Wizzup? & N1ke!
-// * function OpenBankFast(Location: String): Boolean;             // * by Wizzup?, Nielsie95 & N1ke!
-// * function OpenBankNPC: Boolean;                                // * by Home
-// * function OpenBank(WhichBank:String; ChangeCompass:Boolean): Boolean; // * by SRL
-// * function FindBank(TheBank: string): Boolean;                  // * by WT-Fakawi & N1ke!
-// * function OpenDepositBox: Boolean;                             // * by Shuttleu
-
 const
   Bank_FE = 'feb'; // (Falador East Bank)
   Bank_FW = 'fwb'; // (Falador West Bank)
@@ -60,6 +27,9 @@ const
   Bank_WG = 'wgb'; // (Warrior guild bank)
   Bank_FG = 'fgb'; // (Fishing guild bank)
 
+  SRL_BANK_SW = 20;   // Soul Wars chest
+  SRL_BANK_CW = 21;   // Castle Wars chest
+  SRL_BANK_B  = 22;   // Burthrope chest (outside warriors guild)
 (*
 BankScreen
 ~~~~~~~~~~
@@ -87,13 +57,13 @@ var
 begin
   if (CountColor(0, MSX1, MSY1, MSX2, MSY2) > 113000) then
   begin
-    MouseBox(26, 138, 489, 157, 1);
+    MouseBox(26, 138, 489, 157, mouse_left);
     c := GetTimeRunning + 45000;
     while (not BankScreen) and (GetTimeRunning < c) do
       Wait(50);
     Wait(RandomRange(100, 150));
   end;
-  Result := FindTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', upchars, Nothing);
+  Result := FindTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', UpCharsEx, Nothing);
 end;
 
 (*
@@ -121,7 +91,7 @@ function DepositScreen: Boolean;
 var
   X, Y: Integer;
 begin
-  Result := FindText(x, y, 'Deposit Box', upchars, 92, 29, 396, 54);
+  Result := FindText(x, y, 'Deposit Box', UpCharsEx, 92, 29, 396, 54);
 end;
 
 (*
@@ -148,7 +118,7 @@ Example:
 *)
 function PinScreen : Boolean;
 begin
-  Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpChars, Nothing);
+  Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpCharsEx, Nothing);
 end;
 
 (*
@@ -183,7 +153,7 @@ begin
   begin
     if Timer > GetSystemTime then
       Break;
-    MouseBox(332, 258, 489, 281, 1);
+    MouseBox(332, 258, 489, 281, mouse_left);
     Wait(500);
   end;
   Result := not PinScreen;
@@ -244,7 +214,7 @@ begin
       // Counts the "Now click the NUM_X digit.". This is used later on.
 
       GetMousePos(X, Y);
-      if (FindText(Tx, Ty, Pin[I], UpChars, 30, 100, 383, 319)) then
+      if (FindText(Tx, Ty, Pin[I], UpCharsEx, 30, 100, 383, 319)) then
       begin
         H := High(Boxes);
         for J := 0 to H do
@@ -252,7 +222,7 @@ begin
           begin
             with Boxes[J] do
               if PinScreen then
-                MouseBox(x1, y1, x2, y2, 1);
+                MouseBox(x1, y1, x2, y2, mouse_left);
             Break;
           end;
       end else
@@ -263,7 +233,7 @@ begin
           begin
             with Boxes[J] do
               if PinScreen then
-                MouseBox(x1, y1, x2, y2, 1);
+                MouseBox(x1, y1, x2, y2, mouse_left);
             Break;
           end;
       end;
@@ -274,7 +244,7 @@ begin
 
       Wait(RandomRange(300, 600));
 
-      if BankScreen then
+      if BankScreen or not PinScreen then
       begin
         Result := True;
         Exit;
@@ -443,6 +413,84 @@ begin
 end;
 
 (*
+GetBankItemAmount
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetBankIndexItemAmount(const Index: Integer): Integer;
+
+Returns the amount of an item in the bank at bank index, Index.
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetBankIndexItemAmount(13);
+*)
+function GetBankIndexItemAmount(const Index: Integer): Integer;
+begin
+  Result := getAmountBox(BankIndexToMSBox(Index));
+end;
+
+(*
+GetBankItemAmount
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetBankItemAmount(const Row, Col: Integer): Integer;
+
+Returns the amount of an item in the bank at bank screen coordinates (Row, Col).
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetBankItemAmount(0, 5);
+*)
+function GetBankItemAmount(const Row, Col: Integer): Integer;
+begin
+  Result := GetBankIndexItemAmount(BankPointToBankIndex(Point(Row, Col)));
+end;
+
+(*
+GetMSBankItemAmount
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMSBankItemAmount(const x, y: Integer): Integer;
+
+Returns the amount of an item in the bank at main screen coordinates x, y.
+
+.. note::
+
+    Author: Daniel
+    Last Modified: Jan. 03, 2012 by Daniel
+
+Example:
+
+.. code-block:: pascal
+
+    amt := GetMSBankItemAmount(250, 100);
+*)
+function GetMSBankItemAmount(const x, y: Integer): Integer;
+begin
+  Result := GetBankIndexItemAmount(BankPointToBankIndex(MSTPointToBankPoint(Point(x, y))));
+end;
+
+(*
 DepositItemBox
 ~~~~~~~~~~~~~~
 
@@ -501,7 +549,7 @@ begin
       if (not (SimilarColors(GetColor(489, 101), 1316634, 5))) then
       begin
         Timer := GetTimeRunning + 5000;
-        MouseBox(482, 101, 488, 111, 1);
+        MouseBox(482, 101, 488, 111, mouse_left);
         while ((not (SimilarColors(GetColor(489, 101), 1316634, 5))) and (GetTimeRunning < Timer)) do
           Wait(50 + Random(50));
         Wait(RandomRange(100, 200));
@@ -545,7 +593,7 @@ begin
     Exit;
   end;
 
-  Mouse(40, 60, 10, 10, True);
+  Mouse(40, 60, 10, 10, mouse_left);
   T := GetSystemTime;
   while Length(activeTPA) <= Length(notactiveTPA) do
   begin
@@ -553,7 +601,7 @@ begin
     FindColorsTolerance(notactiveTPA, 2437688, 25, 45, 70, 80, 5);
     Wait(500);
     if ((GetSystemTime - T) div 1500) mod 2 = 0 then
-      Mouse(40, 60, 10, 10, True);
+      Mouse(40, 60, 10, 10, mouse_left);
     if GetSystemTime - T > 10000 then
       Exit;
   end;
@@ -672,7 +720,7 @@ begin
   if not ExistsBankTab(T) then
     srl_Warn('BankTab', 'Bank Tab '+inttostr(T) +' does not Exist.', warn_AllVersions)
   else
-    Mouse(48 * T, 57, 10, 10, true);
+    Mouse(48 * T, 57, 10, 10, mouse_left);
 
   Result := T = CurrentBankTab;
 end;
@@ -707,18 +755,71 @@ begin
   for II := 0 to 2 do
   begin
     FixBankTab;
-    Mouse(75, 300, 20, 10, True);
+    Mouse(75, 300, 20, 10, mouse_left);
     T := GetSystemTime;
     while (BankScreen) and (GetSystemTime - T < 5000) do
     begin
       Wait(500 + Random(500));
-      if (FindTextTpa(0, 0, 350, 392, 399, 410, 'search', UpChars, Nothing)) then
+      if (FindTextTpa(0, 0, 350, 392, 399, 410, 'search', UpCharsEx, Nothing)) then
       begin
         TypeSend(Item);
         Exit;
       end;
     end;
     Wait(500 + Random(500));
+  end;
+end;
+
+(*
+QuickDeposit
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function QuickDeposit(Which: Integer): Boolean;
+
+Uses the quick deposit buttons in the bottom right of the bank.  Valid
+arguments for 'Which' are:
+    * SRL_DEPOSIT_ALL
+    * SRL_DEPOSIT_COINS
+    * SRL_DEPOSIT_EQUIPMENT
+    * SRL_DEPOSIT_FOLLOWER
+
+.. note::
+
+    Author: ZephyrsFury & Quickmarch & Shuttleu
+    Last Modified: January 08, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    QuickDeposit(SRL_DEPOSIT_COINS);
+*)
+const
+  SRL_DEPOSIT_ALL = 0;
+  SRL_DEPOSIT_COINS = 1;
+  SRL_DEPOSIT_EQUIPMENT = 2;
+  SRL_DEPOSIT_FOLLOWER = 3;
+
+procedure QuickDeposit(Which: Integer);
+var
+  StartX: Integer;
+begin
+  if (BankScreen) or (DepositScreen) then
+  begin
+    case Which of
+      SRL_DEPOSIT_ALL:       StartX := 362;
+      SRL_DEPOSIT_EQUIPMENT: StartX := 395;
+      SRL_DEPOSIT_FOLLOWER:  StartX := 431;
+      SRL_DEPOSIT_COINS:     StartX := 467;
+
+      else
+        SRL_Warn('QuickDeposit', 'Invalid deposit method ', WARN_ALLVERSIONS);
+    end;
+
+    Mouse(StartX - 58 * Integer(DepositScreen), 303 - 29 * Integer(DepositScreen), 15, 10, True);
+    Wait(200 + Random(300));
   end;
 end;
 
@@ -730,42 +831,29 @@ DepositAll
 
     function DepositAll: Boolean;
 
-Deposits all items in your inventory
+Deposits all items in your inventory.
 
 .. note::
 
-    Author: ZephyrsFury & Quickmarch
-    Last Modified: Unknown
+    Author: Shuttleu
+    Last Modified: January 08, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
-    if InvFull then
-    DepositAll;
+    DepositAll();
 *)
 function DepositAll: Boolean;
-var
-  T, X, Y: Integer;
-  BScreen, DScreen: Boolean;
 begin
-  Result := false;
-  BScreen := BankScreen;
-  if (not(BScreen)) then
-    DScreen := DepositScreen;
-  if (BScreen) or (DScreen) then
-    if (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) then
-    begin
-      Mouse(390 - 50 * Byte(DScreen), 305 - 30 * Byte(DScreen), 15, 10, True);
-      Wait(200 + Random(300));
-      T := GetSystemTime;
-      while (InvCount > 0) or (FindColor(X, Y, srl_outline_black, 98, 68, 436, 257) and (DSCreen)) and (GetSystemTime - T < 2000) do
-        Wait(100);
-      Result := (InvEmpty) or (not(FindColor(X, Y, srl_outline_black, 98, 68, 436, 257)) and (DScreen));
-    end else begin
-      srl_Warn('DepositAll', 'No items to deposit ', warn_AllVersions);
-      result := true;
-    end;
+  if (InvEmpty) then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  QuickDeposit(SRL_DEPOSIT_ALL);
+  Result := WaitFunc(@InvEmpty, 50, 3000);
 end;
 
 (*
@@ -825,13 +913,19 @@ begin
     begin
       If Not ExistsItem(I) Then
         Continue;
-      MouseItem(I, not All);
+      if (not All) then
+        MouseItem(I, mouse_left)
+      else
+        MouseItem(I, mouse_right);
     end else
     begin
       B := DepositItemBox(I);
       if (not(FindColor(X, Y, srl_outline_black, B.X1, B.Y1, B.X2, B.Y2))) then
         Continue;
-      Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, not All);
+      if (not All) then
+        Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, mouse_left)
+      else
+        Mouse((B.X1 + B.X2) shr 1, (B.Y1 + B.Y2) shr 1, 0, 0, mouse_right);
     end;
     if DepositX then
     begin
@@ -843,7 +937,7 @@ begin
     end else if VarType(vType) = varInteger then
       WaitOptionMulti(['Deposit-' + IntToStr(Integer(vType)), 'Deposit'], 200)
     else
-      WaitOptionMulti(['Deposit-All', 'Deposit'], 200);
+      WaitOptionMulti(['Deposit-All', 'All', 'osit'], 200);
     T := GetSystemTime;
     Wait(RandomRange(200, 300));
     repeat
@@ -888,13 +982,16 @@ begin
   BBox := BankIndexToMSBox(BankPointToBankIndex(Point(Col, Row)));
   GetMousePos(X, Y);
   if (not PointInBox(Point(X, Y), BBox)) then
-    MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, 3);
+    MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_move);
 
   if (Length(Uptexts) > 0) then
     if (not WaitUptextMulti(Uptexts, 500)) then
       Exit;
 
-  ClickMouse2(Amount = 1);
+  if (Amount = 1) then
+    ClickMouse2(mouse_left)
+  else
+    ClickMouse2(mouse_right);
   if (Amount = 1) then
   begin
     Result := True;
@@ -902,14 +999,24 @@ begin
     Exit;
   end;
 
-  if (Amount = 0) then
-    Result := WaitOptionMulti(['Withdraw-All', 'w-A'], 300)
-  else
-    Result := WaitOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)] , 300);
+  if (Amount = -1) then
+  begin
+    if (WaitOptionMultiEx(['Withdraw-All but', 'l b'], 'All', Nothing, 300)) then
+      Result := ChooseOptionMulti(['Withdraw-All but', 'l b']);
+  end else
+    if (Amount = 0) then
+    begin
+      if (WaitOptionMultiEx(['Withdraw-All', 'w-A'], 'All', Nothing, 300)) then
+        Result := ChooseOptionMulti(['Withdraw-All', 'w-A']);
+    end else
+      if (WaitOptionMultiEx(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)], 'All', Nothing, 300)) then
+        Result := ChooseOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)]);
 
   if (not (Result)) and (Amount > 0) then
   begin
-    MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, 2);
+    if (not OptionsExist(['Withdraw', 'ithdraw', 'draw'], nothing)) then
+      MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_right);
+
     if WaitOptionMulti(['Withdraw-X', 'w-X'], 500) then
     begin
        X := GetSystemTime + 10000;
@@ -1025,7 +1132,7 @@ begin
     BankBox := BankIndexToMSBox(Index);
     FindColors(t, srl_outline_black, BankBox.x1, BankBox.y1, BankBox.x2, BankBox.y2);
     BankBox := GetTPABounds(t);
-    MouseBox(BankBox.x1, BankBox.y1, BankBox.x2, BankBox.y2, 3);
+    MouseBox(BankBox.x1, BankBox.y1, BankBox.x2, BankBox.y2, mouse_move);
     if WaitUpText(UpText, 300) then
       Found := true
     else
@@ -1104,7 +1211,7 @@ procedure Notes(SwitchOn: Boolean);
 begin
   if BankScreen then
     if (GetColor(254, 306) = 5863290) xor SwitchOn then
-      Mouse(250, 300, 10, 10, True);
+      Mouse(250, 300, 10, 10, mouse_left);
 end;
 
 (*
@@ -1138,7 +1245,7 @@ begin
   begin
     Timer := GetTimeRunning + 8000;
     repeat
-      Mouse(483, 28, 10, 12, True);
+      Mouse(483, 28, 10, 12, mouse_left);
       for i := 0 to 30 do
       begin
         if not BankScreen then
@@ -1227,7 +1334,7 @@ begin
     if WaitUpTextMulti(['ank', 'Bo', 'ot'], 1000) then
     begin
       GetMousePos(dx, dy);
-      Mouse(dx, dy, 0, 0, False);
+      Mouse(dx, dy, 0, 0, mouse_right);
       if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
       begin
         MarkTime(Mark2);
@@ -1266,7 +1373,7 @@ begin
       if WaitUptextMulti(['ank', 'Bo', 'ot'], 1000) then
       begin
         GetMousePos(dx, dy);
-        Mouse(dx, dy, 0, 0, False);
+        Mouse(dx, dy, 0, 0, mouse_right);
         if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
         begin
           MarkTime(Mark2);
@@ -1370,7 +1477,7 @@ begin
     MMouse(OBC.x, OBC.y, 4, 4);
     if WaitUpTextMulti(['nk', 'bo', 'ot'], 1000) then
     begin
-      Mouse(OBC.x, OBC.y, 0, 0, False);
+      Mouse(OBC.x, OBC.y, 0, 0, mouse_right);
       WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000);
       FFlag(0);
       Wait(2000 + Random(500));
@@ -1382,7 +1489,7 @@ begin
   end else
     if FindObj(OBC.x, OBC.y, 'ank', 10070458, 20) then
     begin
-      Mouse(OBC.x, OBC.y, 0, 0, False);
+      Mouse(OBC.x, OBC.y, 0, 0, mouse_right);
       WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000);
       FFlag(0);
       Wait(2000 + Random(500));
@@ -1525,7 +1632,7 @@ begin
     if WaitUpTextMulti(UpText, 1000) Then
     begin
       GetMousePos(Booths[i].X, Booths[i].Y);
-      Mouse(Booths[i].X, Booths[i].Y, 0, 0, False);
+      Mouse(Booths[i].X, Booths[i].Y, 0, 0, mouse_right);
       if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
       begin
         FFLag(0);
@@ -1557,7 +1664,7 @@ Opens the bank by using Banker.
 .. note::
 
     Author: Home
-    Last Modified: Unknown
+    Last Modified: December 28 by Narcle
 
 Example:
 
@@ -1568,29 +1675,59 @@ Example:
 *)
 function OpenBankNPC: Boolean;
 var
-  bx, by, Speed, ColFace, ColGrey, ColBlue: Integer;
+  NPCBox :TBox;
+  Colors, NPCArray :TPointArray;
+  ATPA: T2DPointArray;
+  MSNPC, NPCPoint :TPoint;
+  CTS, C, II, I :Integer;
 begin
-  Result := (LoggedIn) and (BankScreen or PinScreen);
-  if (Result) then exit;
-
-  Speed := GetColorToleranceSpeed;
-  ColorToleranceSpeed(2);
-  ColFace := 7774419; // Face Color
-  ColGrey := 6381925; // Grey Color [ Clothes ]
-  ColBlue := 2429979; // Blue Color [ Clothes ]
-  if (FindObjThroughMM(bx, by, 'npc', [ColFace, ColBlue, ColGrey], [5, 5, 5],
-    ['anke', 'to B', 'Banker', 'nker'], 2, 2)) then
+  Result := False;
+  Result := (BankScreen) or (PinScreen);
+  If Result then
+    Exit;
+  NPCArray := GetMinimapDots('NPC');
+  If Length(NPCArray) < 1 then
+    Exit;
+  SortTPAFrom(NPCArray, Point(MMCX, MMCY));
+  for I := 0 to High(NPCArray) do
   begin
-    Mouse(bx, by, 0, 0, False);
-    WaitOptionMulti(['ank B', 'ank', 'nker'], 1000);
-    FFlag(0);
-    Wait(2000 + Random(500));
-    if (Length(Players) > 0) then
-      if ((PinScreen) and (Players[CurrentPlayer].Pin <> '')) then
-        InPin(Players[CurrentPlayer].Pin);
-    Result := (BankScreen) or (PinScreen);
+    NPCPoint := MMToMS(NPCArray[I])
+    If NPCPoint = Point(-1, -1) then
+      Continue;
+    with NPCPoint do
+      NPCBox := IntToBox(Max(X - 40, MSX1), Max(Y - 40, MSY1), Min(X + 40, MSX2), Min(Y + 40, MSY2));
+    If PixelShift(NPCBox, 200) > 500 then
+      Continue;
+
+    CTS := GetColorToleranceSpeed;
+    ColorToleranceSpeed(2);
+    SetColorSpeed2Modifiers(0.13, 1.52);
+    FindColorsTolerance(Colors, 6067652, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 13);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    ColorToleranceSpeed(CTS);
+    ATPA := TPAToATPAEx(Colors, 15, 20);
+    SortATPASize(ATPA, True);
+
+    for II := 0 to High(ATPA) do
+    begin
+      MSNPC := MiddleTPA(ATPA[II]);
+      MMouse(MSNPC.X, MSNPC.Y, 3, 3);
+      If WaitUpTextMulti(['ooth', 'anker'], 200) then
+      begin
+        ClickMouse2(False);
+        If WaitOptionMulti(['ank B', 'quick'], 600) then
+          MarkTime(c);
+        Repeat
+          Wait(RandomRange(50, 100));
+        Until (BankScreen) or (PinScreen) or (TimeFromMark(C) > 4500);
+        if (Players[CurrentPlayer].Pin <> '') then
+          InPin(Players[CurrentPlayer].Pin);
+        Result := (BankScreen) or (PinScreen);
+        If Result then
+          Exit;
+      end;
+    end;
   end;
-  ColorToleranceSpeed(Speed);
 end;
 
 (*
@@ -1757,7 +1894,7 @@ begin
   end;
   if FindDtmRotated(TheDTM, bx, by, MMX1, MMY1, MMX2, MMY2, Radians(-30), Radians(30), 0.05, WhichAngle) then
   begin
-    Mouse(bx, by, 0, 0, True);
+    Mouse(bx, by, 0, 0, mouse_left);
     FFlag(0);
     Wait(300+Random(400));
     Result := OpenBank(TheBank, False, False);
@@ -1797,7 +1934,7 @@ begin
     if FindObjTPA(x, y, 739167, 10, -1, 30, 30, 200, ['deposit']) then
     begin
       GetMousePos(X, Y);
-      Mouse(x, y, 0, 0, True);
+      Mouse(x, y, 0, 0, mouse_left);
       Result := True;
       T :=0;
       repeat
@@ -1807,4 +1944,201 @@ begin
     end else
     Writeln('Could not find the deposit box');
   end;
+end;
+
+(*
+WithdrawFromPouch
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WithdrawFromPouch(Amount :Integer) :Boolean;
+
+Withdraws amount from pouch.
+
+.. note ::
+
+    by Home
+
+*)
+function WithdrawFromPouch(Amount :Integer) :Boolean;
+var
+  T :Integer;
+begin
+  Result := False;
+  MouseBox(528, 94, 533, 107, mouse_Right);
+  If WaitOption('draw', 500) then
+  begin
+    T := GetSystemTime + 10000;
+    repeat
+      wait(50);
+      InPin(Players[CurrentPlayer].Pin);
+    until (T <= GetSystemTime) or (InRange(CountColor(0, 250, 396, 307, 410), 160, 175));
+    Wait(RandomRange(75, 400));
+    TypeSend(IntToStr(Amount));
+    Result := True;
+  end;
+end;
+
+(*
+OpenBankChestEdge
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenBankChestEdge(Location: String): Boolean;
+
+Opens the bank.  Valid arguments are:
+    * SRL_BANK_SW (Soul Wars Bank)
+    * SRL_BANK_CW (Castle Wars Bank)
+    * SRL_BANK_B (Burthrope)
+
+.. note::
+
+    Author: -daazndagger-  (kept WT-Fakawi's structure)
+    Last Modified: 18/01/2012
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankChestEdge(SRL_BANK_SW) then
+    Withdraw(...);
+*)
+function OpenBankChestEdge(Location: Integer): Boolean;
+var
+  bo, i, l, c, z: Integer;
+  Info: TVariantArray;
+  Chests: TPointArray;
+  AChests: T2DPointArray;
+  UpText: TStringArray;
+  B: TBox;
+begin
+  result := false;
+  if (not LoggedIn) then
+    Exit;
+  if BankScreen or PinScreen then
+  begin
+    Result := True;
+    Exit;
+  end;
+  UpText := ['Bank', 'chest', 'nk che'];
+                   {              0          1         2        3     4     5      6       7       8   9     10   }
+  case Location of {            Sort X     Sort Y     Color    Tol   Hue   Sat   Count  SplitTPA?  W   H   Compass}
+    SRL_BANK_SW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'w'];
+    SRL_BANK_CW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
+    SRL_BANK_B  :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
+
+    else
+    begin
+      srl_Warn('OpenBankChestEdge', 'Unknown bank: '+IntToStr(Location), warn_AllVersions);    //will output loc as int (no longer string)
+      Exit;
+    end;
+  end;
+
+  MakeCompass(Info[10]);
+  //SetAngle(SRL_ANGLE_HIGH);  //??
+  z := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Info[4], Info[5]);
+
+  FindColorsSpiralTolerance(Info[0], Info[1], Chests, Info[2], MSX1, MSY1, MSX2, MSY2, Info[3]);
+  ColorToleranceSpeed(z);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  { Split to ATPA. }
+  if Info[7] then
+    AChests := SplitTPA(Chests, 3)
+  else
+    AChests := TPAtoATPA(Chests, 10);
+
+  Chests := [];
+
+  { Go through ATPA. }
+  l := GetArrayLength(AChests) -1;
+  for i := 0 to l do
+  begin
+    { Too few pixels. }
+    if (Length(AChests[i]) < Info[6]) then
+      Continue;
+
+    { Too small TPA bounds. }
+    B := GetTPABounds(AChests[i]);
+    If ((B.X2 - B.X1) < Info[8]) Or ((B.Y2 - B.Y1) < Info[9]) Then
+      Continue;
+
+    Inc(bo);
+    SetArrayLength(Chests, bo);
+    Chests[bo-1] :=  MiddleBox(GetTPABounds(AChests[i]));
+
+  end;
+
+  SortTPAFrom(Chests, Point(Info[0], Info[1]));
+
+  l := GetArrayLength(Chests) -1;
+  for i := 0 to l do
+  begin
+
+    MMouse(Chests[i].X, Chests[i].Y, 3, 3);
+    if WaitUpTextMulti(UpText, 1000) Then
+    begin
+      GetMousePos(Chests[i].X, Chests[i].Y);
+      Case Random(9) of
+        0..7: Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_left);
+        8: begin
+             Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_right);
+             if not WaitOptionMulti(['Use', 'se'], 1000) then Exit;
+        end;
+      end;
+      FFLag(0);
+      MarkTime(c);
+      repeat
+        Wait(100);
+      until (BankScreen) or (PinScreen) or (TimeFromMark(c) > 10000);
+      Wait(Random(300));
+      if (HowManyPlayers > 0) then
+        if (Players[CurrentPlayer].Pin <> '') then
+          InPin(Players[CurrentPlayer].Pin);
+      Result := (BankScreen) or (PinScreen);
+      if (Result) then Exit;
+    end;
+  end;
+end;
+
+(*
+OpenBankChest
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenBankChest(WhichBank): Boolean;
+
+Opens the bank.  Valid arguments are:
+    * SRL_BANK_SW (Soul Wars Bank)
+    * SRL_BANK_CW (Castle Wars Bank)
+    * SRL_BANK_B (Burthrope)
+
+.. note::
+
+    Author: SRL Dev Team
+    Last Modified: 18/01/2012
+
+Example:
+
+.. code-block:: pascal
+
+  if OpenBankChest(SRL_BANK_SW) then
+    Withdraw(...);
+*)
+function OpenBankChest(WhichBank: Integer): Boolean;
+begin
+  result := false;
+  if BankScreen or PinScreen then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  Result := OpenBankChestEdge(WhichBank);
+
 end;

@@ -329,7 +329,7 @@ function PrayerPoints: Byte;
 By: NaumanAkhlaQ
 Description:
 *******************************************************************************}
-function PrayerPoints: Byte;
+function PrayerPoints: Integer;
 var
   TmpStr: string;
 begin

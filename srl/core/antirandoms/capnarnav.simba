@@ -58,7 +58,7 @@ begin
       t.y := 20
     else
       t.y := 305;
-    Mouse(t.x, t.y, 8, 8, True);
+    Mouse(t.x, t.y, 8, 8, mouse_left);
     Wait(500 + Random(500));
   end;
 end;
@@ -186,7 +186,7 @@ begin
       Wait(200 + Random(50));
       if (CountColorTolerance(648165, 7, 7, 100, 25, 50) > 50) then
       begin
-        Mouse(CA.X, CA.Y, 0, 0, False);
+        Mouse(CA.X, CA.Y, 0, 0, mouse_right);
         Wait(100 + Random(200));
         if (ChooseOptionMulti(['alk-to', 'o C', 'k-t', 'Talk'])) then
         begin
@@ -243,7 +243,7 @@ begin
       Wait(200 + Random(50));
       if (IsUpTextMultiCustom(['portal', 'Exit', 'nter'])) then
       begin
-        Mouse(EP.X, EP.Y, 0, 0, False);
+        Mouse(EP.X, EP.Y, 0, 0, mouse_right);
         Wait(100 + Random(200));
         if (ChooseOptionMulti(['nter', 'er E', 'r Ex'])) then
         begin
@@ -309,7 +309,7 @@ begin
     Exit;
   end;
 
-  Mouse(405, 245, 70, 20, True);
+  Mouse(405, 245, 70, 20, mouse_left);
   x := GetSystemTime;
   while arnav_LockScreen and ((GetSystemTime - x) < 5000) do Wait(100);
 

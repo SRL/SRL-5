@@ -26,7 +26,7 @@ is open.
 .. note::
 
     Author: ZephyrsFury
-    Last Modified: Unknown
+    Last Modified: 12/7/11 by Legoace
 
 Example:
 
@@ -40,7 +40,7 @@ begin
   for Result := 2 downto 1 do
     case Result of
       2: if (CountColor(16776960, 127, 32, 373, 51) > 20) then Break;
-      1: if (GetColor(93, 69) = 0) then Break;
+      1: if (CountColor(2070783, 150, 12, 350, 28) > 20) then Break;
     end;
 end;
 

@@ -246,10 +246,10 @@ Begin
       Exit;
 
     Case Information.Direction Of   //co-ords taken from wizzups
-      _Up : Mouse(RandomRange(630, 650), RandomRange(260, 275), 0, 0, True); // Up
-      Down : Mouse(RandomRange(627, 655), RandomRange(383, 411), 0, 0, True); // Down
-      _Right : Mouse(RandomRange(705, 720), RandomRange(315, 340), 0, 0, True); // Right
-      _Left : Mouse(RandomRange(563, 583), RandomRange(323, 341), 0, 0, True); // Left
+      _Up : Mouse(RandomRange(630, 650), RandomRange(260, 275), 0, 0, mouse_left); // Up
+      Down : Mouse(RandomRange(627, 655), RandomRange(383, 411), 0, 0, mouse_left); // Down
+      _Right : Mouse(RandomRange(705, 720), RandomRange(315, 340), 0, 0, mouse_left); // Right
+      _Left : Mouse(RandomRange(563, 583), RandomRange(323, 341), 0, 0, mouse_left); // Left
     End;
 
     Inc(I);
@@ -313,7 +313,7 @@ Begin
 
   SetRun(False);
   If FindMollyDoor(P, 1) Then
-    Mouse(P.X, P.Y, 0, 0, True)
+    Mouse(P.X, P.Y, 0, 0, mouse_left)
   Else
   Begin
     WriteLn('Molly : Could NOT Open Door');
@@ -335,7 +335,7 @@ Begin
   Begin
     If FindObjTPAMulti(P.x, P.y, [2379300, 4015557, 3697078, 5140596], 15, -1, 20,
                        20, 10, ['ontr', 'anel', 'se']) Then
-      Mouse(P.X, P.Y, 0, 0, True)
+      Mouse(P.X, P.Y, 0, 0, mouse_left)
     Else
     Begin
       WriteLn('Molly : Could NOT Find Machine');
@@ -378,7 +378,7 @@ Begin
       Molly_CrosshairPos(P, IntToBox(MSX1, MSY1, 515, 200));
       If IsMollyOnDot(P) Then
       Begin
-        Mouse(700, 423, 10, 10, True);
+        Mouse(700, 423, 10, 10, mouse_left);
         Wait(1000 + Random(1000));
       End;
       If Tries = 0 Then
@@ -441,11 +441,11 @@ Begin
           Exit;
         End;
 
-        Mouse(P.X, P.Y, 0, 0, True);
+        Mouse(P.X, P.Y, 0, 0, mouse_left);
         Wait(10000);
         If FindObjTPAMulti(P.X, P.Y, MollyColors, 5, 1, 10, 7, 30,
                            ['alk', 'olly']) Then
-        Mouse(P.X, P.Y, 0, 0, True);
+        Mouse(P.X, P.Y, 0, 0, mouse_left);
         Wait(5000);
 
         T := GetSystemTime;

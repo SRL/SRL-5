@@ -363,7 +363,7 @@ var
   CurrPT : TPoint;
 begin
   result := false;
-  if (not InRange(Action, 1, 3)) then
+  if (not InRange(Action, 0, 3)) then
   begin
     srl_Warn('InvMouse', 'Action #' + IntToStr(Action) + ' is not a valid action', warn_AllVersions);
     Exit;
@@ -381,7 +381,7 @@ begin
     MouseBox(Max(CurrPT.x-random(2),TB.x1),Max(CurrPT.y-random(2),TB.y1),
              Min(CurrPT.x+random(2),TB.x2),Min(CurrPT.y+random(2),TB.y2),Action) //LOL Pro-human much!
   else
-    MouseBoxEx(TB.X1, TB.Y1, TB.X2, TB.Y2,14, Action);
+    MouseBox(TB.X1, TB.Y1, TB.X2, TB.Y2, Action);
 end;
 
 (*
@@ -405,9 +405,9 @@ Example:
     MMouseItem(1);
 
 *)
-procedure MMouseItem(I: Byte);
+procedure MMouseItem(I: Integer);
 begin
-  InvMouse(I, 3);
+  InvMouse(I, mouse_move);
 end;
 
 (*
@@ -431,12 +431,9 @@ Example:
     MouseItem(1, true);
 
 *)
-procedure MouseItem(I: Byte; Left: Boolean);
+procedure MouseItem(I: Integer; button: Integer);
 begin
-  case left of
-    true : InvMouse(I,1);
-    false: InvMouse(I,2);
-  end;
+  InvMouse(i, button);
 end;
 
 (*
@@ -649,12 +646,12 @@ begin
       if not FindItemEx(x, y, ItemType, Identifier, TB, Tol) then Continue;
       if (Option <> '') then
       begin
-        MouseItem(arr[i], False);
+        MouseItem(arr[i], mouse_right);
         WaitOption(Option, waitnum);
         Inc(Result);
       end
       else
-        MouseItem(arr[i], True);
+        MouseItem(arr[i], mouse_Left);
       Wait(waitnum);
     except end;
   end;
@@ -712,7 +709,7 @@ begin
   Result := False;
   if ExistsItem(i) then
   begin
-    MouseItem(i, False);
+    MouseItem(i, mouse_Right);
     if (WaitOptionEx('rop', 'action', ClickLeft, 250)) then
     begin
       Result := True;
@@ -1051,7 +1048,7 @@ begin
     if InRange(GetArrayLength(TPAA[z]), Count - Tol, Count + Tol) then
     begin
       MiddleTPAEx(TPAA[z], X, Y);
-      Mouse(X, Y, 2, 2, False);
+      Mouse(X, Y, 2, 2, mouse_Right);
       if WaitOption(Option, 300) then
       begin
         Inc(Result);

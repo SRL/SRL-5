@@ -8,6 +8,14 @@ Supporting math functions.
 
 *)
 
+const
+  MATH_PI = 3.14159265358979320;
+  MATH_2PI = MATH_PI * 2.0;
+  MATH_PIOVER2 = MATH_PI / 2.0;
+  MATH_PIOVER3 = MATH_PI / 3.0;
+  MATH_PIOVER4 = MATH_PI / 4.0;
+  MATH_PIOVER6 = MATH_PI / 6.0;
+
 var
    SineArray, Cosearray: array[0..360] of Extended;
    
@@ -70,6 +78,156 @@ begin;
 end;
 
 (*
+RBoolEx
+~~~~~~~
+
+.. code-block:: pascal
+    function RBoolEx(chance: integer): boolean;
+
+Description: Returns a boolean, with a chance of 1 / chance
+
+..note::
+    by Rasta Magician
+*)
+
+function RBoolEx(chance: Integer): Boolean;
+begin
+  Result := (0 = Random(chance));
+end;
+
+(*
+RBool
+~~~~~
+
+.. code-block:: pascal
+    function RBool: boolean;
+
+Description: Returns a boolean, with a 50% chance
+
+.. note::
+    by Rasta Magician
+*)
+function RBool: boolean;
+begin
+  Result := RBoolEx(2);
+end;
+
+type
+  TVector = record
+    x, y: Extended;
+    m: Extended;
+  end;
+
+(*
+fixRad
+~~~~~~
+
+.. code-block:: pascal
+    function fixRad(rad: Extended): Extended;
+
+Returns the periodic rad in the range (0,2PI].
+
+.. note::
+  By Nava2
+
+*)
+function fixRad(rad: Extended): Extended;  // by Nava2
+begin
+  result := rad;
+
+  while (result >= MATH_2PI) do
+    result := result - MATH_2PI;
+
+  while (result < 0) do
+    result := result + MATH_2PI;
+end;
+
+
+(*
+AngleBetween
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AngleBetween(v1, v2: TVector): Extended;
+
+Calculates the angle between two TVector records. This is returned in radians
+(normalized between (0, 2Pi]).
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function AngleBetween(v1, v2: TVector): Extended;
+var
+  a1, a2: Extended;
+begin
+  a1 := ArcTan2(v1.x, v1.y);
+  a2 := ArcTan2(v2.x, v2.y);
+
+  Result := fixRad(a1 - a2)
+end;
+
+
+(*
+Normalize
+~~~~~~~~~
+
+.. code-block:: pascal
+    procedure Normalize(var vect: TVector);
+
+Converts a TVector to normal TVector (|v| = 1). 
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure Normalize(var vect: TVector);
+begin
+  vect.x := vect.x / vect.m;
+  vect.y := vect.y / vect.m;
+  vect.m := 1;
+end;
+
+(*
+CreateVector
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+    function CreateVector(Origin, vPoint: TPoint; NormalizeV: Boolean): TVector;
+
+Creates a `TVector` object. If NormalzseV is true, will set |v| = 1.
+
+.. note::
+
+    by readysteadygo
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function CreateVector(Origin, vPoint: TPoint; NormalizeV: Boolean): TVector;
+begin
+  Result.x := vPoint.x - Origin.x;
+  Result.y := 0 - (vPoint.y - Origin.y); // inverts y axis as well
+  Result.m := Sqrt(Sqr(Result.x) + Sqr(Result.y));
+  if (NormalizeV) then
+    Normalize(Result);
+end;
+
+
+(*
 GetSplitPt
 ~~~~~~~~~~
 
@@ -103,6 +261,301 @@ begin
   end;
   Result.x := Round(XTemp);
   Result.y := Round(YTemp);
+end;
+
+(*
+srl_GaussRand
+~~~~~~~~~~~~~
+
+This is a functional pointer. It behaves transparently as a regular function
+would. This function will behave as so: it will return a random Extended 
+normally distributed with a mean of 0 and a standard deviation of 1. 
+
+If you need more flexibility in this (ex. mean of 2), please use GaussRandom
+which converts between the Standard Normal and a custom version.
+
+.. note:
+    by: SRL Development Team
+
+Example:
+
+.. code-block:: pascal
+    
+
+*)
+
+var
+  srl_GaussRand: function: Extended;
+  srl_GaussDev_Range, srl_GaussDev_Point: Extended;
+
+{
+
+Helper method for cal_normal_random. Does polynomial calculation using the
+`Horner Scheme`_
+
+..http://en.wikipedia.org/wiki/Horner_scheme
+
+}
+const
+  __gauss_norm_0 = 0.029899776;
+  __gauss_norm_1 = 0.008355968;
+  __gauss_norm_2 = 0.076542912;
+  __gauss_norm_3 = 0.252408784;
+  __gauss_norm_4 = 3.949846138;
+
+function __gauss_poly(r, rsqr: Extended): Extended;
+begin
+  Result := __gauss_norm_0*rsqr + __gauss_norm_1;
+  Result := Result*rsqr + __gauss_norm_2;
+  Result := Result*rsqr + __gauss_norm_3;
+  Result := Result*rsqr + __gauss_norm_4;
+  Result := Result*r;
+end;
+
+(*
+
+n2_gauss
+~~~~~~~~
+
+Calculates a standard normal value (N(0, 1)).
+
+By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
+
+.. note::
+    by: Nava2
+
+*)
+function n2_gauss(): Extended;
+var
+  r: Extended;
+  i: Integer;
+begin
+  r := 0.0;
+  for i := 0 to 11 do
+    r := r + (random(MaxInt)*1.0)/MaxInt;
+
+  r := (r-6.0)/4.0 ;
+  result := __gauss_poly(r, r*r);
+end;
+
+(*
+
+GaussMarsPolar
+~~~~~~~~~~~~~~
+
+Calculates a standard normal value (N(0, 1]).
+
+By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
+
+.. note::
+    Please use `srl_GaussRand` instead of this function directly, feel free to
+    set `srl_GaussRand` to this function if you choose. 
+    Currently, this is the default.
+
+.. note::
+    by: BenLand100
+
+*)
+function GaussMarsPolar(): Extended;
+begin
+  Result := sqrt(-2.0*ln(RandomE()))*cos(2.0*PI*RandomE());
+end;
+
+(*
+
+SetupGauss
+~~~~~~~~~~~~
+
+Sets up the necessary constants for the gaussian functions used in the Gaussian
+math functions internally to SRL.
+
+*)
+procedure setupGauss();
+begin
+  srl_GaussDev_Point := 0.4;
+  srl_GaussDev_Range := 0.3;
+  srl_GaussRand := @GaussMarsPolar;
+end;
+
+
+(*
+  
+GaussRand
+~~~~~~~~~
+
+Calculates a normally distributed point around mean (u) with a standard 
+deviation of dev (o).
+
+..note::
+    by: Nava2
+
+Example:
+
+..code-block:: pascal
+    // shooting arrows simulation:
+    pt := Point(GaussRand(center.x, 0.5), GaussRand(center.y, 0.5));
+    WriteLn(Format('Hit the target at (%d, %d).', [pt.x, pt.y]));
+
+*)
+
+function GaussRand(mean, dev: Extended): Extended;
+begin
+  result := mean + dev*srl_GaussRand();
+end;
+
+
+(*
+
+Gauss_Point
+~~~~~~~~~~~
+
+Calculates a point about cX, cY with radius maxRad. The sangle and eangle are 
+in radians. The point is returned in the reference parameters oX, oY.
+
+.. note::
+    by Nava2
+
+Example:
+.. code-block:: pascal
+
+    var
+      gX, gY: Integer;
+    // get a gaussian pt in a circle:
+    Gauss_Point(MMCX, MMCY, 0, math_2PI, MMX2-MMCX, gX, gY);
+    WriteLn(Format("gX, gY -> %d, %d", gX, gY);
+
+*)
+
+procedure Gauss_Point(cX, cY: Integer; sAngle, eAngle: Extended; maxRad: Integer; out oX, oY: Integer);
+var
+  angle: Extended;
+  radius: Extended;
+  xShift, yShift: Integer;
+begin
+
+  if (eAngle < sAngle) then
+    swap(eAngle, sAngle);
+
+  { random angle about the center }
+  angle := sAngle + (eAngle-sAngle)*srl_GaussRand()/2.0;
+
+  { get normal pt about zero, where 68% lie within .5*maxRad }
+  radius := GaussRand(maxRad,maxRad*srl_GaussDev_Point) - maxRad;
+
+
+  { the shifting distance based on the radius and angle (both rand) }
+  xShift := round(radius * Cos(angle));
+  yShift := round(radius * Sin(angle));
+
+  oX := cX + xShift;
+  oY := cY + yShift;
+end;
+
+(*
+GaussRange
+~~~~~~~~~~
+
+Returns a number between minI and maxI that is normally distributed in the range.
+
+.. note::
+  by Nava2
+
+Example:
+
+.. code-block:: pascal
+    randMean := GaussRange(0, 20);
+
+*)
+function GaussRange(minI, maxI: Extended): Extended;
+var
+  valid: Boolean;
+  mean: Extended;
+  dev: Extended;
+  t: Integer;
+begin
+  { calculate the mean }
+  mean := (maxI+minI)/2.0;
+  dev  := abs(maxI-minI)/2.0 * srl_GaussDev_Range; 
+
+  t := 0;
+  while ((not valid) and (t < 100)) do 
+  begin
+    Result := GaussRand(mean, dev);
+    valid := ((Result >= minI) and (Result <= MaxI));
+
+    inc(t);
+  end;
+  
+end;
+
+(*
+
+iGaussRange
+~~~~~~~~~~~
+
+See `GaussRange` for more detail. Same function, but with integers.
+
+.. note: 
+    by Nava2
+
+*)
+function iGaussRange(minI, maxI: Integer): Integer;
+begin
+  Result := Round(GaussRange(minI, maxI));
+end;
+
+(*
+
+GaussRandom
+~~~~~~~~~~~
+
+Computes a normally distributed number in [0, maxExt). Thus, it behaves like 
+Random() would be expected to. But normally distributed about maxExt/2. 
+
+It is a wrapper for `iGaussRange`. 
+
+.. note: 
+    by Nava2
+
+*)
+function GaussRandom(maxExt: Integer): Integer;
+begin
+  Result := iGaussRange(0, maxExt-1);
+end;
+
+(*
+
+GaussBox
+~~~~~~~~~
+
+.. code-block:: pascal
+    procedure GaussBox(out px, py: Integer; x1, y1, x2, y2: Integer);
+
+Calculates a point normally distributed from the center of the passed box. It
+checks for outlying points and will regenerate points if necessary.
+
+.. note::
+    by Nava2
+
+Example:
+.. code-block:: pascal
+
+    var
+      gX, gY: Integer;
+
+    // get a gaussian pt in a circle:
+    Gauss_Box(gX, gY, MMX1, MMY1, MMX2, MMY2);
+    WriteLn(Format("gX, gY -> %d, %d", gX, gY);
+
+*)
+
+procedure GaussBox(out px, py: Integer; x1, y1, x2, y2: Integer);
+begin
+  px := iGaussRange(x1, x2);
+  py := iGaussRange(y1, y2);
+
+  if (not PointInBox(Point(px, py), IntToBox(x1, y1, x2, y2))) then
+    SRL_Warn('GaussBox',Format('Point invalid (%d, %d)', [px, py]), warn_Terminate);
 end;
 
 (*
@@ -327,11 +780,12 @@ MMToMS
 
     function MMToMS(MM: TPoint): TPoint;
 
-Turns a Minimap point into a close MS point.
+Turns a Minimap point into a close MS point. New one compensates for angles.
+(I need to add Y angle change still).
 
 .. note::
 
-    by N1ke!
+    by Narcle
 
 Example:
 
@@ -343,18 +797,17 @@ Example:
     //...
 
 *)
-function MMToMS(MM: TPoint): TPoint;
+Function MMtoMS(mm: TPoint): TPoint;
 var
-  X, Y: Integer;
-  Dis: TPoint;
+  X, Y: Extended;
+  Yh: integer;
 begin
-  X := ((MM.X - 647));
-  Y := ((MM.Y - 84));
-
-  Dis := Point( (MMCX - MM.X)*-1, (MMCY - MM.Y)*-1);
-  Result := Point(Round((259.5 + X)+ Dis.X*10), Round((170.0 + Y)+ Dis.Y*6.5));
-
-  If not IntInBox(Result.X, Result.Y, IntToBox(MSX1, MSY1, MSX2, MSY2)) then
+  X := (mm.x-627.0);
+  Y := (mm.y-85.0);
+  Yh := round(abs(mm.y-104));
+  Result := Point(Round((X*3.0/(Yh/42+3.0))*((487.0/48.0))+259.5),
+                  Round(170.0+Y*(6.96+(Yh/42.0)*1.46)));
+  if not PointInBox(Result, MSBox) then
     Result := Point(-1, -1);
 end;
 
@@ -716,4 +1169,54 @@ begin
     if (b > 1) then
       insert(token, Result, b);
   until (b < 3);
+end;
+
+
+
+(*
+CashStrToInt
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+    function CondensedStrToInt(Number: string): Integer;
+
+Converts between '100k' representation to 1000000. 
+
+.. note::
+
+    by Nava2
+
+Example:
+
+.. code-block:: pascal
+
+    foo := CashStrToInt('2b');
+
+*)
+function CashStrToInt(Number: string): Integer;
+var
+  p, i: Integer;
+  n: TIntegerArray;
+begin
+  Number := LowerCase(Number);
+  n := [ord('k'), 1000,
+        ord('m'), 1000000,
+        ord('b'), 1000000000];
+
+  for i := 0 to 2 do
+  begin
+    p := Pos(chr(n[i*2]), Number);
+    if (p <> 0) then
+    begin
+      Delete(Number, p, Length(Number));
+      try
+        Result := Round(StrToFloat(Number) * n[(i*2) + 1]);
+      except
+        Writeln(Format('This caused error in StrToFloat (%s): %s',
+                       [n[i*2], Number]));
+      end;
+      Exit;
+    end;
+  end;
+  Result := StrToIntDef(Number, 0);
 end;
