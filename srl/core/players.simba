@@ -12,7 +12,7 @@ Player Management
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
-//--                » PlayerArray Routines                       --//
+//--                ï¿½ PlayerArray Routines                       --//
 //-----------------------------------------------------------------//
 // * function  LoggedIn: Boolean;                                  // by WT-Fakawi
 // * procedure NumberOfPlayers(Number: Integer);                   // by BenLand100 & Wizzup?
@@ -252,8 +252,10 @@ function PlayerWorked(player: integer): integer;
 begin
   if (player = currentPlayer) then
     if (playerStartTime > 0) then // if it's been set at all
+    begin
       incEx(players[player].worked, (getSystemTime - playerStartTime));
+      playerStartTime := getSystemTime;
+    end;
 
-  playerStartTime := getSystemTime();
   result := players[player].worked;
 end;
