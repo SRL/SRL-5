@@ -867,13 +867,15 @@ begin
   FastDrawClear(bmp, 0);
   DrawTPABitmap(bmp, TPA, clRed);
   DrawTPABitmap(bmp, TPA1, clPurple);
+  {$IFNDEF LAPE}
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
+  {$ENDIF}
   GetbitmapSize(bmp,w,h);
   SetTargetBitmap(bmp);  // new target for findcolorstolerance.
   findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
   ATPA := SplitTPAEx(TPA, 15, 2);
   L := High(ATPA);
-  SortATPAFromFirstPointY(ATPA, Point(w/2,0));
+  SortATPAFromFirstPointY(ATPA, Point(w div 2,0));
 
   SetArrayLength(Result, Length(ATPA));
   Result[0].BigBox := BigBox;

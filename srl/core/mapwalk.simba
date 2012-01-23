@@ -128,7 +128,7 @@ begin
     Exit;
   end;
   Left := (Round((360 - StartAngle) + DirectionDeg) mod 360 <= Round((StartAngle + 360) - DirectionDeg) mod 360);
-  KeyDown((Integer(not Left) * 2) + 37);
+  KeyDown((Ord(not Left) * 2) + 37);
   Wait(10);
   MarkTime(Mark);
   i := 0.0;
@@ -1208,8 +1208,8 @@ begin
     srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
   end;
   Freeze;
-  Radius := Max((x2-x1)/2, (y2-y1)/2);
-  FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)/2, (y1+y2)/2);
+  Radius := Max((x2-x1)div 2, (y2-y1)div 2);
+  FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)div 2, (y1+y2)div 2);
   Hi := High(TPA);
   SetLength(Result, Hi + 1);
   if (Hi < 0) then

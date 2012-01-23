@@ -818,7 +818,7 @@ begin
         SRL_Warn('QuickDeposit', 'Invalid deposit method ', WARN_ALLVERSIONS);
     end;
 
-    Mouse(StartX - 58 * Integer(DepositScreen), 303 - 29 * Integer(DepositScreen), 15, 10, True);
+    Mouse(StartX - 58 * Ord(DepositScreen), 303 - 29 * Ord(DepositScreen), 15, 10, True);
     Wait(200 + Random(300));
   end;
 end;
@@ -1014,7 +1014,7 @@ begin
 
   if (not (Result)) and (Amount > 0) then
   begin
-    if (not OptionsExist(['Withdraw', 'ithdraw', 'draw'], nothing)) then
+    if (not OptionsExist(['Withdraw', 'ithdraw', 'draw'], False)) then
       MouseBox(BBox.X1 + 5, BBox.Y1 + 5, BBox.X2 - 5, BBox.Y2 - 5, mouse_right);
 
     if WaitOptionMulti(['Withdraw-X', 'w-X'], 500) then
@@ -1692,7 +1692,7 @@ begin
   for I := 0 to High(NPCArray) do
   begin
     NPCPoint := MMToMS(NPCArray[I])
-    If NPCPoint = Point(-1, -1) then
+    If (NPCPoint.x = -1) and (NPCPoint.y = -1) then
       Continue;
     with NPCPoint do
       NPCBox := IntToBox(Max(X - 40, MSX1), Max(Y - 40, MSY1), Min(X + 40, MSX2), Min(Y + 40, MSY2));

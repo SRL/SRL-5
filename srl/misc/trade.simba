@@ -407,7 +407,7 @@ begin
     end;
 
     MarkTime(TradeMark);
-    if (SRL_Procs[srl_OnFindTrade] <> nil) then
+    if (@SRL_Procs[srl_OnFindTrade] <> nil) then
       SRL_Procs[srl_OnFindTrade]();
   end;
 end;

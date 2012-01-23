@@ -225,7 +225,7 @@ begin
 
     5:
     begin
-      if (SRL_Procs[srl_OnCustomRC] <> nil) then
+      if (@SRL_Procs[srl_OnCustomRC] <> nil) then
          SRL_Procs[srl_OnCustomRC]();
       Result := True;
     end;

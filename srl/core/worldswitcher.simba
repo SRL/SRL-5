@@ -321,7 +321,7 @@ begin
       if (Length(ATPA) < (I * 2)) then
         Exit;
 
-      TB := GetTPABounds(ATPA[(I * 2) + Integer(Descending)]);
+      TB := GetTPABounds(ATPA[(I * 2) + Ord(Descending)]);
       MouseBox(TB.x1 + 2, TB.y1 + 2, TB.x2, TB.y2, 1);
 
       Result := True;
@@ -427,13 +427,13 @@ begin
   if InRange(SPos, CurPos - BarHeight, CurPos + BarHeight) then
   begin//if its too close the scroll bar won't move to correct position
     if (CurPos < ((SB.y1+BarHeight/2)+ (SB.y2-SB.y1-BarHeight)/2)) then//half point
-      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y2, 0, 0, mouse_left)
+      Mouse((SB.x1 + (SB.x2-SB.x1)div 2), SB.y2, 0, 0, mouse_left)
     else
-      Mouse((SB.x1 + (SB.x2-SB.x1)/2), SB.y1, 0, 0, mouse_left);
+      Mouse((SB.x1 + (SB.x2-SB.x1)div 2), SB.y1, 0, 0, mouse_left);
   end;
 
   //Writeln('SPos := '+ToStr(SPos));
-  Mouse((SB.x1 + (SB.x2-SB.x1)/2), SPos, 0, 0, mouse_left);
+  Mouse((SB.x1 + (SB.x2-SB.x1)div 2), SPos, 0, 0, mouse_left);
   wait(300+Random(100));
   Result := IsTextInAreaEx(84, 134, 134, 440, p.X, p.Y, IntToStr(W) + ' ', 0, StatChars, False, False, -1, 2, TextColor);
 end;

@@ -112,6 +112,7 @@ Example:
 function RSReady: Boolean;
 begin
   Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  WriteLn(LoggedIn, ' ', LobbyScreen, ' ', GetColor(745, 17));
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -371,7 +372,7 @@ begin
   Result := LobbyScreen;
   if Result = True then
     Exit;
-  if (SRL_Procs[srl_OnExitToLobby] <> nil) then
+  if (@SRL_Procs[srl_OnExitToLobby] <> nil) then
     SRL_Procs[srl_OnExitToLobby]();
   if (not (GameTab(tab_LogOut))) then
     Exit;
@@ -473,7 +474,7 @@ begin
   Result := (not (LoggedIn));
   if (Result) then
     Exit;
-  if (SRL_Procs[srl_OnLogOut] <> nil) then
+  if (@SRL_Procs[srl_OnLogOut] <> nil) then
     SRL_Procs[srl_OnLogOut]();
   if (not (GameTab(tab_LogOut))) then
   begin
@@ -549,9 +550,11 @@ begin
 
          {Check for lobby screen already open/ already logged in}
 
+  WriteLn('1');
   Result := ((LobbyScreen) or (LoggedIn));
   if (Result) then
     Exit;
+  WriteLn('2');
 
                        {Check for active player.}
 
@@ -571,6 +574,7 @@ begin
 
   T := GetSystemTime;
   repeat
+    WriteLn('Loop');
     if (RSReady) then
       Break;
     if ((GetSystemTime - T) > 180000) then
@@ -744,7 +748,7 @@ begin
 
         'RSUpdate':
           begin
-            if (SRL_Procs[srl_OnRSUpdate] <> nil) then
+            if (@SRL_Procs[srl_OnRSUpdate] <> nil) then
             begin
               SRL_Procs[srl_OnRSUpdate]();
               Exit;
@@ -806,24 +810,24 @@ label
 {$ENDIF}
 begin
   {$IFNDEF LAPE}ProcStart:{$ENDIF}
-  //Writeln('1');
+  Writeln('1');
   if (not (Result)) then    {Check if Logged in}
     Result := LoggedIn;
-  //Writeln('2');
+  Writeln('2');
   if (Result) then
   begin
     Result := True;
     AddToSRLLog('Current player: ' + Capitalize(Players[CurrentPlayer].Name));
     PlayerStartTime := GetSystemTime; // PlayerStartTime
-    if (SRL_Procs[srl_OnLogIn] <> nil) then
+    if (@SRL_Procs[srl_OnLogIn] <> nil) then
       SRL_Procs[srl_OnLogIn]();
 
     Exit;
   end;
-  //Writeln('4');
+  Writeln('4');
   if (not (LoginPlayerToLob)) then    {Get to lobby screen}
     Exit;
-    //Writeln('5');
+    Writeln('5');
   Wait(500 + Random(500));
                            {World switching}
   if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
@@ -1070,7 +1074,7 @@ begin
   WriteLn('SwitchToPlayer(PlayerNo: ' + IntToStr(PlayerNo) + ', Active: ' + BoolToStr(Active)+ ');');
   Players[CurrentPlayer].Active := Active;
   Logout;
-  if (SRL_Procs[srl_OnNextPlayer] <> nil) then
+  if (@SRL_Procs[srl_OnNextPlayer] <> nil) then
     SRL_Procs[srl_OnNextPlayer]();
   PlayerCurTime := GetSystemTime;
   Players[CurrentPlayer].Worked := Players[CurrentPlayer].Worked + (PlayerCurTime - PlayerStartTime);
@@ -1118,7 +1122,7 @@ begin
   while (cP = -1) do
   begin
     cP := srl_PlayerIndexFunc();
-    if (SRL_Procs[srl_InNextPlayerLoop] <> nil) then
+    if (@SRL_Procs[srl_InNextPlayerLoop] <> nil) then
       SRL_Procs[srl_InNextPlayerLoop]();
     Wait(5000); //Endless loop
   end;

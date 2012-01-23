@@ -135,7 +135,7 @@ begin
     srl_Warn('HandleWhirlPool', 'Whirlpool found!', warn_Debug);
     Tab := GetCurrentTab;
     repeat
-      if (srl_Procs[srl_AntiBan] <> nil) then
+      if (@srl_Procs[srl_AntiBan] <> nil) then
         srl_Procs[srl_AntiBan]()
       else
       begin
