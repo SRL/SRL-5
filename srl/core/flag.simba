@@ -325,7 +325,7 @@ begin
         D2 := D1;
         M := GetSystemTime;
       end;
-    if @SRL_Procs[SRL_AntiBan] <> nil then
+    if SRL_HasProc(SRL_AntiBan) then
       SRL_Procs[SRL_AntiBan]();
   until not LoggedIn;
 end;

@@ -2,10 +2,6 @@ procedure DebugLn(s: string);
 begin
 end;
 
-procedure Swap(var a, b);
-begin
-end;
-
 function GetSystemTime: UInt32;
 begin
   Result := GetTickCount;
@@ -13,17 +9,10 @@ end;
 
 function iAbs(i: Integer): Integer;
 begin
-  Result := Abs(i);
-end;
-
-function Chr(c: Byte): Char; overload;
-begin
-  Result := Char(c);
-end;
-
-function Chr(c: Word): WideChar; overload;
-begin
-  Result := WideChar(c);
+  if (i < 0) then
+    Result := -i
+  else
+    Result := i;
 end;
 
 function GetTextAtExWrap(const xs, ys, xe, ye, minvspacing, maxvspacing, hspacing, color, tol: Integer; const font: string): string;
@@ -34,6 +23,12 @@ end;
 function InitializeHTTPClientWrap(HandleCookies: Boolean): Integer;
 begin
   Result := InitializeHTTPClient(HandleCookies);
+end;
+
+function CallProc(s: string; params: TVariantArray): Variant;
+begin
+  WriteLn('Calling proc', s);
+  Result := NULL;
 end;
 
 const
@@ -48,6 +43,7 @@ const
   SmallChars = 'SmallChars';
   StatChars = 'StatChars';
   FriendChars = 'FriendChars';
+  UpCharsEx = 'UpCharsEx';
 
 {$define Simba}
 {$include SRL/SRL.simba}

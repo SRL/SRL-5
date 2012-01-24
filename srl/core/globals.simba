@@ -145,7 +145,7 @@ const
   srl_OnLogIn          = 13;  // Right after player has successfully logged in.
   srl_OnRSUpdate       = 14;  // Called in LoginPlayerToLob if RuneScape updates.
 
-{ var SRL_Procs: array [0..12] of procedure();
+{ var SRL_Procs: array [0..14] of procedure();
   Description: Varibles to store user-defined procs to be called in SRL. }
 var
   SRL_Procs: array [0..14] of procedure();
@@ -277,6 +277,31 @@ var
 // * I tried to make these Bitmaps Local, but I got after a couple of hours
 // *  running scripts, CTB and DB handle errors. So sorry, declared them global
 //****************************************************************************//
+
+(*
+SRL_HasProc
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SRL_HasProc;
+
+Checks if userproc is defined at index.
+
+.. note::
+
+    by SRL Dev Team
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function SRL_HasProc(Index: Integer): Boolean;
+begin
+  if (Index >= Low(SRL_Procs)) and (Index <= High(SRL_Procs)) then
+    Result := {$IFDEF LAPE}@{$ENDIF}SRL_Procs[Index] <> nil;
+end;
 
 (*
 LoadSRLBitmaps

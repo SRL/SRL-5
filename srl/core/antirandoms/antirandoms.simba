@@ -377,7 +377,7 @@ begin
       TakeScreen('Found mod');
       Inc(tmp_RandSolved[rand_Mod]);
       SaveToChatLog;
-      if (@SRL_Procs[srl_OnFindMod] <> nil) then
+      if SRL_HasProc(srl_OnFindMod) then
         SRL_Procs[srl_OnFindMod]();
       if (LogoutOnMod) then
       begin
@@ -481,7 +481,7 @@ begin
       Inc(tmp_RandSolved[rand_Death]);
       Result := True;
       SaveToChatLog;
-      if (@SRL_Procs[srl_OnFindDead] <> nil) then
+      if SRL_HasProc(srl_OnFindDead) then
         SRL_Procs[srl_OnFindDead]();
       if (Reincarnate) then exit;
       TakeScreen('Found Dead');
@@ -953,12 +953,12 @@ begin
       3: Result := FindDead;
       4: Result := RC;
       5: Result := FindDwarvenPopup;
-      6: if (@SRL_Procs[srl_OnRandomCall] <> nil) then
+      6: if SRL_HasProc(srl_OnRandomCall) then
            SRL_Procs[srl_OnRandomCall]();
     end;
     if (Result) then
     begin
-      if (@SRL_Procs[srl_OnFindRandom] <> nil) then
+      if SRL_HasProc(srl_OnFindRandom) then
         SRL_Procs[srl_OnFindRandom]();
       Break;
     end;
@@ -992,14 +992,14 @@ begin
       5:  Result :=  RC;
       6:  Result := FindMod;
       7:  Result := FindDwarvenPopup;
-      8:  if (@SRL_Procs[srl_OnRandomCall] <> nil) then
+      8:  if SRL_HasProc(srl_OnRandomCall) then
             SRL_Procs[srl_OnRandomCall]();
       9:  Result := UseRewardBox;
       10: Result := UseMysteryBox;
     end;
     if (Result) then
     begin
-      if (@SRL_Procs[srl_OnFindRandom] <> nil) then
+      if SRL_HasProc(srl_OnFindRandom) then
         SRL_Procs[srl_OnFindRandom]();
       Break;
     end;

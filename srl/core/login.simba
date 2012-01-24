@@ -371,7 +371,7 @@ begin
   Result := LobbyScreen;
   if Result = True then
     Exit;
-  if (@SRL_Procs[srl_OnExitToLobby] <> nil) then
+  if SRL_HasProc(srl_OnExitToLobby) then
     SRL_Procs[srl_OnExitToLobby]();
   if (not (GameTab(tab_LogOut))) then
     Exit;
@@ -473,7 +473,7 @@ begin
   Result := (not (LoggedIn));
   if (Result) then
     Exit;
-  if (@SRL_Procs[srl_OnLogOut] <> nil) then
+  if SRL_HasProc(srl_OnLogOut) then
     SRL_Procs[srl_OnLogOut]();
   if (not (GameTab(tab_LogOut))) then
   begin
@@ -742,7 +742,7 @@ begin
 
         'RSUpdate':
           begin
-            if (@SRL_Procs[srl_OnRSUpdate] <> nil) then
+            if SRL_HasProc(srl_OnRSUpdate) then
             begin
               SRL_Procs[srl_OnRSUpdate]();
               Exit;
@@ -811,7 +811,7 @@ begin
     Result := True;
     AddToSRLLog('Current player: ' + Capitalize(Players[CurrentPlayer].Name));
     PlayerStartTime := GetSystemTime; // PlayerStartTime
-    if (@SRL_Procs[srl_OnLogIn] <> nil) then
+    if SRL_HasProc(srl_OnLogIn) then
       SRL_Procs[srl_OnLogIn]();
 
     Exit;
@@ -1066,7 +1066,7 @@ begin
   WriteLn('SwitchToPlayer(PlayerNo: ' + IntToStr(PlayerNo) + ', Active: ' + BoolToStr(Active)+ ');');
   Players[CurrentPlayer].Active := Active;
   Logout;
-  if (@SRL_Procs[srl_OnNextPlayer] <> nil) then
+  if SRL_HasProc(srl_OnNextPlayer) then
     SRL_Procs[srl_OnNextPlayer]();
   PlayerCurTime := GetSystemTime;
   Players[CurrentPlayer].Worked := Players[CurrentPlayer].Worked + (PlayerCurTime - PlayerStartTime);
@@ -1114,7 +1114,7 @@ begin
   while (cP = -1) do
   begin
     cP := srl_PlayerIndexFunc();
-    if (@SRL_Procs[srl_InNextPlayerLoop] <> nil) then
+    if SRL_HasProc(srl_InNextPlayerLoop) then
       SRL_Procs[srl_InNextPlayerLoop]();
     Wait(5000); //Endless loop
   end;
