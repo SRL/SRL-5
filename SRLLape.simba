@@ -1,12 +1,3 @@
-procedure DebugLn(s: string);
-begin
-end;
-
-function GetSystemTime: UInt32;
-begin
-  Result := GetTickCount;
-end;
-
 function iAbs(i: Integer): Integer;
 begin
   if (i < 0) then
@@ -37,13 +28,6 @@ const
   clBlue  = 255 shl 16;
   clRed   = 255;
   clPurple= clBlue + 100;
-
-  CharsNPC = 'CharsNPC';
-  UpChars = 'UpChars';
-  SmallChars = 'SmallChars';
-  StatChars = 'StatChars';
-  FriendChars = 'FriendChars';
-  UpCharsEx = 'UpCharsEx';
 
 {$define Simba}
 {$include SRL/SRL.simba}
