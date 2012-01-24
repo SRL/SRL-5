@@ -1101,10 +1101,8 @@ var
   BankBox: TBox;
   Found: Boolean;
   t: TPointArray;
-{$IFNDEF LAPE}
 label
   Start;
-{$ENDIF}
 begin
   Result := False;
   if not BankScreen then Exit;
@@ -1112,7 +1110,7 @@ begin
 
   if (Index = 0) then
   begin
-    {$IFNDEF LAPE}Start:{$ENDIF}
+    Start:
     for Index := 1 to 50 do
     begin
       if FindItemEx(x, y, IdentType, Ident, BankIndexToMSBox(Index), Tol) then
@@ -1138,7 +1136,7 @@ begin
     else
     begin
       Writeln('Item Moved from Bank Slot ' + IntToStr(Index) + ', checking bank again.');
-      {$IFNDEF LAPE}goto Start;{$ENDIF}
+      goto Start;
     end;
   end;
   Wait(RandomRange(200, 350));

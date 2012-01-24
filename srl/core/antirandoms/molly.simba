@@ -111,10 +111,8 @@ Description: Finds the position of molly on the main screen
 *******************************************************************************}
 
 Procedure Molly_FindMS(Var Molly : TPoint);
-{$IFNDEF LAPE}
 Label
   Begining;
-{$ENDIF}
 Var                              //
   ATPA : T2DPointArray;
   TPA : TPointArray;
@@ -124,7 +122,7 @@ Var                              //
   AddOn : Integer;
 
 Begin
-  {$IFNDEF LAPE}Begining:{$ENDIF}
+  Begining:
   I := 0;
   SetLength(ATPA, Length(MollyColors)); //sets length the same as colors
   For I := 0 To High(MollyColors) Do
@@ -168,10 +166,8 @@ Begin
     End;
   End;
 
-  {$IFNDEF LAPE}
   If NotFound Then
     GoTo Begining;
-  {$ENDIF}
 End;
 
 {*******************************************************************************
@@ -287,10 +283,8 @@ Description: Solves the Molly Random
 *******************************************************************************}
 
 Function SolveMolly : Boolean;
-{$IFNDEF LAPE}
 Label
   IfNot_CivilianCaught;
-{$ENDIF}
 Var P : TPoint;
     T, Tries, MolMark, I, TX, TY : Integer;
     MCaught : Boolean;
@@ -371,7 +365,7 @@ Begin
 
     T := GetSystemTime + 120000; //2 minutes timeout.
 
-    {$IFNDEF LAPE}IfNot_CivilianCaught:{$ENDIF}
+    IfNot_CivilianCaught:
     While Not (MCaught) And (T > GetSystemTime) Do
     Begin
       Molly_MoveCrossTo;
@@ -418,9 +412,7 @@ Begin
       Exit;
     End;
 
-    {$IFNDEF LAPE}
     If Not MCaught Then GoTo IfNot_CivilianCaught;
-    {$ENDIF}
 
     If MCaught Then
     Begin

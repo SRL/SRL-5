@@ -112,7 +112,6 @@ Example:
 function RSReady: Boolean;
 begin
   Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
-  WriteLn(LoggedIn, ' ', LobbyScreen, ' ', GetColor(745, 17));
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -538,10 +537,8 @@ var
   TPA: TPointArray;
   Boxes : TIntegerArray;
   //B: TBox;
-{$IFNDEF LAPE}
 label
   ProcStart;
-{$ENDIF}
 begin
   ActivateClient;
   Wait(100);
@@ -550,11 +547,9 @@ begin
 
          {Check for lobby screen already open/ already logged in}
 
-  WriteLn('1');
   Result := ((LobbyScreen) or (LoggedIn));
   if (Result) then
     Exit;
-  WriteLn('2');
 
                        {Check for active player.}
 
@@ -574,7 +569,6 @@ begin
 
   T := GetSystemTime;
   repeat
-    WriteLn('Loop');
     if (RSReady) then
       Break;
     if ((GetSystemTime - T) > 180000) then
@@ -608,7 +602,7 @@ begin
   if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
     Members := Players[CurrentPlayer].WorldInfo[0];
 
-  {$IFNDEF LAPE}ProcStart:{$ENDIF}
+  ProcStart:
 
   {if (Members) then
     I := 1;
@@ -769,7 +763,7 @@ begin
   begin
     RetryLogin := False;
     Inc(Attempts);
-    {$IFNDEF LAPE} goto ProcStart;{$ENDIF}
+    goto ProcStart;
   end;
 
 end;
@@ -804,16 +798,14 @@ var
   RetryLogin, B, BB: Boolean;
   Actions: TVariantArray;
   T, Attempts: LongInt;
-{$IFNDEF LAPE}
 label
   ProcStart;
-{$ENDIF}
 begin
-  {$IFNDEF LAPE}ProcStart:{$ENDIF}
-  Writeln('1');
+  ProcStart:
+
   if (not (Result)) then    {Check if Logged in}
     Result := LoggedIn;
-  Writeln('2');
+
   if (Result) then
   begin
     Result := True;
@@ -824,10 +816,10 @@ begin
 
     Exit;
   end;
-  Writeln('4');
+
   if (not (LoginPlayerToLob)) then    {Get to lobby screen}
     Exit;
-    Writeln('5');
+
   Wait(500 + Random(500));
                            {World switching}
   if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
@@ -956,13 +948,13 @@ begin
   begin
     RetryLogin := False;
     Inc(Attempts);
-    {$IFNDEF LAPE}goto ProcStart;{$ENDIF}
+    goto ProcStart;
   end;
 
                       {Set player start time ect...}
 
   if (Result) then
-    {$IFNDEF LAPE}goto ProcStart;{$ENDIF}
+    goto ProcStart;
 
 end;
 
