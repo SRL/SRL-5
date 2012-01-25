@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------//
 //--               SRL Resource Library                                 --//
-//--               » Grand Exchange Routines                            --//
+//--               ï¿½ Grand Exchange Routines                            --//
 //------------------------------------------------------------------------//
 // * function InGE: boolean;                                              // * by Rasta Magician
 // * function GEIsMember: boolean;                                        // * by Rasta Magician
@@ -630,7 +630,7 @@ begin
   if GESellAt(free) then
   begin
     wait(100+Random(100));
-    MouseItem(InvSpot, true);
+    MouseItem(InvSpot, mouse_Left);
     wait(200+Random(100));
     GESetPrice(Price);
     wait(200+Random(100));
