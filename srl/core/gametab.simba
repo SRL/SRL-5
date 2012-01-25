@@ -2420,7 +2420,7 @@ begin
     FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
     B := GetTPABounds(TPA);
     S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, UpChars), ' ', '');
-    P := Pos('xp', S);
+    P := Pos('x', S);
     if P > 0 then
       Result := StrToIntDef(ExtractFromStr(Copy(s, P, Length(S)), Numbers), 0)
     else
