@@ -688,44 +688,18 @@ Example:
 .. code-block:: pascal
 
 *)
-Function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
+function FindNPCChatText(txt: string; action: fnct_ActionOptions): boolean;
 var
-  BlackTPA, WhiteTPA, TPA, mTPA: TPointArray;
-  i, ii, cts, Height, c, H: integer;
-  TextATPA, ATPA: T2DPointArray;
-  B: TBox;
-  TSA: TStringArray;
+  x, y: integer;
 begin
-  cts := GetColorToleranceSpeed;
-  SetColorToleranceSpeed(1);
-  FindColors(WhiteTPA, 13158600, MCX1, MCY1, MCX2, MCY2);
-  FindColors(BlackTPA, 0, MCX1, MCY1, MCX2, MCY2);
-  SetColorToleranceSpeed(cts);
-  TPA := CombineTPA(BlackTPA, WhiteTPA);
-  if (Length(TPA) < 1) then
-    Exit;
-  ATPA := SplitTPAEx(TPA, MCX2-MCX1, 1);
-  TSA := Explode(' ', txt);
-  SetArrayLength(TextATPA, Length(TSA));
-  for i := 0 to High(TSA) do
-    TextATPA[i] := LoadTextTPA(TSA[i], UpChars, Height);
-  H := High(TextATPA);
-  for i := 0 to High(ATPA) do
+  if (findText(x, y, txt, UpChars, MCX1, MCY1, MCX2, MCY2)) then
   begin
-    c := 0;
-    for ii := 0 to H do
-    if FindTextTPAinTPA(Height, TextATPA[ii], ATPA[i], mTPA) then
-      Inc(c);
-    Result := (c = H+1);
-    if Result then
-    begin
-      B := GetTPABounds(ATPA[i]);
-      with B do
-      case Action of
-        Move: MMouse(X1, Y1 + 2, X2-X1, 4);
-        ClickLeft: Mouse(X1, Y1 + 2, X2-X1, 4, True);
-        ClickRight: Mouse(X1, Y1 + 2, X2-X1, 4, False);
-      end;
+    result := true;
+
+    case action of
+      Move: MMouse(x, y, 6, 3);
+      ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
+      ClickRight: Mouse(x, y, 6, 3, mouse_Right);
     end;
   end;
 end;
