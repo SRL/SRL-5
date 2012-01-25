@@ -252,7 +252,7 @@ Example:
 *)
 function FTab(Tab: integer): boolean;
 var
-  T: integer;
+  T, F: integer;
 begin
   if (GetCurrentTab = Tab) then
   begin
@@ -260,16 +260,20 @@ begin
     Exit;
   end;
   Case Tab of
-    tab_Inv: t := 1;
-    tab_Equip: t := 2;
-    tab_Prayer: t := 3;
-    tab_Magic: t := 4;
-    tab_Combat: t := 5;
+    tab_Inv: F := 1;
+    tab_Equip: F := 2;
+    tab_Prayer: F := 3;
+    tab_Magic: F := 4;
+    tab_Combat: F := 5;
     else
       writeln('Tab '+inttostr(tab)+' isn''t a valid option.');
   end;
-  TypeByte(111+T)
-  Result := GetCurrentTab = Tab;
+  T := GetSystemTime + 2000;
+  Repeat
+    TypeByte(111+F);
+    Wait(150+random(100));
+    Result := GetCurrentTab = Tab;
+  until Result or (GetSystemTime > T);
 end;
 
 (*
