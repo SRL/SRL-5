@@ -808,19 +808,16 @@ var
   Colors : TIntegerArray;
   Signs: TStringArray;
   P: TPointArray;
-  TP: TPoint;
-  I{,cl}: Integer;
+  I: Integer;
   B: TBox;
-  W,H{, T}: integer;
-  SearchBox : TBox;
 begin;
   Result := -1;
   ColorSign := '';
   case LowerCase(Leveltype) of
-    'health', 'hp', 'hitpoints', 'constitution': TP := Point(715,27);
-    'prayer', 'pray'                           : TP := Point(730,66);
-    'summon', 'summoning'                      : TP := Point(715,140);
-    'run','energy'                             : TP := Point(730,105);
+    'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719,27,745,43);
+    'prayer', 'pray'                           : B := IntToBox(735,66,762,82);
+    'summon', 'summoning'                      : B := IntToBox(735,103,762,122);
+    'run','energy'                             : B := IntToBox(719,119,745,156);
   else
     begin;
       srl_Warn('GetMMLevels', 'Invalid LevelType: ''' + LevelType + '', warn_AllVersions);
@@ -829,18 +826,14 @@ begin;
   end;
   Colors := [65280, 65535, 2070783, 255];
   Signs  := ['Green', 'Yellow', 'Orange', 'Red'];
-  GetClientDimensions(w,h); //We donnot want to search out of the clients area!
-  SearchBox := IntToBox(TP.X, TP.Y, Min(w-1,TP.X + 30), min(h-1,TP.Y + 15));
   for I := 0 to 3 do
   begin
-    With SearchBox do
+    With B do
       FindColorsTolerance(P, Colors[i], x1, y1, x2, y2, 30);
     if Length(P) < 1 then
       Continue;
-    B := GetTPABounds(P);//GetTextAtEx works better for Simba for Run
-    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1 , B.Y1 - 1, 30, statChars,
-              False, False, 0, 0, Colors[i], 20, False, tr_Digits)), -1);
-    if (Result > 0) then
+    Result := StrToIntDef(GetNumbers(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2, 0, 4, 4, Colors[i], 20, statChars)), -1);
+    if (Result > -1) then
     begin
       ColorSign := Signs[i];
       Exit;
