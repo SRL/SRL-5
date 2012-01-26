@@ -22,6 +22,11 @@ begin
   Result := NULL;
 end;
 
+function GetMufasaBitmap(bmp: Integer): Integer;
+begin
+  Result := bmp;
+end;
+
 const
   clWhite = 255 * 255 * 255;
   clBlack = 0;
