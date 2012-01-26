@@ -816,8 +816,8 @@ begin;
   case LowerCase(Leveltype) of
     'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719,27,745,43);
     'prayer', 'pray'                           : B := IntToBox(735,66,762,82);
-    'summon', 'summoning'                      : B := IntToBox(735,103,762,122);
-    'run','energy'                             : B := IntToBox(719,119,745,156);
+    'run','energy'                             : B := IntToBox(735,103,762,122);
+    'summon', 'summoning'                      : B := IntToBox(719,119,745,156);
   else
     begin;
       srl_Warn('GetMMLevels', 'Invalid LevelType: ''' + LevelType + '', warn_AllVersions);
