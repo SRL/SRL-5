@@ -1713,7 +1713,7 @@ begin
       If WaitUpTextMulti(['ooth', 'anker'], 200) then
       begin
         ClickMouse2(False);
-        If WaitOptionMulti(['Bank', 'ank', 'nk B'], 600) then
+        If WaitOptionMulti(['Bank B', 'nk B'], 600) then
           MarkTime(c);
         Repeat
           Wait(RandomRange(50, 100));
