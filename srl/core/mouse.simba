@@ -535,7 +535,8 @@ Example:
 *)
 function DidClick(Red: Boolean; Time: integer): boolean;
 var
-  TimeOut, x, y, Trash, w, h: integer;
+  TimeOut, x, y, w, h: integer;
+  TPA1, TPA2: TPointArray;
   B: TBox;
 begin
   GetMousePos(x, y);
@@ -549,25 +550,31 @@ begin
   while (GetSystemTime < TimeOut) do
   begin
     With B do
-    if FindColor(Trash, Trash, 254, x1, y1, x2, y2) then
     begin
-      if Red then
-        Result := true
-      else
-        Result := false;
-      exit;
-    end;
+      FindColors(TPA1, 333711, x1, y1, x2, y2);//Red
+      FindColors(TPA2, 168682, x1, y1, x2, y2);//Orange/Yellow
 
-    With B do
-    if FindColor(Trash, Trash, 65278, x1, y1, x2, y2) then
-    begin
-      if Red then
-        Result := false
-      else
-        Result := True;
-      exit;
+      if (Length(TPA1) > 0) and (Length(TPA2) > 0) then
+      begin
+        if (Length(TPA1) > Length(TPA2)) then
+        begin
+          if Red then
+            Result := True
+          else
+            Result := False;
+          Exit;
+        end;
+        if (Length(TPA1) < Length(TPA2)) then
+        begin
+          if Red then
+            Result := False
+          else
+            Result := True;
+          Exit;
+        end;
+      end;
     end;
-    wait(5);
+    wait(2);
   end;
 end;
 

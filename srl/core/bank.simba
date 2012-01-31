@@ -1333,7 +1333,7 @@ begin
     begin
       GetMousePos(dx, dy);
       Mouse(dx, dy, 0, 0, mouse_right);
-      if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
+      if WaitOptionMulti(['Bank', 'ank', 'nk C'], 1000) then
       begin
         MarkTime(Mark2);
         repeat
@@ -1372,7 +1372,7 @@ begin
       begin
         GetMousePos(dx, dy);
         Mouse(dx, dy, 0, 0, mouse_right);
-        if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
+        if WaitOptionMulti(['Bank', 'ank', 'nk C'], 1000) then
         begin
           MarkTime(Mark2);
           repeat
@@ -1476,7 +1476,7 @@ begin
     if WaitUpTextMulti(['nk', 'bo', 'ot'], 1000) then
     begin
       Mouse(OBC.x, OBC.y, 0, 0, mouse_right);
-      WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000);
+      WaitOptionMulti(['Bank', 'ank', 'nk C'], 1000);
       FFlag(0);
       Wait(2000 + Random(500));
       if (Length(Players) > 0) then
@@ -1631,7 +1631,7 @@ begin
     begin
       GetMousePos(Booths[i].X, Booths[i].Y);
       Mouse(Booths[i].X, Booths[i].Y, 0, 0, mouse_right);
-      if WaitOptionMulti(['uickly', 'uick', 'ickly', 'ckl'], 1000) then
+      if WaitOptionMulti(['Bank', 'ank', 'nk C'], 1000) then
       begin
         FFLag(0);
         MarkTime(c);
@@ -1713,7 +1713,7 @@ begin
       If WaitUpTextMulti(['ooth', 'anker'], 200) then
       begin
         ClickMouse2(False);
-        If WaitOptionMulti(['ank B', 'quick'], 600) then
+        If WaitOptionMulti(['Bank', 'ank', 'nk B'], 600) then
           MarkTime(c);
         Repeat
           Wait(RandomRange(50, 100));
