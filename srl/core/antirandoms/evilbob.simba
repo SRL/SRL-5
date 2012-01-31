@@ -35,37 +35,12 @@ Procedure EB_FindPortal; Forward;
 
 function InEvilBobsIsland: Boolean;
 var
-  pts: TPointArray;
-  x, y, L: Integer;
+  x, y: Integer;
 begin
-  if (FindColor(x, y, 61937, MMX1, MMY1, MMX2, MMY2)) then
-  begin
-    pts := getMiniMapDotsIn('npc', MMX1, MMY1, MMX2, MMY2);
-    L := Length(pts);
-    if InRange(L, 1, 2) then
-    begin
-      if L = 1 then
-      begin
-        x := MMCX;
-        y := MMCY;
-      end else
-      begin
-        x := Pts[1].x;
-        y := Pts[1].y;
-      end;
-      if (inRange(Distance(pts[0].x, pts[0].y, x, y), 5, 13)) then
-      begin
-        pts := getMiniMapDotsIn('item',  MMX1, MMY1, MMX2, MMY2);
-        Result := inRange(Length(pts), 4, 12);
-        if result then
-        begin
-          SetupAutoColors;
-          writeln(IntToStr(countColor(autoColorEx(srl_WaterColor).color, mmx1, mmy1, mmx2, mmy2)));
-          result := (countColor(autoColorEx(srl_WaterColor).color, mmx1, mmy1, mmx2, mmy2) >= 100);
-        end;
-      end;
-    end;
-  end;
+  // searches for the water colour
+  if (FindColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then
+    if (not TabExists(TAB_MAGIC)) then
+      Result := TabExists(TAB_PRAYER);
 end;
 
 {********************************************************************************}

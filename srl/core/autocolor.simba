@@ -21,7 +21,7 @@ Auto color finding routines.
 { const AutoColor Constants;
   Description: Constants representing the different types of AutoColors }
 const
-  srl_AutoColorCount   = 13;
+  srl_AutoColorCount   = 14;
     srl_VarrockRoadColor   = 0;
     srl_LumbridgeRoadColor = 1;
     srl_FaladorRoadColor   = 2;
@@ -35,6 +35,7 @@ const
     srl_RockColor          = 10;
     srl_MineRockColor      = 11;
     srl_TreeColor          = 12;
+    srl_BlackColor         = 13;
 
 (*
 SetupAutoColors
@@ -162,6 +163,11 @@ begin
 
     srl_TreeColor:
       Result := [ 2121284, 1463332, 1527603, 1333281, 1267488, 1202468, 999966 ];
+
+    srl_BlackColor:
+      Result := [ 460550, 460033, 459776, 458757, 395015, 329476, 328454, 328194,
+                  263170, 262145, 197895, 197120, 132096, 131075, 198151,
+                  1792, 1539, 1286, 1030];
 
     else
       srl_Warn('AutoColor',
