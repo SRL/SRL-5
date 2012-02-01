@@ -822,26 +822,29 @@ Example:
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
    B, BB, sB, BigBox: TBox;
-   TPA, TPA1, TPA2: TPointArray;
-   aTPA, tempatpa: T2DPointArray;
+   TPA, TPA1, TPA2, TPA3: TPointArray;
+   ATPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
-   Colors: TIntegerArray;
+   BoxColors: TIntegerArray;
 begin
   target := GetImageTarget;
   GetClientDimensions(B.X2, B.Y2);
   B := IntToBox(0, 0, B.X2-1, B.Y2-1);
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
-  FindColorsTolerance(TPA1, 131843, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 3682593, B.X1, B.Y1, B.X2, B.Y2, 0);
-  TPA := CombineTPA(TPA1, TPA2);
+  //            Black, Top Blue, grey
+  BoxColors := [131843, 3682593, 3552822];
+  SetLength(ATPA, Length(BoxColors));
+  for i := 0 to High(BoxColors) do
+    FindColorsTolerance(ATPA[i], BoxColors[i], B.X1, B.Y1, B.X2, B.Y2, 0);
+  TPA := MergeATPA(ATPA);
   If Length(TPA) < 100 Then
   begin
     ColorToleranceSpeed(cts);
     Exit;
   end;
 
-  aTPA := SplitTPA(TPA, 10);
+  ATPA := SplitTPA(TPA, 4);
   For i := 0 to High(ATPA) do
   begin
     B := GetTPABounds(ATPA[i]);
@@ -859,33 +862,24 @@ begin
 
   BigBox := B;
 
-
-  //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
-  Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
-  {
-  SetLength(aTPA, Length(Colors));
-  for i := 0 to High(Colors) do
-    FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
-  TPA := MergeATPA(aTPA);
-  }
   SetColorToleranceSpeed(3);
-  FindColorsTolerance(TPA2, 2563852, B.X1, B.Y1, B.X2, B.Y2, 10);
-  FindColorsTolerance(TPA1, 7034150, B.X1, B.Y1, B.X2, B.Y2, 10);//Blue Highlight
+  FindColorsTolerance(TPA2, 2827284, B.X1, B.Y1, B.X2, B.Y2, 16);//Background
+  FindColorsTolerance(TPA1, 6968358, B.X1, B.Y1, B.X2, B.Y2, 10);//Blue Highlight
   TPA2 := CombineTPA(TPA2, TPA1);
-  SetColorToleranceSpeed(1);
-  FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
-  SetColorToleranceSpeed(cts);
   sB := GetTPABounds(TPA2);
   ReturnPointsNotInTPAWrap(TPA2, B, TPA);
+  FindColorsTolerance(TPA3, 460291, B.X1, B.Y1, B.X2, B.Y2, 6);//shadow
+  SetColorToleranceSpeed(cts);
+
   bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
-  OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
+  OffsetTPA(TPA3, Point(-B.X1, -B.Y1));
   FastDrawClear(bmp, 0);
-  DrawTPABitmap(bmp, TPA, clRed);
-  DrawTPABitmap(bmp, TPA1, clPurple);
+  DrawTPABitmap(bmp, TPA, clRed);//Text
+  DrawTPABitmap(bmp, TPA3, clPurple);//Shadow
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
   GetbitmapSize(bmp,w,h);
-  SetTargetBitmap(bmp); // new target for findcolorstolerance.
+  SetTargetBitmap(bmp);  // new target for findcolorstolerance.
   findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
   ATPA := SplitTPAEx(TPA, 15, 2);
   L := High(ATPA);
@@ -908,7 +902,6 @@ begin
   SetImageTarget(target);
   FreeBitmap(bmp);
 end;
-
 
 
 (*
