@@ -665,6 +665,49 @@ begin
 end;
 
 (*
+FindNPCChatTextMulti
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
+
+Finds a text said by a NPC in chat. If found it'll perform action,
+where action can be:
+Nothing - Just return wether its found
+Move - Just move the mouse to it
+Clickleft - Movemouse & Clickmouse left
+Clickright - MoveMouse & Clickmouse right
+
+.. note::
+
+    by Kernel Klink, Nielsie95 & Narcle
+    Last Modified: January 31st, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
+var
+  i, x, y: integer;
+begin
+  for i := 0 to high(txt) do
+    if (findText(x, y, txt[i], UpChars, MCX1, MCY1, MCX2, MCY2)) then
+    begin
+      case action of
+        Move: MMouse(x, y, 6, 3);
+        ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
+        ClickRight: Mouse(x, y, 6, 3, mouse_Right);
+      end;
+
+      result := true;
+      break;
+    end;
+end;
+
+(*
 FindNPCChatText
 ~~~~~~~~~~~~~~~
 
@@ -681,7 +724,7 @@ Clickright - MoveMouse & Clickmouse right
 
 .. note::
 
-    by Kernel Klink, Nielsie95 & Narcle
+    by Coh3n
 
 Example:
 
@@ -689,19 +732,8 @@ Example:
 
 *)
 function FindNPCChatText(txt: string; action: fnct_ActionOptions): boolean;
-var
-  x, y: integer;
 begin
-  if (findText(x, y, txt, UpChars, MCX1, MCY1, MCX2, MCY2)) then
-  begin
-    result := true;
-
-    case action of
-      Move: MMouse(x, y, 6, 3);
-      ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
-      ClickRight: Mouse(x, y, 6, 3, mouse_Right);
-    end;
-  end;
+  result := findNPCChatTextMulti([txt], action);
 end;
 
 (*
@@ -789,7 +821,7 @@ Example:
 *)
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
-   B, BB, sB, BigBox: TBox;
+   B,BB, BigBox: TBox;
    TPA, TPA1, TPA2: TPointArray;
    aTPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
@@ -827,22 +859,14 @@ begin
 
   BigBox := B;
 
-
   //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
   Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
-  {
+
   SetLength(aTPA, Length(Colors));
   for i := 0 to High(Colors) do
     FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
   TPA := MergeATPA(aTPA);
-  }
-  SetColorToleranceSpeed(3);
-  FindColorsTolerance(TPA2, 2563852, B.X1, B.Y1, B.X2, B.Y2, 10);
-  SetColorToleranceSpeed(1);
   FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
-  SetColorToleranceSpeed(cts);
-  sB := GetTPABounds(TPA2);
-  ReturnPointsNotInTPAWrap(TPA2, B, TPA);
   bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
   OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
@@ -864,7 +888,7 @@ begin
     TPA := ATPA[i];
     tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
     SortATPAFromFirstPointX(tempatpa, Point(0, 0));
-    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx'); //Writeln(Result[i].Str);
+    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx');
     BB := GetTPABounds(ATPA[i]);
     Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
     setlength(tempatpa,0);
