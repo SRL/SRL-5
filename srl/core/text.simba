@@ -821,7 +821,7 @@ Example:
 *)
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
-   B,BB, BigBox: TBox;
+   B, BB, sB, BigBox: TBox;
    TPA, TPA1, TPA2: TPointArray;
    aTPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
@@ -859,14 +859,24 @@ begin
 
   BigBox := B;
 
+
   //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
   Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
-
+  {
   SetLength(aTPA, Length(Colors));
   for i := 0 to High(Colors) do
     FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
   TPA := MergeATPA(aTPA);
+  }
+  SetColorToleranceSpeed(3);
+  FindColorsTolerance(TPA2, 2563852, B.X1, B.Y1, B.X2, B.Y2, 10);
+  FindColorsTolerance(TPA1, 7034150, B.X1, B.Y1, B.X2, B.Y2, 10);//Blue Highlight
+  TPA2 := CombineTPA(TPA2, TPA1);
+  SetColorToleranceSpeed(1);
   FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
+  SetColorToleranceSpeed(cts);
+  sB := GetTPABounds(TPA2);
+  ReturnPointsNotInTPAWrap(TPA2, B, TPA);
   bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
   OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
@@ -875,7 +885,7 @@ begin
   DrawTPABitmap(bmp, TPA1, clPurple);
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
   GetbitmapSize(bmp,w,h);
-  SetTargetBitmap(bmp);  // new target for findcolorstolerance.
+  SetTargetBitmap(bmp); // new target for findcolorstolerance.
   findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
   ATPA := SplitTPAEx(TPA, 15, 2);
   L := High(ATPA);
@@ -888,7 +898,7 @@ begin
     TPA := ATPA[i];
     tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
     SortATPAFromFirstPointX(tempatpa, Point(0, 0));
-    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx');
+    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx'); //Writeln(Result[i].Str);
     BB := GetTPABounds(ATPA[i]);
     Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
     setlength(tempatpa,0);
@@ -898,6 +908,8 @@ begin
   SetImageTarget(target);
   FreeBitmap(bmp);
 end;
+
+
 
 (*
 ChooseOptionMultiEx
