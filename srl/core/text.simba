@@ -838,6 +838,8 @@ begin
   }
   SetColorToleranceSpeed(3);
   FindColorsTolerance(TPA2, 2563852, B.X1, B.Y1, B.X2, B.Y2, 10);
+  FindColorsTolerance(TPA1, 7034150, B.X1, B.Y1, B.X2, B.Y2, 10);//Blue Highlight
+  TPA2 := CombineTPA(TPA2, TPA1);
   SetColorToleranceSpeed(1);
   FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
   SetColorToleranceSpeed(cts);
