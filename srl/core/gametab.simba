@@ -335,6 +335,32 @@ end;
 
 (*
 
+GetWeaponName
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetWeaponName: String;
+
+Returns the name of the weapon your currently using.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function GetWeaponName: String;
+begin
+  if GameTab(tab_Combat) then
+    Result := GetTextAtExWrap(584, 208, 734, 226, 0, 3, 4, 3907053, 0, UpChars);
+end;
+
+(*
+
 GetWeaponData
 ~~~~~~~~~~~~~
 
@@ -367,7 +393,8 @@ begin
   Result := False;
   if (not LoggedIn) then
     Exit;
-  GameTab(tab_Combat);
+  if not GameTab(tab_Combat) then
+    Exit;
   for i := 0 to 3 do
   begin
     T := Point(680-(i+1) mod 2*85, 270+2 mod (i+1)*28);
