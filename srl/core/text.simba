@@ -691,20 +691,24 @@ Example:
 *)
 function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
 var
-  i, x, y: integer;
+  i, j, x, y: integer;
+  chars: TStringArray;
 begin
-  for i := 0 to high(txt) do
-    if (findText(x, y, txt[i], UpChars, MCX1, MCY1, MCX2, MCY2)) then
-    begin
-      case action of
-        Move: MMouse(x, y, 6, 3);
-        ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
-        ClickRight: Mouse(x, y, 6, 3, mouse_Right);
-      end;
+  chars := [UpChars, CharsNPC];
 
-      result := true;
-      break;
-    end;
+  for i := 0 to high(txt) do
+    for j := 0 to high(chars) do
+      if (findText(x, y, txt[i], chars[j], MCX1, MCY1, MCX2, MCY2)) then
+      begin
+        case action of
+          Move: MMouse(x, y, 6, 3);
+          ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
+          ClickRight: Mouse(x, y, 6, 3, mouse_Right);
+        end;
+
+        result := true;
+        exit;
+      end;
 end;
 
 (*
