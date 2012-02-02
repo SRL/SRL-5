@@ -722,7 +722,7 @@ begin
   for i := 0 to TPH do
   begin
     TTP := LoadTextTPA(TSA[i], Font, h);
-    OffsetTPA(TTP, Point(Placement.x, Placement.y));
+    OffsetTPA(TTP, Point(Placement.x, Placement.y+(i*h)));
     SMART_DrawDotsEx(False, TTP, Colour);
     if Shadow then
     begin
