@@ -523,10 +523,12 @@ DidClick
     function DidClick(Red: Boolean; Time: integer): boolean;
 
 Checks for the X after a click, Times Out after Time.
+DidClick Time must be at LEAST 200 now.
 
 .. note::
 
     by Rasta Magician
+    Modded by Narcle on Feb. 4th, 2012
 
 Example:
 
@@ -546,7 +548,10 @@ begin
   if B.y1 < 0 then B.y1 := 0;
   if B.x2 > w then B.x2 := w;
   if B.y2 > h then B.y2 := h;
-  TimeOut := GetSystemTime + Time;
+  if Time < 200 then
+    TimeOut := GetSystemTime + 200
+  else
+    TimeOut := GetSystemTime + Time;
   while (GetSystemTime < TimeOut) do
   begin
     With B do
