@@ -2720,7 +2720,8 @@ Example:
 *)
 procedure OpenToolBelt();
 begin
-  MouseBox(691, 413, 732, 453, 1);
+  GameTab(tab_Equip);
+  MouseBox(670, 416, 704, 450, mouse_Left);
   Wait(RandomRange(250, 750));
 end;
 
@@ -2813,4 +2814,7 @@ begin
   end;
 
   Result := itemSlotFilled;
+
+  Wait(RandomRange(250, 750));
+  MouseBox(479, 20, 491, 29, mouse_Left);
 end;
