@@ -1110,7 +1110,7 @@ var
   b: array[0..1] of TPointArray;
   a: T2DPointArray;
   Pa: TBox;
-  i, ii, l: Integer;
+  i, ii, l, x, y: Integer;
 begin
   if (CloseBank) then
   begin
@@ -1118,15 +1118,22 @@ begin
     exit;
   end;
 
+  // handles the advanced skill guide window
+  if (findColorTolerance(x, y, 2994428, 728, 8, 753, 30, 20)) then
+  begin
+    mouse(x, y, 3, 3, mouse_Left);
+    result := true;
+    exit;
+  end;
+
   Col := [1118997,  1449250,  {Main typ 1}
-          7976927,  4095140,  {Skill}
           6854059,  2902100,  {Quest}
           4282212,  2503226,  {Main typ 2}
           39423,    13567,    {Red X}
           1514271,  1580837,  {Deposit Box}
           1383457,  2107437];
 
-  for i := 0 to 6 do
+  for i := 0 to 5 do
   begin
     FindColorsTolerance(b[0], Col[i * 2], MSCX, MSY1, MSX2, MSCY, 5);
     FindColorsTolerance(b[1], Col[i * 2 + 1], MSCX, MSY1, MSX2, MSCY, 5);
