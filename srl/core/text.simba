@@ -884,12 +884,8 @@ begin
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
   GetbitmapSize(bmp,w,h);
   SetTargetBitmap(bmp);  // new target for findcolorstolerance.
-  //findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
-  //ATPA := SplitTPAEx(TPA, 15, 2);
-  SetLength(ATPA, H/16);
-  for i := 0 to High(ATPA) do
-    FindColorsTolerance(ATPA[i], clRed, 0, 2+i*16,  W-1, 18+i*16, 0);//+2 to y to line it up
-
+  findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
+  ATPA := SplitTPAEx(TPA, 15, 2);
   L := High(ATPA);
   SortATPAFromFirstPointY(ATPA, Point(w/2,0));
 
@@ -1131,7 +1127,7 @@ begin
   end;
 
   Col := [1118997,  1449250,  {Main typ 1}
-          6854059,  2902100,  {Quest}
+          3912691,  1973857,  {Quest}
           4282212,  2503226,  {Main typ 2}
           39423,    13567,    {Red X}
           1514271,  1580837,  {Deposit Box}
@@ -1158,7 +1154,7 @@ begin
           Continue;
 
         MouseBox(Pa.x1, Pa.y1, Pa.x2, Pa.y2, mouse_move);
-        if (WaitUptextMulti(['lose', 'ack'], 300)) then
+        if (WaitUptextMulti(['lose', 'ack', 'Cl', 'se'], 300)) then
         begin
           GetMousePos(Pa.x1, Pa.y1);
           Mouse(Pa.x1, Pa.y1, 0, 0, mouse_left);
