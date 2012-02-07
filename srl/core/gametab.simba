@@ -574,30 +574,34 @@ Gametab 2 related functions.
   Description: Constants representing player skills. }
 { consts in Players.scar ; Here is the list for easier access
 const
-  skill_Attack = 1;
-  skill_Strength = 2;
-  skill_Defence = 3;
-  skill_Range = 4;
-  skill_Prayer = 5;
-  skill_Magic = 6;
-  skill_Runecrafting = 7;
-  skill_Hitpoints = 8;
-  skill_Agility = 9;
-  skill_Herblore = 10;
-  skill_Thieving = 11;
-  skill_Crafting = 12;
-  skill_Fletching = 13;
-  skill_Slayer = 14;
-  skill_Mining = 15;
-  skill_Smithing = 16;
-  skill_Fishing = 17;
-  skill_Cooking = 18;
-  skill_Firemaking = 19;
-  skill_Woodcutting = 20;
-  skill_Farming = 21;
-  skill_Construction = 22;
-  skill_Hunting = 23;
-  skill_Summoning = 24;
+  SKILL_ATTACK        = 0;
+  SKILL_DEFENCE       = 1;
+  SKILL_STRENGTH      = 2;
+  SKILL_HITPOINTS     = 3;    
+  SKILL_RANGE         = 4;
+  SKILL_PRAYER        = 5;
+  SKILL_MAGIC         = 6;
+  SKILL_COOKING       = 7;
+  SKILL_WOODCUTTING   = 8;
+  SKILL_FLETCHING     = 9;
+  SKILL_FISHING       = 10;
+  SKILL_FIREMAKING    = 11;
+  SKILL_CRAFTING      = 12;
+  SKILL_SMITHING      = 13;
+  SKILL_MINING        = 14;
+  SKILL_HERBLORE      = 15;
+  SKILL_AGILITY       = 16;
+  SKILL_THIEVING      = 17;
+  SKILL_SLAYER        = 18;
+  SKILL_FARMING       = 19;
+  SKILL_RUNECRAFTING  = 20;
+  SKILL_HUNTER        = 21;
+  SKILL_CONSTRUCTION  = 22;
+  SKILL_SUMMONING     = 23;
+  SKILL_DUNGEONEERING = 24;
+  SKILL_ALLCOMBAT     = 25;
+  SKILL_EVERYSKILL    = 26;
+  SKILL_NONE          = 27;
 }
 (*
 
