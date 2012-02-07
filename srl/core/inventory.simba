@@ -1088,9 +1088,7 @@ begin
   if not GameTab(tab_Inv) then
     exit;
   TB := InvBox(Slot);
-  Result := FindColor(x, y, srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2) and InRange(
-                    CountColor(srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2) -
-                    CountColor(srl_outline_black, TB.x1, TB.y1, TB.x2, TB.y2),-40,40);
+  Result := FindColor(x, y, srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2);
 end;
 
 (*
