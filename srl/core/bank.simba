@@ -1517,6 +1517,7 @@ Valid arguments are:
 'sgb', 'south gnome bank'
 'wgb', 'warrior guild bank'
 'fgb', 'fishing guild bank'
+'tavb', 'taverly bank'
 
 .. note::
 
@@ -1569,6 +1570,9 @@ begin
     'sgb', 'south gnome bank':    Info := [MSCX,      MSCY,      3239049,  7,    0.20, 0.20, 100,   False,   10, 10];
     'wgb', 'warrior guild bank':  Info := [MSCX,      MSCY,      2578286,  7,    0.20, 0.20, 100,   False,   10, 10];
     'fgb', 'fishing guild bank':  Info := [MSCX,      MSCY,      2908796,  10,   0.20, 0.20, 100,   False,   10, 10];
+    'tavb', 'taverly bank': begin UpText := ['ount','unte','oun','unter'];
+                                  Info := [MSCX,      MSCY,      3556433,  7,   0.20, 0.20, 100,   False,   10, 10];
+                            end;
     else
     begin
       srl_Warn('OpenBankFast', 'Unknown bank: '+Location, warn_AllVersions);
