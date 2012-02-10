@@ -772,6 +772,38 @@ begin
 end;
 
 (*
+MouseBankSlot
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseBankSlot(BankSlot, Action: integer);
+
+.. note::
+
+    by Fwd Motion
+    Last Modified: Feb. 09, 2012 by Fwd Motion
+
+Example:
+
+.. code-block:: pascal
+
+    MouseBankSlot(1, mouse_Right);
+    if (WaitOption('ithdraw-All', 500)) then
+      Writeln('Withdrew item');
+*)
+procedure MouseBankSlot(BankSlot, Action: integer);
+var
+  BankBox: TBox;
+  X, Y: Integer;
+begin
+  BankBox := BankIndexToMSBox(BankSlot);
+  GetMousePos(X, Y);
+  if (not PointInBox(Point(X, Y), BankBox)) then
+    MouseBox(BankBox.X1, BankBox.Y1, BankBox.X2, BankBox.Y2, Action);
+end;
+
+(*
 QuickDeposit
 ~~~~~~~~~~~~
 
