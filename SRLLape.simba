@@ -28,11 +28,11 @@ begin
 end;
 
 const
-  clWhite = 255 * 255 * 255;
+  clWhite = 16777215;
   clBlack = 0;
-  clBlue  = 255 shl 16;
+  clBlue  = 16711680;
   clRed   = 255;
-  clPurple= clBlue + 100;
+  clPurple= 8388736;
 
 {$define Simba}
 {$include SRL/SRL.simba}
