@@ -163,8 +163,10 @@ begin
     Mouse(TP.X, TP.Y, 10, 10, mouse_left);
     Wait(3000+Random(3000));
     CloseWindow;
-  end else
+  end else begin
     MMouse(TP.x, TP.y, 10, 10);
+    Wait(1000 + Random(500));
+  end;
 end;
 
 (*

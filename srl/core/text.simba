@@ -665,6 +665,53 @@ begin
 end;
 
 (*
+FindNPCChatTextMulti
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
+
+Finds a text said by a NPC in chat. If found it'll perform action,
+where action can be:
+Nothing - Just return wether its found
+Move - Just move the mouse to it
+Clickleft - Movemouse & Clickmouse left
+Clickright - MoveMouse & Clickmouse right
+
+.. note::
+
+    by Kernel Klink, Nielsie95 & Narcle
+    Last Modified: January 31st, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
+var
+  i, j, x, y: integer;
+  chars: TStringArray;
+begin
+  chars := [UpChars, CharsNPC];
+
+  for i := 0 to high(txt) do
+    for j := 0 to high(chars) do
+      if (findText(x, y, txt[i], chars[j], MCX1, MCY1, MCX2, MCY2)) then
+      begin
+        case action of
+          Move: MMouse(x, y, 6, 3);
+          ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
+          ClickRight: Mouse(x, y, 6, 3, mouse_Right);
+        end;
+
+        result := true;
+        exit;
+      end;
+end;
+
+(*
 FindNPCChatText
 ~~~~~~~~~~~~~~~
 
@@ -681,53 +728,16 @@ Clickright - MoveMouse & Clickmouse right
 
 .. note::
 
-    by Kernel Klink, Nielsie95 & Narcle
+    by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
 *)
-Function FindNPCChatText(txt: string; Action: fnct_ActionOptions): Boolean;
-var
-  BlackTPA, WhiteTPA, TPA, mTPA: TPointArray;
-  i, ii, cts, Height, c, H: integer;
-  TextATPA, ATPA: T2DPointArray;
-  B: TBox;
-  TSA: TStringArray;
+function FindNPCChatText(txt: string; action: fnct_ActionOptions): boolean;
 begin
-  cts := GetColorToleranceSpeed;
-  SetColorToleranceSpeed(1);
-  FindColors(WhiteTPA, 13158600, MCX1, MCY1, MCX2, MCY2);
-  FindColors(BlackTPA, 0, MCX1, MCY1, MCX2, MCY2);
-  SetColorToleranceSpeed(cts);
-  TPA := CombineTPA(BlackTPA, WhiteTPA);
-  if (Length(TPA) < 1) then
-    Exit;
-  ATPA := SplitTPAEx(TPA, MCX2-MCX1, 1);
-  TSA := Explode(' ', txt);
-  SetArrayLength(TextATPA, Length(TSA));
-  for i := 0 to High(TSA) do
-    TextATPA[i] := LoadTextTPA(TSA[i], UpChars, Height);
-  H := High(TextATPA);
-  for i := 0 to High(ATPA) do
-  begin
-    c := 0;
-    for ii := 0 to H do
-    if FindTextTPAinTPA(Height, TextATPA[ii], ATPA[i], mTPA) then
-      Inc(c);
-    Result := (c = H+1);
-    if Result then
-    begin
-      B := GetTPABounds(ATPA[i]);
-      with B do
-      case Action of
-        Move: MMouse(X1, Y1 + 2, X2-X1, 4);
-        ClickLeft: Mouse(X1, Y1 + 2, X2-X1, 4, True);
-        ClickRight: Mouse(X1, Y1 + 2, X2-X1, 4, False);
-      end;
-    end;
-  end;
+  result := findNPCChatTextMulti([txt], action);
 end;
 
 (*
@@ -754,11 +764,19 @@ var
    i, l: Integer;
    DistArr: TIntegerArray;
 begin
-  l := High(a);
-  if (l < 0) then Exit;
-  SetLength(DistArr, l + 1);
+  l := high(a);
+  if (l < 0) then
+    Exit;
+
+  setLength(DistArr, l + 1);
   for i := 0 to l do
+  begin
+    if (length(a[i]) <= 0) then // prevent out of range errors
+      continue;
+
     DistArr[i] := Round(Sqr(From.y - a[i][0].y));
+  end;
+
   QuickATPASort(DistArr, a, 0, l, True);
 end;
 
@@ -787,10 +805,18 @@ var
    DistArr: TIntegerArray;
 begin
   l := High(a);
-  if (l < 0) then Exit;
+  if (l < 0) then
+    Exit;
+
   SetLength(DistArr, l + 1);
   for i := 0 to l do
+  begin
+    if (length(a[i]) <= 0) then
+      continue;
+
     DistArr[i] := Round(Sqr(From.x - a[i][0].x));
+  end;
+
   QuickATPASort(DistArr, a, 0, l, True);
 end;
 
@@ -815,27 +841,30 @@ Example:
 *)
 Function GetChooseOptions(TextType: string): Array of TOptions;
 var
-   B,BB, BigBox: TBox;
+   B, BB, sB, BigBox: TBox;
    TPA, TPA1, TPA2: TPointArray;
-   aTPA, tempatpa: T2DPointArray;
+   ATPA, tempatpa: T2DPointArray;
    I, L, target, bmp,w,h, cts: Integer;
-   Colors: TIntegerArray;
+   BoxColors: TIntegerArray;
 begin
   target := GetImageTarget;
   GetClientDimensions(B.X2, B.Y2);
   B := IntToBox(0, 0, B.X2-1, B.Y2-1);
   cts := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
-  FindColorsTolerance(TPA1, 131843, B.X1, B.Y1, B.X2, B.Y2, 0);
-  FindColorsTolerance(TPA2, 3682593, B.X1, B.Y1, B.X2, B.Y2, 0);
-  TPA := CombineTPA(TPA1, TPA2);
+  //            Black, Top Blue, grey
+  BoxColors := [131843, 3682593, 3552822];
+  SetLength(ATPA, Length(BoxColors));
+  for i := 0 to High(BoxColors) do
+    FindColorsTolerance(ATPA[i], BoxColors[i], B.X1, B.Y1, B.X2, B.Y2, 0);
+  TPA := MergeATPA(ATPA);
   If Length(TPA) < 100 Then
   begin
     ColorToleranceSpeed(cts);
     Exit;
   end;
 
-  aTPA := SplitTPA(TPA, 10);
+  ATPA := SplitTPA(TPA, 4);
   For i := 0 to High(ATPA) do
   begin
     B := GetTPABounds(ATPA[i]);
@@ -853,25 +882,25 @@ begin
 
   BigBox := B;
 
-  //Object Blue, Player White, Item Orange, Action Tan, NPC Yellow, Level Green
-  Colors := [14342147, 14079443, 3832268, 9677229, 840143, 710915];
+  SetColorToleranceSpeed(3);
+  FindColorsTolerance(TPA1, 4996381, B.X1, B.Y1, B.X2, B.Y2, 18);//One color covers both Highlighted and non
+  sB := GetTPABounds(TPA1);
+  ReturnPointsNotInTPAWrap(TPA1, sB, TPA);
+  FindColorsTolerance(TPA2, 460291, B.X1, B.Y1, B.X2, B.Y2, 6);//shadow
+  SetColorToleranceSpeed(cts);
 
-  SetLength(aTPA, Length(Colors));
-  for i := 0 to High(Colors) do
-    FindColorsTolerance(aTPA[i], Colors[i], B.X1, B.Y1, B.X2, B.Y2, 70);
-  TPA := MergeATPA(aTPA);
-  FindColorsTolerance(TPA1, 986117, B.X1, B.Y1, B.X2, B.Y2, 24);//shadow
   bmp := CreateBitmap(B.X2-B.X1+2, B.Y2-B.Y1+2);
   OffsetTPA(TPA, Point(-B.X1, -B.Y1));
-  OffsetTPA(TPA1, Point(-B.X1, -B.Y1));
+  OffsetTPA(TPA2, Point(-B.X1, -B.Y1));
   FastDrawClear(bmp, 0);
-  DrawTPABitmap(bmp, TPA, clRed);
-  DrawTPABitmap(bmp, TPA1, clPurple);
+  DrawTPABitmap(bmp, TPA, clRed);//Text
+  DrawTPABitmap(bmp, TPA2, clPurple);//Shadow
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
   GetbitmapSize(bmp,w,h);
   SetTargetBitmap(bmp);  // new target for findcolorstolerance.
-  findcolorstolerance(TPA, clRed, 0, 0, w-1,h-1, 0);
-  ATPA := SplitTPAEx(TPA, 15, 2);
+  SetLength(ATPA, H/16);
+  for i := 0 to High(ATPA) do
+    FindColorsTolerance(ATPA[i], clRed, 0, 2+i*16,  W-1, 18+i*16, 0);//+2 to y to line it up
   L := High(ATPA);
   SortATPAFromFirstPointY(ATPA, Point(w div 2,0));
 
@@ -882,7 +911,7 @@ begin
     TPA := ATPA[i];
     tempatpa := SplitTPAEx(TPA, 1, 10); // Split one into characters
     SortATPAFromFirstPointX(tempatpa, Point(0, 0));
-    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx');
+    Result[i].Str := GetTextATPA(tempatpa, 5, 'UpCharsEx'); //Writeln(Result[i].Str);
     BB := GetTPABounds(ATPA[i]);
     Result[i].Bounds := IntToBox(BB.X1+B.X1, BB.Y1+B.Y1, BB.X2+B.X1, BB.Y2+B.Y1);
     setlength(tempatpa,0);
@@ -892,6 +921,7 @@ begin
   SetImageTarget(target);
   FreeBitmap(bmp);
 end;
+
 
 (*
 ChooseOptionMultiEx
@@ -1095,7 +1125,7 @@ var
   b: array[0..1] of TPointArray;
   a: T2DPointArray;
   Pa: TBox;
-  i, ii, l: Integer;
+  i, ii, l, x, y: Integer;
 begin
   if (CloseBank) then
   begin
@@ -1103,15 +1133,22 @@ begin
     exit;
   end;
 
+  // handles the advanced skill guide window
+  if (findColorTolerance(x, y, 2994428, 728, 8, 753, 30, 20)) then
+  begin
+    mouse(x, y, 3, 3, mouse_Left);
+    result := true;
+    exit;
+  end;
+
   Col := [1118997,  1449250,  {Main typ 1}
-          7976927,  4095140,  {Skill}
-          6854059,  2902100,  {Quest}
+          3912691,  1973857,  {Quest}
           4282212,  2503226,  {Main typ 2}
           39423,    13567,    {Red X}
           1514271,  1580837,  {Deposit Box}
           1383457,  2107437];
 
-  for i := 0 to 6 do
+  for i := 0 to 5 do
   begin
     FindColorsTolerance(b[0], Col[i * 2], MSCX, MSY1, MSX2, MSCY, 5);
     FindColorsTolerance(b[1], Col[i * 2 + 1], MSCX, MSY1, MSX2, MSCY, 5);
@@ -1132,7 +1169,7 @@ begin
           Continue;
 
         MouseBox(Pa.x1, Pa.y1, Pa.x2, Pa.y2, mouse_move);
-        if (WaitUptextMulti(['lose', 'ack'], 300)) then
+        if (WaitUptextMulti(['lose', 'ack', 'Cl', 'se'], 300)) then
         begin
           GetMousePos(Pa.x1, Pa.y1);
           Mouse(Pa.x1, Pa.y1, 0, 0, mouse_left);

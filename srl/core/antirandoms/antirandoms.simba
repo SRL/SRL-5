@@ -944,7 +944,14 @@ Description: Searches for the common NON-Inventory randoms: Won't switch to Game
 function FindNonInventoryRandoms: Boolean;
 var
   I: Byte;
+  Cont: boolean;
 begin
+  if (SRL_OnFindRandomCall <> nil) then
+  begin;
+    Result := SRL_OnFindRandomCall(cont);
+    if not Cont then
+      exit;
+  end;
   for I := 1 to 6 do
   begin
     case I of

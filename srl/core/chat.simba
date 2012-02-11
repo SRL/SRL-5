@@ -217,8 +217,8 @@ var
   Height, i, x, y : Integer;
 begin
   Result := false;
-  FindColors(bTxt, 16711680, MCX1, MCY1, MCX2, MCY2);
-  FindColors(wTxt, 16777215, MCX1, MCY1, MCX2, MCY2);
+  FindColorsTolerance(bTxt, 8388608, MCX1, MCY1, MCX2, MCY2, 10);
+  FindColorsTolerance(wTxt, 16777215, MCX1, MCY1, MCX2, MCY2, 10);
 
   SearchTPA := CombineTPA(bTxt, wTxt);
   if Length(SearchTPA) < 1 then
@@ -285,7 +285,7 @@ begin
   end;
   C := GetColorToleranceSpeed;
   SetColorToleranceSpeed(1);
-  FindColorsTolerance(TPA, 11776948, MCX1, MCY1, MCX2, MCY2, 0);//color is constant atm
+  FindColorsTolerance(TPA, 11776948, MCX1, MCY1, MCX2, MCY2, 15);//color is constant atm
   SetColorToleranceSpeed(C);
   if Length(TPA) < 1 then
     Exit;

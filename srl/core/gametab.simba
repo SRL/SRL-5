@@ -252,7 +252,7 @@ Example:
 *)
 function FTab(Tab: integer): boolean;
 var
-  T: integer;
+  T, F: integer;
 begin
   if (GetCurrentTab = Tab) then
   begin
@@ -260,16 +260,20 @@ begin
     Exit;
   end;
   Case Tab of
-    tab_Inv: t := 1;
-    tab_Equip: t := 2;
-    tab_Prayer: t := 3;
-    tab_Magic: t := 4;
-    tab_Combat: t := 5;
+    tab_Inv: F := 1;
+    tab_Equip: F := 2;
+    tab_Prayer: F := 3;
+    tab_Magic: F := 4;
+    tab_Combat: F := 5;
     else
       writeln('Tab '+inttostr(tab)+' isn''t a valid option.');
   end;
-  TypeByte(111+T);
-  Result := GetCurrentTab = Tab;
+  T := GetSystemTime + 2000;
+  Repeat
+    TypeByte(111+F);
+    Wait(150+random(100));
+    Result := GetCurrentTab = Tab;
+  until Result or (GetSystemTime > T);
 end;
 
 (*
@@ -331,6 +335,32 @@ end;
 
 (*
 
+GetWeaponName
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetWeaponName: String;
+
+Returns the name of the weapon your currently using.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function GetWeaponName: String;
+begin
+  if GameTab(tab_Combat) then
+    Result := GetTextAtExWrap(584, 208, 734, 226, 0, 3, 4, 3907053, 0, UpChars);
+end;
+
+(*
+
 GetWeaponData
 ~~~~~~~~~~~~~
 
@@ -363,7 +393,8 @@ begin
   Result := False;
   if (not LoggedIn) then
     Exit;
-  GameTab(tab_Combat);
+  if not GameTab(tab_Combat) then
+    Exit;
   for i := 0 to 3 do
   begin
     T := Point(680-(i+1) mod 2*85, 270+2 mod (i+1)*28);
@@ -382,7 +413,7 @@ begin
     if (Length(TP) < 1) then
       Continue;
     TB := GetTPABounds(TP);
-    H := ((TB.y2-TB.y1)div 17)-1;
+    H := ((TB.y2-TB.y1)/17)-1;
     SetArrayLength(WArr[i], H+1);
     for ii := 0 to H do
     begin
@@ -804,19 +835,16 @@ var
   Colors : TIntegerArray;
   Signs: TStringArray;
   P: TPointArray;
-  TP: TPoint;
-  I{,cl}: Integer;
+  I: Integer;
   B: TBox;
-  W,H{, T}: integer;
-  SearchBox : TBox;
 begin;
   Result := -1;
   ColorSign := '';
   case LowerCase(Leveltype) of
-    'health', 'hp', 'hitpoints', 'constitution': TP := Point(715,27);
-    'prayer', 'pray'                           : TP := Point(730,66);
-    'summon', 'summoning'                      : TP := Point(715,140);
-    'run','energy'                             : TP := Point(730,105);
+    'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719,27,745,43);
+    'prayer', 'pray'                           : B := IntToBox(735,66,762,82);
+    'run','energy'                             : B := IntToBox(735,103,762,122);
+    'summon', 'summoning'                      : B := IntToBox(719,119,745,156);
   else
     begin;
       srl_Warn('GetMMLevels', 'Invalid LevelType: ''' + LevelType + '', warn_AllVersions);
@@ -825,18 +853,14 @@ begin;
   end;
   Colors := [65280, 65535, 2070783, 255];
   Signs  := ['Green', 'Yellow', 'Orange', 'Red'];
-  GetClientDimensions(w,h); //We donnot want to search out of the clients area!
-  SearchBox := IntToBox(TP.X, TP.Y, Min(w-1,TP.X + 30), min(h-1,TP.Y + 15));
   for I := 0 to 3 do
   begin
-    With SearchBox do
+    With B do
       FindColorsTolerance(P, Colors[i], x1, y1, x2, y2, 30);
     if Length(P) < 1 then
       Continue;
-    B := GetTPABounds(P);//GetTextAtEx works better for Simba for Run
-    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1 , B.Y1 - 1, 30, statChars,
-              False, False, 0, 0, Colors[i], 20, False, tr_Digits)), -1);
-    if (Result > 0) then
+    Result := StrToIntDef(GetNumbers(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2, 0, 4, 4, Colors[i], 20, statChars)), -1);
+    if (Result > -1) then
     begin
       ColorSign := Signs[i];
       Exit;
@@ -1324,7 +1348,7 @@ function CountEquippedItems: Integer;
 var
   I: Integer;
 begin
-  Result := Byte(GameTab(tab_Equip)) - 2;
+  Result := Integer(GameTab(tab_Equip)) - 2;
   if (Result = -1) then exit;
 
   for I := 1 to 11 do
@@ -1755,7 +1779,7 @@ begin
   begin
     Result := IsResting;
     if (not(Result)) then exit;
-    if SRL_HasProc(srl_AntiBan) then
+    if (SRL_Procs[srl_AntiBan] <> nil) then
       SRL_Procs[srl_AntiBan]();
     Wait(100 + Random(50));
   end;
@@ -1790,7 +1814,7 @@ begin
   begin
     Result := IsResting;
     if (not(Result)) then exit;
-    if SRL_HasProc(srl_AntiBan) then
+    if (SRL_Procs[srl_AntiBan] <> nil) then
       SRL_Procs[srl_AntiBan]();
     Wait(100 + Random(50));
   end;
@@ -2289,6 +2313,52 @@ XP Counter related functions
 
 *)
 
+ (*
+ToggleXPPopUp
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function ToggleXPPopUp(Disabled: Boolean): Boolean;
+
+Toggles the XP Pop-up to on/off that shows up on main screen.
+This uses the chat messages to determine if its off or on.
+  ToggleXPPopUp(True) turns it off and returns True if successful
+  ToggleXPPopUp(False) turns it on and returns True if successful
+
+.. note::
+
+    by Narcle
+
+*)
+Function ToggleXPPopUp(Disabled: Boolean): Boolean;
+var
+  i: Integer;
+  TPA: TPointArray;
+  P: TPoint;
+  S: String;
+begin
+  for i := 0 to 1 do
+  begin
+    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    P := TPA[Random(Length(TPA))];
+    Mouse(P.X, P.Y, 0, 0, mouse_right);
+    if WaitOptionMulti(['Pop', 'op', '-up'], 1000) then
+    begin
+      Wait(1500+Random(500))
+      S := GetBlackChatMessage;
+      if Pos('disabled', S) > 0 then
+        Result := Disabled;
+      if Pos('enabled', S) > 0 then
+        Result := not Disabled;
+      if Result then
+        Break;
+    end;
+  end;
+  Writeln(S);
+end;
+
 (*
 ISXPBarOpenEx
 ~~~~~~~~~~~
@@ -2416,7 +2486,7 @@ begin
     FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
     B := GetTPABounds(TPA);
     S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, UpChars), ' ', '');
-    P := Pos('xp', S);
+    P := Pos('x', S);
     if P > 0 then
       Result := StrToIntDef(ExtractFromStr(Copy(s, P, Length(S)), Numbers), 0)
     else
@@ -2696,7 +2766,8 @@ Example:
 *)
 procedure OpenToolBelt();
 begin
-  MouseBox(691, 413, 732, 453, 1);
+  GameTab(tab_Equip);
+  MouseBox(670, 416, 704, 450, mouse_Left);
   Wait(RandomRange(250, 750));
 end;
 
@@ -2782,11 +2853,14 @@ begin
   begin
     if(not(FindTextTpa(1158880, 9, 167, 146, 352, 161, Tool, SmallChars, Nothing)))then
     begin
-      Mouse((375 + 397) div 2, (147 + 163) div 2, 1, 1, True);
+      Mouse((375 + 397) / 2, (147 + 163) / 2, 1, 1, True);
       Wait(RandomRange(250, 750))
     end else
       Break;
   end;
 
   Result := itemSlotFilled;
+
+  Wait(RandomRange(250, 750));
+  MouseBox(479, 20, 491, 29, mouse_Left);
 end;

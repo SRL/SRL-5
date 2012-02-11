@@ -773,15 +773,166 @@ begin
 end;
 
 (*
-MMToMS
+GridCoords16Ex
 ~~~~~~
 
 .. code-block:: pascal
 
-    function MMToMS(MM: TPoint): TPoint;
+    Function GridCoords16Ex(Xmod, Ymod: integer; Grid16: TPoint): TPoint;
+
+Using a grid system based off MiniMap size to return grid position on MainScreen.
+This is used in MMtoMS as well as other Grid functions.
+Why the number 16?  Original grid is based off a tile, and this splits one tile
+into a 4x4 hence 16.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+    Example: see MMtoMSEx
+
+*)
+
+Function GridCoords16Ex(Xmod, Ymod: integer; Grid16: TPoint): TPoint;
+var
+  Yh, yM, X, Y: Extended;
+begin
+  X := Grid16.x+0.0;
+  Y := Grid16.y+0.0;
+  yM := 36.0;
+  Yh := Abs(Y + yM);
+  Result.x := Round( (263.5+Xmod) + (X*9.75/(12.8-(Yh/yM*3.15))) * 9.75);
+  Result.y := Round( (182.0+Ymod) + Y * (6.3 + ((Yh/yM)*2.4)));
+  if not PointInBox(Result, MSBox) then
+    Result := Point(-1, -1);
+end;
+
+(*
+GetGridAbstractBox
+~~~~~~
+
+.. code-block:: pascal
+
+    Function GetGridAbstractBox(Grid: TPoint): TPointArray;
+
+Returns TPointArray of points for grid tile to use InAbstractBox in GetGridPos
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
+Function GetGridAbstractBox(Grid: TPoint): TPointArray;
+var
+  T: TPoint;
+  i: integer;
+begin
+  T := Point(Grid.x*4, Grid.y*4);
+  Result := [GridCoords16Ex(0, 0, Point(T.x-2, T.y-2)), GridCoords16Ex(0, 0, Point(T.x+1, T.y-2)),
+          GridCoords16Ex(0, 0, Point(T.x+1, T.y+1)), GridCoords16Ex(0, 0, Point(T.x-2, T.y+1))];
+  for i := 0 to 3 do
+    if Result[i].x = -1 then
+    begin
+      Result := [Point(-1,-1), Point(-1,-1), Point(-1,-1), Point(-1,-1)];
+      Exit;
+    end;
+end;
+
+(*
+GetGridPos
+~~~~~~
+
+.. code-block:: pascal
+
+    Function GetGridPos(MS: TPoint): TPoint;
+
+Given a MainScreen point it'll return the GridTile position the point is in.
+If it fails result is Point(-100, -100), because it can return negative grid
+points.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
+Function GetGridPos(MS: TPoint): TPoint;
+var
+  x, y: integer;
+  TPA: TPointArray;
+begin
+  Result := Point(-100, -100); //fail point
+  for x := -8 to 8 do
+   for y := -8 to 5 do
+   begin
+     TPA := GetGridAbstractBox(Point(x,y));
+     if TPA[0].x = -1 then
+       Continue;
+     if InAbstractBox(TPA[0].x, TPA[0].y, TPA[1].x, TPA[1].y, TPA[2].x, TPA[2].y, TPA[3].x, TPA[3].y, MS.x, MS.y) then
+     begin
+       Result := Point(x, y);
+       Exit;
+     end;
+   end;
+end;
+
+(*
+GridCoords
+~~~~~~
+
+.. code-block:: pascal
+
+    Function GridCoords(GridPoint: TPoint): TPoint;
+
+Returns grid point Main Screen position. (middle of tile)
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
+Function GridCoords(GridPoint: TPoint): TPoint;
+var
+  Yh: Extended;
+begin
+  Yh := Abs((GridPoint.y+0.0) + 6.0);
+  Result.x := Round(259.5 + ((GridPoint.x+1.0)*38.0/(45.7-(Yh/9.0*12.8))) * 38.0);
+  Result.y := Round(178.5 + (GridPoint.y+0.0) * (36.0 + ((GridPoint.y+0.0)*37.0)/25.0));
+  if not PointInBox(Result, MSBox) then
+    Result := Point(-1, -1);
+end;
+
+(*
+MMToMSEx
+~~~~~~
+
+.. code-block:: pascal
+
+    Function MMtoMSEx(Xmod, Ymod: integer; MM: TPoint): TPoint;
 
 Turns a Minimap point into a close MS point. New one compensates for angles.
-(I need to add Y angle change still).
+Xmod and Ymod change the starting point on MainScreen.  Ymod = -30 would
+raise the points on screen by 30 pixels. This is good if you know the
+Height of the npc or object your looking for on MS.
+Formula in GridCoords16Ex now.
 
 .. note::
 
@@ -792,23 +943,40 @@ Example:
 .. code-block:: pascal
 
     FindTreeOnMinimap(x, y);
-    msPoint := MMToMS(Point(x,y));
+    msPoint := MMToMSEx(0, -20, Point(x,y));
     MMouse(msPoint.x, msPoint.y, 0, 0);
     //...
 
 *)
-Function MMtoMS(mm: TPoint): TPoint;
-var
-  X, Y: Extended;
-  Yh: integer;
+Function MMtoMSEx(Xmod, Ymod: integer; MM: TPoint): TPoint;
 begin
-  X := (mm.x-627.0);
-  Y := (mm.y-85.0);
-  Yh := round(abs(mm.y-104));
-  Result := Point(Round((X*3.0/(Yh/42+3.0))*((487.0/48.0))+259.5),
-                  Round(170.0+Y*(6.96+(Yh/42.0)*1.46)));
-  if not PointInBox(Result, MSBox) then
-    Result := Point(-1, -1);
+  Result := GridCoords16Ex(Xmod, Ymod, Point(MM.x-MMCX, MM.y-MMCY));
+end;
+
+
+(*
+MMToMS
+~~~~~~
+
+.. code-block:: pascal
+
+    function MMToMS(MM: TPoint): TPoint;
+
+Refer to MMtoMSEx - Ymod shift required to be backward compatible
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
+Function MMtoMS(MM: TPoint): TPoint;
+begin
+  Result := MMtoMSEx(0, -20, MM);
 end;
 
 (*
