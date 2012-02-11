@@ -898,7 +898,7 @@ begin
   ocr_FilterUpTextByCharacteristics(GetMufasaBitmap(bmp));
   GetbitmapSize(bmp,w,h);
   SetTargetBitmap(bmp);  // new target for findcolorstolerance.
-  SetLength(ATPA, H/16);
+  SetLength(ATPA, H div 16);
   for i := 0 to High(ATPA) do
     FindColorsTolerance(ATPA[i], clRed, 0, 2+i*16,  W-1, 18+i*16, 0);//+2 to y to line it up
   L := High(ATPA);

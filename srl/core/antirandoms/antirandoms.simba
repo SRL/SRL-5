@@ -946,7 +946,7 @@ var
   I: Byte;
   Cont: boolean;
 begin
-  if (SRL_OnFindRandomCall <> nil) then
+  if ({$IFDEF LAPE}@{$ENDIF}SRL_OnFindRandomCall <> nil) then
   begin;
     Result := SRL_OnFindRandomCall(cont);
     if not Cont then

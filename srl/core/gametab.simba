@@ -413,7 +413,7 @@ begin
     if (Length(TP) < 1) then
       Continue;
     TB := GetTPABounds(TP);
-    H := ((TB.y2-TB.y1)/17)-1;
+    H := ((TB.y2-TB.y1) div 17)-1;
     SetArrayLength(WArr[i], H+1);
     for ii := 0 to H do
     begin
@@ -1348,7 +1348,7 @@ function CountEquippedItems: Integer;
 var
   I: Integer;
 begin
-  Result := Integer(GameTab(tab_Equip)) - 2;
+  Result := Ord(GameTab(tab_Equip)) - 2;
   if (Result = -1) then exit;
 
   for I := 1 to 11 do
@@ -1779,7 +1779,7 @@ begin
   begin
     Result := IsResting;
     if (not(Result)) then exit;
-    if (SRL_Procs[srl_AntiBan] <> nil) then
+    if SRL_HasProc(srl_AntiBan) then
       SRL_Procs[srl_AntiBan]();
     Wait(100 + Random(50));
   end;
@@ -1814,7 +1814,7 @@ begin
   begin
     Result := IsResting;
     if (not(Result)) then exit;
-    if (SRL_Procs[srl_AntiBan] <> nil) then
+    if SRL_HasProc(srl_AntiBan) then
       SRL_Procs[srl_AntiBan]();
     Wait(100 + Random(50));
   end;
@@ -2346,7 +2346,7 @@ begin
     Mouse(P.X, P.Y, 0, 0, mouse_right);
     if WaitOptionMulti(['Pop', 'op', '-up'], 1000) then
     begin
-      Wait(1500+Random(500))
+      Wait(1500+Random(500));
       S := GetBlackChatMessage;
       if Pos('disabled', S) > 0 then
         Result := Disabled;
@@ -2853,7 +2853,7 @@ begin
   begin
     if(not(FindTextTpa(1158880, 9, 167, 146, 352, 161, Tool, SmallChars, Nothing)))then
     begin
-      Mouse((375 + 397) / 2, (147 + 163) / 2, 1, 1, True);
+      Mouse((375 + 397) div 2, (147 + 163) div 2, 1, 1, True);
       Wait(RandomRange(250, 750))
     end else
       Break;
