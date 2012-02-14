@@ -132,7 +132,11 @@ begin
     Text := Text + chr(13);
   for i := 0 to Length(Text) do
   begin
+    {$IFDEF SIMBAMAJOR980}
     SendKeys(Text[i], 40 + Random(40));
+    {$ELSE}
+    SendKeys(Text[i], 30 + Random(30), 30 + Random(30));
+    {$ENDIF}
     Wait(40 + Random(40));
   end;
 end;
