@@ -130,7 +130,7 @@ var
 begin
   if PressEnter then
     Text := Text + chr(13);
-  for i := 0 to Length(Text) do
+  for i := 1 to Length(Text) do
   begin
     {$IFDEF SIMBAMAJOR980}
     SendKeys(Text[i], 40 + Random(40));
