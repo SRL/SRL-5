@@ -126,38 +126,19 @@ Example:
 *)
 procedure TypeSendEx(Text: string; PressEnter: Boolean);
 var
-  S: string;
-  I, L: Integer;
-  Shift: Boolean;
+  I: Integer;
 begin
-  S:= 'ABCDEFGHIJKLMNOPQRSTUVWXZ' + '~!@#$%^&*()_+{}|:"<>?';
-  L := Length(Text);
-  for I := 1 to L do
+  if PressEnter then
+    Text := Text + chr(13);
+  for i := 0 to Length(Text) do
   begin
-    Shift := (Pos(Text[i], S) > 0);
-    if (Shift) then
-    begin
-      KeyDown(VK_SHIFT);
-	  Wait(40 + Random(40));
-      while (Pos(Text[i], S) > 0) and (I <= Length(Text)) do
-      begin
-        TypeByte(GetKeyCode(Text[I]));
-        Wait(40 + Random(40));
-        Inc(I);
-        if (I > Length(Text)) then Break;
-      end;
-    end;
-    if (Shift) then
-      KeyUp(VK_SHIFT);
+    {$IFDEF SIMBAMAJOR980}
+    SendKeys(Text[i], 40 + Random(40));
+    {$ELSE}
+    SendKeys(Text[i], 30 + Random(30), 30 + Random(30));
+    {$ENDIF}
     Wait(40 + Random(40));
-    if (I <= Length(Text)) then
-    begin
-      TypeByte(GetKeyCode(Text[I]));
-      Wait(40 + Random(40));
-    end;
   end;
-  if (PressEnter) then
-    TypeByte(GetKeyCode(Chr(13)));
 end;
 
 (*
