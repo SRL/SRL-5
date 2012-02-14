@@ -635,6 +635,10 @@ begin
   end;    }
 
                        {Type in username and pass}
+
+  if (loggedIn) then
+    exit;
+
   for W:= 0 to 1 do
   begin
     if W = 0 then
