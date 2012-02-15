@@ -128,8 +128,6 @@ procedure TypeSendEx(Text: string; PressEnter: Boolean);
 var
   I: Integer;
 begin
-  if PressEnter then
-    Text := Text + chr(13);
   for i := 1 to Length(Text) do
   begin
     {$IFDEF SIMBAMAJOR980}
@@ -139,6 +137,9 @@ begin
     {$ENDIF}
     Wait(40 + Random(40));
   end;
+
+  if (PressEnter) then
+    TypeByte(VK_RETURN);
 end;
 
 (*
