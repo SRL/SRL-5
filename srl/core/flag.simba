@@ -154,7 +154,7 @@ Example:
 *)
 function FindFlag2(var X, Y: Integer): Boolean;
 var
-  KMTarget, ITarget, I, Hi, Map, W, H: Integer;
+  KMTarget, ITarget, I, Hi, Map, W, H, t: Integer;
   TPA: TPointArray;
 begin
   Result := False;
@@ -165,7 +165,7 @@ begin
   SetTargetBitmap(Map);
   GetBitmapSize(Map, W, H);
   FindColors(TPA, 65536, 0, 0, W - 1, H -1);
-  FilterPointsDist(TPA, 0, 75.5, W / 2, H / 2);
+  FilterPointsDist(TPA, 0, 75.5, W div 2, H div 2);
   Hi := Length(TPA);
   for I := 0 to Hi - 1 do
     if ((FastGetPixel(Map, TPA[I].X - 1, TPA[I].Y - 1) - FastGetPixel(Map, TPA[I].X, TPA[I].Y - 1)) = 6381921) then
@@ -175,10 +175,12 @@ begin
       Y := TPA[I].Y + MMY1;
       Break;
     end;
-  FreeTarget(GetImageTarget);
-  FreeBitmap(Map);
+
+  t := GetImageTarget;
   SetKeyMouseTarget(KMTarget);
   SetImageTarget(ITarget);
+  FreeTarget(t);
+  FreeBitmap(Map);
 end;
 (*
 FlagPresent
