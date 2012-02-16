@@ -542,7 +542,7 @@ var
 begin
   GetMousePos(x, y);
   GetClientDimensions(w, h);
-  B := IntToBox(x - 20, y - 20, x + 20, y + 20);
+  B := IntToBox(x - 15, y - 15, x + 15, y + 15);
   if B.x1 < 0 then B.x1 := 0;
   if B.y1 < 0 then B.y1 := 0;
   if B.x2 > w then B.x2 := w;
@@ -550,18 +550,18 @@ begin
   TimeOut := GetSystemTime + Time;
   while (GetSystemTime < TimeOut) do
   begin
-    R := CountColorTolerance(10915, B.x1, B.y1, B.x2, B.y2, 25);//Red (Orange = 4 to 8)
-    O := CountColorTolerance(1689320, B.x1, B.y1, B.x2, B.y2, 15);//Orange/Yellow (max red = 52)
+    R := CountColorTolerance(855399, B.x1, B.y1, B.x2, B.y2, 15);//Red (Orange = 4 to 8)
+    O := CountColorTolerance(1689320, B.x1, B.y1, B.x2, B.y2, 15);//Yellow (max red = 52)
     if Red then
     begin
-      Result := (R > 10) and (O <= 0);
       if (O > 8) then
         Exit;
+      Result := (R > 4);
     end else
     begin
-      Result := (O > 8);
-      if (R > 52) then
+      if (R > 4) then
         Exit;
+      Result := (O > 8);
     end;
     if Result then
       Exit;
