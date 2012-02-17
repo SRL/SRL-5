@@ -364,14 +364,6 @@ begin
 
       players[currentPlayer].rand := SRL_Randoms[rand].name;
       players[currentPlayer].active := false;
-
-      // logout and terminate if there's only one player active
-      if ((length(players) = 1) or (playersActive() = 1)) then
-      begin
-        logout();
-        terminateScript();
-      end else
-        nextPlayer(false);
     end;
   end;
 end;
