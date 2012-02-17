@@ -1,0 +1,597 @@
+(*
+Common
+======
+
+The common randoms file stores any functions or procedures that are used
+several random event solvers.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+{$ENDIF}
+
+(**
+ * Author: Wizzup?
+ * Description: Type used to identify rotating items.  Example, Quiz & Mordaut.
+ *)
+type
+  TRotateObject = record
+    name, use: string;
+    count, width, height, totalCount: integer;
+    coverPercent: extended;
+  end;
+  TRotateObjectArray = array of TRotateObject;
+
+(*
+ReturnTPAExceptColors
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ReturnTPAExceptColors(cols, tols: TIntegerArray; area: TBox): TPointArray;
+
+Returns a tpa of every point found in 'area' that DOES NOT a color in 'cols'
+with tolerance 'tols'. Useful if you need a tpa of an object that is constantly
+changing color, but has a constant background color.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 26th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    iTPA := InverseColors([4410947, 5003083], [10, 10], IntToBox(MCX1, MCY1, MCX2, MCY2));
+*)
+function ReturnTPAExceptColors(cols, tols: TIntegerArray; area: TBox): TPointArray;
+var
+  i: integer;
+  tpa: TPointArray;
+  atpa: T2DpointArray;
+begin
+  setLength(atpa, length(cols));
+  for i := 0 to high(cols) do
+    findColorsTolerance(atpa[i], cols[i], area.x1, area.y1, area.x2, area.y2, tols[i]);
+
+  tpa := mergeATPA(atpa);
+  clearDoubleTPA(tpa);
+  result := returnPointsNotInTPA(tpa, getTPABounds(tpa));
+
+  //debugTPA(result, '');
+end;
+
+(*
+GetRotateObject
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetRotateObject(cols, tols: TIntegerArray; area: TBox; splitDist, tries: integer): TRotateObject;
+
+Returns a TRotateObject type depending on parameters given:
+    * cols: The colors you DO NOT want to find (calls InverseColors)
+    * tols: The tolerance on the colors in 'cols'
+    * area: The area to gather data (i.e. area of the rotating item)
+    * splitDist: The splitTPA distance (larger for larger items)
+    * tries: How many times to call InverseColors before declaring result fields
+
+.. note::
+
+    Author: Wizzup?
+    Last Modified: Feb. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    // MD_SmallBox is in mordaut.simba
+    item := getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30);
+*)
+function GetRotateObject(cols, tols: TIntegerArray; area: TBox; splitDist, tries: integer): TRotateObject;
+var
+  i: integer;
+  bounds: TBox;
+  tmpTPA: TPointArray;
+  tmpATPA: T2DPointArray;
+  tmpObj: TRotateObject;
+begin
+  for i := 1 to tries do
+  begin
+    tmpTPA := returnTPAExceptColors(cols, tols, area);
+    bounds := getTPABounds(tmpTPA);
+
+    tmpATPA := splitTPA(tmpTPA, splitDist);
+    sortATPASize(tmpATPA, true);
+
+    if (length(tmpATPA) <> 0) then
+      tmpTPA := tmpATPA[0]
+    else
+      setLength(tmpTPA, 0);
+
+    // keep increasing the properties so we can find the average later
+    tmpObj.count := (tmpObj.count + length(tmpTPA));
+    tmpObj.width := (tmpObj.width + (bounds.x2 - bounds.x1));
+    tmpObj.height := (tmpObj.height + (bounds.y2 - bounds.y1));
+    tmpObj.totalCount := (tmpObj.totalCount + ((bounds.x2 - bounds.x1) * (bounds.y2 - bounds.y1)));
+  end;
+
+  // get the average and set the result
+  result.count := (tmpObj.count div tries);
+  result.width := (tmpObj.width div tries);
+  result.height := (tmpObj.height div tries);
+  result.totalCount := (tmpObj.totalCount div tries);
+
+  if (result.totalCount > 0) then // to prevent math runtime errors
+    result.coverPercent := ((result.count / extended(result.totalCount)) * 100.0);
+end;
+
+(*
+DebugRotateObject
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DebugRotateObject(obj: TRotateObject);
+
+Prints 'obj' to the debug box in a format so it can be easily inserted into a
+case statement.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Feb. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    // MD_SmallBox is in mordaut.simba
+    debugRotateObject(getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30));
+*)
+procedure DebugRotateObject(obj: TRotateObject);
+begin
+  writeln('with result do');
+  writeln('begin');
+  writeln('  name := '+capitalize(obj.name)+';');
+  writeln('  use := '+capitalize(obj.use)+';');
+  writeln('  count := '+toStr(obj.count)+';');
+  writeln('  width := '+toStr(obj.width)+';');
+  writeln('  height := '+toStr(obj.height)+';');
+  writeln('  totalCount := '+toStr(obj.totalCount)+';');
+  writeln('  coverPercent := '+toStr(obj.coverPercent)+';');
+  writeln('end;');
+end;
+
+(*
+GetNPCChatName
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetNPCChatName(): string;
+
+Gets the name of the random event NPC from the top of the chat box.  The proper
+font doesn't exist yet, so it returns a random string of characters.
+
+.. note::
+
+    Author: DemiseSythe
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    writeln(getNPCChatName());
+*)
+function GetNPCChatName(): string;
+begin
+  result := getTextAtExWrap(152, 345, 366, 370, 0, 50, 30, 7913190, 15, NPCChars);
+end;
+
+(*
+WaitDTM
+~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitDTM(var x, y: integer; DTM, waitTime: integer): boolean;
+
+waits 'waitTime' for the 'DTM' to be found.  If found, returns true and the
+DTM's coodinates in x and y.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (WaitDTM(x, y, dtmHatchet, 5000)) then
+      mouse(x, y, 5, 5, mouse_Left);
+*)
+function WaitDTM(var x, y: integer; DTM, waitTime: integer): boolean;
+var
+  t: integer;
+begin
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
+  begin
+    if (findDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(randomRange(30, 70));
+  end;
+end;
+
+(*
+WaitTabExists
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitTabExists(tab, waitTime: integer): boolean;
+
+waits 'waitTime' for the 'tab' to exist.  Useful for detecting when a player
+has returned from a random event.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (WaitTabExists(TAB_MAGIC, 5000)) then
+      writeln('exited the random');
+*)
+function WaitTabExists(tab, waitTime: integer): boolean;
+var
+  v: TVariantArray;
+begin
+  v := [tab];
+  result := waitFuncEx('tabExists', v, 50, waitTime);
+end;
+
+(*
+WaitNPCTalking
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitNPCTalking(NPC: string, waitTime: integer): boolean;
+
+waits 'waitTime' for the 'NPC' name to appear in the chat box.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 29th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (WaitNPCTalking(NAME_NPC_GILES, 5000)) then
+      writeln('Talking to Giles');
+*)
+function WaitNPCTalking(NPC: string; waitTime: integer): boolean;
+var
+  t: integer;
+begin
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
+  begin
+    if (getNPCChatName() = NPC) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(50 + random(25));
+  end;
+end;
+
+(*
+GridBox
+~~~~~~~
+
+.. code-block:: pascal
+
+    function GridBox(slot, columns, rows, w, h, diffX, diffY: integer; starTPoint: TPoint): TBox;
+
+Returns a TBox of the slot 'slot' in a grid created by the other parameters.
+Slots start with 1 being the top left of the grid, and counting accross.
+    * columns: number of columns in the grid
+    * rows: number of rows in the grid
+    * w: the width of each box in the grid
+    * h: the height of each box in the grid
+    * diffX: pixels from center to center (x)
+    * diffY: pixels from center to center (y)
+    * starTPoint: the center point of the top left box in the grid
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 25th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    result := GridBox(Slot, 4, 2, 95, 80, 0, 150, point(110, 100));
+*)
+function GridBox(slot, columns, rows, w, h, diffX, diffY: integer; startPoint: TPoint): TBox;
+begin
+  if (slot > (columns * rows)) then
+  begin
+    writeln('GridBox: Invalid slot: '+toStr(slot));
+    exit;
+  end;
+
+  result.x1 := (startPoint.x + (((slot - 1) mod columns) * diffX) - (w / 2));
+  result.y1 := (startPoint.y + (((slot - 1) div columns) * diffY) - (h / 2));
+  result.x2 := (result.x1 + w);
+  result.y2 := (result.y1 + h);
+end;
+
+(*
+Grid
+~~~~
+
+.. code-block:: pascal
+
+    function Grid(columns, rows, w, h, diffX, diffY: integer; starTPoint: TPoint): TBoxArray;
+
+Returns a grid of TBoxes (see GridBox for parameters).
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 25th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DrawBoxes(false, Grid(5, 10, 20, 20, 25, 25, point(30, 30)), clYellow);
+*)
+function Grid(columns, rows, w, h, diffX, diffY: integer; starTPoint: TPoint): TBoxArray;
+var
+  i: integer;
+begin
+  setLength(result, (columns * rows));
+
+  for i := 0 to high(result) do
+    result[i] := GridBox(i + 1, columns, rows, w, h, diffX, diffY, starTPoint);
+end;
+
+(*
+ClickDTMRotatedIn
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickDTMRotatedIn(DTM, x1, y1, x2, y2: integer; sAngle, eAngle, aStep: extended; uptext: TStringArray; action: integer): boolean;
+
+Returns true if 'DTM' is found and clicked.
+    * DTM: The DTM identifier
+    * x1, y1, x2, y2: The area to search for the DTM
+    * sAngle: The starting angle to search
+    * eAngle: The ending angle to search
+    * aStep: Rotate 'aStep' degrees each search
+    * uptext: Will click no matter what if uptext is set to []
+    * action: The mouse action
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    ClickDTMRotatedIn(DTM, MSBox, -Pi, Pi, Pi/30, [], mouse_Left);
+*)
+function ClickDTMRotatedIn(DTM, x1, y1, x2, y2: integer; sAngle, eAngle, aStep: extended; uptext: TStringArray; action: integer): boolean;
+var
+  x, y: integer;
+  aFound: extended;
+begin
+  if (findDTMRotatedAlternating(DTM, x, y, x1, y1, x2, y2, sAngle, eAngle, aStep, aFound)) then
+  begin
+    mmouse(x, y, 3, 3);
+    if ((length(uptext) = 0) or waitUptextMulti(uptext, 300)) then
+    begin
+      getmousePos(x, y);
+      mouse(x, y, 0, 0, action);
+      result := true;
+    end;
+  end;
+end;
+
+(*
+DoConversation
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function DoConversation(resultText: string; clickresult: boolean): boolean;
+
+Goes through the initial dialog of a random.  Will keep clicking to continue
+until the conversation's 'resultText' is found.  Will click to continue when
+'resultText' is found if 'clickresult' is set to true.  Set 'resultText' to ''
+to click continue until conversation is over.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (DoConversation('thank', true)) then
+      writeln('Finished conversation');
+*)
+function DoConversation(resultText: string; clickResult: boolean): boolean;
+var
+  t: integer;
+begin
+  while (t < 25) do // max of 25 "click to continue's"
+  begin
+    if (resultText <> '') then
+      if (findNPCChatText(resultText, nothing)) then
+      begin
+        if (clickResult) then
+          clickContinue(true, true);
+
+        result := true;
+        break;
+      end;
+
+    // break if there's no more conversation
+    if (not clickContinue(true, true)) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(1500 + random(500));
+    inc(t);
+  end;
+end;
+
+(*
+ClickPortal
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickPortal(dtmPortal: integer): boolean;
+
+Calls ClickDTMRotatedIn on 'dtmPortal'.  Debugs portal information depending on
+whether the function is successful or not.  Function also checks for the
+"dropped items" warning.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    result := exitPortal(dtmCerterPortal);
+*)
+function ClickPortal(dtmPortal: integer): boolean;
+var
+  t: integer;
+  v: TVariantArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  writeln('ClickPortal: Exiting random');
+
+  v := [dtmPortal, MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ortal'], mouse_Left];
+  if (waitFuncEx('ClickDTMRotatedIn', v, 50, 5000)) then
+  begin
+    t := (getSystemTime + 5000);
+    while (getSystemTime < t) do
+    begin
+      // in case we had to drop items
+      if (clickText('valuables', smallChars, MSX1, MSY1, MSX2, MSY2, mouse_Left)) then
+        break;
+
+      wait(50 + random(50));
+    end;
+
+    result := true;
+    writeln('ClickPortal: Clicked portal');
+  end else
+    writeln('ClickPortal: Didn''t find portal DTM');
+end;
+
+(*
+AreTalking
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AreTalking(): boolean;
+
+Returns true if player is talking to an NPC.
+
+.. note::
+
+    Author: Wizzup?
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    while (areTalking()) do
+      clickContinue(true, true);
+*)
+function AreTalking(): boolean;
+var
+  x, y: integer;
+begin
+  result := findColor(x, y, 1577999, 140, 340, 370, 370);
+end;
+
+(*
+FreeDTMs
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure FreeDTMs(DTMs: TIntegerArray);
+
+Frees the dtms 'DTMs'.  Used to avoid repeating code.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Feb. 08, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FreeDTMs(DTMs);
+*)
+procedure FreeDTMs(DTMs: TIntegerArray);
+var
+  i: integer;
+begin
+  for i := 0 to high(DTMs) do
+    freeDTM(DTMs[i]);
+end;
+
+{$IFNDEF IS_incLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+end.
+}
+{$ENDIF}

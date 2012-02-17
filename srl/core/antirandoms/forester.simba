@@ -1,0 +1,60 @@
+(*
+Freaky Forester
+===============
+
+Stores all the routines to solve the Forester random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the random.
+ *)
+function FF_Detect(): boolean;
+begin
+  if (not (tabExists(TAB_MAGIC))) then
+    if (length(getMinimapDots('npc')) >= 10) then
+      // forest color
+      result := (countColorTolerance(2513745, MMX1, MMY1, MMX2, MMY2, 20) > 5000);
+end;
+
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function FF_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+  doConversation('', false);
+
+  repeat
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('FF_Solve: '' solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  FF_Solve();
+end.
+}
+{$ENDIF}

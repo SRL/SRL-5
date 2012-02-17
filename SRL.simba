@@ -122,23 +122,25 @@ begin
   RoadColor := 0;
   WaterColor := 0;
   BankColor := 0;
+
+  // these need to be removed eventually (no longer used)
+  SRL_OnFindRandomCall := nil;
   LampSkill := 'mining';
+
   //SetUpSRLReport;
   LoadCosineArrays;
   SymbolAccuracy:= 0.8;
   LoadSRLBitMaps;
   LoadSRLFonts;
-  LoadTeleRandoms;
-  SolveSRLRandoms := True;
+  _SetRandoms();
   SetupSRLAutoResponder;
   UseFindMod := True;
   LogoutOnMod := True;
   UseFindTrade := True;
   UseAutoResponder := True;
-  Screenshots := False;
   GraphicsSet := False;
   AllowPVP    := False;
-  ScreenShots := True;
+  SRLSavePath := includePath + 'SRL/logs/';
   WarnSensitivity := -2;
   SetupAutoColors;
 

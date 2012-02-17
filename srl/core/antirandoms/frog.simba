@@ -1,0 +1,328 @@
+(*
+Frog
+====
+
+Stores all the routines to solve the Frog random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+const
+  FROG_NAME_HERALD   = '8!oqB8!5lg';
+  FROG_NAME_PRINCESS = '8!oqo!l0o8gg';
+
+  FROG_DTM_PRINCESS = 0;
+  FROG_DTM_CENTER   = 1; // big cave center
+
+(**
+ * Author: Coh3n
+ * Description: Loads the 'DTM'.
+ *)
+function Frog_GetDTM(DTM: integer): integer;
+begin
+  case DTM of
+    FROG_DTM_PRINCESS : result := DTMFromString('mlwAAAHicY2dgYGBlgAAeKM0FxGxAzALEnFA+J1SMGaoGRMvEyjJIRcgwyKUqMMinKzD8vefD8PCYC5jmB8rjwoxAzIQDQwEAwHgJcQ==');
+    FROG_DTM_CENTER   : result := DTMFromString('mlwAAAHicY2dgYKhmYmAoAOJcIC4D4jYg7oJieaC8DhDLATE/EEsBsToQmwJxaJAJg4OOGENARTaDb0kGmO9TlAYW44eqx4YZgZgJB4YCADVaCxw=');
+  end;
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Sets up to solve the Frog random.
+ *)
+procedure Frog_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_HIGH);
+  doConversation('', false);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the Princess is talking.
+ *)
+function Frog_PrincessTalking(): boolean;
+begin
+  result := (getNPCChatName = FROG_NAME_PRINCESS);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the Frog Herald is talking.
+ *)
+function Frog_HeraldTalking(): boolean;
+begin
+  result := (getNPCChatName = FROG_NAME_HERALD);
+end;
+
+(**
+ * Author: DemiseScythe
+ * Description: Returns true if player is in the Frog random.
+ *)
+function Frog_Detect(): boolean;
+begin
+  result := Frog_HeraldTalking() and (not tabExists(TAB_MAGIC));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: waits for the Princess the be talking (called after clicking
+ * Princess).
+ *)
+function Frog_WaitChat(waitTime: integer): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
+  begin
+    // checks to see if we're talking to the Frog Princess
+    if (Frog_PrincessTalking()) then
+    begin
+      writeln('Frog_waitChat: Talking to the Princess');
+      result := true;
+      break;
+    end;
+
+    // if we're talkin to the Herald, we clicked the wrong frog
+    if (Frog_HeraldTalking()) then
+    begin
+      writeln('Frog_waitChat: Clicked wrong frog');
+      clickContinue(true, true);
+      break;
+    end;
+
+    wait(200 + random(100));
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true when the player is talking to the Frog Princess.
+ *)
+function Frog_ClickPrincess(): boolean;
+var
+  dtmPrincess, i, x, y: integer;
+  dtmpoints: TPointArray;
+  aFound: T2DextendedArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  if (Frog_PrincessTalking()) then
+  begin
+    writeln('Frog_ClickPrincess: Already talking to Frog Princess');
+    result := true;
+    exit;
+  end;
+
+  dtmPrincess := Frog_GetDTM(FROG_DTM_PRINCESS);
+
+  // it's possible more than one DTM can be found (multiple frogs)
+  if (findDTMsRotatedAlternating(dtmPrincess, dtmpoints, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+  begin
+    filterTPADist(dtmpoints, 35);
+    sortTPAFrom(dtmpoints, point(MSCX, MSCY)); // sort from closest to the player
+
+    // loop through each DTM that was found
+    for i := 0 to high(dtmpoints) do
+    begin
+      x := dtmpoints[i].x;
+      y := dtmpoints[i].y;
+
+      mmouse(x, y, 3, 3);
+
+      // added the '/' so we don't click the 'Frog Herald'
+      if (waitUptextMulti(['Frog /', 'rog /'], 300)) then
+      begin
+        writeln('Frog_ClickPrincess: Clicked a frog');
+
+        getmousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+
+        if (Frog_WaitChat(10000)) then // wait for Princess's name
+        begin
+          result := true;
+          break;
+        end;
+      end;
+    end;
+  end;
+
+  freeDTM(dtmPrincess);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if Princess's text is found that indicated we're in
+ * the big cave.  Finishes the conversation.
+ *)
+function Frog_InBigCave(): boolean;
+begin
+  if (FindNPCChatText('gnore', Nothing) or (FindNPCChatText('pologise', Nothing))) then
+  begin
+    writeln('Frog_InBigCave: Failed to click Princess, we are in the big cave');
+    DoConversation('', false);
+    result := true;
+  end;
+end;
+
+(**
+ * Author: Marpis & Coh3n
+ * Description: Walks to an area specified by 'Where' in the cave.
+ *)
+function Frog_WalkCave(center: Tpoint; where: integer): boolean;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  writeln('Frog_WalkCave: Relocating in cave');
+
+  case Where of
+    0, 2, 4: mouse(center.x, center.y + 50, 2, 2, mouse_Left); // south
+    1:       mouse(center.x + 40, center.y, 2, 2, mouse_Left); // east
+    3:       mouse(center.x - 40, center.y, 2, 2, mouse_Left); // west
+    5:       mouse(center.x, center.y, 2, 2, mouse_Left);      // center
+  end;
+
+  if (flag) then
+  begin
+    result := true;
+    wait(1500 + random(500));
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Goes through the conversation with the Princess in the big cave.
+ *)
+function Frog_TalkCave(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 30000);
+
+  repeat
+    findNPCChatText('lease', clickLeft);
+    clickContinue(true, true);
+    result := tabExists(TAB_MAGIC);
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('Frog_TalkCave: Failed to go through conversation with Princess');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the big cave part of the random event.
+ *)
+function Frog_SolveCave(): boolean;
+var
+  t, x, y, tries, dtmCenter: integer;
+  aFound: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  writeln('Frog_SolveCave: Solving frog big cave');
+  t := (getSystemTime + (5 * 60000));
+  dtmCenter := Frog_GetDTM(FROG_DTM_CENTER);
+
+  repeat
+    if (Frog_ClickPrincess()) then
+    begin
+      result := Frog_TalkCave();
+      break;
+    end;
+
+    if (findDTMRotatedAlternating(dtmCenter, x, y, MMX1, MMY1, MMX2, MMY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+      Frog_WalkCave(point(x, y), tries)
+    else
+      writeln('Frog_SolveCave: Didn''t find DTM_FROG_CENTER');
+
+    Inc(tries);
+
+    // reset so it'll still walk
+    if (tries > 5) then
+      tries := 0;
+  until(getSystemTime > t);
+
+  if (not result) then
+    writeln('Frog_SolveCave: Failed to solve big frog cave');
+
+  freeDTM(dtmCenter);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Frog Princess random event, returns false if player
+ * had to go through the big cave because RS still teleports you.
+ *)
+function Frog_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (10 * 60000)); // 5 minutes max
+  Frog_Setup();
+
+  repeat
+    if (Frog_ClickPrincess()) then // returns true if Princess is talking
+    begin
+      // may have clicked wrong frogs, need to solve large cave
+      if (Frog_InBigCave) then
+      begin
+        if (Frog_SolveCave()) then // still get teleported after big cave
+        begin
+          writeln('Frog_Solve: Solved frog big cave, but failed random');
+          WaitTabExists(TAB_MAGIC, 5000);
+          break;
+        end;
+      end else
+        if (doConversation('', false)) then
+        begin
+          wait(3000 + random(500));
+          clickContinue(true, true);
+          result := true;
+        end;
+
+      if (result) then
+      begin
+        result := false;
+        result := WaitTabExists(TAB_MAGIC, 5000);
+      end;
+    end;
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('Frog_Solve: Frog Princess solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  Frog_Solve();
+end.
+}
+{$ENDIF}

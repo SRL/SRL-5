@@ -1,0 +1,93 @@
+(*
+Abyss
+=====
+
+The Abyss file stores the routines to solve the abyss (Lost and Found) random
+event.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the Abyss random.
+ *)
+function Abyss_Detect(): boolean;
+var
+  x, y: integer;
+begin
+  if (tabExists(TAB_MAGIC)) then
+    exit;
+
+  // redish color on the minimap; only searches top half because the Mime audience color is similar and only appears in the bottom of the minimap
+  result := (findColorTolerance(x, y, 3619450, MMCX-10, MMCY-10, MMCX+10, MMCY, 15));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Sets up the screen/player to solve the random.
+ *)
+procedure Abyss_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_HIGH);
+  mouse(MMCX, MMY1 + 60, 3, 3, true); // walks north, clicks the same appendage
+  wait(2000 + random(500));
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the random by clicking the same appendage over and over
+ * again.  There's a 25% chance of getting it right each click.
+ *)
+function Abyss_Solve(): boolean;
+var
+  dtmStick, t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  Abyss_Setup();
+  dtmStick := DTMFromString('mrAAAAHic42BgYNBhZGCQAWJbIFYEYnMgFgNiJyDWBuIqoJp8IM4D4jogrgHiLiBuh+JQVSmGMntThlgjLYZIdRkw34WPi8GdH4glxRj4gWrwYUYCGAYAeSYKcw==');
+
+  repeat
+    Inc(t);
+
+    if (clickDTMRotatedIn(dtmStick, MSX1, MSY1, MSX2, 200, -Pi/4, Pi/4, Pi/30, ['erate'], mouse_Left)) then
+    begin
+      writeln('Abyss_Solve: Clicked Appendage');
+      wait(2000 + random(1000));
+    end;
+
+    if (FindNPCChatText('ologise', Nothing)) then
+    begin
+      clickContinue(true, true);
+      result := true;
+    end else
+      result := tabExists(TAB_MAGIC);
+
+  until(result or (t > 25));
+
+  freeDTM(dtmStick);
+
+  if (not result) then
+    writeln('Abyss_Solve: Abyss solver exceeded maximum tries');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  ClearDebug();
+  ActivateClient();
+  SetupSRL();
+
+  Abyss_Solve();
+end.
+}
+{$ENDIF}

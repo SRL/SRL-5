@@ -1,0 +1,205 @@
+(*
+Drill Demon
+===========
+
+Stores all the routines to solve the Drill Demon random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+// the demon's name that appears when he's talking
+const
+  DD_NPC_DEMON = 'B8!q850t85Ol80';
+
+// these constants represent elements in an array, so do not change the values
+const
+  DTM_DD_EXERCISE_COUNT = 4;
+    DTM_DD_JOG      = 0;
+    DTM_DD_SITUP    = 1;
+    DTM_DD_PUSHUP   = 2;
+    DTM_DD_STARJUMP = 3;
+
+  DTM_DD_RELOCATE_COUNT = 3;
+    DTM_DD_RIGHT    = 0;
+    DTM_DD_LEFT     = 1;
+    DTM_DD_CENTER   = 2;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns true if player is in the Drill Demon random.
+ *)
+function DD_Detect(): boolean;
+begin
+  result := (getNPCChatName() = DD_NPC_DEMON) and (not tabExists(TAB_MAGIC));
+end;
+
+(**
+ * Author: Coh3n, DTMs by DemiseScythe
+ * Description: Returns the four DTMs of the exercise signs.
+ *)
+function DD_ExerciseDTMs(): TIntegerArray;
+begin
+  setLength(result, DTM_DD_EXERCISE_COUNT);
+
+  // The signs
+  result[DTM_DD_JOG]      := DTMFromString('mrAAAAHic42BgYNjFyMCwBYpB7L1AfBSIVwPxciAuAKrJBOISKA3iFwNxDpROK4lkKG5JBWMQG4Sd0izhmB+oBh9mJIBhAABkYhKt');
+  result[DTM_DD_SITUP]    := DTMFromString('mggAAAHicY2NgYDgCxKeA+DwQ7wfijUB8BYiLgTgHiAuBuASIs4C4FIRb01CwQ4oFGPMD5bBhRhwYAgALjQ7j');
+  result[DTM_DD_PUSHUP]   := DTMFromString('mlwAAAHicY2dgYNjNyMCwGYhXAfEpID4DxAeAeDUQFwHl84C4FIiLgTgLCZe3Z6BgpzRLMM4oi2bgB8rjwox4MBQAALfyETE=');
+  result[DTM_DD_STARJUMP] := DTMFromString('mbQAAAHicY2VgYHBkZGCwAmJXIA4AYmMgzgeKZwFxGRAXQnF5ewYcO6VZgjE/UBwdM2LBYAAAhp8Jww==');
+end;
+
+(**
+ * Author: Coh3n, DTMs by DemiseScythe
+ * Description: Returns the three DTMs used to relocate inside the random.
+ *)
+function DD_RelocateDTMs(): TIntegerArray;
+begin
+  setLength(result, DTM_DD_RELOCATE_COUNT);
+
+  // Used to relocate inside the fence
+  result[DTM_DD_RIGHT]  := DTMFromString('mbQAAAHicY2VgYDAE4iwgngDEz4E4AYjPA3E+EBcCcS4QvwFi7yAVBsc0Czj2DOJm4AeKo2NGLBgMAMJeCdQ=');
+  result[DTM_DD_LEFT]   := DTMFromString('mbQAAAHicY2VgYDjPyMAgAsQ5QDwJiOcA8S2geA4Q5wFxARB/BmKfYBUGpzRLOLZp0WDgB4qjY0YsGAwA3gcKPQ==');
+  result[DTM_DD_CENTER] := DTMFromString('mbQAAAHicY2VgYNgJxM+AeBIQMzMyMMQC6fNAnAfEBUD8EohfAbFPsAqDU5olGHsESjBYN2kw8APF0TEjFgwGAP5iCoM=');
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Sets up the screen to solve the random.
+ *)
+procedure DD_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_LOW); // Takes care of MakeCompass & SetAngle
+  if (findNPCChatText('minute', Nothing)) then
+    clickToContinue;
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Checks the NPC chat and finds which exercise we must do. Then
+ * it finds the sign and uses its coords to click the mat. The wait is just
+ * large enough to make it wait until it has walked, performed the exercise,
+ * and ready to return to the center of the fence.
+ *)
+function DD_DoExercise(DTMs: TIntegerArray): boolean;
+var
+  i, x, y: integer;
+  texts: TStringArray;
+  aFound: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  texts := ['jog', 'sit', 'push', 'star'];
+
+  if (length(texts) <> length(DTMs)) then
+  begin
+    writeln('DD_DoExercise: Invalid DTMs or texts array');
+    exit;
+  end;
+
+  // There should not be any out of range errors here as all arrays should be the same length
+  for i := 0 to high(texts) do
+    if (findNPCChatText(texts[i], nothing)) then
+      if (findDTMRotated(DTMs[i], x, y, MSX1, MSY1, MSX2, MSY2, -Pi/12, Pi/12, Pi/30, aFound)) then
+      begin
+        writeln('DD_DoExercise: '+capitalize(texts[i]));
+        mouse(x, (y + 100), 3, 3, true);
+
+        if (waitNPCTalking(DD_NPC_DEMON, 10000)) then
+        begin
+          wait(2000 + random(500));
+          result := true;
+          break;
+        end;
+      end else
+        writeln('DD_Exercise: Didn''t find exercise DTM: '+capitalize(texts[i]));
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Relocates the player to the center of the exercise area.
+ *)
+function DD_Relocate(DTMs: TIntegerArray): boolean;
+var
+  i: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  for i := 0 to high(DTMs) do
+    if (clickDTMRotatedIn(DTMs[i], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['alk'], mouse_Left)) then
+    begin
+      writeln('Walking to Center!');
+      flag();
+      wait(1000 + random(100));
+      result := true;
+      break;
+    end else
+      writeln('DD_Relocate: Didn''t click relocate DTM: '+IntToStr(i));
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Solves the Drill Demon random event.
+ *)
+function DD_Solve(): boolean;
+var
+  t: integer;
+  exerciseDTMs, relocateDTMs: TIntegerArray;
+begin
+  DD_Setup();
+
+  exerciseDTMs := DD_ExerciseDTMs();
+  relocateDTMs := DD_RelocateDTMs();
+
+  repeat
+    inc(t); // tries counter
+
+    // checks if we have sucessfully completed the Demon's requests
+    if (findNPCChatText('actual', nothing)) then
+    begin
+      clickContinue(true, true);
+
+      if (waitTabExists(TAB_MAGIC, 10000)) then
+      begin
+        result := true;
+        break;
+      end;
+
+    end else
+      if (not DD_DoExercise(exerciseDTMs)) then
+        DD_Relocate(relocateDTMs);
+
+    result := tabExists(TAB_MAGIC);
+    doConversation('', false); // GE message or if we get exercise wrong
+
+  until(result or (not loggedIn()) or (t > 30));
+
+  // free the DTMs
+  freeDTMs(exerciseDTMs);
+  freeDTMs(relocateDTMs);
+
+  if (not result) then
+    writeln('DD_Solve: Drill Demon exceeded maximum tries');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  DD_Solve();
+end.
+}
+{$ENDIF}

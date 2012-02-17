@@ -1,0 +1,284 @@
+(*
+Pinball
+=======
+
+Stores all the routines to solve the Pinball random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+//{$DEFINE PB_DEBUG}
+
+const
+  DTM_PB_COUNT = 3;
+    DTM_PB_RING_1 = 0;
+    DTM_PB_RING_2 = 1;
+    DTM_PB_CHAT   = 2;
+
+const
+  PB_SCORE_10 = 60; // the tpa length of when the score is 10
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the Pinball random.
+ *)
+function PB_Detect(): boolean;
+begin
+  // makes sure friends tab exists and magic doesn't
+  if ((not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS))) then
+    if (not areTalking()) then
+      result := (countColor(clBlack, MMCX-20, MMCY-20, MMCX+20, MMCY+20) = 1681);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the length of a tpa found of the yellow color of the
+ * score at the top of the main screen.
+ *)
+function PB_GetScore(): integer;
+var
+  tpa: TPointArray;
+begin
+  // yellow color of the score
+  if (findColorsTolerance(tpa, 381907, 280, 15, 315, 50, 30)) then
+    result := length(tpa);
+end;
+
+(**
+ * Author: SKy Scripter, NCDS, & Coh3n
+ * Description: Returns true if a flashing pillar is found.  Sets coordinates
+ * to x, y.
+ *)
+const
+  _PB_FILL_COLOR = 10;
+  _PB_MIN_LENGTH = 20;
+
+function PB_ScanPost(var x, y: integer): boolean;
+var
+  tpa: TPointArray;
+  pillarCols: array of integer;
+  ATPA, pillarGaps: T2DPointArray;
+  oldTarget, tmpCTS, bmp, i, j, c: integer;
+  hue, sat, lum: extended;
+  tmpBox: TBox;
+begin
+  result := false;
+  bmp := -1;
+
+  try
+    tmpCTS := getColorToleranceSpeed;
+    setColorToleranceSpeed(3);
+
+    // the green of the spinning pillars
+    findColorsTolerance(tpa, 8708721, MSX1, MMY1, MSX2, MSY2, 5);
+
+    setColorToleranceSpeed(tmpCTS);
+
+    // if colors aren't found, exit
+    if (length(tpa) < _PB_MIN_LENGTH) then
+      exit;
+
+    bmp := createBitmap(MSX2 + 5, MSY2 + 5); // creats a bitmap of the MS
+    fastDrawClear(bmp, _PB_FILL_COLOR); // fill it with a distinct color
+
+    c := 0;
+    pillarCols := getColors(tpa);
+
+    // draws a rectangle on the bitmap of the colors that are light enough
+    for i := 0 to high(tpa) do
+    begin
+      colorToHSL(pillarCols[i], hue, sat, lum);
+
+      if (lum > 50.0) then
+      begin
+        tmpBox := intToBox(max(0, tpa[i].x - 1), max(0, tpa[i].y - 1), tpa[i].x + 1, tpa[i].y + 1);
+        rectangleBitmap(bmp, tmpBox, clRed);
+        inc(c);
+      end;
+    end;
+
+    if (c > _PB_MIN_LENGTH) then
+    begin
+      floodFillBitmap(bmp, point(5, 5), _PB_FILL_COLOR, clBlack);
+
+      oldTarget := getImageTarget();
+      setTargetBitmap(bmp);
+
+      findColors(tpa, _PB_FILL_COLOR, 0, 0, MSX2 - 5, MSY2 - 5);
+
+      setImageTarget(oldTarget); // reset target to RS client
+
+      if (length(tpa) > 10) then
+      begin
+        ATPA := TPAtoATPA(tpa, 60);
+        sortATPASize(ATPA, true);
+
+        for i := 0 to high(ATPA) do
+        begin
+          pillarGaps := findGapsTPA(ATPA[i], 10);
+
+          for j := 0 to high(pillarGaps) do
+            if (length(pillarGaps[j]) > 2) then
+            begin
+              middleTPAEx(ATPA[i], x, y);
+              result := true;
+              break;
+            end;
+
+          if (result) then
+            break;
+        end;
+      end;
+    end;
+
+    {$IFDEF PB_DEBUG}
+    displayDebugImgWindow(MSX2, MSY2);
+    drawBitmapDebugImg(bmp);
+    {$ENDIF}
+
+  finally
+    if (bmp <> -1) then
+      freeBitmap(bmp);
+  end;
+
+  if (result) then
+    writeln('PB_ScanPost: Found post');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if player clicks a post and the score changes.
+ *)
+function PB_TagPost(): boolean;
+var
+  t, x, y, oldScore: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  oldScore := PB_GetScore();
+
+  if (PB_ScanPost(x, y)) then
+  begin
+    mmouse(x, y, 5, 5);
+
+    if (waitUptextMulti(['ag', 'ost'], 300)) then
+    begin
+      getMousePos(x, y);
+      mouse(x, y, 0, 0, mouse_Left);
+
+      t := (getSystemTime + 6000);
+      while (getSystemTime < t) do
+      begin
+        if (PB_GetScore() <> oldScore) then
+        begin
+          writeln('PB_TagPost: Tagged post');
+          result := true;
+          break;
+        end;
+
+        wait(300 + random(200));
+      end;
+    end;
+  end;
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Uses mainscreen walking to exit the random.
+ *)
+function PB_Exit(): boolean;
+var
+  x, y, t: integer;
+  tpa: TPointArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  writeln('PB_Exit: Exiting cave');
+  t := (getSystemTime + 20000);
+  clickNorth(SRL_ANGLE_HIGH);
+
+  repeat
+    // the green path color
+    if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 20)) then
+      if (length(tpa) > 0) then
+      begin
+        sortTPAFrom(tpa, point(MSCX, MSY2)); // center of the bottom of the MS
+        x := tpa[0].x;
+        y := tpa[0].y - 20; // so it's actually on the MS
+
+        mouse(x, y, 5, 5, mouse_Move);
+
+        // check for the proper uptexts
+        if (waitUptextMulti(['Walk', 'alk', 'here', 'ere'], 200)) then
+        begin
+          getMousePos(x, y);
+          mouse(x, y, 0, 0, mouse_Left);
+        end else
+          if (waitUptextMulti(['Exit', 'xit', 'Cave', 'ave'], 200)) then
+          begin
+            getMousePos(x, y);
+            mouse(x, y, 0, 0, mouse_Left);
+
+            if (waitTabExists(TAB_MAGIC, 8000)) then
+            begin
+              result := true;
+              break;
+            end;
+          end;
+      end;
+
+    wait(2000 + random(300));
+  until(getSystemTime > t);
+
+  if (result) then
+    writeln('PB_Exit: Clicked exit cave');
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the Pinball random.
+ *)
+function PB_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (8 * 60000)); // maximum 5 minutes
+  doConversation('', false);
+
+  repeat
+    if (PB_GetScore = PB_SCORE_10) then // length of "Score: 10"
+    begin
+      result := PB_Exit();
+      break;
+    end;
+
+    PB_TagPost();
+    wait(500 + random(200));
+  until(getSystemTime > t);
+
+  if (not result) then
+    writeln('PB_Solve: Pinball solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  //PB_Solve();
+end.
+}
+{$ENDIF}

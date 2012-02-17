@@ -1,0 +1,58 @@
+(*
+Molly
+=====
+
+Stores all the routines to solve the Molly random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+(**
+ * Author:
+ * Description: Detects if a player is in the random.
+ *)
+function Molly_Detect(): boolean;
+begin
+  if (not tabExists(TAB_MAGIC)) then
+    result := (getNPCChatName = 'Dolly');
+end;
+
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function Molly_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+  doConversation('', false);
+
+  repeat
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('Molly_Solve: '' solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  Molly_Solve();
+end.
+}
+{$ENDIF}

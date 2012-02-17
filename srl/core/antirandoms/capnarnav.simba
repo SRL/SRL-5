@@ -1,0 +1,273 @@
+(*
+Cap'n Arnav
+===========
+
+Stores all the routines to solve the Cap'n Arnav random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+const
+  CA_NAME_ARNAV = 'C50!04!05u';
+
+  DTM_CA_COUNT = 4;
+    DTM_CA_RING  = 0;
+    DTM_CA_BAR   = 1;
+    DTM_CA_COINS = 2;
+    DTM_CA_BOWL  = 3;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if player is in the random.
+ *)
+function CA_Detect(): boolean;
+var
+  x, y: integer;
+begin
+  if ((not tabExists(TAB_MAGIC)) and (not tabExists(TAB_INV))) then
+    if (findColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then // water color
+      result := inRange(countDots('npc'), 3, 5);
+end;
+
+(**
+ * Author: DemiseScythe
+ * Description: Loads the item's DTMs.
+ *)
+function CA_GetDTMs(): TIntegerArray;
+begin
+  setLength(result, DTM_CA_COUNT);
+
+  result[DTM_CA_RING]  := DTMFromString('m6wAAAHic42ZgYLgMxKeB+CgUXwLi60D8CIgfAPFDIL4CxDeBeDEQzwLiOUC8EojXAvFGIF4BxPOAeBoQzwDiKUC8e+1Uhrd3lBg+X1JmOLNPlqGrXIThzhl5hhNrZBmeXVVkyI3jZ7i1R56hv0aEgR+onljMSAJGAgC5kiIz');
+  result[DTM_CA_BAR]   := DTMFromString('m6wAAAHic42ZgYOBhQABeKBYHYgkglgRiKSR5MSCWBmI+INaEirEAsQAQy0LFtKHiVZGCDNm+/AwpnnwMvWkiDMXBAgxNcUIM/ekiDLMLxBiWV4ozlIYIMMS58DLwA9UTixmBmIlIjAQAHY4MWg==');
+  result[DTM_CA_COINS] := DTMFromString('mAAEAAHic42FgYOBjgABGIOYGYn4gVgFiNSCWBWJhqDgzELNB+RxIekBsSSAWgOqVAmJFKC0KxL+uKzOcXCvD8Py4IsPvm8oMDw8pMFzfKcfw45oyw7crygxvzygy7FsiDVbz8oQi2AxSMMgNTCRgZAAAn4IXqw==');
+  result[DTM_CA_BOWL]  := DTMFromString('mAAEAAHiclcs/CoIAAEbxzz3oIAUVJVkg9HfRK0lzQ9YQFE1SBEJQ4SYNQksnUAk8hXSB3ujqg9/4GpJGhjTEAB10YcLGEg4WmMBCwHPAFkecccMdEZ644oQ1knCs9DXVN5kpvlgK930Fm558r6Xdqq3Pw1bxnqvMHP1yV02eOoyaqv0BVbQe0g==');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the lock screen is open.
+ *)
+function CA_LockScreen(): boolean;
+var
+  x, y: integer;
+begin
+  // looks for the text in the top right of the lcok screen
+  result := findText(x, y, 'lick', smallChars, MSCX, MSY1, MSX2, MSCY);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the slot 'slot' for the lock grid.  Top left
+ * is slot 1.
+ *)
+function CA_LockBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 3, 3, 90, 82, 90, 82, point(127, 79));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the slot 'slot' for the top arrows.
+ *)
+function CA_ArrowBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 3, 1, 45, 30, 88, 0, point(125, 25));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Talks to Cap'n Arnav and returns true when the lock screen is
+ * open.
+ *)
+function CA_TalkToArnav(): boolean;
+var
+  dtmArnav, t: integer;
+begin
+  if (not loggedIn() and (not CA_LockScreen)) then
+    exit;
+
+  writeln('CA_TalkToArnav: Talking to Cap''n Arnav');
+  dtmArnav := DTMFromString('mQwAAAHicY2ZgYIhiZGAIAeJoIN4N5O8E4m1A7OZmw+DsbMWgoaHEwA/kwzBQGQMTFAMBAO12BWY=');
+
+  if (clickDTMRotatedIn(dtmArnav, MSCX+50, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['rnav'], mouse_Left)) then
+  begin
+    if (waitNPCTalking(CA_NAME_ARNAV, 4000)) then
+    begin
+      t := (getSystemTime + 20000);
+
+      while ((getSystemTime < t) and (not CA_LockScreen())) do
+      begin
+        doConversation('', false);
+
+        if (findNPCChatText('ready', nothing)) then
+        begin
+          typeSend('2');
+          writeln('CA_TalkToArnav: Clicked chat box text');
+          wait(500 + random(500));
+        end;
+      end;
+    end;
+
+  end else
+    writeln('CA_TalkToArnav: Didn''t click Arnav DTM');
+
+  result := CA_LockScreen();
+  freeDTM(dtmArnav);
+end;
+
+(**
+ * Author: nielsie95 & Coh3n
+ * Description: Returns which item is needed to open the chest.
+ *)
+function CA_GetTarget(): integer;
+var
+  tpa: TPointArray;
+  s: TStringArray;
+begin
+  if ((not loggedIn()) or (not CA_LockScreen())) then
+    exit;
+
+  writeln('CA_GetTarget: Identifying chest target');
+
+  // the black color of the text shadow
+  findColorsTolerance(tpa, 1119769, 7, 150, 80, 185, 15);
+
+  case length(tpa) of
+    116: result := DTM_CA_RING; // set to DTM constant to easily access the correct DTM
+    84 : result := DTM_CA_BAR;
+    108: result := DTM_CA_BOWL;
+    102: result := DTM_CA_COINS;
+
+    else
+      writeLn('CA_GetTarget: Could not get Arnav target');
+  end;
+
+  s := ['Ring', 'Bar', 'Coins', 'Bowl'];
+  writeln('CA_GetTarget: Found target: '+s[result]);
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns true if the chest has been unlocked.
+ *)
+function CA_FixLock(DTMs: TIntegerArray): boolean;
+var
+  i, t, t2, target, x, y: integer;
+  b: TBox;
+  aFound: extended;
+  colDone: array[1..3] of boolean;
+begin
+  if ((not loggedIn()) or (not CA_LockScreen())) then
+    exit;
+
+  writeln('CA_FixLock: Fixing lock');
+  target := CA_GetTarget();
+
+  for i := 1 to 3 do // arrows 1, 2, and 3
+  begin
+    t := (getSystemTime + (2 * 60000));
+
+    repeat
+      b := CA_LockBox(i + 3); // slots 4, 5, and 6
+      t2 := (getSystemTime + 5000); // time to ID item in each column before rotating
+
+      // try to find the target DTM
+      while (getSystemTime < t2) do
+      begin
+        if (findDTMRotatedAlternating(DTMs[target], x, y, b.x1, b.y1, b.x2, b.y2, -Pi, Pi, Pi/30, aFound)) then
+        begin
+          writeln('CA_FixLock: Found target in slot '+toStr(i));
+          colDone[i] := true;
+          break;
+        end;
+
+        wait(50 + random(50));
+      end;
+
+      if (colDone[i]) then // continue with the for loop
+        break;
+
+      // rotate the item if needed
+      b := CA_ArrowBox(i);
+      mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_Left);
+      wait(500 + random(500));
+
+    until(colDone[i] or (getSystemTime > t));
+
+    result := (colDone[1] and colDone[2] and colDone[3]);
+  end;
+
+  if (result) then
+  begin
+    mouse(440, 250, 20, 10, mouse_Left); // click the unlock button
+
+    // have to make sure we did it right
+    result := false;
+    if (waitNPCTalking(CA_NAME_ARNAV, 3000)) then
+      result := findNPCChatText('hanks', nothing);
+  end;
+
+  if (result) then
+    writeln('CA_FixLock: Fixed lock')
+  else
+    writeln('CA_FixLock: Didn''t fix lock');
+end;
+
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function CA_Solve(): boolean;
+var
+  t, tries, dtmPortal: integer;
+  DTMs: TIntegerArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (6 * 60000));
+  DTMs := CA_GetDTMs();
+  dtmPortal := DTMFromString('mbQAAAHicY2VgYPgHxOyMDAz/gfQPIGYFsoOBtB8QewGxPxBHAPGuB/0M+19OAWMQe8eHXgZ+oDg6BmpnYELDYAAAF5wP7g==');
+  clickNorth(SRL_ANGLE_HIGH);
+
+  repeat
+    if (not CA_LockScreen) then
+      CA_TalkToArnav()
+    else
+      if (CA_FixLock(DTMs)) then
+      begin
+        //if (waitNPCTalking(
+        if (clickPortal(dtmPortal)) then
+          result := waitTabExists(TAB_MAGIC, 5000);
+      end else
+        inc(tries);
+
+  until(result or (tries >= 5) or (getSystemTime > t)); // 5 failed we fail the random
+
+  if (not result) and (getSystemTime > t) then
+    writeln('CA_Solve: Cap''n Arnav solver timed out')
+  else
+    if (not result) and (tries >= 5) then
+      writeln('CA_Solve: Cap''n Arnav failed after 5 tries');
+
+  freeDTM(dtmPortal);
+  freeDTMs(DTMs);
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  CA_Solve();
+end.
+}
+{$ENDIF}

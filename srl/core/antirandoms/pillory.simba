@@ -1,0 +1,338 @@
+(*
+Pillory
+=======
+
+Stores all the routines to solve the Pillory random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+(**
+ * Author: nielsie95
+ * Description: Checks if the lock screen is visible.
+ *)
+function PL_LockScreen(): boolean;
+begin
+  result := (loggedIn() and (getColor(502, 22) = 0));
+end;
+
+(**
+ * Author: nielsie95 & Coh3n
+ * Description: Returns true if the locks have been opened.
+ *)
+function PL_DoneLocks(): boolean;
+begin
+  if (not PL_LockScreen) then
+    if (findNPCChatText('spinning lock', nothing)) then
+      if (clickContinue(true, true)) then
+      begin
+        result := true;
+        wait(2000 + random(1000));
+      end;
+end;
+
+(**
+ * Author: Wanted
+ * Description: Returns true if in the Pillory random.
+ *)
+function PL_Detect(): boolean;
+var
+  tpa: TPointArray;
+begin
+  if (not tabExists(tab_Magic)) and (not tabExists(TAB_INV)) then
+  begin
+    // red doors of the cages
+    findColorsTolerance(tpa, 237, MMCX - 15, MMCY - 15, MMCX + 15, MMCY + 15, 17);
+    result := ((inRange(length(tpa), 3, 18)) and (not (PL_DoneLocks)));
+  end;
+end;
+
+(**
+ * Author: Wanted & Coh3n
+ * Description: Clicks the cage to open the lock screen.
+ *)
+function PL_ClickCage(): boolean;
+var
+  x, y: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  result := PL_LockScreen();
+
+  if (not result) then
+    // click around the center of the main screen (where cage lock is)
+    if (spiralMouse(x, y, MSCX - 20, MSCY - 20, MSCX + 20, MSCY - 20, 'age', 30, 8)) then
+    begin
+      getMousePos(x, y);
+      mouse(x, y, 0, 0, mouse_Left);
+
+      if (waitFunc(@PL_LockScreen, 50, 5000)) then
+      begin
+        writeln('PL_ClickCage: Opened lock screen');
+        result := true;
+      end;
+    end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a tpa of the lock color found in 'area'.
+ *)
+function PL_GetLockTPA(area: TBox): TPointArray;
+begin
+  setColorToleranceSpeed(2);
+  setToleranceSpeed2Modifiers(0.26, 0.55);
+
+  // the color on the inside of the lock, and the face of the keys
+  findColorsTolerance(result, 1121831, area.x1, area.y1, area.x2, area.y2, 4);
+
+  setColorToleranceSpeed(1);
+  setToleranceSpeed2Modifiers(0.2, 0.2);
+end;
+
+(**
+ * Author: nielsie95
+ * Description: Returns a color density of the four corners of 'bounds'.
+ *)
+function PL_GetDensities(bounds: TBox): TIntegerArray;
+var
+  i: integer;
+  b: TBox;
+begin
+  setLength(result, 4);
+
+  for i := 0 to high(result) do
+  begin
+    b := bounds;
+
+    b.x2 := (bounds.x1 + bounds.x2) shr 1;
+    b.y2 := (bounds.y1 + bounds.y2) shr 1;
+
+    case i of
+      1: begin
+           b.x1 := b.x2;
+           b.x2 := bounds.x2;
+         end;
+
+      2: begin
+           b.y1 := b.y2;
+           b.y2 := bounds.y2;
+         end;
+
+      3: begin
+           b.x1 := b.x2;
+           b.x2 := bounds.x2;
+           b.y1 := b.y2;
+           b.y2 := bounds.y2;
+         end;
+    end;
+
+    result[i] := length(PL_GetLockTPA(b));
+  end;
+
+  quickSort(result);
+end;
+
+(**
+ * Author: nielsie95, Wanted, & Coh3n
+ * Description: Returns the type of lock that needs to be opened.
+ *)
+function PL_GetLock(): string;
+var
+  densities: TIntegerArray;
+  tpa: TPointArray;
+  bounds: TBox;
+  l, t: integer;
+  e: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 8000); // 8 seconds to identify lock
+
+  while ((getSystemTime < t) and (PL_LockScreen())) do
+  begin
+    wait(randomRange(50, 75));
+
+    // box around the spinning lock
+    tpa := PL_GetLockTPA(intToBox(40, 40, 180, 180));
+    l := length(tpa);
+
+    // if not enough colors are found, search again
+    if (l < 300) then
+      continue;
+
+    // if more than 1100 colors are found, it has to be a circle
+    if (l > 1100) then
+    begin
+      result := 'circle';
+      break;
+    end;
+
+    bounds := getTPAbounds(tpa);
+
+    if (((bounds.x2 - bounds.x1) < 24) and ((bounds.y2 - bounds.y2) < 24)) then
+      continue;
+
+    densities := PL_GetDensities(bounds);
+
+    if (((densities[3] - densities[0]) > 150) and (l > 350)) then
+    begin
+      result := 'triangle';
+      break;
+    end;
+
+    e := maxE(bounds.x2 - bounds.x1, bounds.y2 - bounds.y1) / minE(bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+
+    if ((((densities[3] - densities[0]) < 35) and (l > 600)) or
+        (((densities[3] - densities[0]) < 75) and (l > 750) and (l < 900))) and
+        (e < 1.3) then
+    begin
+      result := 'square';
+      break;
+    end;
+  end;
+
+  if (result = '') then
+    result := 'rombus';
+
+  writeln('PL_GetLock: Identified lock - '+capitalize(result))
+end;
+
+(**
+ * Author: nielsie95, Wanted, & Coh3n
+ * Description: Returns the type of key in 'slot', starting at 0.
+ *)
+function PL_GetKey(slot: integer): string;
+var
+  tpa: TPointArray;
+  l, e, t: integer;
+  bounds: TBox;
+  densities: TIntegerArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 8000);
+  l := 0;
+
+  while ((getSystemTime < t) and (PL_LockScreen())) do
+  begin
+    wait(60 + random(40));
+
+    // search box depends on which 'slot' the key is in
+    tpa := PL_GetLockTPA(intToBox(190 + (slot * 95), 180, 235 + (slot * 95), 260));
+
+    if (length(tpa) < l) or (length(tpa) < 230) then
+      continue;
+
+    l := length(tpa);
+    bounds := getTPABounds(tpa);
+
+    if ((bounds.x2 - bounds.x1) < 18) and ((bounds.y2 - bounds.y1) < 18) then
+      continue;
+
+    e := (bounds.x2 - bounds.x1) - (bounds.y2 - bounds.y1);
+
+    if (l > 400) and (l < 600) and (e < -5) then
+    begin
+      result := 'rombus';
+      break;
+    end;
+
+    if (iAbs(e) <= 3) then
+      if (l > 600) then
+      begin
+        result := 'square';
+        break;
+      end else
+        if (l > 375) then
+        begin
+          result := 'circle';
+          break;
+        end;
+
+    densities := PL_GetDensities(bounds);
+
+    if (l < 350) and ((densities[3] - densities[0]) > 50) then
+    begin
+      result := 'triangle';
+      break;
+    end;
+  end;
+
+  if (result <> '') then
+    writeln('PL_GetKey: Identified key - '+capitalize(result))
+  else
+    writeln('PL_GetKey: Didn''t identify key in slot '+toStr(slot));
+end;
+
+{*******************************************************************************
+function SolvePilloryPuzzle: boolean;
+by: Nielsie95 & IceFire908
+Description: Solves the pillory random.
+*******************************************************************************}
+
+function PL_Solve(): boolean;
+var
+  i, t: integer;
+  lock: string;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (2 * 60000)); // maximum 2 minutes
+  clickNorth(SRL_ANGLE_HIGH);
+
+  if (not PL_ClickCage()) then
+  begin
+    writeln('PL_Solve: Didn''t click cage lock');
+    exit;
+  end;
+
+  repeat
+    lock := PL_GetLock();
+
+    if (lock <> '') then
+      for i := 0 to 2 do // there's only 3 keys for each puzzle
+        if (PL_GetKey(i) = lock) then
+        begin
+          writeln('PL_Solve: Found matching key');
+
+          // specific coords because only a certain part is "clickable"
+          mouse(208 + (94 * I), 225, 4, 4, mouse_Left);
+          wait(2000 + random(1000));
+          break;
+        end;
+
+    if (not PL_LockScreen()) then
+      if (findNPCChatText('not', nothing)) then
+        PL_ClickCage()
+      else
+        result := waitTabExists(TAB_MAGIC, 5000);
+
+    wait(1500 + random(500));
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('PL_Solve: Pillory solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  PL_Solve();
+end.
+}
+{$ENDIF}

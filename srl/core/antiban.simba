@@ -759,3 +759,133 @@ function LevelUp: Boolean;
 begin
   Result := LevelUpEx(True, False);
 end;
+
+(*
+FindMod
+~~~~~~~
+
+.. code-block:: pascal
+
+    function FindMod: Boolean;
+
+Results true if a mod is found talking in the chat box.  Will logout and wait
+if LogoutOnMod (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+  FindMod();
+*)
+function FindMod: Boolean;
+var
+  tX, tY: Integer;
+begin
+  if (not UseFindMod) or (not LoggedIn) then
+    exit;
+
+  if (not SRLBitmapsLoaded) then
+    LoadSRLBitMaps;
+
+  if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+     (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+       (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    begin
+      Result := True;
+
+      if (SRL_Procs[srl_OnFindMod] <> nil) then
+        SRL_Procs[srl_OnFindMod]();
+
+      if (LogoutOnMod) then
+      begin
+        Writeln('******** FOUND MOD ********');
+        Writeln('Logging out, waiting 1-2 minutes until mod leaves');
+
+        WaitFunc(@ExitToLobby, 500, 1500);
+        Wait(60000 + Random(60000));
+        LoginPlayer;
+      end;
+    end;
+end;
+
+(*
+FindDead
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDead: Boolean;
+
+Logs out and sets the current player to false if they are found dead. Will not
+logout if Reincarnate (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo and Cazax
+
+Example:
+
+.. code-block:: pascal
+
+  FindDead();
+*)
+function FindDead: Boolean;
+begin
+  Result := False;
+  if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dear', SmallChars, Nothing) then
+    if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dead', SmallChars, Nothing) then
+    begin
+      Result := True;
+
+      if (SRL_Procs[srl_OnFindDead] <> nil) then
+        SRL_Procs[srl_OnFindDead]();
+
+      if (Reincarnate) then
+        exit;
+
+      LogOut;
+      Players[CurrentPlayer].Rand := 'Dead';
+      Players[CurrentPlayer].Active := False;
+    end;
+end;
+
+(*
+FindDwarvenPopup
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDwarvenPopup: Boolean;
+
+A simple functinds and closes the "please buy RS Members" popup that happens
+when you reach lvl 10 in any skill.
+
+.. note::
+
+    Author: Harry
+
+Example:
+
+.. code-block:: pascal
+
+  FindDwarvenPopup();
+*)
+function FindDwarvenPopup: Boolean;
+begin
+  Result := False;
+  // Parts of red X, checked in two different spots to reduce false-positives
+  if (GetColor(485, 40) = 2569093) then
+    if (GetColor(488, 40) = 11189720) then
+    begin
+      Result := True;
+
+      // Box around the X, to close it.
+      MouseBox(482, 35, 492, 44, mouse_left);
+      Wait(1000+Random(3000));
+    end;
+end;

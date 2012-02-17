@@ -1,0 +1,60 @@
+(*
+Prison Pete
+===========
+
+Stores all the routines to solve the Prison Pete random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
+{$ENDIF}
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the random.
+ *)
+function PP_Detect(): boolean;
+begin
+  if (not tabExists(TAB_MAGIC)) then
+    if (countColorTolerance(14409956, MMX1, MMY1, MMX2, MMY2, 10) > 700) then // white tiles
+      if (countColorTolerance(6713450, MMX1, MMY1, MMX2, MMY2, 10) > 300) then // grey tiles
+        result := (countColorTolerance(clWhite, MMX1, MMY1, MMX2, MMY2, 50) > 500); // walls
+end;
+
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function PP_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+  doConversation('', false);
+
+  repeat
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    writeln('PP_Solve: '' solver timed out');
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  writeln(toStr(PP_Detect));
+end.
+}
+{$ENDIF}

@@ -1,0 +1,503 @@
+(*
+Antirandoms
+===========
+
+The 'master' SRL randoms file.  The 4 "core" functions (solverandoms,
+FindAllrandoms, FindNormalRandoms, and FindNonInventoryRandoms) shouldn't ever
+need to be updated if a new random event is added to the game, or a current one
+is removed.
+
+*)
+
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+{$ENDIF}
+
+// include all the solver files
+{$i common.simba}
+{$i rewards.simba}
+{$i demon.simba}
+{$i maze.simba}
+{$i evilbob.simba}
+{$i mordaut.simba}
+{$i certers.simba}
+{$i mime.simba}
+{$i abyss.simba}
+{$i frog.simba}
+{$i pinball.simba}
+{$i sandwich.simba}
+{$i pillory.simba}
+{$i capnarnav.simba}
+{$i quiz.simba}
+{$i leo.simba}
+{$i prisonpete.simba}
+{$i forester.simba}
+{$i molly.simba}
+{$i beekeeper.simba}
+
+// represent the elements of the SRL_Randoms array
+const
+  SRL_RANDOMS_COUNT = 19;
+    SRL_RAND_DEMON     = 0;
+    SRL_RAND_MAZE      = 1;
+    SRL_RAND_EVILBOB   = 2;
+    SRL_RAND_MORDAUT   = 3;
+    SRL_RAND_CERTERS   = 4;
+    SRL_RAND_MIME      = 5;
+    SRL_RAND_ABYSS     = 6;
+    SRL_RAND_FROG      = 7;
+    SRL_RAND_PINBALL   = 8;
+    SRL_RAND_SANDWICH  = 9;
+    SRL_RAND_PILLORY   = 10;
+    SRL_RAND_ARNAV     = 11;
+    SRL_RAND_QUIZ      = 12;
+    SRL_RAND_LEO       = 13;
+    SRL_RAND_PETE      = 14;
+    SRL_RAND_FORESTER  = 15;
+    SRL_RAND_MOLLY     = 16;
+    SRL_RAND_BEEKEEPER = 17;
+    SRL_RAND_REWARDS   = 18;
+
+type
+  TRandom = record
+    name: string;
+    solve, detect: function(): boolean;
+    solved, failed: integer; // for SRL stats/randoms report
+    isInvRandom, hasRewardBox, disabled: boolean;
+  end;
+
+var
+  SRL_Randoms: array[0..(SRL_RANDOMS_COUNT - 1)] of TRandom;
+  SRL_RandomsSet, SRL_DisableRandoms: boolean;
+
+(*
+SRLRandomsReport
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SRLRandomsReport(): boolean;
+
+Prints a random events progress report for the current script.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SRLRandomsReport();
+*)
+procedure SRLRandomsReport();
+var
+  i: integer;
+begin
+  writeln('|====================================|');
+  writeln('|              ~ SRL ~               |');
+  writeln('|           Randoms Report           |');
+  writeln('|────────────────────────────────────|');
+  writeln('|                                    |');
+
+  for i := 0 to high(SRL_Randoms) do
+  begin
+    if (SRL_Randoms[i].name = '') then
+      continue;
+
+    if (SRL_Randoms[i].solved > 0) then
+      writeln('|    '+padR(SRL_Randoms[i].name
+        +' Solved', 22)+' ~ '+padR(toStr(SRL_Randoms[i].solved), 7)+'|');
+
+    if (SRL_Randoms[i].failed > 0) then
+      writeln('|    '+padR(SRL_Randoms[i].name
+        +' Failed', 22)+' ~ '+padR(toStr(SRL_Randoms[i].failed), 7)+'|');
+  end;
+
+  writeln('|                                    |');
+  writeln('|────────────────────────────────────|');
+  writeln('|====================================|');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Sets the SRL_Randoms global array.
+ *)
+procedure _SetRandoms();
+var
+  i: integer;
+begin
+  if (SRL_RandomsSet) then
+    exit;
+
+  with SRL_Randoms[SRL_RAND_DEMON] do
+  begin
+    name := 'Drill Demon';
+    solve := @DD_Solve;
+    detect := @DD_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MAZE] do
+  begin
+    name := 'Maze';
+    solve := @Maze_Solve;
+    detect := @Maze_Detect;
+    isInvRandom := false;
+    hasRewardBox := false;
+  end;
+
+  with SRL_Randoms[SRL_RAND_EVILBOB] do
+  begin
+    name := 'Evil Bob';
+    solve := @EB_Solve;
+    detect := @EB_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MORDAUT] do
+  begin
+    name := 'Mordaut';
+    solve := @MD_Solve;
+    detect := @MD_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_CERTERS] do
+  begin
+    name := 'Certers';
+    solve := @CT_Solve;
+    detect := @CT_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MIME] do
+  begin
+    name := 'Mime';
+    solve := @Mime_Solve;
+    detect := @Mime_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_ABYSS] do
+  begin
+    name := 'Abyss';
+    solve := @Abyss_Solve;
+    detect := @Abyss_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_FROG] do
+  begin
+    name := 'Frog Princess';
+    solve := @Frog_Solve;
+    detect := @Frog_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PINBALL] do
+  begin
+    name := 'Pinball';
+    solve := @PB_Solve;
+    detect := @PB_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_SANDWICH] do
+  begin
+    name := 'Sandwich Lady';
+    solve := @SL_Solve;
+    detect := @SL_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PILLORY] do
+  begin
+    name := 'Pillory (Cage)';
+    solve := @PL_Solve;
+    detect := @PL_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_ARNAV] do
+  begin
+    name := 'Cap''n Arnav';
+    solve := @CA_Solve;
+    detect := @CA_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_QUIZ] do
+  begin
+    name := 'Quiz Master';
+    solve := @Quiz_Solve;
+    detect := @Quiz_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_LEO] do
+  begin
+    name := 'Leo';
+    solve := @Leo_Solve;
+    detect := @Leo_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PETE] do
+  begin
+    name := 'Prison Pete';
+    solve := @PP_Solve;
+    detect := @PP_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_FORESTER] do
+  begin
+    name := 'Freaky Forester';
+    solve := @FF_Solve;
+    detect := @FF_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MOLLY] do
+  begin
+    name := 'Molly';
+    solve := @Molly_Solve;
+    detect := @Molly_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_BEEKEEPER] do
+  begin
+    name := 'Beekeeper';
+    solve := @BK_Solve;
+    detect := @BK_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_REWARDS] do
+  begin
+    name := 'Rewards';
+    solve := @RD_Solve;
+    detect := @RD_Detect;
+    isInvRandom := true;
+    hasRewardBox := true;
+  end;
+
+  // disable all randoms if set to
+  if (SRL_DisableRandoms) then
+  begin
+    writeln('**** WARNING: Disabling random event solvers');
+
+    for i := 0 to high(SRL_Randoms) do
+      SRL_Randoms[i].disabled := true;
+  end;
+
+  SRL_RandomsSet := true;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: detects and solves the random of index 'rand' in the SRL_Randoms
+ * array.
+ *)
+function _SolveRandom(rand: integer): boolean;
+begin
+  if (not loggedIn) then
+    exit;
+
+  if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
+  begin
+    writeln('***** Found Random: '+SRL_Randoms[rand].name+' *****');
+
+    if (SRL_Procs[SRL_OnFindRandom] <> nil) then
+      SRL_Procs[SRL_OnFindRandom]();
+
+    // sometimes it gets in the way of objects we need to find
+    toggleMoneyPouch(false);
+
+    // if solver isn't disabled, solve it
+    if (not SRL_Randoms[rand].disabled) then
+    begin
+      if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
+      begin
+        writeln('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
+        inc(SRL_Randoms[rand].solved);
+        result := true;
+      end;
+
+    end else
+      writeln(SRL_Randoms[rand].name+' solver currently disabled');
+
+    if (not result) then
+    begin
+      writeln('***** Failed Random: '+SRL_Randoms[rand].name+' *****');
+
+      // solver didn't fail, it's disabled
+      if (not SRL_Randoms[rand].disabled) then
+        inc(SRL_Randoms[rand].failed);
+
+      players[currentPlayer].rand := SRL_Randoms[rand].name;
+      players[currentPlayer].active := false;
+
+      // logout and terminate if there's only one player active
+      if ((length(players) = 1) or (playersActive() = 1)) then
+      begin
+        logout();
+        terminateScript();
+      end else
+        nextPlayer(false);
+    end;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Finds and solves all the randoms.  Checks inventory if checkInv
+ * is set to true. This function should only be called in FindNormalRandoms and
+ * FindNonInventoryRandoms.
+ *)
+function _FindAllRandoms(checkInv: boolean): boolean;
+var
+  i: integer;
+  v: TVariantArray;
+begin
+  if (not loggedIn) then
+    exit;
+
+  if (not SRL_RandomsSet) then
+    _SetRandoms();
+
+  // handle the GE update message
+  if (findNPCChatText('exchan', nothing)) then
+    clickContinue(true, true);
+
+  for i := 0 to high(SRL_Randoms) do
+  begin
+    if ((SRL_Randoms[i].isInvRandom) and (not checkInv)) then
+      continue;
+
+    if (_SolveRandom(i)) then
+    begin
+      // solve reward box if a non inventory random was just solved
+      if (not SRL_Randoms[i].isInvRandom) then
+      begin
+        // reward box doesn't exist if inventory is full/some randoms don't have reward box
+        result := (invFull() or (not SRL_Randoms[i].hasRewardBox));
+
+        if (not result) then
+        begin
+          v := [SRL_RAND_REWARDS];
+          if (waitFuncEx('_SolveRandom', v, 50, 30000)) then
+            _SolveRandom(SRL_RAND_REWARDS); // check if we chose another reward
+        end;
+
+        break;
+      end;
+
+      result := true;
+    end;
+
+    if (result) then
+      break;
+  end;
+
+  findDead();
+  findMod();
+  findDwarvenPopup();
+
+  if (SRL_Procs[SRL_OnRandomCall] <> nil) then
+    SRL_Procs[SRL_OnRandomCall]();
+end;
+
+(*
+FindNormalRandoms
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindNormalRandoms(): boolean;
+
+Finds and solves Runescape's random events.  Returns true if an event was
+solved.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FindNormalRandoms();
+*)
+function FindNormalRandoms(): boolean;
+begin
+  result := _FindAllrandoms(true);
+end;
+
+(*
+FindNonInventoryRandoms
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindNonInventoryRandoms(): boolean;
+
+Finds and solves all Runescape's non inventory random events (i.e. the ones that
+teleport the player somewhere else).  Returns true if an event was solved.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FindNonInventoryRandoms();
+*)
+function FindNonInventoryRandoms(): boolean;
+begin
+  result := _FindAllRandoms(false);
+end;
+
+{$IFNDEF IS_INCLUDE}
+{
+begin
+  clearDebug();
+  activateClient();
+  setupSRL();
+
+  findNormalRandoms();
+  SRLRandomsReport();
+end.
+}
+{$ENDIF}
