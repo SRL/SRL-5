@@ -316,7 +316,7 @@ begin
       if (findNPCChatText('not', nothing)) then
         PL_ClickCage()
       else
-        result := waitTabExists(TAB_MAGIC, 5000);
+        result := waitTabExists(TAB_MAGIC, 10000);
 
     wait(1500 + random(500));
   until(result or (getSystemTime > t));
