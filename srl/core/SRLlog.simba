@@ -43,10 +43,10 @@ begin
   ForceDirectories(SRLSavePath);
 
   try
-    if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png') then
-      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.png')
+    if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
+      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
     else
-      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png');
+      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
 
     WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
   except
