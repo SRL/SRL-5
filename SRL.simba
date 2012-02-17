@@ -140,15 +140,13 @@ begin
   UseAutoResponder := True;
   GraphicsSet := False;
   AllowPVP    := False;
-  SRLSavePath := includePath + 'SRL/logs/';
+  SRL_SavePath := includePath + 'SRL/logs/';
+  SRL_StartTime := theTime;
   WarnSensitivity := -2;
   SetupAutoColors;
 
 {$IFDEF LoadExtraFonts}
   srl_UpdateFonts(srl_FontsUp2date);
-{$ENDIF}
-{$IFDEF YourMom}
-  InitializeSRLLogFile;
 {$ENDIF}
 
   AddOnTerminate('FreeSRL');

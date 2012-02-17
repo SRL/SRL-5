@@ -1,22 +1,18 @@
 (*
 
-SRL Debug-log management
-========================
+SRL Debug Log
+=============
 
-Saves SRLLog
+Routines that write to the SRL log file.
 
 *)
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » SRL Log related functions                   --//
-//-----------------------------------------------------------------//
-// * function InitializeSRLLogFile : boolean;                      // by Markus
-// * procedure AddToSRLLog(s : string);                            // by Markus
 
-{ var SRLSavePath : string;
-  Description: The default path we save files too (screenshots, chatlogs). }
 var
-  SRLSavePath : string;
+  SRL_SavePath: string;        // the path to save log files
+  SRL_LogFile: integer;        // stores the log file
+  SRL_StartTime: string;       // the time the script starts (used to name log file)
+  SRL_DisableLogging: boolean; // gives the scripter the option to disable
+  SRL_LogInitialized: boolean; // so disabling will work properly; set if file was created successfully
 
 (*
 TakeScreen
@@ -37,16 +33,18 @@ Example:
 
 .. code-block:: pascal
 
+  TakeScreen('Prison Pete');
+
 *)
 procedure TakeScreen(Reason: string);
 begin
-  ForceDirectories(SRLSavePath);
+  ForceDirectories(SRL_SavePath);
 
   try
-    if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
-      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
+    if FileExists(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
+      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
     else
-      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
+      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
 
     WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
   except
@@ -60,81 +58,49 @@ InitializeSRLLogFile
 
 .. code-block:: pascal
 
-    function InitializeSRLLogFile : boolean;
+    procedure InitializeSRLLogFile();
+
+Creates the SRL log file.
 
 .. note::
 
-    by Markus
+    by Coh3n
+    Last Modified: Feb. 17th, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
-*)
-function InitializeSRLLogFile : boolean;
-{$IFDEF YourMom}
-var
-  FolderArray: TStringArray;
-  BaseFileName: string;
-  i: integer;
-  TempFile: integer;
-begin
-  result := false;
-  FolderArray := [IncludePath +'SRL/logs/', AppPath+'SRLlogs/', ScriptPath, AppPath];
-  for i := 0 to high(FolderArray) do
-  begin
-    if (trim(FolderArray[i]) <> '') then
-    begin
-      if not (DirectoryExists(FolderArray[i])) then
-        if not CreateDirectory(FolderArray[i]) then
-          Continue;
-      SRLSavePath := FolderArray[i];
-      BaseFileName := SRLSavePath+'SRL log '+TheDate(3)+' ';
-      for i := 0 to 999 do
-      begin
-        if (not(FileExists(BaseFileName+inttostr(i)+'.txt'))) then
-        begin
-          try
-            TheFile := RewriteFile(BaseFileName+inttostr(i)+'.txt', false);
-            result := (TheFile >= 0);
-            if (result) then
-              exit
-            else
-              CloseFile(TheFile);
-          except end;
-        end else
-        begin
-          TempFile := OpenFile(BaseFileName+inttostr(i)+'.txt', true);
-          if (TempFile >= 0) then
-            if (FileSize(TempFile) = 0) then
-            begin
-              CloseFile(TempFile);
-              try
-                TheFile := RewriteFile(BaseFileName+inttostr(i)+'.txt', false);
-                result := (TheFile >= 0);
-                if (result) then
-                  exit
-                else
-                  CloseFile(TheFile);
-              except end;
-            end else
-              CloseFile(TempFile);
-        end;
-      end;
-    end;
-  end;
-end;
-{$ELSE}
-begin
-  Result := False;
-end;
-{$ENDIF}
+  InitializeSRLLogFile();
 
-{*******************************************************************************
-procedure AddToSRLLog(s : string);
-By: Markus
-Description: Adds a line to the SRL Log file.
-*******************************************************************************}
+*)
+procedure InitializeSRLLogFile();
+var
+  fileName: string;
+begin
+  if (SRL_DisableLogging) then
+    exit;
+
+  forceDirectories(SRL_SavePath);
+
+  // make sure it's a valid file name (Windows)
+  fileName := 'SRL log ('+theDate(DATE_MONTH)+' at '+SRL_StartTime+').txt';
+  fileName := replace(fileName, '/', '-');
+  fileName := replace(fileName, ':', ' ');
+  fileName := SRL_SavePath + fileName;
+
+  try
+    if (fileExists(fileName)) then
+      SRL_LogFile := openFile(fileName, false)
+    else
+      createFile(fileName);
+  except
+    writeln('InitializeSRLLogFile: '+exceptionToString(exceptionType, exceptionParam));
+  end;
+
+  SRL_LogInitialized := true;
+end;
+
 (*
 AddToSRLLog
 ~~~~~~~~~~~
@@ -143,40 +109,40 @@ AddToSRLLog
 
     procedure AddToSRLLog(s : string);
 
+Writes the string 's' to the SRL log file.
+
 .. note::
 
     by Markus
+    Last Modified: Feb. 17th, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+  AddToSRLLoc('Adding to SRL log file!');
+
 *)
-procedure AddToSRLLog(s : string);
-{$IFDEF YourMom}
-var
-  WriteString : string;
+procedure AddToSRLLog(s: string);
 begin
-  if (TheFile >= 0) then
+  writeln(s);
+
+  if (SRL_DisableLogging) then
+    exit;
+
+  if (not SRL_LogInitialized) then
+    InitializeSRLLogFile();
+
+  if (SRL_LogFile >= 0) then
   begin
-    WriteString := TheTime+': '+s;
     try
-      WriteFileString(TheFile, WriteString+#13#10);
+      writeFileString(SRL_LogFile, '['+msToTime(getTimeRunning(), TIME_BARE)+']: '+s+#13+#10);
     except
-      srl_warn('AddToSRLLog', 'Could not write to logfile!', warn_AllVersions);
+      SRL_Warn('AddToSRLLog', 'Could not write to logfile: '+exceptionToString(exceptionType, exceptionParam), WARN_ALLVERSIONS);
     end;
   end;
 end;
-{$ELSE}
-begin
-end;
-{$ENDIF}
 
-{*******************************************************************************
-procedure FreeSRLLog;
-By: Raymond
-Description: Frees the opened SRL logfile.
-*******************************************************************************}
 (*
 FreeSRLLog
 ~~~~~~~~~~
@@ -184,6 +150,8 @@ FreeSRLLog
 .. code-block:: pascal
 
     procedure FreeSRLLog;
+
+Frees the opened SRL log file.
 
 .. note::
 
@@ -193,14 +161,14 @@ Example:
 
 .. code-block:: pascal
 
+  freeSRLLog();
+
 *)
 procedure FreeSRLLog;
-{$IFDEF YourMom}
 begin
-  if (TheFile >= 0 ) then
-    CloseFile(thefile)
+  try
+    if (SRL_LogFile >= 0) then
+      closeFile(SRL_LogFile);
+  except
+  end;
 end;
-{$ELSE}
-begin
-end;
-{$ENDIF}
