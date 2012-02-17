@@ -76,27 +76,7 @@
 {$include SRL/SRL/core/cautorespond.simba}
 {$include SRL/SRL/core/antiban.simba}
 {$include SRL/SRL/core/globalstats.simba}
-{$include SRL/SRL/core/antirandoms/common.simba}
-{$include SRL/SRL/core/antirandoms/certer.simba}
-{$include SRL/SRL/core/antirandoms/demon.simba}
-{$include SRL/SRL/core/antirandoms/forester.simba}
-{$include SRL/SRL/core/antirandoms/quiz.simba}
-{$include SRL/SRL/core/antirandoms/sandwich.simba}
-{$include SRL/SRL/core/antirandoms/evilbob.simba}
-{$include SRL/SRL/core/antirandoms/leo.simba}
-{$include SRL/SRL/core/antirandoms/frog.simba}
-{$include SRL/SRL/core/antirandoms/molly.simba}
-{$include SRL/SRL/core/antirandoms/pillory.simba}
-{$include SRL/SRL/core/antirandoms/pinball.simba}
-{$include SRL/SRL/core/antirandoms/maze.simba}
-{$include SRL/SRL/core/antirandoms/capnarnav.simba}
-{$include SRL/SRL/core/antirandoms/beekeeper.simba}
-{$include SRL/SRL/core/antirandoms/abyss.simba}
-{$include SRL/SRL/core/antirandoms/mordaut.simba}
-{$include SRL/SRL/core/antirandoms/prisonpete.simba}
-{$include SRL/SRL/core/antirandoms/mime.simba}
 {$include SRL/SRL/core/antirandoms/antirandoms.simba}
-{$include SRL/SRL/core/antirandoms/randomtool.simba}
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
