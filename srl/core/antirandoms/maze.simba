@@ -16,7 +16,10 @@ type
     name: string;
     area: TBox;                  // area to search for black on MM
     minCount, maxCount: integer; // range for lenght of black found on MM
-    path: array of TVariantArray; // [x, y, compassAngle] if compassAngle = '', it won't look for the door (some rooms need to walk further)
+
+    // [x, y, compassAngle] if compassAngle = '', it won't look for the door (some rooms need to walk further)
+    // compass angle should be so you can see the DARK side of the door
+    path: array of TVariantArray;
   end;
   TMazePathArray = array of TMazePath;
 
@@ -34,7 +37,11 @@ const
  *)
 function Maze_Detect(): boolean;
 begin
-  result := (GetNPCChatName() = 'Dygt8!loqgGlgD50') and (not tabExists(TAB_MAGIC));
+  // WARNING: sometimes magic tab exists, sometimes it doesn't
+
+  if (getNPCChatName() = 'Dygt8!loqgGlgD50') then
+    // the red maze walls on the minimap
+    result := (countColorTolerance(197614, MMX1, MMY1, MMX2, MMY2, 15) > 1000);
 end;
 
 (**
@@ -67,7 +74,7 @@ begin
 
     path := [[630, 86, 's'], [672, 94, 's'], [676, 83, 's'], [609, 78, 's'],
              [645, 78, 's'], [581, 77, 's'], [670, 80, 's'], [604, 49, 'w'],
-             [608, 94, 's'], [575, 81, 'w'], [609, 128, 's'], [583, 78, 's']];
+             [608, 94, 's'], [575, 81, 'w'], [611, 128, 's'], [583, 78, 's']];
   end;
 
   with result[MAZE_PATH_SE] do
@@ -77,10 +84,10 @@ begin
     minCount := 800;
     maxCount := 3400;
 
-    path := [[580, 82, 's'], [698, 79, 's'], [577, 84, ''], [590, 55, 'e'],
-             [587, 89, 'e'], [598, 88, 'e'], [684, 87, 'e'], [571, 90, ''],
-             [603, 78, 'e'], [590, 83, 'e'], [610, 77, 'n'], [695, 72, 'e'],
-             [594, 87, 'e'], [595, 76, 'n']];
+    path := [[580, 82, 's'], [698, 79, 's'], [560, 81, ''], [637, 116, 'w'],
+             [676, 81, 'w'], [648, 82, 'w'], [574, 83, 'w'], [690, 83, ''],
+             [643, 90, 'w'], [663, 86, 'w'], [645, 95, 's'], [561, 94, 'w'],
+             [662, 83, 'w'], [657, 97, 's']];
   end;
 
   with result[MAZE_PATH_SW] do
@@ -138,16 +145,79 @@ end;
 
 (**
  * Author: DemiseScythe & Coh3n
+ * Description: Uses dark and light DTMs to find and click the maze doors.
+ *)
+function Maze_ClickDoor(): boolean;
+var
+  dtmDoorDark, i, x, y: integer;
+  s: string;
+  tpa: TPointArray;
+  aFound: T2DExtendedArray;
+begin
+  dtmDoorDark := DTMFromString('m6wAAAHic42ZgYOADYgkglmeAABCbGYjZoXLCQCwC5YMwFxBzQjETVC0IMEJpNii2t7VBwTUVZWCMLg7C/ED1xGJGqJ3EYCQAAF6aCvQ=');
+
+  // find the DTM, using TPA because the walls and doors are very similar
+  findDTMsRotatedAlternating(
+    dtmDoorDark, tpa, MSX1, MSY1, MSX2, MSY2, -pi/4, pi/4, pi/60, aFound);
+
+  if (length(tpa) > 0) then
+  begin
+    sortTPAFrom(tpa, point(MSCX, MSCY)); // sort from center of screen
+    filterTPADist(tpa, 5);
+
+    for i := 0 to high(tpa) do
+    begin
+      x := tpa[i].x;
+      y := tpa[i].y;
+
+      mouse(x, y, 3, 3, mouse_Move);
+
+      if (waitUptext('pen', 250)) then
+      begin
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+
+        // can sometimes misclick the doors
+        if (didYellowClick()) then
+          continue;
+
+        wait(2500 + random(500));
+
+        // check the chat message to see if we accidentially clicked a wall
+        s := getBlackChatMessage();
+        if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
+        begin
+          writeln('Maze_ClickDoor: Accidentially clicked the wall');
+          typeSend('.'); // don't like this, but it's needed to remove last chat text line
+          wait(1500 + random(500));
+          continue;
+        end;
+
+        result := true;
+        break;
+      end;
+    end;
+  end;
+
+  if (result) then
+    writeln('Maze_ClickDoor: Clicked door')
+  else
+    writeln('Maze_ClickDoor: Failed to clicked door');
+
+  freeDTM(dtmDoorDark);
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
  * Description: Walks the path.
  *)
 function Maze_WalkPath(path: TMazePath): boolean;
 var
-  i, t, dtmDoor: integer;
+  i, t: integer;
 begin
   if (not loggedIn()) then
     exit;
 
-  dtmDoor := DTMFromString('m6wAAAHic42ZgYGBhZGD4C6S5gDQnI4L/E4j5gOxvQFqUEcJuAbKbobgWiOugdAMQ1wNxGxS3A7G9rQ1WXFNRBsbIYvxA9cRioDMYmIjESAAAxmMT4g==');
   writeln('Maze_WalkPath: Walking '+path.name+' path');
 
   for i := 0 to high(path.path) do
@@ -166,15 +236,10 @@ begin
 
       // in a loop in case we misclick the door
       repeat
-        // box around the center of the player
-        if (clickDTMRotatedIn(dtmDoor, 170, 120, 325, 240, -Pi/4, Pi/4, Pi/60, ['pen'], mouse_Left)) then
+        if (Maze_ClickDoor()) then
         begin
-          if (didYellowClick()) then // sometimes the door click doesn't register properly
-            continue;
-
           writeln('Maze_WalkPath: Finished room '+toStr(i));
           result := (i = high(path.path));
-          wait(2500 + random(500));
           break;
         end;
       until(getSystemTime > t);
@@ -192,8 +257,6 @@ begin
     writeln('Maze_WalkPath: Finished path '+path.name)
   else
     writeln('Maze_WalkPath: Didn''t finish path '+path.name);
-
-  freeDTM(dtmDoor);
 end;
 
 (**
