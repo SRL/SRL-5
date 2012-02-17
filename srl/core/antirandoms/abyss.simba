@@ -24,7 +24,8 @@ begin
     exit;
 
   // redish color on the minimap; only searches top half because the Mime audience color is similar and only appears in the bottom of the minimap
-  result := (findColorTolerance(x, y, 3619450, MMCX-10, MMCY-10, MMCX+10, MMCY, 15));
+  if (findColorTolerance(x, y, 3619450, MMCX-10, MMCY-10, MMCX+10, MMCY, 15)) then
+    result := (countColorTolerance(clBlack, MMX1, MMY1, MMX2, MMY2, 15) > 1000);
 end;
 
 (**

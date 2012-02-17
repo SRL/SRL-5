@@ -41,7 +41,8 @@ var
 begin
   if (not tabExists(TAB_MAGIC)) then
     if (findColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then // water color
-      result := tabExists(TAB_PRAYER);
+      if (inRange(countDots('red'), 4, 10)) then
+        result := tabExists(TAB_PRAYER);
 end;
 
 (**
