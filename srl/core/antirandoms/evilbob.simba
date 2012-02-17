@@ -97,7 +97,7 @@ begin
 
   writeln('EB_GetNet: Getting fishing net');
 
-  result := waitDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 200); // may already have a net
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 200); // may already have a net
 
   if (not result) then
   begin
@@ -126,7 +126,7 @@ begin
     begin
       if (didRedClick) then
       begin
-        result := waitDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 5000); // look for net in inventory
+        result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 5000); // look for net in inventory
 
         if (not result) then
           writeln('DB_GetNet: Didn''t find DTM_EB_NET_INV');
@@ -256,8 +256,8 @@ begin
   writeln('EB_GetFish: Getting fish');
 
   // may already have fish
-  result := waitDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 200) or
-            waitDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200);
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 200) or
+            waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200);
 
   EB_WalkToCenter(); // make sure we're at the center of the island
 
@@ -276,7 +276,7 @@ begin
     if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
     begin
       if (didRedClick) then
-        if (waitDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 10000)) then // wait to find cooked fish
+        if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 10000)) then // wait to find cooked fish
           result := true
         else
           writeln('EB_GetFish: Didn''t find DTM_EB_FISH_COOKED');
@@ -300,7 +300,7 @@ begin
     exit;
 
   writeln('EB_Uncook: Uncooking the fish');
-  result := waitDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200); // may already have uncooked the fish
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200); // may already have uncooked the fish
 
   EB_WalkToCenter();
 
@@ -315,7 +315,7 @@ begin
       if (clickDTMRotatedIn(EB_DTMs[DTM_EB_POT], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ncook'], mouse_Left)) then
       begin
         // wait for the fish to be uncooked
-        if (waitDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 5000)) then
+        if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 5000)) then
           result := true
         else
           writeln('EB_Uncook: Didn''t find DTM_EB_FISH_RAW')

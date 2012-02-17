@@ -19,6 +19,42 @@ var
   SRLSavePath : string;
 
 (*
+TakeScreen
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure TakeScreen(Reason: string);
+
+Sets up Box variables
+
+.. note::
+
+    by Mutant, Squirrle, Yakman, & Harry
+    Last Modified: Feb. 16th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure TakeScreen(Reason: string);
+begin
+  ForceDirectories(SRLSavePath);
+
+  try
+    if FileExists(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png') then
+      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.png')
+    else
+      SaveScreenshot(SRLSavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png');
+
+    WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
+  except
+    Writeln('Failed to save screenshot of: ' + reason);
+  end
+end;
+
+(*
 InitializeSRLLogFile
 ~~~~~~~~~~~~~~~~~~~~
 

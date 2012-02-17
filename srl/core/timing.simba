@@ -259,6 +259,91 @@ begin
 end;
 
 (*
+WaitFuncEx
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+
+Calls Func with arguments Args every WaitPerLoop milliseconds for a max of
+MaxWait milliseconds. Func can return any basic types (boolean, string,
+integer). Boolean: Returns it. String: Returns true if string equals 'true'.
+Integer: Returns true unless it equals 0.
+
+.. note::
+
+  by Dgby714
+
+Example:
+
+.. code-block:: pascal
+
+  var
+    V: TVariantArray;
+  begin
+    V := [0, 0, 16711680, 4, 4, 500, 500];
+    WriteLn(WaitFuncEx('FindColorEx', V, 10 + Random(15), 1000));
+  end.
+*)
+function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+var
+  T: integer;
+  Temp: variant;
+begin
+  T := GetSystemTime + MaxWait;
+  while (GetSystemTime < T) do
+  begin
+    Temp := CallProc(Func, Args);
+    if (not (VarType(Temp) = varString)) then
+      Temp := ToStr(Temp);
+    Result := StrToBoolDef(Temp, False);
+    if (Result) then
+      Exit;
+    Wait(WaitPerLoop);
+  end;
+end;
+
+(*
+WaitFunc
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFunc(Func: Function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
+
+Waits for function Func to be true. WaitPerLoop is how often you
+want to call "Func" function.
+Example: "WaitFunc(@BankScreen, 10 + Random(15), 750);" will check if BankScreen
+is open every 10-25th millisecond, for a maximum of 750 milliseconds.
+Notice the '@'.
+
+.. note::
+
+  by Rasta Magician, small edit by EvilChicken!
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function WaitFunc(Func: function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
+var
+  T: Integer;
+begin
+  T := GetSystemTime + MaxTime;
+  while (GetSystemTime < T) do
+  begin
+    if (Func()) then
+    begin
+      Result := True;
+      Exit;
+    end;
+    Wait(WaitPerLoop);
+  end;
+end;
+
+(*
 WaitOptionMultiEx
 ~~~~~~~~~~~~~~~~~
 
@@ -751,94 +836,114 @@ begin
 end;
 
 (*
-WaitFuncEx
-~~~~~~~~~~
+WaitFindDTM
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+    function WaitFindDTM(var x, y: integer; DTM, waitTime: integer): boolean;
 
-Calls Func with arguments Args every WaitPerLoop milliseconds for a max of
-MaxWait milliseconds. Func can return any basic types (boolean, string,
-integer). Boolean: Returns it. String: Returns true if string equals 'true'.
-Integer: Returns true unless it equals 0.
+waits 'waitTime' for the 'DTM' to be found.  If found, returns true and the
+DTM's coodinates in x and y.
 
 .. note::
 
-  by Dgby714
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
-  var
-    V: TVariantArray;
-  begin
-    V := [0, 0, 16711680, 4, 4, 500, 500];
-    WriteLn(WaitFuncEx('FindColorEx', V, 10 + Random(15), 1000));
-  end.
+    if (WaitDTM(x, y, dtmHatchet, 5000)) then
+      mouse(x, y, 5, 5, mouse_Left);
 *)
-function WaitFuncEx(Func: string; var Args: TVariantArray; WaitPerLoop, MaxWait: integer): boolean;
+function WaitFindDTM(var x, y: integer; DTM, waitTime: integer): boolean;
 var
-  T: integer;
-  Temp: variant;
+  t: integer;
 begin
-  T := GetSystemTime + MaxWait;
-  while (GetSystemTime < T) do
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
   begin
-    Temp := CallProc(Func, Args);
-    if (not (VarType(Temp) = varString)) then
-      Temp := ToStr(Temp);
-    Result := StrToBoolDef(Temp, False);
-    if (Result) then
-      Exit;
-    Wait(WaitPerLoop);
+    if (findDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(randomRange(30, 70));
   end;
 end;
 
 (*
-WaitFunc
-~~~~~~~~
+WaitTabExists
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function WaitFunc(Func: Function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
+    function WaitTabExists(tab, waitTime: integer): boolean;
 
-Waits for function Func to be true. WaitPerLoop is how often you
-want to call "Func" function.
-Example: "WaitFunc(@BankScreen, 10 + Random(15), 750);" will check if BankScreen
-is open every 10-25th millisecond, for a maximum of 750 milliseconds.
-Notice the '@'.
+waits 'waitTime' for the 'tab' to exist.  Useful for detecting when a player
+has returned from a random event.
 
 .. note::
 
-  by Rasta Magician, small edit by EvilChicken!
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+    if (WaitTabExists(TAB_MAGIC, 5000)) then
+      writeln('exited the random');
 *)
-function WaitFunc(Func: function: Boolean; WaitPerLoop, MaxTime: Integer): Boolean;
+function WaitTabExists(tab, waitTime: integer): boolean;
 var
-  T: Integer;
+  v: TVariantArray;
 begin
-  T := GetSystemTime + MaxTime;
-  while (GetSystemTime < T) do
-  begin
-    if (Func()) then
-    begin
-      Result := True;
-      Exit;
-    end;
-    Wait(WaitPerLoop);
-  end;
+  v := [tab];
+  result := waitFuncEx('tabExists', v, 50, waitTime);
 end;
 
-// Remove? It was originally created to do this:
-//   while Condition do WaitNone;
-// But with simba you can do
-//   while Condition do ;
-procedure WaitNone;
+(*
+WaitNPCTalking
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitNPCTalking(NPC: string, waitTime: integer): boolean;
+
+waits 'waitTime' for the 'NPC' name to appear in the chat box.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 29th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (WaitNPCTalking(NAME_NPC_GILES, 5000)) then
+      writeln('Talking to Giles');
+*)
+function getNPCChatName(): string; forward;
+function WaitNPCTalking(NPC: string; waitTime: integer): boolean;
+var
+  t: integer;
 begin
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
+  begin
+    if (getNPCChatName() = NPC) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(50 + random(25));
+  end;
 end;

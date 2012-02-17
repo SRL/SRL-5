@@ -2868,3 +2868,39 @@ begin
   Wait(RandomRange(250, 750));
   MouseBox(479, 20, 491, 29, mouse_Left);
 end;
+
+(*
+GetMusic
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMusic: string;
+
+Gets the music that's currently playing.
+
+.. note::
+
+    by Nielsie95 and ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetMusic: string;
+var
+  Pts: TPointArray;
+  B: TBox;
+begin
+  if (GetCurrentTab <> tab_Music) then
+  begin
+    GameTab(tab_Music);
+    Wait(500 + Random(500));
+  end;
+  if (FindColorsTolerance(Pts, 39401, 553, 242, 729, 264, 0)) then
+  begin
+    B := GetTPABounds(Pts);
+    Result := Trim(GetTextAtEx(B.X1 - 1, 245, 0, UpCharsEx, False, False, 0, 1, 39401, 50, False, tr_AllChars));
+  end;
+end;

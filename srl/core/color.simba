@@ -261,6 +261,46 @@ begin
 end;
 
 (*
+ReturnTPAExceptColors
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ReturnTPAExceptColors(cols, tols: TIntegerArray; area: TBox): TPointArray;
+
+Returns a tpa of every point found in 'area' that DOES NOT a color in 'cols'
+with tolerance 'tols'. Useful if you need a tpa of an object that is constantly
+changing color, but has a constant background color.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 26th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    iTPA := InverseColors([4410947, 5003083], [10, 10], IntToBox(MCX1, MCY1, MCX2, MCY2));
+*)
+function ReturnTPAExceptColors(cols, tols: TIntegerArray; area: TBox): TPointArray;
+var
+  i: integer;
+  tpa: TPointArray;
+  atpa: T2DpointArray;
+begin
+  setLength(atpa, length(cols));
+  for i := 0 to high(cols) do
+    findColorsTolerance(atpa[i], cols[i], area.x1, area.y1, area.x2, area.y2, tols[i]);
+
+  tpa := mergeATPA(atpa);
+  clearDoubleTPA(tpa);
+  result := returnPointsNotInTPA(tpa, getTPABounds(tpa));
+
+  //debugTPA(result, '');
+end;
+
+(*
 GetColorArrayInfo
 ~~~~~~~~~~~~~~~~~
 

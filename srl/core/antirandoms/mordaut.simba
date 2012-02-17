@@ -297,7 +297,7 @@ end;
  *)
 function MD_ScanBigObject(slot: integer): TRotateObject;
 begin
-  result := getRotateObject(
+  result := scanRotateObject(
     MD_ExColBig, MD_ExTolBig, MD_BigBox(slot), MD_OBJ_SIZE, MD_ACCURACY);
 end;
 
@@ -307,7 +307,7 @@ end;
  *)
 function MD_ScanSmallObject(slot: integer): TRotateObject;
 begin
-  result := getRotateObject(
+  result := scanRotateObject(
     MD_ExColSmall, MD_ExTolSmall, MD_SmallBox(slot), MD_OBJ_SIZE, MD_ACCURACY);
 end;
 
