@@ -253,7 +253,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  t := (getSystemTime + (8 * 60000)); // maximum 5 minutes
+  t := (getSystemTime + (8 * 60000)); // maximum 8 minutes
   doConversation('', false);
 
   repeat

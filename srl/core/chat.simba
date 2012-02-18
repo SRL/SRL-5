@@ -771,6 +771,33 @@ begin
 end;
 
 (*
+GetNPCChatName
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetNPCChatName(): string;
+
+Gets the name of the random event NPC from the top of the chat box.  The proper
+font doesn't exist yet, so it returns a random string of characters.
+
+.. note::
+
+    Author: DemiseSythe
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    writeln(getNPCChatName());
+*)
+function GetNPCChatName(): string;
+begin
+  result := getTextAtExWrap(152, 345, 366, 370, 0, 50, 30, 7913190, 15, NPCChars);
+end;
+
+(*
 AreTalking
 ~~~~~~~~~~
 
@@ -796,34 +823,7 @@ function AreTalking(): boolean;
 var
   x, y: integer;
 begin
-  result := findColor(x, y, 1577999, 140, 340, 370, 370);
-end;
-
-(*
-GetNPCChatName
-~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function GetNPCChatName(): string;
-
-Gets the name of the random event NPC from the top of the chat box.  The proper
-font doesn't exist yet, so it returns a random string of characters.
-
-.. note::
-
-    Author: DemiseSythe
-    Last Modified: Jan. 22nd, 2012 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-    writeln(getNPCChatName());
-*)
-function GetNPCChatName(): string;
-begin
-  result := getTextAtExWrap(152, 345, 366, 370, 0, 50, 30, 7913190, 15, NPCChars);
+  result := (getNPCChatName <> '');
 end;
 
 (*
