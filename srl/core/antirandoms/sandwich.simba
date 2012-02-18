@@ -61,7 +61,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  foods := ['doughnut', 'baguette', 'square', 'triangle', 'roll', 'meat pie', 'chocolate'];
+  foods := ['doughnut', 'baguette', 'square', 'triangle', 'roll', 'pie', 'chocolate'];
 
   // to avoid out of range errors
   if (length(foods) <> length(DTMs)) then
@@ -127,7 +127,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    addToSRLLog('_Solve: '' solver timed out');
+    addToSRLLog('SL_Solve: Sandwich Lady solver timed out');
 
   freeDTM(dtmPortal);
   freeDTMs(DTMs);
