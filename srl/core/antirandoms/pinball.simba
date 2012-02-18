@@ -148,7 +148,7 @@ begin
   end;
 
   if (result) then
-    writeln('PB_ScanPost: Found post');
+    addToSRLLog('PB_ScanPost: Found post');
 end;
 
 (**
@@ -178,7 +178,7 @@ begin
       begin
         if (PB_GetScore() <> oldScore) then
         begin
-          writeln('PB_TagPost: Tagged post');
+          addToSRLLog('PB_TagPost: Tagged post');
           result := true;
           break;
         end;
@@ -201,7 +201,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('PB_Exit: Exiting cave');
+  addToSRLLog('PB_Exit: Exiting cave');
   t := (getSystemTime + 20000);
   clickNorth(SRL_ANGLE_HIGH);
 
@@ -239,7 +239,7 @@ begin
   until(getSystemTime > t);
 
   if (result) then
-    writeln('PB_Exit: Clicked exit cave');
+    addToSRLLog('PB_Exit: Clicked exit cave');
 end;
 
 (**
@@ -268,7 +268,7 @@ begin
   until(getSystemTime > t);
 
   if (not result) then
-    writeln('PB_Solve: Pinball solver timed out');
+    addToSRLLog('PB_Solve: Pinball solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

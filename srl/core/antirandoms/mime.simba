@@ -142,10 +142,10 @@ end;
  *)
 procedure Mime_DebugEmote(emote: TMimeEmote);
 begin
-  writeln('Name: '+emote.name);
-  writeln('ShiftSmall: '+toStr(emote.shiftSmall));
-  writeln('ShiftBig: '+toStr(emote.shiftBig));
-  writeln('ShiftPercent: '+toStr(emote.shiftPercent));
+  addToSRLLog('Name: '+emote.name);
+  addToSRLLog('ShiftSmall: '+toStr(emote.shiftSmall));
+  addToSRLLog('ShiftBig: '+toStr(emote.shiftBig));
+  addToSRLLog('ShiftPercent: '+toStr(emote.shiftPercent));
 end;
 
 (**
@@ -234,7 +234,7 @@ begin
   // wait for the performance to start before scanning
   if (waitFunc(@Mime_IsPerforming, 50, 10000)) then
   begin
-    writeln('Mime_IdentifyEmote: Identifying emote');
+    addToSRLLog('Mime_IdentifyEmote: Identifying emote');
     tmpEmote := Mime_ScanMime();
 
     {$IFDEF DEBUG_MIME}
@@ -278,9 +278,9 @@ begin
     result := maxIndex;
 
   if (result <> -1) then
-    writeln('Mime_IdentifyEmote: Found emote '+emotes[result].name+' with a score of '+toStr(maxScore))
+    addToSRLLog('Mime_IdentifyEmote: Found emote '+emotes[result].name+' with a score of '+toStr(maxScore))
   else
-    writeln('Mime_IdentifyEmote: Didn''t identify emote');
+    addToSRLLog('Mime_IdentifyEmote: Didn''t identify emote');
 end;
 
 (**
@@ -312,7 +312,7 @@ begin
   if (findColorsTolerance(tpa, 11174789, b.x1, b.y1, b.x2, b.y2, 10)) then
     result := length(tpa);
 
-  //writeln('slot: '+toStr(text)+' length: '+toStr(result));
+  //addToSRLLog('slot: '+toStr(text)+' length: '+toStr(result));
 end;
 
 (**
@@ -335,7 +335,7 @@ begin
     // +/- tolerance on TPA count just in case
     if (inRange(len, emote.textTPACount - 3, emote.textTPACount + 3)) then
     begin
-      writeln('Mime_ClickText: Clicked text '+emote.name);
+      addToSRLLog('Mime_ClickText: Clicked text '+emote.name);
       p := middleBox(Mime_TextBox(i));
       mouse(p.x, p.y, 10, 3, mouse_Left);
       wait(1500 + random(500));
@@ -348,7 +348,7 @@ begin
   end;
 
   if (not result) then
-    writeln('Mime_ClickText: Unable to click text - '+emote.name);
+    addToSRLLog('Mime_ClickText: Unable to click text - '+emote.name);
 end;
 
 (**
@@ -398,7 +398,7 @@ begin
   until(result or (t > 30));
 
   if (not result) then
-    writeln('Mime_Solve: Mime solver exceeded maximum tries');
+    addToSRLLog('Mime_Solve: Mime solver exceeded maximum tries');
 end;
 
 (**

@@ -91,7 +91,7 @@ begin
     // checks to see if we're talking to the Frog Princess
     if (Frog_PrincessTalking()) then
     begin
-      writeln('Frog_waitChat: Talking to the Princess');
+      addToSRLLog('Frog_waitChat: Talking to the Princess');
       result := true;
       break;
     end;
@@ -99,7 +99,7 @@ begin
     // if we're talkin to the Herald, we clicked the wrong frog
     if (Frog_HeraldTalking()) then
     begin
-      writeln('Frog_waitChat: Clicked wrong frog');
+      addToSRLLog('Frog_waitChat: Clicked wrong frog');
       clickContinue(true, true);
       break;
     end;
@@ -123,7 +123,7 @@ begin
 
   if (Frog_PrincessTalking()) then
   begin
-    writeln('Frog_ClickPrincess: Already talking to Frog Princess');
+    addToSRLLog('Frog_ClickPrincess: Already talking to Frog Princess');
     result := true;
     exit;
   end;
@@ -147,7 +147,7 @@ begin
       // added the '/' so we don't click the 'Frog Herald'
       if (waitUptextMulti(['Frog /', 'rog /'], 300)) then
       begin
-        writeln('Frog_ClickPrincess: Clicked a frog');
+        addToSRLLog('Frog_ClickPrincess: Clicked a frog');
 
         getmousePos(x, y);
         mouse(x, y, 0, 0, mouse_Left);
@@ -173,7 +173,7 @@ function Frog_InBigCave(): boolean;
 begin
   if (FindNPCChatText('gnore', Nothing) or (FindNPCChatText('pologise', Nothing))) then
   begin
-    writeln('Frog_InBigCave: Failed to click Princess, we are in the big cave');
+    addToSRLLog('Frog_InBigCave: Failed to click Princess, we are in the big cave');
     DoConversation('', false);
     result := true;
   end;
@@ -188,7 +188,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('Frog_WalkCave: Relocating in cave');
+  addToSRLLog('Frog_WalkCave: Relocating in cave');
 
   case Where of
     0, 2, 4: mouse(center.x, center.y + 50, 2, 2, mouse_Left); // south
@@ -224,7 +224,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('Frog_TalkCave: Failed to go through conversation with Princess');
+    addToSRLLog('Frog_TalkCave: Failed to go through conversation with Princess');
 end;
 
 (**
@@ -239,7 +239,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('Frog_SolveCave: Solving frog big cave');
+  addToSRLLog('Frog_SolveCave: Solving frog big cave');
   t := (getSystemTime + (5 * 60000));
   dtmCenter := Frog_GetDTM(FROG_DTM_CENTER);
 
@@ -253,7 +253,7 @@ begin
     if (findDTMRotatedAlternating(dtmCenter, x, y, MMX1, MMY1, MMX2, MMY2, -Pi/4, Pi/4, Pi/30, aFound)) then
       Frog_WalkCave(point(x, y), tries)
     else
-      writeln('Frog_SolveCave: Didn''t find DTM_FROG_CENTER');
+      addToSRLLog('Frog_SolveCave: Didn''t find DTM_FROG_CENTER');
 
     Inc(tries);
 
@@ -263,7 +263,7 @@ begin
   until(getSystemTime > t);
 
   if (not result) then
-    writeln('Frog_SolveCave: Failed to solve big frog cave');
+    addToSRLLog('Frog_SolveCave: Failed to solve big frog cave');
 
   freeDTM(dtmCenter);
 end;
@@ -291,7 +291,7 @@ begin
       begin
         if (Frog_SolveCave()) then // still get teleported after big cave
         begin
-          writeln('Frog_Solve: Solved frog big cave, but failed random');
+          addToSRLLog('Frog_Solve: Solved frog big cave, but failed random');
           WaitTabExists(TAB_MAGIC, 5000);
           break;
         end;
@@ -312,7 +312,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('Frog_Solve: Frog Princess solver timed out');
+    addToSRLLog('Frog_Solve: Frog Princess solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

@@ -44,7 +44,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('PP_Solve: '' solver timed out');
+    addToSRLLog('PP_Solve: '' solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}
@@ -54,7 +54,7 @@ begin
   activateClient();
   setupSRL();
 
-  writeln(toStr(PP_Detect));
+  addToSRLLog(toStr(PP_Detect));
 end.
 }
 {$ENDIF}

@@ -113,16 +113,16 @@ Example:
 *)
 procedure DebugRotateObject(obj: TRotateObject);
 begin
-  writeln('with result do');
-  writeln('begin');
-  writeln('  name := '+capitalize(obj.name)+';');
-  writeln('  use := '+capitalize(obj.use)+';');
-  writeln('  count := '+toStr(obj.count)+';');
-  writeln('  width := '+toStr(obj.width)+';');
-  writeln('  height := '+toStr(obj.height)+';');
-  writeln('  totalCount := '+toStr(obj.totalCount)+';');
-  writeln('  coverPercent := '+toStr(obj.coverPercent)+';');
-  writeln('end;');
+  addToSRLLog('with result do');
+  addToSRLLog('begin');
+  addToSRLLog('  name := '+capitalize(obj.name)+';');
+  addToSRLLog('  use := '+capitalize(obj.use)+';');
+  addToSRLLog('  count := '+toStr(obj.count)+';');
+  addToSRLLog('  width := '+toStr(obj.width)+';');
+  addToSRLLog('  height := '+toStr(obj.height)+';');
+  addToSRLLog('  totalCount := '+toStr(obj.totalCount)+';');
+  addToSRLLog('  coverPercent := '+toStr(obj.coverPercent)+';');
+  addToSRLLog('end;');
 end;
 
 (*
@@ -201,7 +201,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('ClickPortal: Exiting random');
+  addToSRLLog('ClickPortal: Exiting random');
 
   v := [dtmPortal, MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ortal'], mouse_Left];
   if (waitFuncEx('ClickDTMRotatedIn', v, 50, 5000)) then
@@ -217,9 +217,9 @@ begin
     end;
 
     result := true;
-    writeln('ClickPortal: Clicked portal');
+    addToSRLLog('ClickPortal: Clicked portal');
   end else
-    writeln('ClickPortal: Didn''t find portal DTM');
+    addToSRLLog('ClickPortal: Didn''t find portal DTM');
 end;
 
 (*

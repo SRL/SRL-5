@@ -312,7 +312,7 @@ begin
   // disable all randoms if set to
   if (SRL_DisableRandoms) then
   begin
-    writeln('**** WARNING: Disabling random event solvers');
+    addToSRLLog('**** WARNING: Disabling random event solvers');
 
     for i := 0 to high(SRL_Randoms) do
       SRL_Randoms[i].disabled := true;
@@ -333,7 +333,7 @@ begin
 
   if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
   begin
-    writeln('***** Found Random: '+SRL_Randoms[rand].name+' *****');
+    addToSRLLog('***** Found Random: '+SRL_Randoms[rand].name+' *****');
 
     if (SRL_Procs[SRL_OnFindRandom] <> nil) then
       SRL_Procs[SRL_OnFindRandom]();
@@ -346,17 +346,17 @@ begin
     begin
       if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
       begin
-        writeln('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
+        addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
         inc(SRL_Randoms[rand].solved);
         result := true;
       end;
 
     end else
-      writeln(SRL_Randoms[rand].name+' solver currently disabled');
+      addToSRLLog(SRL_Randoms[rand].name+' solver currently disabled');
 
     if (not result) then
     begin
-      writeln('***** Failed Random: '+SRL_Randoms[rand].name+' *****');
+      addToSRLLog('***** Failed Random: '+SRL_Randoms[rand].name+' *****');
 
       // solver didn't fail, it's disabled
       if (not SRL_Randoms[rand].disabled) then

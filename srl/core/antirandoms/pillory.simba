@@ -75,7 +75,7 @@ begin
 
       if (waitFunc(@PL_LockScreen, 50, 5000)) then
       begin
-        writeln('PL_ClickCage: Opened lock screen');
+        addToSRLLog('PL_ClickCage: Opened lock screen');
         result := true;
       end;
     end;
@@ -203,7 +203,7 @@ begin
   if (result = '') then
     result := 'rombus';
 
-  writeln('PL_GetLock: Identified lock - '+capitalize(result))
+  addToSRLLog('PL_GetLock: Identified lock - '+capitalize(result))
 end;
 
 (**
@@ -269,9 +269,9 @@ begin
   end;
 
   if (result <> '') then
-    writeln('PL_GetKey: Identified key - '+capitalize(result))
+    addToSRLLog('PL_GetKey: Identified key - '+capitalize(result))
   else
-    writeln('PL_GetKey: Didn''t identify key in slot '+toStr(slot));
+    addToSRLLog('PL_GetKey: Didn''t identify key in slot '+toStr(slot));
 end;
 
 {*******************************************************************************
@@ -293,7 +293,7 @@ begin
 
   if (not PL_ClickCage()) then
   begin
-    writeln('PL_Solve: Didn''t click cage lock');
+    addToSRLLog('PL_Solve: Didn''t click cage lock');
     exit;
   end;
 
@@ -304,7 +304,7 @@ begin
       for i := 0 to 2 do // there's only 3 keys for each puzzle
         if (PL_GetKey(i) = lock) then
         begin
-          writeln('PL_Solve: Found matching key');
+          addToSRLLog('PL_Solve: Found matching key');
 
           // specific coords because only a certain part is "clickable"
           mouse(208 + (94 * I), 225, 4, 4, mouse_Left);
@@ -322,7 +322,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('PL_Solve: Pillory solver timed out');
+    addToSRLLog('PL_Solve: Pillory solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

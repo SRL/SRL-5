@@ -62,7 +62,7 @@ begin
 
     if (clickDTMRotatedIn(dtmStick, MSX1, MSY1, MSX2, 200, -Pi/4, Pi/4, Pi/30, ['erate'], mouse_Left)) then
     begin
-      writeln('Abyss_Solve: Clicked Appendage');
+      addToSRLLog('Abyss_Solve: Clicked Appendage');
       wait(2000 + random(1000));
     end;
 
@@ -78,7 +78,7 @@ begin
   freeDTM(dtmStick);
 
   if (not result) then
-    writeln('Abyss_Solve: Abyss solver exceeded maximum tries');
+    addToSRLLog('Abyss_Solve: Abyss solver exceeded maximum tries');
 end;
 
 {$IFNDEF IS_INCLUDE}

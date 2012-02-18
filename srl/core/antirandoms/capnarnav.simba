@@ -92,7 +92,7 @@ begin
   if (not loggedIn() and (not CA_LockScreen)) then
     exit;
 
-  writeln('CA_TalkToArnav: Talking to Cap''n Arnav');
+  addToSRLLog('CA_TalkToArnav: Talking to Cap''n Arnav');
   dtmArnav := DTMFromString('mQwAAAHicY2ZgYIhiZGAIAeJoIN4N5O8E4m1A7OZmw+DsbMWgoaHEwA/kwzBQGQMTFAMBAO12BWY=');
 
   if (clickDTMRotatedIn(dtmArnav, MSCX+50, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['rnav'], mouse_Left)) then
@@ -108,14 +108,14 @@ begin
         if (findNPCChatText('ready', nothing)) then
         begin
           typeSend('2');
-          writeln('CA_TalkToArnav: Clicked chat box text');
+          addToSRLLog('CA_TalkToArnav: Clicked chat box text');
           wait(500 + random(500));
         end;
       end;
     end;
 
   end else
-    writeln('CA_TalkToArnav: Didn''t click Arnav DTM');
+    addToSRLLog('CA_TalkToArnav: Didn''t click Arnav DTM');
 
   result := CA_LockScreen();
   freeDTM(dtmArnav);
@@ -133,7 +133,7 @@ begin
   if ((not loggedIn()) or (not CA_LockScreen())) then
     exit;
 
-  writeln('CA_GetTarget: Identifying chest target');
+  addToSRLLog('CA_GetTarget: Identifying chest target');
 
   // the black color of the text shadow
   findColorsTolerance(tpa, 1119769, 7, 150, 80, 185, 15);
@@ -149,7 +149,7 @@ begin
   end;
 
   s := ['Ring', 'Bar', 'Coins', 'Bowl'];
-  writeln('CA_GetTarget: Found target: '+s[result]);
+  addToSRLLog('CA_GetTarget: Found target: '+s[result]);
 end;
 
 (**
@@ -166,7 +166,7 @@ begin
   if ((not loggedIn()) or (not CA_LockScreen())) then
     exit;
 
-  writeln('CA_FixLock: Fixing lock');
+  addToSRLLog('CA_FixLock: Fixing lock');
   target := CA_GetTarget();
 
   for i := 1 to 3 do // arrows 1, 2, and 3
@@ -182,7 +182,7 @@ begin
       begin
         if (findDTMRotatedAlternating(DTMs[target], x, y, b.x1, b.y1, b.x2, b.y2, -Pi, Pi, Pi/30, aFound)) then
         begin
-          writeln('CA_FixLock: Found target in slot '+toStr(i));
+          addToSRLLog('CA_FixLock: Found target in slot '+toStr(i));
           colDone[i] := true;
           break;
         end;
@@ -214,9 +214,9 @@ begin
   end;
 
   if (result) then
-    writeln('CA_FixLock: Fixed lock')
+    addToSRLLog('CA_FixLock: Fixed lock')
   else
-    writeln('CA_FixLock: Didn''t fix lock');
+    addToSRLLog('CA_FixLock: Didn''t fix lock');
 end;
 
 (**
@@ -251,10 +251,10 @@ begin
   until(result or (tries >= 5) or (getSystemTime > t)); // 5 failed we fail the random
 
   if (not result) and (getSystemTime > t) then
-    writeln('CA_Solve: Cap''n Arnav solver timed out')
+    addToSRLLog('CA_Solve: Cap''n Arnav solver timed out')
   else
     if (not result) and (tries >= 5) then
-      writeln('CA_Solve: Cap''n Arnav failed after 5 tries');
+      addToSRLLog('CA_Solve: Cap''n Arnav failed after 5 tries');
 
   freeDTM(dtmPortal);
   freeDTMs(DTMs);

@@ -96,7 +96,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_GetNet: Getting fishing net');
+  addToSRLLog('EB_GetNet: Getting fishing net');
 
   result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 200); // may already have a net
 
@@ -109,7 +109,7 @@ begin
     // drop items if needed
     if (InvCount > 26) then
     begin
-      writeln('Dropping items');
+      addToSRLLog('Dropping items');
 
       t := (getSystemTime + 5000);
       repeat
@@ -130,14 +130,14 @@ begin
         result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 5000); // look for net in inventory
 
         if (not result) then
-          writeln('DB_GetNet: Didn''t find DTM_EB_NET_INV');
+          addToSRLLog('DB_GetNet: Didn''t find DTM_EB_NET_INV');
       end;
     end else
-      writeln('EB_GetNet: Didn''t click DTM_EB_NET_GROUND');
+      addToSRLLog('EB_GetNet: Didn''t click DTM_EB_NET_GROUND');
   end;
 
   if (result) then
-    writeln('EB_GetNet: Got fishing net');
+    addToSRLLog('EB_GetNet: Got fishing net');
 end;
 
 (**
@@ -149,7 +149,7 @@ var
   x, y: integer;
   aFound: extended;
 begin
-  writeln('EB_WalkToCenter: Walking to the center of the island');
+  addToSRLLog('EB_WalkToCenter: Walking to the center of the island');
 
   if (findDTMRotatedAlternating(EB_DTMs[DTM_EB_CENTER], x, y, MMX1, MMY1, MMX2, MMY2, -Pi/4, Pi/4, Pi/30, aFound)) then
   begin
@@ -159,16 +159,16 @@ begin
       wait(1500 + random(300));
       Flag;
     end else
-      writeln('EB_WalkToCenter: Already at center');
+      addToSRLLog('EB_WalkToCenter: Already at center');
 
     result := true;
   end else begin
-    writeln('EB_WalkToCenter: Didn''t find DTM_EB_CENTER');
+    addToSRLLog('EB_WalkToCenter: Didn''t find DTM_EB_CENTER');
     result := TPAWalk(63717, 50, randomRange(-5, 5), randomRange(-5, 5), point(MMCX, MMCY));
   end;
 
   if (result) then
-    writeln('EB_WalkToCenter: At center');
+    addToSRLLog('EB_WalkToCenter: At center');
 end;
 
 (**
@@ -183,7 +183,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_TalkToSlave: Talking to the Slave');
+  addToSRLLog('EB_TalkToSlave: Talking to the Slave');
 
   v := [EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['ervant'], mouse_Left];
   if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
@@ -196,7 +196,7 @@ begin
         result := true;
       end;
   end else
-    writeln('Didn''t find DTM_EB_SLAVE');
+    addToSRLLog('Didn''t find DTM_EB_SLAVE');
 end;
 
 (**
@@ -213,7 +213,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_GetStatue: Identifying statue');
+  addToSRLLog('EB_GetStatue: Identifying statue');
 
   result := '';
   t := (getSystemTime + 20000);
@@ -233,9 +233,9 @@ begin
   until((result <> '') or (getSystemTime > t));
 
   if (result <> '') then
-    writeln('DB_GetStatue: Found statue '''+result+'''')
+    addToSRLLog('DB_GetStatue: Found statue '''+result+'''')
   else
-    writeln('DB_GetStatue: Didn''t identify statue');
+    addToSRLLog('DB_GetStatue: Didn''t identify statue');
 
   wait(1500 + random(500));
   clickContinue(true, true); // need to do this whether or not it fails
@@ -254,7 +254,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_GetFish: Getting fish');
+  addToSRLLog('EB_GetFish: Getting fish');
 
   // may already have fish
   result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 200) or
@@ -280,13 +280,13 @@ begin
         if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 10000)) then // wait to find cooked fish
           result := true
         else
-          writeln('EB_GetFish: Didn''t find DTM_EB_FISH_COOKED');
+          addToSRLLog('EB_GetFish: Didn''t find DTM_EB_FISH_COOKED');
     end else
-      writeln('EB_GetFish: Didn''t click DTM_EB_FISHSPOT');
+      addToSRLLog('EB_GetFish: Didn''t click DTM_EB_FISHSPOT');
   end;
 
   if (result) then
-    writeln('EB_GetFish: Got fish')
+    addToSRLLog('EB_GetFish: Got fish')
 end;
 
 (**
@@ -300,7 +300,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_Uncook: Uncooking the fish');
+  addToSRLLog('EB_Uncook: Uncooking the fish');
   result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200); // may already have uncooked the fish
 
   EB_WalkToCenter();
@@ -319,15 +319,15 @@ begin
         if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 5000)) then
           result := true
         else
-          writeln('EB_Uncook: Didn''t find DTM_EB_FISH_RAW')
+          addToSRLLog('EB_Uncook: Didn''t find DTM_EB_FISH_RAW')
       end else
-        writeln('EB_Uncook: Didn''t click DTM_EB_POT');
+        addToSRLLog('EB_Uncook: Didn''t click DTM_EB_POT');
     end else
-      writeln('EB_Uncook: Didn''t find DTM_EB_FISH_COOKED');
+      addToSRLLog('EB_Uncook: Didn''t find DTM_EB_FISH_COOKED');
   end;
 
   if (result) then
-    writeln('EB_Uncook: Uncooked the fish');
+    addToSRLLog('EB_Uncook: Uncooked the fish');
 end;
 
 (**
@@ -341,7 +341,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('EB_FeedBob: Feeding Bob');
+  addToSRLLog('EB_FeedBob: Feeding Bob');
 
   if (findDTM(EB_DTMs[DTM_EB_FISH_RAW], x, y, MIX1, MIY1, MIX2, MIY2)) then
   begin
@@ -354,13 +354,13 @@ begin
       if (DoConversation('nap', false)) then
       begin
         result := true;
-        writeln('EB_FeedBob: Fed Bob');
+        addToSRLLog('EB_FeedBob: Fed Bob');
       end;
 
     end else
-      writeln('EB_FeedBob: Didn''t find DTM_EB_BOB');
+      addToSRLLog('EB_FeedBob: Didn''t find DTM_EB_BOB');
   end else
-    writeln('EB_FeedBob: Didn''t find DTM_EB_FISH_RAW');
+    addToSRLLog('EB_FeedBob: Didn''t find DTM_EB_FISH_RAW');
 end;
 
 (**
@@ -408,7 +408,7 @@ begin
   freeDTMs(EB_DTMs);
 
   if (not result) then
-    writeln('EB_Solve: Evil Bob solver timed out');
+    addToSRLLog('EB_Solve: Evil Bob solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

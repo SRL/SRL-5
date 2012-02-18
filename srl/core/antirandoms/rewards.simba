@@ -59,7 +59,7 @@ end;
  *)
 function RD_SolveMystery(x, y: integer): boolean;
 begin
-  writeln('RD_SolveMystery: Found mystery box');
+  addToSRLLog('RD_SolveMystery: Found mystery box');
 
   mmouse(x, y, 5, 5);
   if (waitUptext('ster', 200)) then
@@ -68,7 +68,7 @@ begin
     GetmousePos(x, y);
     mouse(x, y, 0, 0, mouse_Left);
     wait(randomRange(200, 500));
-    writeln('RD_SolveMystery: Clicked mystery box');
+    addToSRLLog('RD_SolveMystery: Clicked mystery box');
   end;
 end;
 
@@ -86,12 +86,12 @@ begin
   begin
     getmousePos(x, y);
     mouse(x, y, 0, 0, mouse_Left);
-    writeln('RD_SolveXP: Clicked XP reward');
+    addToSRLLog('RD_SolveXP: Clicked XP reward');
 
     // the color of the background (i.e. scroll color)
     if (not waitFindColor(x, y, 10803447, MSX1, MSY1, MSX2, MSY2, 5, 5000)) then
     begin
-      writeln('RD_SolveXP: XP reward didn''t open');
+      addToSRLLog('RD_SolveXP: XP reward didn''t open');
       exit;
     end;
 
@@ -139,7 +139,7 @@ begin
     wait(500 + random(500));
     mouse(413, 282, 20, 5, mouse_Left); // click confirm
 
-    writeln('RD_SolveXP: Solved experience reward');
+    addToSRLLog('RD_SolveXP: Solved experience reward');
     wait(2000 + random(500));
     clickContinue(true, true);
     result := true;
@@ -152,7 +152,7 @@ end;
  *)
 function RD_SolveLamp(x, y: integer): boolean;
 begin
-  writeln('RD_SolveLamp: Found experience lamp');
+  addToSRLLog('RD_SolveLamp: Found experience lamp');
   result := RD_SolveXP(x, y, 'amp');
 end;
 
@@ -162,7 +162,7 @@ end;
  *)
 function RD_SolveBook(x, y: integer): boolean;
 begin
-  writeln('RD_SolveBook: Found Book of Knowledge');
+  addToSRLLog('RD_SolveBook: Found Book of Knowledge');
   result := RD_SolveXP(x, y, 'ook');
 end;
 
@@ -196,7 +196,7 @@ begin
   // if found box option
   if (findTextTPA(_RD_TEXT_COLOR, _RD_TEXT_TOL, b.x1, b.y1, b.x2, b.y2, opt, upCharsEx, nothing)) then
   begin
-    writeln('RD_ClickBoxOption: Found box option '+opt);
+    addToSRLLog('RD_ClickBoxOption: Found box option '+opt);
     mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_Left);
 
     // box around the confirm choice box
@@ -272,7 +272,7 @@ var
   boxRewards: TStringArray;
   tmpReward: string;
 begin
-  writeln('RD_SolveBox: Found reward box');
+  addToSRLLog('RD_SolveBox: Found reward box');
 
   mmouse(x, y, 5, 5);
   if (waitUptextMulti(['andom', 'event', 'ift', 'pen'], 300)) then
@@ -282,7 +282,7 @@ begin
 
     if (not waitFunc(@RD_BoxScreen, 50, 5000)) then
     begin
-      writeln('RD_SolveBox: Reward box didn''t open');
+      addToSRLLog('RD_SolveBox: Reward box didn''t open');
       exit;
     end;
 
@@ -351,7 +351,7 @@ begin
 
       if (not result) then
       begin
-        writeln('RD_Solve: Didn''t solve reward, dropping as a failsafe');
+        addToSRLLog('RD_Solve: Didn''t solve reward, dropping as a failsafe');
         dropItem(coordsToItem(x, y));
         result := true;
       end;

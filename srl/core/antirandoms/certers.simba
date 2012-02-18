@@ -195,7 +195,7 @@ begin
 
   result := -1;
   t := (getSystemTime + 60000);
-  writeln('CT_IdentifyItem: Identifying item...');
+  addToSRLLog('CT_IdentifyItem: Identifying item...');
   markTime(t2);
 
   // loops through DTMs while item is rotating on screen
@@ -205,7 +205,7 @@ begin
         // look in the box where the item is rotating
         if (findDTMRotatedAlternating(items[i].DTMs[j], x, y, 145, 150, 370, 295, -Pi, Pi, Pi/30, aFound)) then
         begin
-          writeln('CT_IdentifyItem: Found item ~ '+items[i].name);
+          addToSRLLog('CT_IdentifyItem: Found item ~ '+items[i].name);
           result := i;
           exit;
         end;
@@ -213,7 +213,7 @@ begin
     // change the spin every 15000
     if (timeFromMark(t2) >= 15000) then
     begin
-      writeln('CT_IdentifyItem: Didn''t ID item, changing spin...');
+      addToSRLLog('CT_IdentifyItem: Didn''t ID item, changing spin...');
       CT_ChangeSpin(randomRange(5, 10));
       markTime(t2);
     end;
@@ -221,7 +221,7 @@ begin
   until(getSystemTime > t);
 
   if (result = -1) then
-    writeln('CT_IdentifyItem: Didn''t identify item');
+    addToSRLLog('CT_IdentifyItem: Didn''t identify item');
 end;
 
 (**
@@ -232,10 +232,10 @@ function CT_SelectItem(Item: TCTItem): boolean;
 begin
   if (ClickText(Item.text, CharsNPC, 75, 40, 240, 140, mouse_Left)) then
   begin
-    writeln('CT_SelectItem: Clicked item text');
+    addToSRLLog('CT_SelectItem: Clicked item text');
     result := true;
   end else
-    writeln('CT_SelectItem: Didn''t click text; may have ID''d wrong item');
+    addToSRLLog('CT_SelectItem: Didn''t click text; may have ID''d wrong item');
 end;
 
 (**
@@ -282,7 +282,7 @@ begin
     freeDTMs(items[i].DTMs);
 
   if (not result) then
-    writeln('CT_Solve: Certers solver timed out');
+    addToSRLLog('CT_Solve: Certers solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

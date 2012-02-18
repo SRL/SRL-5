@@ -41,7 +41,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('Quiz_Solve: Quiz solver timed out');
+    addToSRLLog('Quiz_Solve: Quiz solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

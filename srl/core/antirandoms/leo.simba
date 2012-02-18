@@ -41,7 +41,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('Leo_Solve: '' solver timed out');
+    addToSRLLog('Leo_Solve: '' solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

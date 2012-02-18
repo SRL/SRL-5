@@ -102,7 +102,7 @@ begin
 
   if (length(texts) <> length(DTMs)) then
   begin
-    writeln('DD_DoExercise: Invalid DTMs or texts array');
+    addToSRLLog('DD_DoExercise: Invalid DTMs or texts array');
     exit;
   end;
 
@@ -111,7 +111,7 @@ begin
     if (findNPCChatText(texts[i], nothing)) then
       if (findDTMRotated(DTMs[i], x, y, MSX1, MSY1, MSX2, MSY2, -Pi/12, Pi/12, Pi/30, aFound)) then
       begin
-        writeln('DD_DoExercise: '+capitalize(texts[i]));
+        addToSRLLog('DD_DoExercise: '+capitalize(texts[i]));
         mouse(x, (y + 100), 3, 3, true);
 
         if (waitNPCTalking(DD_NPC_DEMON, 10000)) then
@@ -121,7 +121,7 @@ begin
           break;
         end;
       end else
-        writeln('DD_Exercise: Didn''t find exercise DTM: '+capitalize(texts[i]));
+        addToSRLLog('DD_Exercise: Didn''t find exercise DTM: '+capitalize(texts[i]));
 end;
 
 (**
@@ -138,13 +138,13 @@ begin
   for i := 0 to high(DTMs) do
     if (clickDTMRotatedIn(DTMs[i], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['alk'], mouse_Left)) then
     begin
-      writeln('Walking to Center!');
+      addToSRLLog('Walking to Center!');
       flag();
       wait(1000 + random(100));
       result := true;
       break;
     end else
-      writeln('DD_Relocate: Didn''t click relocate DTM: '+IntToStr(i));
+      addToSRLLog('DD_Relocate: Didn''t click relocate DTM: '+IntToStr(i));
 end;
 
 (**
@@ -189,7 +189,7 @@ begin
   freeDTMs(relocateDTMs);
 
   if (not result) then
-    writeln('DD_Solve: Drill Demon exceeded maximum tries');
+    addToSRLLog('DD_Solve: Drill Demon exceeded maximum tries');
 end;
 
 {$IFNDEF IS_INCLUDE}

@@ -66,7 +66,7 @@ begin
   // to avoid out of range errors
   if (length(foods) <> length(DTMs)) then
   begin
-    writeln('SL_ClickFood: Invalid foods or DTMs array');
+    addToSRLLog('SL_ClickFood: Invalid foods or DTMs array');
     exit;
   end;
 
@@ -74,14 +74,14 @@ begin
     // the color of the text that tells you which food to take
     if (findTextTPA(2070783, 15, MSX1, MSY1, MSX2, MSY2, foods[i], upCharsEx, nothing)) then
     begin
-      writeln('SL_ClickFood: Need to click '+capitalize(foods[i]));
+      addToSRLLog('SL_ClickFood: Need to click '+capitalize(foods[i]));
 
       t := (getSystemTime + 5000);
       while ((not result) and (getSystemTime < t)) do
       begin
         if (clickDTMRotatedIn(DTMs[i], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['hoose'], mouse_Left)) then
         begin
-          writeln('SL_ClickFood: Clicked '+capitalize(foods[i]));
+          addToSRLLog('SL_ClickFood: Clicked '+capitalize(foods[i]));
           result := true;
         end;
 
@@ -127,7 +127,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('_Solve: '' solver timed out');
+    addToSRLLog('_Solve: '' solver timed out');
 
   freeDTM(dtmPortal);
   freeDTMs(DTMs);

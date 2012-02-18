@@ -135,7 +135,7 @@ begin
 
       if (inRange(tmpCount, minCount, maxCount)) then
       begin
-        writeln('Maze_DetectPath: Found path - '+name);
+        addToSRLLog('Maze_DetectPath: Found path - '+name);
         resultPath := paths[i];
         result := true;
         break;
@@ -187,7 +187,7 @@ begin
         s := getBlackChatMessage();
         if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
         begin
-          writeln('Maze_ClickDoor: Accidentially clicked the wall');
+          addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
           typeSend('.'); // don't like this, but it's needed to remove last chat text line
           wait(1500 + random(500));
           continue;
@@ -200,9 +200,9 @@ begin
   end;
 
   if (result) then
-    writeln('Maze_ClickDoor: Clicked door')
+    addToSRLLog('Maze_ClickDoor: Clicked door')
   else
-    writeln('Maze_ClickDoor: Failed to clicked door');
+    addToSRLLog('Maze_ClickDoor: Failed to clicked door');
 
   freeDTM(dtmDoorDark);
 end;
@@ -218,7 +218,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('Maze_WalkPath: Walking '+path.name+' path');
+  addToSRLLog('Maze_WalkPath: Walking '+path.name+' path');
 
   for i := 0 to high(path.path) do
   begin
@@ -238,7 +238,7 @@ begin
       repeat
         if (Maze_ClickDoor()) then
         begin
-          writeln('Maze_WalkPath: Finished room '+toStr(i));
+          addToSRLLog('Maze_WalkPath: Finished room '+toStr(i));
           result := (i = high(path.path));
           break;
         end;
@@ -246,7 +246,7 @@ begin
 
       if (getSystemTime > t) then
       begin
-        writeln('Maze_WalkPath: Failed to solve room '+toStr(i));
+        addToSRLLog('Maze_WalkPath: Failed to solve room '+toStr(i));
         result := false;
         break;
       end;
@@ -254,9 +254,9 @@ begin
   end;
 
   if (result) then
-    writeln('Maze_WalkPath: Finished path '+path.name)
+    addToSRLLog('Maze_WalkPath: Finished path '+path.name)
   else
-    writeln('Maze_WalkPath: Didn''t finish path '+path.name);
+    addToSRLLog('Maze_WalkPath: Didn''t finish path '+path.name);
 end;
 
 (**
@@ -305,7 +305,7 @@ begin
         if (Maze_TouchShrine()) then
           result := waitTabExists(TAB_MAGIC, 15000);
   end else
-    writeln('Maze_Solve: Didn''t detect maze path');
+    addToSRLLog('Maze_Solve: Didn''t detect maze path');
 end;
 
 {$IFNDEF IS_INCLUDE}

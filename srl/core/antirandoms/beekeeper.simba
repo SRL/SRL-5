@@ -42,7 +42,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('BK_Solve: '' solver timed out');
+    addToSRLLog('BK_Solve: '' solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}

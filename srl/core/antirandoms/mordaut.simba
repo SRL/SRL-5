@@ -183,7 +183,7 @@ begin
       end;
 
     else
-      writeln('MD_GetObject: Invalid object '+toStr(obj));
+      addToSRLLog('MD_GetObject: Invalid object '+toStr(obj));
   end;
 end;
 
@@ -244,7 +244,7 @@ begin
   if ((obj1.coverPercent > obj2.coverPercent - 3) and (obj1.coverPercent < obj2.coverPercent + 3)) then
     score := score + 8;
 
-  //writeln('MD_ObjIsObj: Final score - '+toStr(score));
+  //addToSRLLog('MD_ObjIsObj: Final score - '+toStr(score));
   result := (score >= 18); // best score is 26, result if score 18/26 or better
 end;
 
@@ -323,17 +323,17 @@ begin
   if (not loggedIn()) or (not MD_SmallScreen()) then
     exit;
 
-  writeln('MD_IDSmallPuzzle: Identifying puzzle');
+  addToSRLLog('MD_IDSmallPuzzle: Identifying puzzle');
   result := -1;
 
-  writeln('MD_IDSmallPuzzle: Scanning objects...');
+  addToSRLLog('MD_IDSmallPuzzle: Scanning objects...');
 
   // get the top three objects (takes a few seconds)
   setLength(scanObjs, 3);
   for i := 0 to high(scanObjs) do // first 3 item slots
     scanObjs[i] := MD_ScanSmallObject(i + 1);
 
-  writeln('MD_IDSmallPuzzle: Objects scanned');
+  addToSRLLog('MD_IDSmallPuzzle: Objects scanned');
 
   setLength(finalObjs, 3);
 
@@ -347,7 +347,7 @@ begin
       begin
         if (MD_ObjIsObj(puzzles[i].topObjs[j], scanObjs[k])) then
         begin
-          writeln('MD_IDSmallPuzzle: Found '+puzzles[i].topObjs[j].name+' in slot '+toStr(k));
+          addToSRLLog('MD_IDSmallPuzzle: Found '+puzzles[i].topObjs[j].name+' in slot '+toStr(k));
           finalObjs[j] := puzzles[i].topObjs[j];
           inc(c);
           break;
@@ -363,9 +363,9 @@ begin
   end;
 
   if (result <> -1) then
-    writeln('MD_IDSmallPuzzle: Found '+puzzles[result].name+' ('+toStr(c)+'/3 objects'+')')
+    addToSRLLog('MD_IDSmallPuzzle: Found '+puzzles[result].name+' ('+toStr(c)+'/3 objects'+')')
   else
-    writeln('MD_IDSmallPuzzle: Didn''t ID puzzle');
+    addToSRLLog('MD_IDSmallPuzzle: Didn''t ID puzzle');
 end;
 
 (**
@@ -380,7 +380,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  writeln('MD_SolveSmallPuzzle: Solving...');
+  addToSRLLog('MD_SolveSmallPuzzle: Solving...');
 
   for i := 5 to 8 do // object slots 5-8 (bottom half)
   begin
@@ -388,7 +388,7 @@ begin
 
     if (MD_ObjIsObj(tmpObj, puzzle.btmObj)) then
     begin
-      writeln('MD_SolveSmallPuzzle: Found '+puzzle.btmObj.name+' in slot '+toStr(i));
+      addToSRLLog('MD_SolveSmallPuzzle: Found '+puzzle.btmObj.name+' in slot '+toStr(i));
 
       // needs specific coords because you can't click anywhere on the item
       mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Move);
@@ -399,9 +399,9 @@ begin
   end;
 
   if (result) then
-    writeln('MD_SolveSmallPuzzle: Solved '+puzzle.name)
+    addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name)
   else
-    writeln('MD_SolveSmallPuzzle: Didn''t solve');
+    addToSRLLog('MD_SolveSmallPuzzle: Didn''t solve');
 end;
 
 (**
@@ -423,12 +423,12 @@ begin
       // the text on the right size of the puzzle
       if (findTextTPA(13290961, 25, 373, 60, 473, 160, puzzles[i].idText[j], smallCharsNS, nothing)) then
       begin
-        writeln('MD_GetBigPuzzle: Found '+puzzles[i].name);
+        addToSRLLog('MD_GetBigPuzzle: Found '+puzzles[i].name);
         result := i;
         exit;
       end;
 
-  writeln('MD_GetBigPuzzle: Failed to identify big puzzle');
+  addToSRLLog('MD_GetBigPuzzle: Failed to identify big puzzle');
 end;
 
 (**
@@ -450,7 +450,7 @@ begin
   if ((not loggedIn()) or (not MD_BigScreen())) then
     exit;
 
-  writeln('MD_SolveBigPuzzle: Solving...');
+  addToSRLLog('MD_SolveBigPuzzle: Solving...');
   setLength(objFound, length(puzzle.objs));
 
   // scan the entire puzzle a maximum of 5 times
@@ -459,7 +459,7 @@ begin
     slots := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     slotsLen := length(slots);
 
-    writeln('MD_SolveBigPuzzle: Scanning for objects (try '+toStr(t)+')...');
+    addToSRLLog('MD_SolveBigPuzzle: Scanning for objects (try '+toStr(t)+')...');
 
     // randomly chooses a slot to look for the objects
     repeat
@@ -474,7 +474,7 @@ begin
 
         if (MD_ObjIsObj(tmpObj, puzzle.objs[i])) then
         begin
-          writeln('MD_SolveBigPuzzle: Found '+puzzle.objs[i].name+' in slot '+toStr(slots[index]));
+          addToSRLLog('MD_SolveBigPuzzle: Found '+puzzle.objs[i].name+' in slot '+toStr(slots[index]));
           mouse(p.x, p.y, 20, 30, mouse_Left);
           objFound[i] := true;
           inc(clicks);
@@ -495,11 +495,11 @@ begin
 
   if (result) then
   begin
-    writeln('MD_SolveBigPuzzle: Solved in '+toStr(timeFromMark(time))+'ms');
+    addToSRLLog('MD_SolveBigPuzzle: Solved in '+toStr(timeFromMark(time))+'ms');
     wait(500 + random(500));
     mouse(429, 270, 7, 7, mouse_Left); // click the thumb
   end else
-    writeln('MD_SolveBigPuzzle: Didn''t solve '+puzzle.name);
+    addToSRLLog('MD_SolveBigPuzzle: Didn''t solve '+puzzle.name);
 end;
 
 // debugs each rotating item in the Mordaut small puzzle
@@ -567,7 +567,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    writeln('MD_Solve: Mordaut solver timed out');
+    addToSRLLog('MD_Solve: Mordaut solver timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}
