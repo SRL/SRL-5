@@ -287,12 +287,12 @@ begin
     if (Frog_ClickPrincess()) then // returns true if Princess is talking
     begin
       // may have clicked wrong frogs, need to solve large cave
-      if (Frog_InBigCave) then
+      if (Frog_InBigCave()) then
       begin
         if (Frog_SolveCave()) then // still get teleported after big cave
         begin
           addToSRLLog('Frog_Solve: Solved frog big cave, but failed random');
-          WaitTabExists(TAB_MAGIC, 5000);
+          waitTabExists(TAB_MAGIC, 5000);
           break;
         end;
       end else
@@ -306,7 +306,7 @@ begin
       if (result) then
       begin
         result := false;
-        result := WaitTabExists(TAB_MAGIC, 5000);
+        result := waitTabExists(TAB_MAGIC, 10000);
       end;
     end;
   until(result or (getSystemTime > t));
