@@ -16,8 +16,9 @@ detection methods.
 const
   FROG_NAME_HERALD   = '8!oqB8!5lg';
   FROG_NAME_PRINCESS = '8!oqo!l0o8gg';
+  FROG_NAME_PRINCE   = '8!oqo!l0o8';
 
-  FROG_DTM_PRINCESS = 0;
+  FROG_DTM_ROYAL = 0;
   FROG_DTM_CENTER   = 1; // big cave center
 
 (**
@@ -27,7 +28,7 @@ const
 function Frog_GetDTM(DTM: integer): integer;
 begin
   case DTM of
-    FROG_DTM_PRINCESS : result := DTMFromString('mlwAAAHicY2dgYGBlgAAeKM0FxGxAzALEnFA+J1SMGaoGRMvEyjJIRcgwyKUqMMinKzD8vefD8PCYC5jmB8rjwoxAzIQDQwEAwHgJcQ==');
+    FROG_DTM_ROYAL : result := DTMFromString('mlwAAAHicY2dgYGBlgAAeKM0FxGxAzALEnFA+J1SMGaoGRMvEyjJIRcgwyKUqMMinKzD8vefD8PCYC5jmB8rjwoxAzIQDQwEAwHgJcQ==');
     FROG_DTM_CENTER   : result := DTMFromString('mlwAAAHicY2dgYKhmYmAoAOJcIC4D4jYg7oJieaC8DhDLATE/EEsBsToQmwJxaJAJg4OOGENARTaDb0kGmO9TlAYW44eqx4YZgZgJB4YCADVaCxw=');
   end;
 end;
@@ -47,11 +48,14 @@ end;
 
 (**
  * Author: Coh3n
- * Description: Returns true if the Princess is talking.
+ * Description: Returns true if the a royal frog is talking.
  *)
-function Frog_PrincessTalking(): boolean;
+function Frog_RoyalTalking(): boolean;
+var
+  name: string;
 begin
-  result := (getNPCChatName = FROG_NAME_PRINCESS);
+  name := getNPCChatName();
+  result := ((name = FROG_NAME_PRINCESS) or (name = FROG_NAME_PRINCE));
 end;
 
 (**
@@ -74,8 +78,8 @@ end;
 
 (**
  * Author: Coh3n
- * Description: waits for the Princess the be talking (called after clicking
- * Princess).
+ * Description: Waits for the a frog the be talking (called after clicking
+ * frog).
  *)
 function Frog_WaitChat(waitTime: integer): boolean;
 var
@@ -88,10 +92,10 @@ begin
 
   while (getSystemTime < t) do
   begin
-    // checks to see if we're talking to the Frog Princess
-    if (Frog_PrincessTalking()) then
+    // checks to see if we're talking to the Royal Frog
+    if (Frog_RoyalTalking()) then
     begin
-      addToSRLLog('Frog_waitChat: Talking to the Princess');
+      addToSRLLog('Frog_WaitChat: Talking to the Royal Frog');
       result := true;
       break;
     end;
@@ -99,7 +103,7 @@ begin
     // if we're talkin to the Herald, we clicked the wrong frog
     if (Frog_HeraldTalking()) then
     begin
-      addToSRLLog('Frog_waitChat: Clicked wrong frog');
+      addToSRLLog('Frog_WaitChat: Clicked wrong frog');
       clickContinue(true, true);
       break;
     end;
@@ -110,49 +114,49 @@ end;
 
 (**
  * Author: Coh3n
- * Description: Returns true when the player is talking to the Frog Princess.
+ * Description: Returns true when the player is talking to the Royal Frog.
  *)
-function Frog_ClickPrincess(): boolean;
+function Frog_ClickRoyal(): boolean;
 var
-  dtmPrincess, i, x, y: integer;
-  dtmpoints: TPointArray;
+  dtmRoyal, i, x, y: integer;
+  dtmPoints: TPointArray;
   aFound: T2DextendedArray;
 begin
   if (not loggedIn()) then
     exit;
 
-  if (Frog_PrincessTalking()) then
+  if (Frog_RoyalTalking()) then
   begin
-    addToSRLLog('Frog_ClickPrincess: Already talking to Frog Princess');
+    addToSRLLog('Frog_ClickRoyal: Already talking to the Royal Frog');
     result := true;
     exit;
   end;
 
-  dtmPrincess := Frog_GetDTM(FROG_DTM_PRINCESS);
+  dtmRoyal := Frog_GetDTM(FROG_DTM_ROYAL);
 
   // it's possible more than one DTM can be found (multiple frogs)
-  if (findDTMsRotatedAlternating(dtmPrincess, dtmpoints, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+  if (findDTMsRotatedAlternating(dtmRoyal, dtmPoints, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, aFound)) then
   begin
-    filterTPADist(dtmpoints, 35);
-    sortTPAFrom(dtmpoints, point(MSCX, MSCY)); // sort from closest to the player
+    filterTPADist(dtmPoints, 35);
+    sortTPAFrom(dtmPoints, point(MSCX, MSCY)); // sort from closest to the player
 
     // loop through each DTM that was found
-    for i := 0 to high(dtmpoints) do
+    for i := 0 to high(dtmPoints) do
     begin
-      x := dtmpoints[i].x;
-      y := dtmpoints[i].y;
+      x := dtmPoints[i].x;
+      y := dtmPoints[i].y;
 
       mmouse(x, y, 3, 3);
 
       // added the '/' so we don't click the 'Frog Herald'
       if (waitUptextMulti(['Frog /', 'rog /'], 300)) then
       begin
-        addToSRLLog('Frog_ClickPrincess: Clicked a frog');
+        addToSRLLog('Frog_ClickRoyal: Clicked a frog');
 
         getmousePos(x, y);
         mouse(x, y, 0, 0, mouse_Left);
 
-        if (Frog_WaitChat(10000)) then // wait for Princess's name
+        if (Frog_WaitChat(10000)) then // wait for frog's name
         begin
           result := true;
           break;
@@ -161,19 +165,19 @@ begin
     end;
   end;
 
-  freeDTM(dtmPrincess);
+  freeDTM(dtmRoyal);
 end;
 
 (**
  * Author: Coh3n
- * Description: Returns true if Princess's text is found that indicated we're in
+ * Description: Returns true if Frog's text is found that indicated we're in
  * the big cave.  Finishes the conversation.
  *)
 function Frog_InBigCave(): boolean;
 begin
   if (FindNPCChatText('gnore', Nothing) or (FindNPCChatText('pologise', Nothing))) then
   begin
-    addToSRLLog('Frog_InBigCave: Failed to click Princess, we are in the big cave');
+    addToSRLLog('Frog_InBigCave: Failed to click Ro, we are in the big cave');
     DoConversation('', false);
     result := true;
   end;
@@ -206,7 +210,8 @@ end;
 
 (**
  * Author: Coh3n
- * Description: Goes through the conversation with the Princess in the big cave.
+ * Description: Goes through the conversation with the Royal Frog in the big
+ * cave.
  *)
 function Frog_TalkCave(): boolean;
 var
@@ -224,7 +229,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    addToSRLLog('Frog_TalkCave: Failed to go through conversation with Princess');
+    addToSRLLog('Frog_TalkCave: Failed to go through conversation with Royal Frog');
 end;
 
 (**
@@ -244,7 +249,7 @@ begin
   dtmCenter := Frog_GetDTM(FROG_DTM_CENTER);
 
   repeat
-    if (Frog_ClickPrincess()) then
+    if (Frog_ClickRoyal()) then
     begin
       result := Frog_TalkCave();
       break;
@@ -270,7 +275,7 @@ end;
 
 (**
  * Author: Coh3n
- * Description: Solves the Frog Princess random event, returns false if player
+ * Description: Solves the Frog random event, returns false if player
  * had to go through the big cave because RS still teleports you.
  *)
 function Frog_Solve(): boolean;
@@ -284,7 +289,7 @@ begin
   Frog_Setup();
 
   repeat
-    if (Frog_ClickPrincess()) then // returns true if Princess is talking
+    if (Frog_ClickRoyal()) then // returns true if Royal Frog is talking
     begin
       // may have clicked wrong frogs, need to solve large cave
       if (Frog_InBigCave()) then
@@ -312,7 +317,7 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    addToSRLLog('Frog_Solve: Frog Princess solver timed out');
+    addToSRLLog('Frog_Solve: Frog solver failed or timed out');
 end;
 
 {$IFNDEF IS_INCLUDE}
