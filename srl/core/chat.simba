@@ -820,8 +820,6 @@ Example:
       clickContinue(true, true);
 *)
 function AreTalking(): boolean;
-var
-  x, y: integer;
 begin
   result := (getNPCChatName <> '');
 end;
