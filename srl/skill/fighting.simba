@@ -117,7 +117,8 @@ Example:
 *)
 function IsFightAt(var X, Y: Integer): Boolean;
 begin
-  Result := Length(GetFightBarTPA(IntToBox(x-20, y-40, x+20, y+10))) > 0;
+  Result := Length(GetFightBarTPA(IntToBox(Max(MSX1, x-20), Max(MSY1, y-40),
+              Min(MSX2, x+20), Min(MSY2, y+10)))) > 0;
 end;
 
 (*
