@@ -45,7 +45,7 @@ function PL_Detect(): boolean;
 var
   tpa: TPointArray;
 begin
-  if (not tabExists(tab_Magic)) and (not tabExists(TAB_INV)) then
+  if (not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS)) then
   begin
     // red doors of the cages
     findColorsTolerance(tpa, 237, MMCX - 15, MMCY - 15, MMCX + 15, MMCY + 15, 17);
