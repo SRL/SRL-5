@@ -91,7 +91,6 @@ procedure FreeSRL;
 begin
   FreeSRLBitmaps;
   FreeSRLFonts;
-  FreeSRLLog;
 end;
 
 {*******************************************************************************
@@ -141,7 +140,7 @@ begin
   GraphicsSet := False;
   AllowPVP    := False;
   SRL_SavePath := includePath + 'SRL/logs/';
-  SRL_StartTime := theTime;
+  SRL_StartTime := theDate(DATE_MONTH)+' at '+theTime;
   WarnSensitivity := -2;
   SetupAutoColors;
 
