@@ -68,7 +68,7 @@ type
 
 var
   SRL_Randoms: array[0..(SRL_RANDOMS_COUNT - 1)] of TRandom;
-  SRL_RandomsSet, SRL_DisableRandoms: boolean;
+  SRL_RandomsSet, SRL_DisableRandoms, SRL_RandomScreenShot: boolean;
 
 (*
 SRLRandomsReport
@@ -197,7 +197,7 @@ begin
 
   with SRL_Randoms[SRL_RAND_FROG] do
   begin
-    name := 'Frog Princess';
+    name := 'Frog';
     solve := @Frog_Solve;
     detect := @Frog_Detect;
     isInvRandom := false;
@@ -323,10 +323,12 @@ end;
 
 (**
  * Author: Coh3n
- * Description: detects and solves the random of index 'rand' in the SRL_Randoms
- * array.
+ * Description: Detects and solves the random of index 'rand' in the SRL_Randoms
+ * array.  Returns true if a random is found, not necessarily if it is solved.
  *)
 function _SolveRandom(rand: integer): boolean;
+var
+  solved: boolean;
 begin
   if (not loggedIn) then
     exit;
@@ -334,9 +336,14 @@ begin
   if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
   begin
     addToSRLLog('***** Found Random: '+SRL_Randoms[rand].name+' *****');
+    result := true;
 
     if (SRL_Procs[SRL_OnFindRandom] <> nil) then
       SRL_Procs[SRL_OnFindRandom]();
+
+    // only take a screenshot if needed
+    if ((SRL_RandomScreenShot) and (not SRL_Randoms[rand].isInvRandom)) then
+      takeScreen(SRL_Randoms[rand].name);
 
     // sometimes it gets in the way of objects we need to find
     toggleMoneyPouch(false);
@@ -348,13 +355,13 @@ begin
       begin
         addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
         inc(SRL_Randoms[rand].solved);
-        result := true;
+        solved := true;
       end;
 
     end else
       addToSRLLog(SRL_Randoms[rand].name+' solver currently disabled');
 
-    if (not result) then
+    if (not solved) then
     begin
       addToSRLLog('***** Failed Random: '+SRL_Randoms[rand].name+' *****');
 
@@ -362,8 +369,10 @@ begin
       if (not SRL_Randoms[rand].disabled) then
         inc(SRL_Randoms[rand].failed);
 
+      // set player to false and logout if the solver failed or is disabled
       players[currentPlayer].rand := SRL_Randoms[rand].name;
       players[currentPlayer].active := false;
+      logout();
     end;
   end;
 end;
@@ -415,7 +424,8 @@ begin
       result := true;
     end;
 
-    if (result) then
+    // don't want to keep looking for randoms if one was already detected, but failed
+    if ((result) or (not loggedIn())) then
       break;
   end;
 
