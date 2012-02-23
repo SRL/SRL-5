@@ -119,7 +119,7 @@ begin
   end;
 
   tP := Point(((Tab - 21) mod 8 * 30) + 537, ((Tab - 21) div 8 * 298) + 186);
-  Result := CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 500; // the count when no icons are overlapping the GameTab.
+  Result := (CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 600); // the count when no icons are overlapping the GameTab.
 end;
 
 (*
