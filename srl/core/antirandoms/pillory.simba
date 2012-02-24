@@ -46,11 +46,7 @@ var
   tpa: TPointArray;
 begin
   if (not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS)) then
-  begin
-    // red doors of the cages
-    findColorsTolerance(tpa, 237, MMCX - 15, MMCY - 15, MMCX + 15, MMCY + 15, 17);
-    result := ((inRange(length(tpa), 3, 18)) and (not (PL_DoneLocks)));
-  end;
+    result := PL_LockScreen();
 end;
 
 (**
