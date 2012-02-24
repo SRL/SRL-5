@@ -54,7 +54,7 @@ end;
 function CT_GetItems(): TCTItemArray;
 begin
   //setLength(result, CT_ITEM_COUNT);
-  setLength(result, 7);
+  setLength(result, 8);
 
   with result[CT_ITEM_BOWL] do
   begin
@@ -127,16 +127,16 @@ begin
     ];
   end;
 
-{
   with result[CT_ITEM_HELMET] do
   begin
     name := 'Helmet';
     text := lowercase(name);
     DTMs := [
-      DTMFromString('')
+      DTMFromString('mkwEAAHicE2ZgYGBkZGBgA2J2IOYGYiZGhNg/oPwfBogYiP0DiD8CMQuQLwTE/4FsVqg+QSC+CuTfAOLLQHwTiG8B8T0oBsmdB+ILQHwaSc0zIL4CxMeB+BgQnwLic0BcVmTKUJQlz5CTKstQlqfAkJ8hxzBzoidDf4czQ2ayDENKvBRDeqIMw+QeV4ZpfW4MnU32DBUlZmD19aXKDKsWBDGsnB8IluMHmkctzAgKDyphLAAATHotqg=='),
+      DTMFromString('mqAEAAHicE2FgYGBnhGBuIGYEYgYg/g+kvgPxV6g8BxCLALEoEPMBMQ8QC0LFJKHif4BqWYD0AyD9GIjvAfE1IH4ExG+h9Ecg/gLE/4D4DhA/BOI3QPwLKv4KygfZ+xSIPwBxfoY5g5uDEIO1OT9Db5MHw6xef4baEnuG9loXhowkY4ZwfwkGf3dRhto8FYaNi2LA8lWFtgxTO30Y1s6LAuO5EwIZ+ls8GcrybBj4gWZSE4OCjImKGBsAAK6vMEA=')
     ];
   end;
-
+{
   with result[CT_ITEM_FISH] do
   begin
     name := 'Fish 1';
