@@ -273,8 +273,8 @@ begin
       maxIndex := i;
     end;
 
-  // didn't ID if score is 0
-  if (maxScore <> 0) then
+  // didn't ID if score is < 15
+  if (maxScore < 15) then
     result := maxIndex;
 
   if (result <> -1) then
