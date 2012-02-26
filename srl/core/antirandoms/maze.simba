@@ -149,21 +149,30 @@ end;
  *)
 function Maze_ClickDoor(): boolean;
 var
-  dtmDoorDark, i, x, y: integer;
+  dtmDoor1, dtmDoor2, i, x, y: integer;
   s: string;
-  tpa: TPointArray;
+  dtmBox: TBox;
+  tpa, tpa1, tpa2: TPointArray;
   aFound: T2DExtendedArray;
 begin
-  dtmDoorDark := DTMFromString('m6wAAAHic42ZgYOADYgkglmeAABCbGYjZoXLCQCwC5YMwFxBzQjETVC0IMEJpNii2t7VBwTUVZWCMLg7C/ED1xGJGqJ3EYCQAAF6aCvQ=');
+  dtmDoor1 := DTMFromString('m6wAAAHic42ZgYOADYgkglmeAABCbGYjZoXLCQCwC5YMwFxBzQjETVC0IMEJpNii2t7VBwTUVZWCMLg7C/ED1xGJGqJ3EYCQAAF6aCvQ=');
+  dtmDoor2 := DTMFromString('m6wAAAHic42ZgYGBkZGD4DaS/ADEHkC0AxUxQ8U9A/B0qd50BFV8D4otAfAGJPgfFrs5OKJiXlxdDDIb5geqJxUBnMDARiZEAACD+Fu0=');
+  dtmBox := intToBox(MSX1+100, MSY1+75, MSX2-100, MSY2-75);
 
   // find the DTM, using TPA because the walls and doors are very similar
   findDTMsRotatedAlternating(
-    dtmDoorDark, tpa, MSX1, MSY1, MSX2, MSY2, -pi/4, pi/4, pi/60, aFound);
+    dtmDoor1, tpa1, dtmBox.x1, dtmBox.y1, dtmBox.x2, dtmBox.y2, -pi/4, pi/4, pi/60, aFound);
+
+  findDTMsRotatedAlternating(
+    dtmDoor2, tpa2, dtmBox.x1, dtmBox.y1, dtmBox.x2, dtmBox.y2, -pi/4, pi/4, pi/60, aFound);
+
+  // combine and filter close points
+  tpa := combineTPA(tpa1, tpa2);
+  filterTPADist(tpa, 5);
 
   if (length(tpa) > 0) then
   begin
     sortTPAFrom(tpa, point(MSCX, MSCY)); // sort from center of screen
-    filterTPADist(tpa, 5);
 
     for i := 0 to high(tpa) do
     begin
@@ -188,8 +197,9 @@ begin
         if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
         begin
           addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
-          typeSend('.'); // don't like this, but it's needed to remove last chat text line
-          wait(1500 + random(500));
+          examineInv(); // don't like this, but it's needed to remove last chat text line
+          wait(2500 + random(500));
+          s := '';
           continue;
         end;
 
@@ -204,7 +214,8 @@ begin
   else
     addToSRLLog('Maze_ClickDoor: Failed to clicked door');
 
-  freeDTM(dtmDoorDark);
+  freeDTM(dtmDoor1);
+  freeDTM(dtmDoor2);
 end;
 
 (**
@@ -214,6 +225,7 @@ end;
 function Maze_WalkPath(path: TMazePath): boolean;
 var
   i, t: integer;
+  doorClicked: boolean;
 begin
   if (not loggedIn()) then
     exit;
@@ -228,23 +240,27 @@ begin
     mouse(path.path[i][0], path.path[i][1], 2, 2, mouse_Left);
     flag();
     wait(1500 + random(500));
+    doorClicked := false;
 
     // if we want to look for the door (some rooms have more than one walking point)
     if (path.path[i][2] <> '') then
     begin
-      t := (getSystemTime + 10000); // 10 seconds to click the door
-
       // in a loop in case we misclick the door
       repeat
+        inc(t);
+
         if (Maze_ClickDoor()) then
         begin
           addToSRLLog('Maze_WalkPath: Finished room '+toStr(i));
           result := (i = high(path.path));
+          doorClicked := true;
+          t := 0;
           break;
         end;
-      until(getSystemTime > t);
 
-      if (getSystemTime > t) then
+      until(t >= 5); // maximum 5 click door calls
+
+      if (not doorClicked) then
       begin
         addToSRLLog('Maze_WalkPath: Failed to solve room '+toStr(i));
         result := false;
@@ -300,7 +316,7 @@ begin
 
   if (Maze_DetectPath(paths, path)) then
   begin
-    if (Maze_WalkPath(path)) then
+    if (Maze_WalkPath(paths[MAZE_PATH_NW])) then
       if (Maze_WalkPath(paths[MAZE_PATH_COMMON])) then
         if (Maze_TouchShrine()) then
           result := waitTabExists(TAB_MAGIC, 15000);
