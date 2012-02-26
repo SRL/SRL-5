@@ -175,12 +175,15 @@ begin
         break;
       end;
 
-    end else
+    end else begin
+      doConversation('', false); // GE message or if we get exercise wrong
+
       if (not DD_DoExercise(exerciseDTMs)) then
         DD_Relocate(relocateDTMs);
+    end;
 
+    // just in case ;)
     result := tabExists(TAB_MAGIC);
-    doConversation('', false); // GE message or if we get exercise wrong
 
   until(result or (not loggedIn()) or (t > 30));
 
