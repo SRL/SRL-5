@@ -327,7 +327,7 @@ var
   tmpObjs: array[0..2] of TRotateObject;
   useNames: TStringArray;
   useCounts: TIntegerArray;
-  b: TBox;
+  p: TPoint;
 begin
   found := false;
 
@@ -379,11 +379,12 @@ begin
 
   addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
 
-  b := Quiz_ItemBox(i + 1);
-  mouse(b.x1 + 5, b.y1 + 5, b.x2 - b.x1 - 5, b.y2 - b.y1 - 5, mouse_Left);
+  p := middleBox(Quiz_ItemBox(i + 1));
+  mouse(p.x, p.y, 20, 10, mouse_Left);
 
   wait(500 + random(500));
   mouse(MIX1, MIY1, 50, 50, mouse_Move); // move away from chat box to get accurate scan
+  result := true;
 end;
 
 (**
