@@ -38,21 +38,33 @@ const
   MD_OBJ_TEA       = 4;
   MD_OBJ_BEER      = 5;
   MD_OBJ_MARTINI   = 6;
-  MD_OBJ_PICKAXE   = 7;
-  MD_OBJ_ORE       = 8;
-  MD_OBJ_HAMMER    = 9;
-  MD_OBJ_BAR       = 10;
-  MD_OBJ_SHORTBOW  = 11;
-  MD_OBJ_ARROWS    = 12;
-  MD_OBJ_CROSSBOW  = 13;
-  MD_OBJ_LONGBOW   = 14;
-  MD_OBJ_FROG      = 15;
-  MD_OBJ_THIEF     = 16;
-  MD_OBJ_MIME      = 17;
-  MD_OBJ_NECKLACE  = 18;
-  MD_OBJ_TIARA     = 19;
-  MD_OBJ_SYMBOL    = 20;
-  MD_OBJ_RING      = 21;
+  MD_OBJ_VODKA     = 7;
+  MD_OBJ_PICKAXE   = 8;
+  MD_OBJ_ORE       = 9;
+  MD_OBJ_HAMMER    = 10;
+  MD_OBJ_BAR       = 11;
+  MD_OBJ_SHORTBOW  = 12;
+  MD_OBJ_ARROWS    = 13;
+  MD_OBJ_CROSSBOW  = 14;
+  MD_OBJ_LONGBOW   = 15;
+  MD_OBJ_FROG      = 16;
+  MD_OBJ_THIEF     = 17;
+  MD_OBJ_MIME      = 18;
+  MD_OBJ_NECKLACE  = 19;
+  MD_OBJ_TIARA     = 20;
+  MD_OBJ_SYMBOL    = 21;
+  MD_OBJ_RING      = 22;
+  MD_OBJ_LONG      = 23;
+  MD_OBJ_FULLHELM  = 24;
+  MD_OBJ_KITE      = 25;
+  MD_OBJ_PLATE     = 26;
+  MD_OBJ_CAVALIER  = 27;
+  MD_OBJ_PIRATE    = 28;
+  MD_OBJ_JESTER    = 29;
+  MD_OBJ_LOGS      = 30;
+  MD_OBJ_TINDERBOX = 31;
+  MD_OBJ_LAMP      = 32;
+  MD_OBJ_CANDLE    = 33;
 
 const
   MD_PUZZLE_BIG_COUNT = 10;
@@ -67,11 +79,14 @@ const
     MD_PUZZLE_BIG_HAT      = 8;
     MD_PUZZLE_BIG_FISH     = 9;
 
-  MD_PUZZLE_SMALL_COUNT = 4;
+  MD_PUZZLE_SMALL_COUNT = 7;
     MD_PUZZLE_SMALL_WEAPONS = 0;
     MD_PUZZLE_SMALL_SMITH   = 1;
     MD_PUZZLE_SMALL_RANGE   = 2;
     MD_PUZZLE_SMALL_JEWEL   = 3;
+    MD_PUZZLE_SMALL_COMBAT  = 4;
+    MD_PUZZLE_SMALL_DRINK   = 5;
+    MD_PUZZLE_SMALL_HAT     = 6;
 
 var
   // stores the background colors and tolerances of the small and big puzzles
@@ -186,11 +201,23 @@ begin
       begin
         name := 'Martini';
         use := 'Drink';
-        count := 426;
-        width := 20;
-        height := 33;
-        totalCount := 671;
-        coverPercent := 65.0;
+        count := 450;
+        width := 17;
+        height := 27;
+        totalCount := 400;
+        coverPercent := 64.0;
+      end;
+
+    MD_OBJ_VODKA:
+      with result do
+      begin
+        name := 'Vodka';
+        use := 'Drink';
+        count := 350;
+        width := 14;
+        height := 28;
+        totalCount := 424;
+        coverPercent := 83.0;
       end;
 
     MD_OBJ_PICKAXE:
@@ -301,18 +328,6 @@ begin
         coverPercent := 81.0;
       end;
 
-    MD_OBJ_THIEF:
-      with result do
-      begin
-        name := 'Thief Mask';
-        use := 'Disguise';
-        count := 560;
-        width := 34;
-        height := 28;
-        totalCount := 944;
-        coverPercent := 59.0;
-      end;
-
     MD_OBJ_MIME:
       with result do
       begin
@@ -330,11 +345,11 @@ begin
       begin
         name := 'Necklace';
         use := 'Jewelery';
-        count := 190;
+        count := 219;
         width := 29;
         height := 19;
-        totalCount := 532;
-        coverPercent := 36.0;
+        totalCount := 567;
+        coverPercent := 38.0;
       end;
 
     MD_OBJ_TIARA:
@@ -342,11 +357,11 @@ begin
       begin
         name := 'Tiara';
         use := 'Jewelery';
-        count := 125;
+        count := 202;
         width := 32;
         height := 23;
-        totalCount := 730;
-        coverPercent := 17.0;
+        totalCount := 758;
+        coverPercent := 26.0;
       end;
 
     MD_OBJ_SYMBOL:
@@ -366,11 +381,150 @@ begin
       begin
         name := 'Ring';
         use := 'Jewelery';
-        count := 254;
+        count := 245;
         width := 24;
         height := 18;
         totalCount := 452;
+        coverPercent := 55.0;
+      end;
+
+    MD_OBJ_LONG: // same item is used for more than one puzzle (different use)
+      begin
+        result := MD_GetObject(MD_OBJ_LONGSWORD);
+        result.name := 'Long';
+        result.use := 'Combat';
+      end;
+
+    MD_OBJ_FULLHELM:
+      with result do
+      begin
+        name := 'Full Helm';
+        use := 'Combat';
+        count := 468;
+        width := 27;
+        height := 28;
+        totalCount := 760;
+        coverPercent := 61.0;
+      end;
+
+    MD_OBJ_KITE:
+      with result do
+      begin
+        name := 'Kiteshield';
+        use := 'Combat';
+        count := 640;
+        width := 37;
+        height := 24;
+        totalCount := 953;
+        coverPercent := 68.0;
+      end;
+
+    MD_OBJ_PLATE:
+      with result do
+      begin
+        name := 'Platebody';
+        use := 'Combat';
+        count := 750;
+        width := 36;
+        height := 28;
+        totalCount := 1039;
+        coverPercent := 70.0;
+      end;
+
+    MD_OBJ_THIEF:
+      with result do
+      begin
+        name := 'Thief Mask';
+        use := 'Hat';
+        count := 560;
+        width := 34;
+        height := 28;
+        totalCount := 944;
+        coverPercent := 59.0;
+      end;
+
+    MD_OBJ_JESTER:
+      with result do
+      begin
+        name := 'Jester Hat';
+        use := 'Hat';
+        count := 416;
+        width := 31;
+        height := 24;
+        totalCount := 747;
         coverPercent := 56.0;
+      end;
+
+    MD_OBJ_PIRATE:
+      with result do
+      begin
+        name := 'Pirate Hat';
+        use := 'Hat';
+        count := 696;
+        width := 35;
+        height := 27;
+        totalCount := 970;
+        coverPercent := 72.0;
+      end;
+
+    MD_OBJ_CAVALIER:
+      with result do
+      begin
+        name := 'Cavalier Hat';
+        use := 'Hat';
+        count := 584;
+        width := 35;
+        height := 23;
+        totalCount := 817;
+        coverPercent := 71.0;
+      end;
+
+    MD_OBJ_LOGS:
+      with result do
+      begin
+        name := 'Logs';
+        use := 'Fire';
+        count := 820;
+        width := 37;
+        height := 32;
+        totalCount := 1242;
+        coverPercent := 65.0;
+      end;
+
+    MD_OBJ_TINDERBOX:
+      with result do
+      begin
+        name := 'Tinderbox';
+        use := 'Fire';
+        count := 1485;
+        width := 42;
+        height := 44;
+        totalCount := 1878;
+        coverPercent := 79.0;
+      end;
+
+    MD_OBJ_LAMP:
+      with result do
+      begin
+        name := 'Lamp';
+        use := 'Fire';
+        count := 463;
+        width := 23;
+        height := 26;
+        totalCount := 625;
+        coverPercent := 74.0;
+      end;
+
+    MD_OBJ_CANDLE:
+      with result do
+      begin
+        name := 'Candle';
+        use := 'Fire';
+        count := 0;
+        width := 0;
+        height := 0;
+        totalCount := 0;
+        coverPercent := 0.0;
       end;
 
     else
@@ -400,6 +554,30 @@ begin
     idText := ['face', 'mask', 'disg'];
     objs := [MD_GetObject(MD_OBJ_FROG), MD_GetObject(MD_OBJ_THIEF),
              MD_GetObject(MD_OBJ_MIME)];
+  end;
+
+  with result[MD_PUZZLE_BIG_MELEE] do
+  begin
+    name := 'Big Puzzle: Melee';
+    idText := ['sword', 'weapon', 'ack', 'melee'];
+    objs := [MD_GetObject(MD_OBJ_LONGSWORD), MD_GetObject(MD_OBJ_SCIMITAR),
+             MD_GetObject(MD_OBJ_BATTLEAXE)];
+  end;
+
+  with result[MD_PUZZLE_BIG_HAT] do
+  begin
+    name := 'Big Puzzle: Hat';
+    idText := ['hat', 'cap', 'head'];
+    objs := [MD_GetObject(MD_OBJ_CAVALIER), MD_GetObject(MD_OBJ_JESTER),
+             MD_GetObject(MD_OBJ_PIRATE)];
+  end;
+
+  with result[MD_PUZZLE_BIG_FIRE] do
+  begin
+    name := 'Big Puzzle: Fire';
+    idText := ['arks', 'fire', 'nitin', 'brain'];
+    objs := [MD_GetObject(MD_OBJ_LOGS), MD_GetObject(MD_OBJ_TINDERBOX),
+             MD_GetObject(MD_OBJ_LAMP)];
   end;
 end;
 
@@ -441,6 +619,30 @@ begin
     btmObj := MD_GetObject(MD_OBJ_RING);
     topObjs := [MD_GetObject(MD_OBJ_NECKLACE), MD_GetObject(MD_OBJ_TIARA),
                 MD_GetObject(MD_OBJ_SYMBOL)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_COMBAT] do
+  begin
+    name := 'Small Puzzle: Combat';
+    btmObj := MD_GetObject(MD_OBJ_PLATE);
+    topObjs := [MD_GetObject(MD_OBJ_LONG), MD_GetObject(MD_OBJ_FULLHELM),
+                MD_GetObject(MD_OBJ_KITE)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_DRINK] do
+  begin
+    name := 'Small Puzzle: Drink';
+    btmObj := MD_GetObject(MD_OBJ_MARTINI);
+    topObjs := [MD_GetObject(MD_OBJ_TEA), MD_GetObject(MD_OBJ_BEER),
+                MD_GetObject(MD_OBJ_VODKA)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_HAT] do
+  begin
+    name := 'Small Puzzle: Head Gear';
+    btmObj := MD_GetObject(MD_OBJ_JESTER);
+    topObjs := [MD_GetObject(MD_OBJ_THIEF), MD_GetObject(MD_OBJ_CAVALIER),
+                MD_GetObject(MD_OBJ_PIRATE)];
   end;
 end;
 
@@ -569,7 +771,7 @@ begin
       for k := 0 to high(scanObjs) do
         if (MD_ObjIsObj(puzzles[i].topObjs[j], scanObjs[k])) then
         begin
-          addToSRLLog('MD_IDSmallPuzzle: Found '+puzzles[i].topObjs[j].name+' in slot '+toStr(k + 1));
+          writeln('Found '+puzzles[i].topObjs[j].name+' in slot '+toStr(k + 1));
           finalObjs[j] := puzzles[i].topObjs[j];
           inc(c);
           break;
@@ -622,7 +824,7 @@ begin
   if (result) then
     addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name)
   else
-    addToSRLLog('MD_SolveSmallPuzzle: Didn''t solve');
+    addToSRLLog('MD_SolveSmallPuzzle: Didn''t find object '+puzzle.btmObj.name);
 end;
 
 (**
@@ -759,28 +961,34 @@ begin
   MD_DeclareGlobals();
   bigPuzzles := MD_GetBigPuzzles();
   smallPuzzles := MD_GetSmallPuzzles();
+  puz := -1;
 
   repeat
     // solve the big puzzle
     if (MD_BigScreen()) then
     begin
-      inc(tries);
       puz := MD_IDBigPuzzle(bigPuzzles);
 
       if (puz <> -1) then
         if (MD_SolveBigPuzzle(bigPuzzles[puz])) then
-          waitNPCTalking(MD_NPC_MORDAUT, 3000);
+          if (waitNPCTalking(MD_NPC_MORDAUT, 3000)) then
+            inc(tries);
     end;
 
     // solve the small puzzle
     if (MD_SmallScreen()) then
     begin
-      inc(tries);
-      puz := MD_IDSmallPuzzle(smallPuzzles);
+      if (puz = -1) then // so we don't keep scanning top objects if bottom isn't found first try
+        puz := MD_IDSmallPuzzle(smallPuzzles);
 
       if (puz <> -1) then
         if (MD_SolveSmallPuzzle(smallPuzzles[puz])) then
-          waitNPCTalking(MD_NPC_MORDAUT, 3000);
+        begin
+          puz := -1;
+
+          if (waitNPCTalking(MD_NPC_MORDAUT, 3000)) then
+            inc(tries);
+        end;
     end;
 
     doConversation('', false); // to bring up the next puzzle

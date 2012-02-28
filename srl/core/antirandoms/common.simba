@@ -46,6 +46,7 @@ Example:
     // MD_SmallBox is in mordaut.simba
     item := getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30);
 *)
+//{$i srl/srl/misc/debug.simba}
 function ScanRotateObject(cols, tols: TIntegerArray; area: TBox; splitDist, tries: integer): TRotateObject;
 var
   i: integer;
