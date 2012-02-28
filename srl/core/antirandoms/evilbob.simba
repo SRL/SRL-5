@@ -36,8 +36,6 @@ var
  * Description: Returns true if player is in the random.
  *)
 function EB_Detect(): boolean;
-var
-  x, y: integer;
 begin
   // check twice to avoid false negatives
   if (not tabExists(TAB_MAGIC)) then
