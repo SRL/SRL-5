@@ -9,11 +9,8 @@ is removed.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
 {$ENDIF}
 
 // include all the solver files
@@ -495,7 +492,8 @@ begin
   result := _FindAllRandoms(false);
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   clearDebug();
   activateClient();
@@ -504,4 +502,5 @@ begin
   findNormalRandoms();
   SRLRandomsReport();
 end.
+}
 {$ENDIF}

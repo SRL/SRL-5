@@ -7,11 +7,9 @@ event.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
 {$ENDIF}
 
 (**
@@ -83,7 +81,8 @@ begin
     addToSRLLog('Abyss_Solve: Abyss solver exceeded maximum tries');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   ClearDebug();
   ActivateClient();
@@ -91,4 +90,5 @@ begin
 
   Abyss_Solve();
 end.
+}
 {$ENDIF}

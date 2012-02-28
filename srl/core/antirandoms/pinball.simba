@@ -8,11 +8,9 @@ detection methods.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
 {$ENDIF}
 
 //{$DEFINE PB_DEBUG}
@@ -273,7 +271,8 @@ begin
     addToSRLLog('PB_Solve: Pinball solver timed out');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   clearDebug();
   activateClient();
@@ -281,4 +280,5 @@ begin
 
   //PB_Solve();
 end.
+}
 {$ENDIF}

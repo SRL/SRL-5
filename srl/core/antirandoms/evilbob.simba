@@ -6,11 +6,9 @@ Stores all the routines to solve the Evil Bob random.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
 {$ENDIF}
 
 const
@@ -414,7 +412,8 @@ begin
     addToSRLLog('EB_Solve: Evil Bob solver timed out');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   clearDebug();
   activateClient();
@@ -422,4 +421,5 @@ begin
 
   EB_Solve();
 end.
+}
 {$ENDIF}

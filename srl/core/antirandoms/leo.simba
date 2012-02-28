@@ -8,11 +8,9 @@ detection methods.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
 {$ENDIF}
 
 (**
@@ -46,7 +44,8 @@ begin
     addToSRLLog('Leo_Solve: '' solver timed out');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   clearDebug();
   activateClient();
@@ -54,4 +53,5 @@ begin
 
   Leo_Solve();
 end.
+}
 {$ENDIF}

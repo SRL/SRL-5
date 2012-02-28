@@ -8,11 +8,9 @@ detection methods.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i common.simba}
+{$IFNDEF IS_INCLUDE}
+  //{$i srl/srl.simba}
+  //{$i common.simba}
 {$ENDIF}
 
 (**
@@ -47,7 +45,8 @@ begin
     addToSRLLog('BK_Solve: '' solver timed out');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
+{$IFNDEF IS_INCLUDE}
+{
 begin
   clearDebug();
   activateClient();
@@ -55,4 +54,5 @@ begin
 
   BK_Solve();
 end.
+}
 {$ENDIF}
