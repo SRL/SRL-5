@@ -7,8 +7,11 @@ several random event solvers.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
+//{$DEFINE SRL_RANDOMS_TEST}
+
+{$IFDEF SRL_RANDOMS_TEST}
+  {$i srl/srl.simba}
+  {$i common.simba}
 {$ENDIF}
 
 (**
@@ -252,12 +255,10 @@ begin
     freeDTM(DTMs[i]);
 end;
 
-{$IFNDEF IS_incLUDE}
-{
+{$IFDEF SRL_RANDOMS_TEST}
 begin
   clearDebug();
   activateClient();
   setupSRL();
 end.
-}
 {$ENDIF}

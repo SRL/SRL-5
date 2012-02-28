@@ -8,9 +8,11 @@ SRL's random detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
+//{$DEFINE SRL_RANDOMS_TEST}
+
+{$IFDEF SRL_RANDOMS_TEST}
+  {$i srl/srl.simba}
+  {$i common.simba}
 {$ENDIF}
 
 const
@@ -133,8 +135,7 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
+{$IFDEF SRL_RANDOMS_TEST}
 begin
   clearDebug();
   activateClient();
@@ -142,5 +143,4 @@ begin
 
   SL_Solve();
 end.
-}
 {$ENDIF}

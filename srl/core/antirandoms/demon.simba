@@ -8,9 +8,11 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
+//{$DEFINE SRL_RANDOMS_TEST}
+
+{$IFDEF SRL_RANDOMS_TEST}
+  {$i srl/srl.simba}
+  {$i common.simba}
 {$ENDIF}
 
 // the demon's name that appears when he's talking
@@ -195,8 +197,7 @@ begin
     addToSRLLog('DD_Solve: Drill Demon exceeded maximum tries');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
+{$IFDEF SRL_RANDOMS_TEST}
 begin
   clearDebug();
   activateClient();
@@ -204,5 +205,4 @@ begin
 
   DD_Solve();
 end.
-}
 {$ENDIF}

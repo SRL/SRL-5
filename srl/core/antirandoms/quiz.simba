@@ -8,8 +8,11 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$include_once srl/srl.simba}
+//{$DEFINE SRL_RANDOMS_TEST}
+
+{$IFDEF SRL_RANDOMS_TEST}
+  {$i srl/srl.simba}
+  {$i common.simba}
 {$ENDIF}
 
 const
@@ -419,8 +422,7 @@ begin
     addToSRLLog('Quiz_Solve: Quiz solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
+{$IFDEF SRL_RANDOMS_TEST}
 begin
   clearDebug();
   activateClient();
@@ -428,5 +430,4 @@ begin
 
   Quiz_Solve();
 end.
-}
 {$ENDIF}

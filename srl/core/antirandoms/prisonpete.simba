@@ -8,9 +8,11 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
+//{$DEFINE SRL_RANDOMS_TEST}
+
+{$IFDEF SRL_RANDOMS_TEST}
+  {$i srl/srl.simba}
+  {$i common.simba}
 {$ENDIF}
 
 (**
@@ -47,8 +49,7 @@ begin
     addToSRLLog('PP_Solve: '' solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
+{$IFDEF SRL_RANDOMS_TEST}
 begin
   clearDebug();
   activateClient();
@@ -56,5 +57,4 @@ begin
 
   addToSRLLog(toStr(PP_Detect));
 end.
-}
 {$ENDIF}
