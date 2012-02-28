@@ -8,10 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$include_once srl/srl.simba}
-{$ENDIF}
-
 const
   _QUIZ_ACCURACY = 100; // number of tries to scan object
   _QUIZ_NPC = 'GqlzD5gt8!'; // Quiz Master's name
@@ -419,14 +415,3 @@ begin
     addToSRLLog('Quiz_Solve: Quiz solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Quiz_Solve();
-end.
-}
-{$ENDIF}

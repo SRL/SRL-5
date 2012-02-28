@@ -6,11 +6,6 @@ The Mime file stores the routines to solve the mime random event.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   MIME_EMOTE_COUNT = 8;
     MIME_EMOTE_THINK = 0;
@@ -427,14 +422,3 @@ begin
   end;
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Mime_Solve();
-end.
-}
-{$ENDIF}

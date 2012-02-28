@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 //{$DEFINE PB_DEBUG}
 
 const
@@ -271,14 +266,3 @@ begin
     addToSRLLog('PB_Solve: Pinball solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  //PB_Solve();
-end.
-}
-{$ENDIF}

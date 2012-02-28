@@ -6,11 +6,6 @@ The Maze file stores the routines to solve the maze random event.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 type
   TMazePath = record
     name: string;
@@ -324,14 +319,3 @@ begin
     addToSRLLog('Maze_Solve: Didn''t detect maze path');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Maze_Solve();
-end.
-}
-{$ENDIF}

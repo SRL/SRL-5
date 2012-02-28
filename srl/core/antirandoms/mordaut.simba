@@ -8,14 +8,6 @@ detection methods.
 
 *)
 
-//{$DEFINE SRL_RANDOMS_TEST}
-
-{$IFDEF SRL_RANDOMS_TEST}
-  {$i srl/srl.simba}
-  {$i srl/srl/misc/debug.simba} // to make sure returnTPAExceptColors is working properly
-  {$i common.simba}
-{$ENDIF}
-
 type
   TMDBigPuzzle = record
     name: string;
@@ -799,15 +791,3 @@ begin
     addToSRLLog('MD_Solve: Mordaut solver timed out');
 end;
 
-{$IFDEF SRL_RANDOMS_TEST}
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-  SRL_DisableLogging := true;
-
-  MD_Solve();
-  //MD_DeclareGlobals();
-  //MD_DebugPuzzle([7], false);
-end.
-{$ENDIF}

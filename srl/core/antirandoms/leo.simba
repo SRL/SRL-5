@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 (**
  * Author:
  * Description: Detects if a player is in the Leo random.
@@ -44,14 +39,3 @@ begin
     addToSRLLog('Leo_Solve: '' solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Leo_Solve();
-end.
-}
-{$ENDIF}

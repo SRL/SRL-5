@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 // the demon's name that appears when he's talking
 const
   DD_NPC_DEMON = 'B8!q850t85Ol80';
@@ -195,14 +190,3 @@ begin
     addToSRLLog('DD_Solve: Drill Demon exceeded maximum tries');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  DD_Solve();
-end.
-}
-{$ENDIF}

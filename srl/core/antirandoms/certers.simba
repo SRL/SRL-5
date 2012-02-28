@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   CT_ITEM_COUNT = 9;
     CT_ITEM_BOWL      = 0;
@@ -285,14 +280,3 @@ begin
     addToSRLLog('CT_Solve: Certers solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  //CT_Solve();
-end.
-}
-{$ENDIF}

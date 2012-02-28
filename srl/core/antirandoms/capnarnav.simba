@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   CA_NAME_ARNAV = 'C50!04!05u';
 
@@ -260,14 +255,3 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  CA_Solve();
-end.
-}
-{$ENDIF}

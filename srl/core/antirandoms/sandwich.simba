@@ -8,11 +8,6 @@ SRL's random detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   DTM_SL_COUNT = 7;
     DTM_SL_DONUT     = 0;
@@ -133,14 +128,3 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  SL_Solve();
-end.
-}
-{$ENDIF}

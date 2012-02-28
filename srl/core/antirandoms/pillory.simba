@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 (**
  * Author: nielsie95
  * Description: Checks if the lock screen is visible.
@@ -325,14 +320,3 @@ begin
     addToSRLLog('PL_Solve: Pillory solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  PL_Solve();
-end.
-}
-{$ENDIF}

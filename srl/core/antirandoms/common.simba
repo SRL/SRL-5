@@ -7,10 +7,6 @@ several random event solvers.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-{$ENDIF}
-
 (**
  * Author: Wizzup? & Coh3n
  * Description: Type used to identify rotating items.  Example, Quiz & Mordaut.
@@ -252,12 +248,3 @@ begin
     freeDTM(DTMs[i]);
 end;
 
-{$IFNDEF IS_incLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-end.
-}
-{$ENDIF}

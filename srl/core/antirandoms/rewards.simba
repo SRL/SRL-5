@@ -6,11 +6,6 @@ Stores all the routines to solving reward/inventory random events.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   DTM_REWARD_COUNT = 4;
     DTM_REWARD_BOX     = 0;
@@ -362,14 +357,3 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  RD_Solve();
-end.
-}
-{$ENDIF}

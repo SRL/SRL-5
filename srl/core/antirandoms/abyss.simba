@@ -7,11 +7,6 @@ event.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 (**
  * Author: Coh3n
  * Description: Detects if a player is in the Abyss random.
@@ -81,14 +76,3 @@ begin
     addToSRLLog('Abyss_Solve: Abyss solver exceeded maximum tries');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  ClearDebug();
-  ActivateClient();
-  SetupSRL();
-
-  Abyss_Solve();
-end.
-}
-{$ENDIF}

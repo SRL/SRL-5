@@ -8,11 +8,6 @@ detection methods.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
-
 const
   FROG_NAME_HERALD   = '8!oqB8!5lg';
   FROG_NAME_PRINCESS = '8!oqo!l0o8gg';
@@ -320,14 +315,3 @@ begin
     addToSRLLog('Frog_Solve: Frog solver failed or timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Frog_Solve();
-end.
-}
-{$ENDIF}
