@@ -1106,12 +1106,71 @@ begin
 end;
 
 (**
- * Author: Coh3n
+ * Author: Coh3n & Nava2
  * Description: Exits the classroom.
  *)
 function MD_Exit(): boolean;
+var
+  doorColor, x, y: integer;
+  txt, doorDirection, doorType: string;
+  p: TPoint;
+  a: extended;
 begin
-  result := false;
+  txt := getTextAtExWrap(142, 395, 500, 419, 1, 6, 2, clBlack, 50, upChars);
+
+  // get the door's direction
+  doorDirection := lowercase(trim(between('in the ', ' of', txt)));
+  case doorDirection of
+    'south-west' : begin p := point(MMX1, MMY2); a := 270; end;
+    'north'      : begin p := point(MMCX, MMY1); a := 0; end;
+    'north-west' : begin p := point(MMX1, MMY1); a := 270; end;
+    'south-east' : begin p := point(MMX2, MMY2); a := 90; end;
+
+    else begin
+      addtoSRLLog('MD_Exit: Failed to get door direction');
+      exit;
+    end;
+  end;
+
+  // get the door's color
+  doorType := lowercase(trim(between(' the ', ' door', txt)));
+  case doorType of
+    'purple circle' : doorColor := 14754001;
+    'red cross'     : doorColor := 1318539;
+    'green square'  : doorColor := 3927642;
+    'blue star'     : doorColor := 6115385;
+
+    else begin
+      addtoSRLLog('MD_Exit: Failed to get door color');
+      exit;
+    end;
+  end;
+
+  addToSRLLog('MD_Exit: Need to exit through '+doorDirection+', '+doorType+' door');
+  makeCompass('n');
+
+  // walk to the proper door
+  if (TPAWalk(clRed, 15, 0, 0, p)) then
+  begin
+    makeCompass(a);
+    wait(1500 + random(500));
+
+    // find and click the door
+    if (findColorTolerance(x, y, doorColor, MSX1, MSY1, MSX2, MSY2, 15)) then
+    begin
+      mouse(x, y, 5, 5, mouse_Move);
+
+      if (waitUptext('oor', 300)) then
+      begin
+        addToSRLLog('MD_Exit: Clicking door');
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+
+        if (didRedClick()) then
+          result := waitTabExists(TAB_MAGIC, 8000);
+      end;
+    end;
+  end;
 end;
 
 // debugs each rotating item in the Mordaut small puzzle
@@ -1146,7 +1205,6 @@ begin
     exit;
 
   t := (getSystemTime + (15 * 60000));
-  doConversation('', false);
 
   MD_DeclareGlobals();
   bigPuzzles := MD_GetBigPuzzles();
@@ -1176,8 +1234,10 @@ begin
     // wait for Mordaut to start talking, otherwise puzzle wasn't solved
     if (solved) then
     begin
+      // reset variables
       puz := -1;
       failed := 0;
+      solved := false;
 
       if (waitNPCTalking(MD_NPC_MORDAUT, 3000)) then
         inc(puzzles);
@@ -1186,7 +1246,7 @@ begin
       inc(failed);
 
     // to bring up the next puzzle or show the solver is done
-    if (doConversation('door', false)) then
+    if (doConversation('exit', false)) then
       result := MD_Exit();
 
     // will only logout if the same puzzle was failed too many times
