@@ -92,7 +92,7 @@ DebugRotateObject
 
 .. code-block:: pascal
 
-    procedure DebugRotateObject(obj: TRotateObject);
+    procedure DebugRotateObject(obj: TRotateObject; name, use: string);
 
 Prints 'obj' to the debug box in a format so it can be easily inserted into a
 case statement.
@@ -107,14 +107,14 @@ Example:
 .. code-block:: pascal
 
     // MD_SmallBox is in mordaut.simba
-    debugRotateObject(getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30));
+    debugRotateObject(getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30), 'Test', 'Nothing');
 *)
-procedure DebugRotateObject(obj: TRotateObject);
+procedure DebugRotateObject(obj: TRotateObject; name, use: string);
 begin
   addToSRLLog('with result do');
   addToSRLLog('begin');
-  addToSRLLog('  name := '+capitalize(obj.name)+';');
-  addToSRLLog('  use := '+capitalize(obj.use)+';');
+  addToSRLLog('  name := '''+capitalize(name)+''';');
+  addToSRLLog('  use := '''+capitalize(use)+''';');
   addToSRLLog('  count := '+toStr(obj.count)+';');
   addToSRLLog('  width := '+toStr(obj.width)+';');
   addToSRLLog('  height := '+toStr(obj.height)+';');
