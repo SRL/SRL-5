@@ -61,6 +61,7 @@ begin
   for i := 1 to tries do
   begin
     tmpTPA := returnTPAExceptColors(cols, tols, area);
+    //debugTPA(tmpTPA, '');
     bounds := getTPABounds(tmpTPA);
 
     tmpATPA := splitTPA(tmpTPA, splitDist);
