@@ -292,7 +292,6 @@ begin
     detect := @BK_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_REWARDS] do

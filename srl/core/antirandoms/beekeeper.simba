@@ -8,6 +8,25 @@ detection methods.
 
 *)
 
+type
+  TBeePiece = record
+    name: string;
+    minPixelShift, maxPixelShift: integer;
+    dragPoint: TPoint;
+    done: boolean; // to use during runtime so the same piece isn't ID'd twice
+  end;
+  TBeePieceArray = array of TBeePiece;
+
+const
+  BK_PIECE_COUNT = 4;
+    BK_PIECE_LID   = 0;
+    BK_PIECE_UPPER = 1;
+    BK_PIECE_LOWER = 2;
+    BK_PIECE_LEGS  = 3;
+
+const
+  _NPC_BEEKEEPER = '888l8808!';
+
 (**
  * Author:
  * Description: Detects if a player is in the '' random.
@@ -15,27 +34,210 @@ detection methods.
 function BK_Detect(): boolean;
 begin
   if (not tabExists(TAB_MAGIC)) then
-    result := (getNPCChatName() = '888l8808!');
+    result := (getNPCChatName() = _NPC_BEEKEEPER);
 end;
 
 (**
- * Author:
+ * Author: Coh3n
+ * Description: Returns an array of all the hive pieces.
+ *)
+function BK_GetPieces(): TBeePieceArray;
+begin
+  setLength(result, BK_PIECE_COUNT);
+
+  with result[BK_PIECE_LID] do
+  begin
+    name := 'Lid';
+    minPixelShift := 2950;
+    maxPixelShift := 3500;
+    dragPoint := point(260, 50);
+  end;
+
+  with result[BK_PIECE_UPPER] do
+  begin
+    name := 'Upper Middle';
+    minPixelShift := 2000;
+    maxPixelShift := 2400;
+    dragPoint := point(260, 100);
+  end;
+
+  with result[BK_PIECE_LOWER] do
+  begin
+    name := 'Lower Middle';
+    minPixelShift := 2450;
+    maxPixelShift := 2550;
+    dragPoint := point(260, 150);
+  end;
+
+  with result[BK_PIECE_LEGS] do
+  begin
+    name := 'Legs';
+    minPixelShift := 2700;
+    maxPixelShift := 2820;
+    dragPoint := point(260, 200);
+  end;
+end;
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the piece slot, 'slot'.
+ *)
+function BK_PieceBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 1, 4, 100, 50, 100, 50, point(77, 53));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the puzzle screen is open.
+ *)
+function BK_Screen(): boolean;
+var
+  x, y: integer;
+begin
+  // the color of the text
+  result := findColorTolerance(x, y, 2071039, 363, 36, 493, 137, 10);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Gets the pixel shift in slot 'slot'.
+ *)
+function BK_ScanPiece(slot: integer): integer;
+begin
+  addToSRLLog('BK_ScanPiece: Scanning slot '+toStr(slot));
+  result := averagePixelShift(BK_PieceBox(slot), 1000, 5000);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Goes through conversations with the Beekeeper.
+ *)
+function BK_TalkTo(): boolean;
+var
+  t: integer;
+begin
+  t := (getSystemTime + 10000);
+
+  // keep clicking continue until the puzzle screen appears
+  while (getSystemTime < t) and (not result) do
+  begin
+    clickContinue(true, true);
+
+    // appears if failed or exited screen
+    if (findNPCChatText('let', nothing)) then
+      typeByte(VK_2);
+
+    result := BK_Screen();
+    wait(100 + random(200));
+  end;
+
+  if (not result) then
+    addToSRLLog('BK_TalkTo: Failed to talk to the Beekeeper');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Identifies and drags each piece to the proper slots.
+ *)
+function BK_BuildHive(pieces: TBeePieceArray): boolean;
+var
+  i, j, t, numDone, tmpShift: integer;
+  p: TPoint;
+  compareShifts: boolean;
+  done: array[1..4] of boolean;
+begin
+  if (not loggedIn()) and (not BK_Screen()) then
+    exit;
+
+  t := (getSystemTime + (5 * 60000));
+
+  repeat
+    for i := 1 to 4 do // 4 piece slots
+    begin
+      if (done[i]) then // skip slots already done
+        continue;
+
+      tmpShift := BK_ScanPiece(i);
+      addToSRLLog('BK_BuildHive: Piece shift = '+toStr(tmpShift)+' in slot '+toStr(i));
+
+      for j := 0 to high(pieces) do
+      begin
+        if (pieces[j].done) then // skip pieces already done
+          continue;
+
+        // if there's only one item left, drag it to the last slot
+        if (numDone <> 3) then
+          compareShifts := inRange(tmpShift, pieces[j].minPixelShift, pieces[j].maxPixelShift)
+        else
+          compareShifts := true;
+
+        if (compareShifts) then
+        begin
+          addToSRLLog('BK_BuildHive: Found '+pieces[j].name+' in slot '+toStr(i));
+
+          p := middleBox(BK_PieceBox(i));
+          dragMouse(p.x, p.y, 15, 15, pieces[j].dragPoint.x, pieces[j].dragPoint.y, 15, 15);
+
+          // set variables to optimize speed
+          compareShifts := false;
+          pieces[j].done := true;
+          done[i] := true;
+          inc(numDone);
+        end;
+      end;
+    end;
+
+    result := (numDone = 4);
+    wait(200 + random(300));
+
+  until(result or (getSystemTime > t));
+
+  if (result) then
+  begin
+    addToSRLLog('BK_BuildHive: Finished dragging pieces');
+    mouse(277, 280, 10, 5, mouse_Left); // click the BUILD button
+  end else
+    addToSRLLog('BK_BuildHive: Solver timed out');
+end;
+
+(**
+ * Author: Coh3n
  * Description: Solves the random.
  *)
 function BK_Solve(): boolean;
 var
-  t: integer;
+  t, fails: integer;
+  pieces: TBeePieceArray;
 begin
   if (not loggedIn()) then
     exit;
 
-  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
-  doConversation('', false);
+  pieces := BK_GetPieces();
 
   repeat
+    if (BK_TalkTo()) then
+      if (BK_BuildHive(pieces)) then
+        if (waitNPCTalking(_NPC_BEEKEEPER, 5000)) then
+          if (findNPCChatText('No', nothing)) then // if it wasn't solved right
+          begin
+            addToSRLLog('BK_Solve: Failed to solve properly');
+            inc(fails);
+          end else begin
+            doConversation('', false);
+            result := waitTabExists(TAB_MAGIC, 8000);
+          end;
 
-  until(result or (getSystemTime > t));
+    result := tabExists(TAB_MAGIC); // just in case
 
-  if (not result) then
-    addToSRLLog('BK_Solve: '' solver timed out');
+  until(result or (fails >= 6)); // Beekeeper gives a maximum of 6 tries
+
+  if (fails >= 6) then
+  begin
+    addToSRLLog('BK_Solve: Failed too many times');
+    result := false;
+    exit;
+  end;
+
+  if (result) then
+    addToSRLLog('BK_Solve: Solved Beekeeper');
 end;
