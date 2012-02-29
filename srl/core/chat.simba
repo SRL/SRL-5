@@ -872,7 +872,7 @@ begin
       break;
     end;
 
-    wait(1500 + random(500));
+    wait(100 + random(200));
     inc(t);
   end;
 end;
