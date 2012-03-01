@@ -239,7 +239,7 @@ begin
       begin
         //if (waitNPCTalking(
         if (clickPortal(dtmPortal)) then
-          result := waitTabExists(TAB_MAGIC, 5000);
+          result := waitTabExists(TAB_MAGIC, 10000);
       end else
         inc(tries);
 
