@@ -272,7 +272,6 @@ begin
     detect := @FF_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_MOLLY] do
