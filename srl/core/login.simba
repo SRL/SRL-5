@@ -945,7 +945,7 @@ begin
             typeByte(VK_ESCAPE);
             leaveLobby();
 
-            if (SRL_Procs[srl_OnRSUpdate] <> nil) then
+            if SRL_HasProc(srl_OnRSUpdate) then
             begin
               SRL_Procs[srl_OnRSUpdate]();
               Exit;
