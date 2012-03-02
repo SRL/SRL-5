@@ -77,6 +77,13 @@ const
   MD_OBJ_SARDINE    = 43;
   MD_OBJ_MACKEREL   = 44;
   MD_OBJ_SWORDFISH  = 45;
+  MD_OBJ_TROUT      = 46;
+  MD_OBJ_BOOTS      = 47;
+  MD_OBJ_HOOK       = 48;
+  MD_OBJ_EYEPATCH   = 49;
+  MD_OBJ_RUNE       = 50;
+  MD_OBJ_STAFF      = 51;
+  MD_OBJ_HARPOON    = 52;
 
 const
   MD_PUZZLE_BIG_COUNT = 10;
@@ -91,7 +98,7 @@ const
     MD_PUZZLE_BIG_HAT      = 8;
     MD_PUZZLE_BIG_FISH     = 9;
 
-  MD_PUZZLE_SMALL_COUNT = 10;
+  MD_PUZZLE_SMALL_COUNT = 12;
     MD_PUZZLE_SMALL_WEAPONS = 0;
     MD_PUZZLE_SMALL_SMITH   = 1;
     MD_PUZZLE_SMALL_RANGE   = 2;
@@ -102,6 +109,8 @@ const
     MD_PUZZLE_SMALL_FARMING = 7;
     MD_PUZZLE_SMALL_SHIELD  = 8;
     MD_PUZZLE_SMALL_FISH    = 9;
+    MD_PUZZLE_SMALL_BOOTS   = 10;
+    MD_PUZZLE_SMALL_MAGIC   = 11;
 
 var
   // stores the background colors and tolerances of the small and big puzzles
@@ -180,11 +189,11 @@ begin
       begin
         name := 'Mace';
         use := 'Weapon';
-        count := 250;
+        count := 205;
         width := 31;
-        height := 22;
-        totalCount := 681;
-        coverPercent := 37.0;
+        height := 23;
+        totalCount := 700;
+        coverPercent := 28.0;
       end;
 
     MD_OBJ_TEA:
@@ -676,6 +685,90 @@ begin
         coverPercent := 26.0;
       end;
 
+    MD_OBJ_BOOTS:
+      with result do
+      begin
+        name := 'Boots';
+        use := 'Boots';
+        count := 587;
+        width := 30;
+        height := 28;
+        totalCount := 900;
+        coverPercent := 67.0;
+      end;
+
+    MD_OBJ_EYEPATCH:
+      with result do
+      begin
+        name := 'Eye Patch';
+        use := 'Pirate';
+        count := 255;
+        width := 32;
+        height := 20;
+        totalCount := 630;
+        coverPercent := 40.0;
+      end;
+
+    MD_OBJ_HOOK:
+      with result do
+      begin
+        name := 'Pirate Hook';
+        use := 'Pirate';
+        count := 224;
+        width := 32;
+        height := 23;
+        totalCount := 706;
+        coverPercent := 32.0;
+      end;
+
+    MD_OBJ_RUNE:
+      with result do
+      begin
+        name := 'Rune';
+        use := 'Magic';
+        count := 800;
+        width := 35;
+        height := 29;
+        totalCount := 1040;
+        coverPercent := 75.0;
+      end;
+
+    MD_OBJ_STAFF:
+      with result do
+      begin
+        name := 'Staff';
+        use := 'Magic';
+        count := 96;
+        width := 39;
+        height := 26;
+        totalCount := 878;
+        coverPercent := 11.0;
+      end;
+
+    MD_OBJ_HARPOON:
+      with result do
+      begin
+        name := 'Harpoon';
+        use := 'Fish';
+        count := 194;
+        width := 35;
+        height := 23;
+        totalCount := 738;
+        coverPercent := 24.0;
+      end;
+
+    MD_OBJ_TROUT:
+      with result do
+      begin
+        name := 'Trout';
+        use := 'Fish';
+        count := 320;
+        width := 32;
+        height := 23;
+        totalCount := 700;
+        coverPercent := 45.0;
+      end;
+
     else
       addToSRLLog('MD_GetObject: Invalid object '+toStr(obj));
   end;
@@ -724,9 +817,33 @@ begin
   with result[MD_PUZZLE_BIG_FIRE] do
   begin
     name := 'Big Puzzle: Fire';
-    idText := ['arks', 'fire', 'nitin', 'brain'];
+    idText := ['arks', 'fire', 'nitin', 'brain', 'star'];
     objs := [MD_GetObject(MD_OBJ_LOGS), MD_GetObject(MD_OBJ_TINDERBOX),
              MD_GetObject(MD_OBJ_LAMP)];
+  end;
+
+  with result[MD_PUZZLE_BIG_PIRATE] do
+  begin
+    name := 'Big Puzzle: Pirate';
+    idText := ['irate', 'tis', 'Yarr'];
+    objs := [MD_GetObject(MD_OBJ_HOOK), MD_GetObject(MD_OBJ_PIRATE),
+             MD_GetObject(MD_OBJ_EYEPATCH)];
+  end;
+
+  with result[MD_PUZZLE_BIG_RANGE] do
+  begin
+    name := 'Big Puzzle: Range';
+    idText := ['arc', 'arrow'];
+    objs := [MD_GetObject(MD_OBJ_LONGBOW), MD_GetObject(MD_OBJ_ARROWS),
+             MD_GetObject(MD_OBJ_CROSSBOW)];
+  end;
+
+  with result[MD_PUZZLE_BIG_FISH] do
+  begin
+    name := 'Big Puzzle: Fish';
+    idText := ['ishy', 'water', 'ish', 'eel like a'];
+    objs := [MD_GetObject(MD_OBJ_TROUT), MD_GetObject(MD_OBJ_HARPOON),
+             MD_GetObject(MD_OBJ_TROUT)];
   end;
 end;
 
@@ -817,6 +934,22 @@ begin
     btmObjs := [MD_GetObject(MD_OBJ_SWORDFISH)];
     topObjs := [MD_GetObject(MD_OBJ_SHRIMP), MD_GetObject(MD_OBJ_SARDINE),
                 MD_GetObject(MD_OBJ_MACKEREL)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_BOOTS] do
+  begin
+    name := 'Small Puzzle: Boots';
+    btmObjs := [MD_GetObject(MD_OBJ_BOOTS)];
+    topObjs := [MD_GetObject(MD_OBJ_BOOTS), MD_GetObject(MD_OBJ_BOOTS),
+                MD_GetObject(MD_OBJ_BOOTS)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_MAGIC] do
+  begin
+    name := 'Small Puzzle: Magic';
+    btmObjs := [MD_GetObject(MD_OBJ_RUNE)];
+    topObjs := [MD_GetObject(MD_OBJ_RUNE), MD_GetObject(MD_OBJ_RUNE),
+                MD_GetObject(MD_OBJ_STAFF)];
   end;
 end;
 
@@ -991,7 +1124,7 @@ begin
         addToSRLLog('MD_SolveSmallPuzzle: Found '+puzzle.btmObjs[j].name+' in slot '+toStr(i));
 
         // needs specific coords because you can't click anywhere on the item
-        mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Move);
+        mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Left);
         wait(1500 + random(500));
         result := true;
         break;
@@ -1250,7 +1383,7 @@ begin
       result := MD_Exit();
 
     // will only logout if the same puzzle was failed too many times
-    if (failed >= 5) then
+    if (failed >= 10) then
     begin
       addToSRLLog('MD_Solve: Failed puzzle too many times');
       break;
