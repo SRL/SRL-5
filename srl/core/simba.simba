@@ -11,13 +11,9 @@ type
   TDTMPointDef = TSDTMPointDef;
   TDTMPointDefArray = TSDTMPointDefArray;
   TDTM = TSDTM;
-function  AddDTM(DTM : TDTM) : integer;
+function AddDTM(DTM : TDTM) : integer;
 begin
-  {$IFDEF LAPE}
-  WriteLn('AddDTM not implemented yet!');
-  {$ELSE}
-  result := AddSDTM(dtm);
-  {$ENDIF}
+  Result := AddSDTM(dtm);
 end;
 
 function InitializeHTTPClient(HandleCookies,handleredirects: Boolean): Integer; {$IFDEF LAPE}overload;{$ENDIF}
