@@ -507,9 +507,45 @@ const
   HP_BAR_TOL = 3;
   HP_BAR_WIDTH = 57;
   HP_BAR_HEIGHT = 7;
-  HP_BAR_COLOR1 = 10240;//Green top
-  HP_BAR_COLOR2 = 9728;//Green bottom
-  HP_BAR_COLOR3 = 132923;//Red
+  HP_BAR_COLOR1 = 9728;//Green
+  HP_BAR_COLOR2 = 132923;//Red
+
+(*
+GetFightBarTPA
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetFightBarTPA(SearchArea: TBox): TPointArray;
+
+Used in various fighting functions, including srl_InFight
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
+Function GetFightBarTPA(SearchArea: TBox): TPointArray;
+var
+  T: TPoint;
+  H, I: integer;
+  Colors: TIntegerArray;
+  ATPA: T2DPointArray;
+begin
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2];
+  H := High(Colors);
+  SetArrayLength(ATPA, H+1);
+  T := point((MFBox.x2+MFBox.x1) div 2,(MFBox.y2+MFBox.y1) div 2);
+  for i := 0 to H do
+    with SearchArea do
+      FindColorsSpiralTolerance(T.x, T.y, ATPA[i], Colors[i], X1, Y1, X2, Y2, 2);
+  Result := MergeATPA(ATPA);
+end;
 
 (*
 srl_InFight
@@ -540,18 +576,6 @@ Example:
 
 *)
 Function srl_InFight: Boolean;
-var
-  T: TPoint;
-  H, I: integer;
-  Colors: TIntegerArray;
-  ATPA: T2DPointArray;
 begin
-  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
-  H := High(Colors);
-  SetArrayLength(ATPA, H+1);
-  T := point((MFBox.x2+MFBox.x1) div 2,(MFBox.y2+MFBox.y1) div 2);
-  for i := 0 to H do
-   with MFBox do
-    FindColorsSpiralTolerance(T.x, T.y, ATPA[i], Colors[i], X1, Y1, X2, Y2, 0);
-  Result := InRange(Length(MergeATPA(ATPA)), 30, 240);
+  Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
 end;

@@ -50,7 +50,7 @@ begin
   SmartHoldKey(key);
 end;
 
-procedure SendKeys(S: String);
+procedure SendKeys(S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer);
 begin
   SmartSendKeys(S);
 end;

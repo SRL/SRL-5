@@ -537,12 +537,12 @@ Example:
 *)
 function DidClick(Red: Boolean; Time: integer): boolean;
 var
-  TimeOut, x, y, w, h, R, O: integer;
+  TimeOut, x, y, w, h, R, G: integer;
   B: TBox;
 begin
   GetMousePos(x, y);
   GetClientDimensions(w, h);
-  B := IntToBox(x - 20, y - 20, x + 20, y + 20);
+  B := IntToBox(x - 15, y - 15, x + 15, y + 15);
   if B.x1 < 0 then B.x1 := 0;
   if B.y1 < 0 then B.y1 := 0;
   if B.x2 > w then B.x2 := w;
@@ -550,18 +550,18 @@ begin
   TimeOut := GetSystemTime + Time;
   while (GetSystemTime < TimeOut) do
   begin
-    R := CountColorTolerance(333712, B.x1, B.y1, B.x2, B.y2, 2);//Red (Orange = 4 to 8)
-    O := CountColorTolerance(168938, B.x1, B.y1, B.x2, B.y2, 2);//Orange/Yellow (max red = 52)
+    R := CountColorTolerance(395675, B.x1, B.y1, B.x2, B.y2, 15);
+    G := CountColorTolerance(1695663, B.x1, B.y1, B.x2, B.y2, 15);
     if Red then
     begin
-      Result := (R > 52) and (O < 9);
-      if (O > 8) then
+      if (G > 8) then
         Exit;
+      Result := (R > 20);
     end else
     begin
-      Result := (O > 8);
-      if (R > 52) then
+      if (R > 5) then
         Exit;
+      Result := (G > 35);
     end;
     if Result then
       Exit;

@@ -154,7 +154,7 @@ Example:
 *)
 function FindFlag2(var X, Y: Integer): Boolean;
 var
-  KMTarget, ITarget, I, Hi, Map, W, H: Integer;
+  KMTarget, ITarget, I, Hi, Map, W, H, t: Integer;
   TPA: TPointArray;
 begin
   Result := False;
@@ -175,10 +175,12 @@ begin
       Y := TPA[I].Y + MMY1;
       Break;
     end;
-  FreeTarget(GetImageTarget);
-  FreeBitmap(Map);
+
+  t := GetImageTarget;
   SetKeyMouseTarget(KMTarget);
   SetImageTarget(ITarget);
+  FreeTarget(t);
+  FreeBitmap(Map);
 end;
 (*
 FlagPresent

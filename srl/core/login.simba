@@ -635,6 +635,10 @@ begin
   end;    }
 
                        {Type in username and pass}
+
+  if (loggedIn) then
+    exit;
+
   for W:= 0 to 1 do
   begin
     if W = 0 then
@@ -868,6 +872,7 @@ begin
       1239: Actions := ['Not a Members Account',                       0,     1,  'PlayerFalse',  'Non-member'];
 	     777: Actions := ['Login limit exceeded.',                       0,     10, '',             'Waiting for login.'];
        951: Actions := ['Your account is already logged in',        5000,     5,  'PlayerTrue',   'Already logged in'];
+       591: Actions := ['Client token changed.',                       0,     0,    'RSUpdate',   'Client Token Changed'];
         -1: Actions := ['You need skill total of 1500.',               0,     9,  'PlayerTrue',   '1500 skill club'];
         -1: Actions := ['You need 20 combat for PvP',                  0,     1,  'PlayerFalse',  'PvP warning'];
     end;
@@ -919,7 +924,6 @@ begin
                                        Wait(5000+Random(10000));
 											               end;
             'You need skill total of 1000.': players[currentPlayer].worldInfo := [players[currentPlayer].member, 0, allowPVP];
-
           end;
           RetryLogin := True;
           Wait(2000 + Random(1000));
@@ -935,6 +939,20 @@ begin
             NextPlayer(True);
           end;
         'Terminate': TerminateScript;
+        'RSUpdate':
+          begin
+            wait(randomRange(1000, 1500));
+            typeByte(VK_ESCAPE);
+            leaveLobby();
+
+            if (SRL_Procs[srl_OnRSUpdate] <> nil) then
+            begin
+              SRL_Procs[srl_OnRSUpdate]();
+              Exit;
+            end;
+            Writeln('Runescape has been updated! Please restart Simba.');
+            TerminateScript;
+          end;
       end;
       Exit;
     end;
