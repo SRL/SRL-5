@@ -11,12 +11,6 @@ detection methods.
 //{$DEFINE PB_DEBUG}
 
 const
-  DTM_PB_COUNT = 3;
-    DTM_PB_RING_1 = 0;
-    DTM_PB_RING_2 = 1;
-    DTM_PB_CHAT   = 2;
-
-const
   PB_SCORE_10 = 60; // the tpa length of when the score is 10
 
 (**
@@ -230,11 +224,14 @@ begin
           end;
       end;
 
+    result := tabExists(TAB_MAGIC); // just in case
     wait(2000 + random(300));
-  until(getSystemTime > t);
+  until((getSystemTime > t) or (result));
 
   if (result) then
-    addToSRLLog('PB_Exit: Clicked exit cave');
+    addToSRLLog('PB_Exit: Clicked exit cave')
+  else
+    addToSRLLog('PB_Exit: Failed to exit cave');
 end;
 
 (**
@@ -254,15 +251,15 @@ begin
   repeat
     if (PB_GetScore = PB_SCORE_10) then // length of "Score: 10"
     begin
-      result := PB_Exit();
-      break;
-    end;
+      if (PB_Exit()) then
+      begin
+        result := true;
+        break;
+      end;
+    end else
+      PB_TagPost();
 
-    PB_TagPost();
     wait(500 + random(200));
-  until(getSystemTime > t);
-
-  if (not result) then
-    addToSRLLog('PB_Solve: Pinball solver timed out');
+  until(result or (getSystemTime > t));
 end;
 
