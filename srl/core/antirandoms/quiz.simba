@@ -6,6 +6,13 @@ Stores all the routines to solve the Quiz random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses a "score" system to determine which item is the odd one out.
+A rotating object is determined using the TRotateObject type and
+DebugRotateObject method both found in common.simba.  Each quiz item is declared
+in Quiz_LoadItems and is compared to a scanned object in each of the item slots.
+It then compares the scanned item with the stored item to determine which item
+is the odd one out.
+
 *)
 
 const

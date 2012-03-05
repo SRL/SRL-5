@@ -4,6 +4,8 @@ Evil Bob
 
 Stores all the routines to solve the Evil Bob random.
 
+This solver uses DTMs to determine which fishing spot to fish at.
+
 *)
 
 const

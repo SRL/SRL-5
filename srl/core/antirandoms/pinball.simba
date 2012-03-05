@@ -6,6 +6,8 @@ Stores all the routines to solve the Pinball random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses findGapsTPA to determine which post to click.
+
 *)
 
 //{$DEFINE PB_DEBUG}

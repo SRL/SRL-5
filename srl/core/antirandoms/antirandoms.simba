@@ -5,7 +5,8 @@ Antirandoms
 The 'master' SRL randoms file.  The 4 "core" functions (solverandoms,
 FindAllrandoms, FindNormalRandoms, and FindNonInventoryRandoms) shouldn't ever
 need to be updated if a new random event is added to the game, or a current one
-is removed.
+is removed.  For a description of how each solver works, see the top of that
+solver's simba file.
 
 *)
 

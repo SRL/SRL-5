@@ -6,6 +6,9 @@ Stores all the routines to solve the Frog random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses a DTM of a frog with a crown to find the royal (Prince or
+Princess) frog.
+
 *)
 
 const

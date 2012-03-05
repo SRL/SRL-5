@@ -4,6 +4,10 @@ Maze
 
 The Maze file stores the routines to solve the maze random event.
 
+This solver uses black minimap color counts in specific areas to determine which
+path to solve.  It uses specific minimap corrdinate clicking to walk to each
+door, and uses simple TPA work to find and click each door.
+
 *)
 
 type

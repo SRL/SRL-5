@@ -3,7 +3,9 @@ Abyss
 =====
 
 The Abyss file stores the routines to solve the abyss (Lost and Found) random
-event.
+event.  Since the appendages are very difficult to differentiate with one
+another, this solver walks to the north one and clicks it until it's the right
+one or the maximum tries (defined in Abyss_Solve) has been reached.
 
 *)
 

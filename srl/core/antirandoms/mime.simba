@@ -4,6 +4,13 @@ Mime
 
 The Mime file stores the routines to solve the mime random event.
 
+This solver uses pixel shifting to determine which emote the mime is performing.
+To compensate for the spotlight, it will get the total pixel shift in a large
+box around the mime, and the pixel shift in a small box around the mime.  It
+then calculates the percentage of the small shift in the big shift.  Lastly,
+it compares the stored emotes (Mime_GetEmotes) with the scanned emote, resulting
+a certain score.  If the score is high enough, it's found the right emote.
+
 *)
 
 const
@@ -51,7 +58,7 @@ begin
 end;
 
 (**
- * Author: Coh3n, DTMs by DemiseScythe
+ * Author: Coh3n
  * Description: Returns a TMimeEmoteArray of all the Mime's emotes.
  *)
 function Mime_GetEmotes(): TMimeEmoteArray;
@@ -269,7 +276,7 @@ begin
     end;
 
   // didn't ID if score is < 15
-  if (maxScore < 15) then
+  if (maxScore > 15) then
     result := maxIndex;
 
   if (result <> -1) then

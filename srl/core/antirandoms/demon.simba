@@ -6,6 +6,10 @@ Stores all the routines to solve the Drill Demon random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses DTMs of the signs to determine which mat to exercise on.  It
+also uses relocating DTMs in case the sign we're looking for doesn't appear on
+the main screen.
+
 *)
 
 // the demon's name that appears when he's talking

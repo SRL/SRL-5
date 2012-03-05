@@ -6,6 +6,10 @@ Stores all the routines to solve the Forester random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses very specific TPA calculations to determine how many tails
+each pheasant has.  It finds the color if the tip of the tail and uses how many
+colors are found to determine how many tails there are.
+
 *)
 
 // colors gathered using ACA

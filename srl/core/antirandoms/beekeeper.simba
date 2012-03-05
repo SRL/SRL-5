@@ -6,6 +6,8 @@ Stores all the routines to solve the Beekeeper random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses pixel shifting to determine which hive piece goes where.
+
 *)
 
 type

@@ -6,6 +6,9 @@ Stores all the routines to solve the Certers random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses multiple DTMs to identify each item.  If an item can't be
+identified right away, it will rotate the item and loop through the items again.
+
 *)
 
 const

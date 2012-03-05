@@ -6,6 +6,15 @@ Stores all the routines to solve the Mordaut random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses a "score" system to determine which item is the odd one out.
+A rotating object is determined using the TRotateObject type and
+DebugRotateObject method both found in common.simba.  Each object is declared
+in MD_GetObject and is compared to a scanned object in each of the slots
+depending on the puzzle that needs to be solved.
+
+The puzzles are stored in separate arrays (big and small).  The big puzzles are
+the ones where you have to match 3 items to the wording on the right.  The small
+puzzles are the ones you have to click the item that comes next in the sequence.
 *)
 
 type

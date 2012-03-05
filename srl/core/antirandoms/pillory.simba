@@ -6,6 +6,9 @@ Stores all the routines to solve the Pillory random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
+This solver uses very specific color density checks to determine the shape of
+the lock and which key to use.
+
 *)
 
 (**
