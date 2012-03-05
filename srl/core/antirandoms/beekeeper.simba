@@ -183,6 +183,7 @@ begin
           pieces[j].done := true;
           done[i] := true;
           inc(numDone);
+          break;
         end;
       end;
     end;
