@@ -84,6 +84,14 @@ const
   MD_OBJ_RUNE       = 50;
   MD_OBJ_STAFF      = 51;
   MD_OBJ_HARPOON    = 52;
+  MD_OBJ_CHEFHAT    = 53;
+  MD_OBJ_APRON      = 54;
+  MD_OBJ_BREAD      = 55;
+  MD_OBJ_CAKE       = 56;
+  MD_OBJ_BANANA     = 57;
+  MD_OBJ_STRAWBERRY = 58;
+  MD_OBJ_PINEAPPLE  = 59;
+  MD_OBJ_GRAPES     = 60;
 
 const
   MD_PUZZLE_BIG_COUNT = 10;
@@ -98,7 +106,7 @@ const
     MD_PUZZLE_BIG_HAT      = 8;
     MD_PUZZLE_BIG_FISH     = 9;
 
-  MD_PUZZLE_SMALL_COUNT = 12;
+  MD_PUZZLE_SMALL_COUNT = 14;
     MD_PUZZLE_SMALL_WEAPONS = 0;
     MD_PUZZLE_SMALL_SMITH   = 1;
     MD_PUZZLE_SMALL_RANGE   = 2;
@@ -111,6 +119,8 @@ const
     MD_PUZZLE_SMALL_FISH    = 9;
     MD_PUZZLE_SMALL_BOOTS   = 10;
     MD_PUZZLE_SMALL_MAGIC   = 11;
+    MD_PUZZLE_SMALL_COOK    = 12;
+    MD_PUZZLE_SMALL_FRUIT   = 13;
 
 var
   // stores the background colors and tolerances of the small and big puzzles
@@ -124,7 +134,7 @@ procedure MD_DeclareGlobals();
 begin
   // background colors of the small puzzle
   MD_ExColSmall := [4674119, 5265999];
-  MD_ExTolSmall := [18, 18];
+  MD_ExTolSmall := [17, 17];
 
   // background colors of the big puzzle
   MD_ExColBig := [13423575, 12897741];
@@ -769,6 +779,102 @@ begin
         coverPercent := 45.0;
       end;
 
+    MD_OBJ_CHEFHAT:
+      with result do
+      begin
+        name := 'Chef''s Hat';
+        use := 'Cook';
+        count := 645;
+        width := 36;
+        height := 25;
+        totalCount := 942;
+        coverPercent := 68.0;
+      end;
+
+    MD_OBJ_APRON:
+      with result do
+      begin
+        name := 'Apron';
+        use := 'Cook';
+        count := 340;
+        width := 31;
+        height := 20;
+        totalCount := 637;
+        coverPercent := 53.0;
+      end;
+
+    MD_OBJ_BREAD:
+      with result do
+      begin
+        name := 'Bread';
+        use := 'Cook';
+        count := 535;
+        width := 30;
+        height := 22;
+        totalCount := 676;
+        coverPercent := 78.0;
+      end;
+
+    MD_OBJ_CAKE:
+      with result do
+      begin
+        name := 'Cake';
+        use := 'Cook';
+        count := 975;
+        width := 35;
+        height := 31;
+        totalCount := 1110;
+        coverPercent := 88.0;
+      end;
+
+    MD_OBJ_BANANA:
+      with result do
+      begin
+        name := 'Banana';
+        use := 'Fruit';
+        count := 399;
+        width := 34;
+        height := 24;
+        totalCount := 799;
+        coverPercent := 50.0;
+      end;
+
+    MD_OBJ_STRAWBERRY:
+      with result do
+      begin
+        name := 'Strawberry';
+        use := 'Fruit';
+        count := 379;
+        width := 20;
+        height := 24;
+        totalCount := 510;
+        coverPercent := 74.0;
+      end;
+
+    MD_OBJ_PINEAPPLE:
+      with result do
+      begin
+        name := 'Pineapple';
+        use := 'Fruit';
+        count := 600;
+        width := 33;
+        height := 33;
+        totalCount := 1098;
+        coverPercent := 55.0;
+      end;
+
+    MD_OBJ_GRAPES:
+      with result do
+      begin
+        name := 'Grapes';
+        use := 'Shield';
+        count := 190;
+        width := 23;
+        height := 15;
+        totalCount := 351;
+        coverPercent := 54.0;
+      end;
+
     else
       addToSRLLog('MD_GetObject: Invalid object '+toStr(obj));
   end;
@@ -785,7 +891,7 @@ begin
   with result[MD_PUZZLE_BIG_DRINK] do
   begin
     name := 'Big Puzzle: Drinks';
-    idText := ['thir', 'drate', 'uench'];
+    idText := ['thirs', 'drate', 'uench'];
     objs := [MD_GetObject(MD_OBJ_TEA), MD_GetObject(MD_OBJ_BEER),
              MD_GetObject(MD_OBJ_MARTINI)];
   end;
@@ -793,7 +899,7 @@ begin
   with result[MD_PUZZLE_BIG_DISGUISE] do
   begin
     name := 'Big Puzzle: Disguise';
-    idText := ['face', 'mask', 'disg'];
+    idText := ['ace', 'mask', 'disg', 'hidden'];
     objs := [MD_GetObject(MD_OBJ_FROG), MD_GetObject(MD_OBJ_THIEF),
              MD_GetObject(MD_OBJ_MIME)];
   end;
@@ -801,7 +907,7 @@ begin
   with result[MD_PUZZLE_BIG_MELEE] do
   begin
     name := 'Big Puzzle: Melee';
-    idText := ['sword', 'weapon', 'ack', 'melee'];
+    idText := ['sword', 'weapon', 'melee'];
     objs := [MD_GetObject(MD_OBJ_LONGSWORD), MD_GetObject(MD_OBJ_SCIMITAR),
              MD_GetObject(MD_OBJ_BATTLEAXE)];
   end;
@@ -833,7 +939,7 @@ begin
   with result[MD_PUZZLE_BIG_RANGE] do
   begin
     name := 'Big Puzzle: Range';
-    idText := ['arc', 'arrow'];
+    idText := ['arc', 'arrow', 'as an'];
     objs := [MD_GetObject(MD_OBJ_LONGBOW), MD_GetObject(MD_OBJ_ARROWS),
              MD_GetObject(MD_OBJ_CROSSBOW)];
   end;
@@ -844,6 +950,14 @@ begin
     idText := ['ishy', 'water', 'ish', 'eel like a'];
     objs := [MD_GetObject(MD_OBJ_TROUT), MD_GetObject(MD_OBJ_HARPOON),
              MD_GetObject(MD_OBJ_TROUT)];
+  end;
+
+  with result[MD_PUZZLE_BIG_JEWEL] do
+  begin
+    name := 'Big Puzzle: Jewelery';
+    idText := ['ineries', 'ecio', 'ewell'];
+    objs := [MD_GetObject(MD_OBJ_SYMBOL), MD_GetObject(MD_OBJ_RING),
+             MD_GetObject(MD_OBJ_NECKLACE)];
   end;
 end;
 
@@ -923,9 +1037,9 @@ begin
   with result[MD_PUZZLE_SMALL_SHIELD] do
   begin
     name := 'Small Puzzle: Shield';
-    btmObjs := [MD_GetObject(MD_OBJ_KITESHIELD)];
+    btmObjs := [MD_GetObject(MD_OBJ_KITESHIELD), MD_GetObject(MD_OBJ_SQUARE)];
     topObjs := [MD_GetObject(MD_OBJ_SQUARE), MD_GetObject(MD_OBJ_WOODEN),
-                MD_GetObject(MD_OBJ_SQUARE)];
+                MD_GetObject(MD_OBJ_SQUARE), MD_GetObject(MD_OBJ_KITESHIELD)];
   end;
 
   with result[MD_PUZZLE_SMALL_FISH] do
@@ -950,6 +1064,22 @@ begin
     btmObjs := [MD_GetObject(MD_OBJ_RUNE)];
     topObjs := [MD_GetObject(MD_OBJ_RUNE), MD_GetObject(MD_OBJ_RUNE),
                 MD_GetObject(MD_OBJ_STAFF)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_COOK] do
+  begin
+    name := 'Small Puzzle: Cook';
+    btmObjs := [MD_GetObject(MD_OBJ_CAKE)];
+    topObjs := [MD_GetObject(MD_OBJ_CHEFHAT), MD_GetObject(MD_OBJ_BREAD),
+                MD_GetObject(MD_OBJ_APRON)];
+  end;
+
+  with result[MD_PUZZLE_SMALL_FRUIT] do
+  begin
+    name := 'Small Puzzle: Fruit';
+    btmObjs := [MD_GetObject(MD_OBJ_GRAPES)];
+    topObjs := [MD_GetObject(MD_OBJ_BANANA), MD_GetObject(MD_OBJ_STRAWBERRY),
+                MD_GetObject(MD_OBJ_PINEAPPLE)];
   end;
 end;
 
@@ -1051,6 +1181,7 @@ function MD_IDSmallPuzzle(puzzles: TMDSmallPuzzleArray): integer;
 var
   i, j, k, c: integer;
   scanObjs, finalObjs: TRotateObjectArray;
+  slotsFound: TIntegerArray;
 begin
   if (not loggedIn()) or (not MD_SmallScreen()) then
     exit;
@@ -1070,7 +1201,9 @@ begin
   // loop through the puzzles and their objects and compare to the scanned objects
   for i := 0 to high(puzzles) do
   begin
-    c := 0; // needs to reset for each puzzle
+    // needs to reset for each puzzle
+    c := 0;
+    slotsFound := [];
 
     for j := 0 to high(puzzles[i].topObjs) do
     begin
@@ -1079,7 +1212,16 @@ begin
       for k := 0 to high(scanObjs) do
         if (MD_ObjIsObj(puzzles[i].topObjs[j], scanObjs[k])) then
         begin
+          // if an object from this puzzle was already found in this slot, skip it
+          if (inIntArray(slotsFound, (k + 1))) then
+            continue;
+
           writeln('Found '+puzzles[i].topObjs[j].name+' in slot '+toStr(k + 1));
+
+          // to keep track of where objects are found so two objects of a puzzle aren't found in the same slot
+          setLength(slotsFound, length(slotsFound) + 1);
+          slotsFound[high(slotsFound)] := (k + 1);
+
           finalObjs[j] := puzzles[i].topObjs[j];
           inc(c);
           break;
@@ -1106,7 +1248,7 @@ end;
  *)
 function MD_SolveSmallPuzzle(puzzle: TMDSmallPuzzle): boolean;
 var
-  i, j: integer;
+  i, j, t: integer;
   tmpObj: TRotateObject;
 begin
   if (not loggedIn()) then
@@ -1114,30 +1256,36 @@ begin
 
   addToSRLLog('MD_SolveSmallPuzzle: Solving...');
 
-  for i := 5 to 8 do // object slots 5-8 (bottom half)
-  begin
-    tmpObj := MD_ScanSmallObject(i);
+  repeat
+    inc(t);
 
-    for j := 0 to high(puzzle.btmObjs) do
-    if (MD_ObjIsObj(tmpObj, puzzle.btmObjs[j])) then
-      begin
-        addToSRLLog('MD_SolveSmallPuzzle: Found '+puzzle.btmObjs[j].name+' in slot '+toStr(i));
+    for i := 5 to 8 do // object slots 5-8 (bottom half)
+    begin
+      tmpObj := MD_ScanSmallObject(i);
 
-        // needs specific coords because you can't click anywhere on the item
-        mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Left);
-        wait(1500 + random(500));
-        result := true;
+      for j := 0 to high(puzzle.btmObjs) do
+      if (MD_ObjIsObj(tmpObj, puzzle.btmObjs[j])) then
+        begin
+          addToSRLLog('MD_SolveSmallPuzzle: Found '+puzzle.btmObjs[j].name+' in slot '+toStr(i));
+
+          // needs specific coords because you can't click anywhere on the item
+          mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Left);
+          wait(1500 + random(500));
+          result := true;
+          break;
+        end;
+
+      if (result) then
         break;
-      end;
+    end;
 
-    if (result) then
-      break;
-  end;
+    if (not result) then
+      addToSRLLog('MD_SolveSmallPuzzle: Didn''t find bottom objects, try '+toStr(t));
+
+  until(result or (t >= 5)); // maximum tries
 
   if (result) then
-    addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name)
-  else
-    addToSRLLog('MD_SolveSmallPuzzle: Didn''t find bottom objects');
+    addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name);
 end;
 
 (**
@@ -1233,7 +1381,8 @@ begin
   begin
     addToSRLLog('MD_SolveBigPuzzle: Solved in '+toStr(timeFromMark(time))+'ms');
     wait(500 + random(500));
-    mouse(429, 270, 7, 7, mouse_Move); // click the thumb
+    mouse(429, 270, 7, 7, mouse_Left); // click the thumb
+    wait(800 + random(500));
   end else
     addToSRLLog('MD_SolveBigPuzzle: Didn''t solve '+puzzle.name);
 end;
@@ -1283,7 +1432,7 @@ begin
   makeCompass('n');
 
   // walk to the proper door
-  if (TPAWalk(clRed, 15, 0, 0, p)) then
+  if (TPAWalk(clRed, 50, 0, 0, p)) then
   begin
     makeCompass(a);
     wait(1500 + random(500));
@@ -1329,7 +1478,7 @@ const
 
 function MD_Solve(): boolean;
 var
-  t, puz, puzzles, failed: integer;
+  t, puz, incorrect, correct: integer;
   bigPuzzles: TMDBigPuzzleArray;
   smallPuzzles: TMDSmallPuzzleArray;
   solved: boolean;
@@ -1340,9 +1489,10 @@ begin
   t := (getSystemTime + (15 * 60000));
 
   MD_DeclareGlobals();
+  clickNorth(SRL_ANGLE_HIGH);
+
   bigPuzzles := MD_GetBigPuzzles();
   smallPuzzles := MD_GetSmallPuzzles();
-  puz := -1;
 
   repeat
     // solve the big puzzle
@@ -1357,8 +1507,7 @@ begin
     // solve the small puzzle
     if (MD_SmallScreen()) then
     begin
-      if (puz = -1) then // so we don't keep scanning top objects if bottom isn't found first try
-        puz := MD_IDSmallPuzzle(smallPuzzles);
+      puz := MD_IDSmallPuzzle(smallPuzzles);
 
       if (puz <> -1) then
         solved := MD_SolveSmallPuzzle(smallPuzzles[puz]);
@@ -1367,30 +1516,28 @@ begin
     // wait for Mordaut to start talking, otherwise puzzle wasn't solved
     if (solved) then
     begin
-      // reset variables
-      puz := -1;
-      failed := 0;
       solved := false;
+      mouseBox(MIX1, MIY1, MIX2, MIY2, mouse_Move); // move away from MS to get a more accurate scan
 
       if (waitNPCTalking(MD_NPC_MORDAUT, 3000)) then
-        inc(puzzles);
-
-    end else
-      inc(failed);
+        if (findNPCChatTextMulti(['No', 'WRONG'], nothing)) then
+        begin
+          addToSRLLog('MD_Solve: Incorrectly solved puzzle')
+          inc(incorrect);
+        end else
+          inc(correct);
+    end;
 
     // to bring up the next puzzle or show the solver is done
     if (doConversation('exit', false)) then
-      result := MD_Exit();
-
-    // will only logout if the same puzzle was failed too many times
-    if (failed >= 10) then
-    begin
-      addToSRLLog('MD_Solve: Failed puzzle too many times');
-      break;
-    end;
+      if (MD_Exit()) then
+        if (incorrect >= 3) then
+          addToSRLLog('MD_Solve: Exited Mordaut, but too many incorrect puzzles')
+        else
+          result := true;
 
     // checks if we've been trying to solve for too long
-    if (getSystemTime > t) then
+    if ((getSystemTime > t) and (not result)) then
     begin
       addToSRLLog('MD_Solve: Mordaut solver timed out');
       break;
