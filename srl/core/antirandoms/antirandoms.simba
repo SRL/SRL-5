@@ -381,7 +381,8 @@ var
   i: integer;
   v: TVariantArray;
 begin
-  if (not loggedIn) then
+  // no tabs exists if bank is open; could throw false positives
+  if (not loggedIn()) or (bankScreen()) then
     exit;
 
   if (not SRL_RandomsSet) then
