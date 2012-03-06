@@ -205,7 +205,7 @@ end;
  *)
 function Maze_ClickDoor(): boolean;
 var
-  i, x, y, c: integer;
+  i, x, y: integer;
   doorPts: TPointArray;
   s: string;
   b: TBox;

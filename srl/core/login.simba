@@ -108,7 +108,7 @@ Example:
 *)
 procedure TakeIPScreen();
 var
-  tmpPath, ipPath: string;
+  tmpPath: string;
 begin
   if ((not lobbyScreen()) or (SRL_DisableIPLog)) then
     exit;
