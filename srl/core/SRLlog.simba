@@ -36,7 +36,8 @@ Example:
 *)
 procedure TakeScreen(Reason: string);
 begin
-  ForceDirectories(SRL_SavePath);
+  if (not DirectoryExists(SRL_SavePath)) then
+    ForceDirectories(SRL_SavePath);
 
   try
     if FileExists(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
