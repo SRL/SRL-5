@@ -87,6 +87,41 @@ begin
 end;
 
 (*
+TakeIPScreen
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure TakeIPScreen();
+
+Saves a screenshot of the last logged in IP address to the SRL logs folder.
+
+.. note::
+
+    by Harry & Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    TakeIPScreen();
+*)
+procedure TakeIPScreen();
+var
+  tmpPath, ipPath: string;
+begin
+  if ((not lobbyScreen()) or (SRL_DisableIPLog)) then
+    exit;
+
+  tmpPath := SRL_SavePath;
+  SRL_SavePath := tmpPath + 'IPLogs/'; // so TakeScreen saves to the right directory
+
+  takeScreen('IP Log');
+
+  SRL_SavePath := tmpPath; // reset
+end;
+
+(*
 RSReady
 ~~~~~~~
 
@@ -760,6 +795,8 @@ begin
     Wait(100);
     Result := (LobbyScreen) or (LoggedIn);
   until (Result);
+
+  TakeIPScreen();
 
                      {Back to main screen if needed}
 

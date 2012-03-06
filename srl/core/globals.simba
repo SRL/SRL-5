@@ -48,6 +48,9 @@ var
 var
   LampSkill: string; // no longer used
 
+var
+  SRL_DisableIPLog: boolean;
+
 { const srl_outline_black
   Description: Black Color outline}
 const

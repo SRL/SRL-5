@@ -145,6 +145,7 @@ begin
   UseAutoResponder := True;
   GraphicsSet := False;
   AllowPVP    := False;
+  SRL_DisableIPLog := false;
   SRL_SavePath := includePath + 'SRL/logs/';
   SRL_StartTime := theDate(DATE_MONTH)+' at '+theTime;
   WarnSensitivity := -2;
