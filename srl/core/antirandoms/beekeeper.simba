@@ -15,7 +15,6 @@ type
     name: string;
     minPixelShift, maxPixelShift: integer;
     dragPoint: TPoint;
-    done: boolean; // to use during runtime so the same piece isn't ID'd twice
   end;
   TBeePieceArray = array of TBeePiece;
 
@@ -66,7 +65,7 @@ begin
   with result[BK_PIECE_LOWER] do
   begin
     name := 'Lower Middle';
-    minPixelShift := 2450;
+    minPixelShift := 2420;
     maxPixelShift := 2550;
     dragPoint := point(260, 150);
   end;
@@ -74,7 +73,7 @@ begin
   with result[BK_PIECE_LEGS] do
   begin
     name := 'Legs';
-    minPixelShift := 2700;
+    minPixelShift := 2600;
     maxPixelShift := 2820;
     dragPoint := point(260, 200);
   end;
@@ -146,25 +145,30 @@ var
   i, j, t, numDone, tmpShift: integer;
   p: TPoint;
   compareShifts: boolean;
-  done: array[1..4] of boolean;
+  slotDone: array[1..4] of boolean;
+  pieceDone: TBooleanArray;
 begin
   if (not loggedIn()) and (not BK_Screen()) then
     exit;
 
   t := (getSystemTime + (5 * 60000));
+  setLength(pieceDone, length(pieces));
 
   repeat
     for i := 1 to 4 do // 4 piece slots
     begin
-      if (done[i]) then // skip slots already done
+      if (slotDone[i]) then // skip slots already done
         continue;
 
-      tmpShift := BK_ScanPiece(i);
+      // no point in scanning if there's only one piece left
+      if (numDone <> 3) then
+        tmpShift := BK_ScanPiece(i);
+
       addToSRLLog('BK_BuildHive: Piece shift = '+toStr(tmpShift)+' in slot '+toStr(i));
 
       for j := 0 to high(pieces) do
       begin
-        if (pieces[j].done) then // skip pieces already done
+        if (pieceDone[j]) then // skip pieces already done
           continue;
 
         // if there's only one item left, drag it to the last slot
@@ -182,8 +186,8 @@ begin
 
           // set variables to optimize speed
           compareShifts := false;
-          pieces[j].done := true;
-          done[i] := true;
+          pieceDone[j] := true;
+          slotDone[i] := true;
           inc(numDone);
           break;
         end;
