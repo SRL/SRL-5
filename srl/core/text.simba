@@ -524,34 +524,29 @@ ClickText
 
 .. code-block:: pascal
 
-    function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
+    function ClickText(text, chars: string; x1, y1, x2, y2: integer; button: variant): boolean;
 
-Clicks Text if found in the specified box.
+Clicks text if found in the specified box.
 
 .. note::
 
-    by SKy Scripter
+    by Coh3n
+    Last Updated: Mar. 5th, 2012 by Coh3n
 
 Example
 
 .. code-block:: pascal
 
 *)
-function ClickText(Text, Chars: string;x1, y1, x2, y2: Integer; button: variant): Boolean;
+function ClickText(text, chars: string; x1, y1, x2, y2: integer; button: variant): boolean;
 var
-  Mask, w, h, tx, ty: Integer;
+  x, y: integer;
 begin
-  try
-    Mask:= CreateBitmapMaskFromText(Text, Chars);
-  except
-    srl_Warn('ClickText', 'Invalid Character Names', warn_AllVersions);
-    Exit;
+  if (findText(x, y, text, chars, x1, y1, x2, y2)) then
+  begin
+    mouse(x, y, 5, 5, button);
+    result := true;
   end;
-  Result:= FindBitmapMaskTolerance(Mask, tx, ty, x1, y1, x2, y2, 10, 10);
-  GetBitmapSize(Mask, W, H);
-  FreeBitmap(Mask);
-  if(Result)then
-    Mouse(TX + (W div 4), TY + (H div 4), (W div 2), (H div 2), button);
 end;
 
 (*
