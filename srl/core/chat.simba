@@ -867,12 +867,9 @@ begin
 
     // break if there's no more conversation
     if (not clickContinue(true, true)) then
-    begin
-      result := true;
       break;
-    end;
 
-    wait(1500 + random(500));
+    wait(100 + random(200));
     inc(t);
   end;
 end;

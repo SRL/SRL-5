@@ -4,12 +4,11 @@ Maze
 
 The Maze file stores the routines to solve the maze random event.
 
-*)
+This solver uses black minimap color counts in specific areas to determine which
+path to solve.  It uses specific minimap corrdinate clicking to walk to each
+door, and uses simple TPA work to find and click each door.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 type
   TMazePath = record
@@ -25,10 +24,10 @@ type
 
 const
   MAZE_PATH_COUNT = 5;
-    MAZE_PATH_NW     = 0;
+    MAZE_PATH_SW     = 0;
     MAZE_PATH_NE     = 1;
     MAZE_PATH_SE     = 2;
-    MAZE_PATH_SW     = 3;
+    MAZE_PATH_NW     = 3;
     MAZE_PATH_COMMON = 4;
 
 (**
@@ -51,19 +50,6 @@ end;
 function Maze_GetPaths(): TMazePathArray;
 begin
   setLength(result, MAZE_PATH_COUNT);
-
-  with result[MAZE_PATH_NW] do
-  begin
-    name := 'North West';
-    area := intToBox(551, 78, 610, 110);
-    minCount := 1300;
-    maxCount := 2000;
-
-    path := [[586, 82, 'w'], [658, 78, 'w'], [602, 97, 's'], [590, 76, 's'],
-             [642, 80, 's'], [594, 73, 'w'], [604, 89, 'w'], [578, 89, 'w'],
-             [612, 90, 'w'], [584, 79, 's'], [628, 152, ''], [638, 92, 's'],
-             [583, 78, 's']];
-  end;
 
   with result[MAZE_PATH_NE] do
   begin
@@ -93,7 +79,7 @@ begin
   with result[MAZE_PATH_SW] do
   begin
     name := 'South West';
-    area := intToBox(550, 84, 626, 166);
+    area := intToBox(MMX1, MMCY, MMCX, MMY2);
     minCount := 3500;
     maxCount := 9999;
 
@@ -101,6 +87,19 @@ begin
              [605, 91, 'w'], [593, 76, 's'], [583, 86, 's'], [650, 93, 's'],
              [639, 143, 'w'], [660, 77, 'w'], [645, 58, 's'], [640, 34, 'w'],
              [612, 137, 's'], [583, 78, 's']];
+  end;
+
+  with result[MAZE_PATH_NW] do
+  begin
+    name := 'North West';
+    area := intToBox(551, 78, 610, 110);
+    minCount := 1300;
+    maxCount := 2000;
+
+    path := [[586, 82, 'w'], [658, 78, 'w'], [602, 97, 's'], [590, 76, 's'],
+             [642, 80, 's'], [594, 73, 'w'], [604, 89, 'w'], [578, 89, 'w'],
+             [612, 90, 'w'], [584, 79, 's'], [628, 152, ''], [638, 92, 's'],
+             [583, 78, 's']];
   end;
 
   // the end of each path is commone throughout
@@ -132,6 +131,7 @@ begin
         continue;
 
       tmpCount := countColorTolerance(clBlack, area.x1, area.y1, area.x2, area.y2, 50);
+      writeln(toStr(tmpCount));
 
       if (inRange(tmpCount, minCount, maxCount)) then
       begin
@@ -144,67 +144,112 @@ begin
 end;
 
 (**
- * Author: DemiseScythe & Coh3n
- * Description: Uses dark and light DTMs to find and click the maze doors.
+ * Author: Coh3n & Naum
+ * Description: Returns true if any doors are found.  Returns their points in
+ * doorPts.
+ *)
+//{$i srl/srl/misc/paintsmart.simba}
+function Maze_FindDoors(var doorPts: TPointArray): boolean;
+var
+  tpa: TPointArray;
+  atpa: T2DPointArray;
+  i, c, tmpCTS: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  tmpCTS := getColorToleranceSpeed();
+  setColorToleranceSpeed(3);
+
+  // the darker door color & smaller main screen box
+  findColorsTolerance(tpa, 4342341, MSX1+100, MSY1+75, MSX2-100, MSY2-75, 5);
+  //SMART_DrawDots(tpa);
+  //SMART_ClearCanvas();
+
+  setColorToleranceSpeed(tmpCTS);
+
+  // make sure the door is found
+  if (length(tpa) <= 0) then
+  begin
+    addToSRLLog('Maze_FindDoor: Failed to find maze door color');
+    exit;
+  end;
+
+  // split the colors into boxes
+  atpa := splitTPA(tpa, 1);
+  setLength(doorPts, length(atpa));
+
+  // loop through all the boxes, filtering out wall points
+  for i := 0 to high(atpa) do
+  begin
+    // if there aren't enough points, it's probably a wall point
+    if (length(atpa[i]) < 220) then
+      continue;
+
+    //SMART_DrawBoxEx(false, getTPABounds(atpa[i]), clRed);
+    doorPts[c] := middleTPA(atpa[i]);
+    inc(c);
+  end;
+
+  setLength(doorPts, c); // gets rid of the empty elements
+  sortTPAFrom(doorPts, point(MSCX, MSCY)); // sort from the player
+
+  result := (c > 0);
+
+  addToSRLLog('Maze_FindDoors: Found '+toStr(c)+' possible doors');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Clicks a maze door.
  *)
 function Maze_ClickDoor(): boolean;
 var
-  dtmDoorDark, i, x, y: integer;
+  i, x, y: integer;
+  doorPts: TPointArray;
   s: string;
-  tpa: TPointArray;
-  aFound: T2DExtendedArray;
+  b: TBox;
 begin
-  dtmDoorDark := DTMFromString('m6wAAAHic42ZgYOADYgkglmeAABCbGYjZoXLCQCwC5YMwFxBzQjETVC0IMEJpNii2t7VBwTUVZWCMLg7C/ED1xGJGqJ3EYCQAAF6aCvQ=');
+  if (not loggedIn()) then
+    exit;
 
-  // find the DTM, using TPA because the walls and doors are very similar
-  findDTMsRotatedAlternating(
-    dtmDoorDark, tpa, MSX1, MSY1, MSX2, MSY2, -pi/4, pi/4, pi/60, aFound);
-
-  if (length(tpa) > 0) then
-  begin
-    sortTPAFrom(tpa, point(MSCX, MSCY)); // sort from center of screen
-    filterTPADist(tpa, 5);
-
-    for i := 0 to high(tpa) do
+  if (Maze_FindDoors(doorPts)) then
+    for i := 0 to high(doorPts) do
     begin
-      x := tpa[i].x;
-      y := tpa[i].y;
+      // small box to spiral the mouse
+      b := intToBox(doorPts[i].x - 20, doorPts[i].y - 20, doorPts[i].x + 20, doorPts[i].y + 20);
 
-      mouse(x, y, 3, 3, mouse_Move);
-
-      if (waitUptext('pen', 250)) then
+      // sometimes the uptext doesn't show when moused on the door
+      if (spiralMouseMulti(x, y, b.x1, b.y1, b.x2, b.y2, ['pen', 'all'], 5, 8)) then
       begin
-        getMousePos(x, y);
-        mouse(x, y, 0, 0, mouse_Left);
+        mouse(x, y, 5, 5, mouse_Left);
+        addToSRLLog('Maze_ClickDoor: Clicked door');
 
-        // can sometimes misclick the doors
-        if (didYellowClick()) then
-          continue;
-
-        wait(2500 + random(500));
-
-        // check the chat message to see if we accidentially clicked a wall
-        s := getBlackChatMessage();
-        if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
+        if (didRedClick()) then
         begin
-          addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
-          typeSend('.'); // don't like this, but it's needed to remove last chat text line
-          wait(1500 + random(500));
-          continue;
+          flag();
+          wait(2500 + random(500));
+
+          // failsafe to make sure we didn't click a wall
+          s := getBlackChatMessage();
+          if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
+          begin
+            addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
+            examineInv(); // don't like this, but it's needed to remove last chat text line
+            wait(2500 + random(500));
+            continue;
+          end else
+            result := true;
+
+          break;
         end;
-
-        result := true;
-        break;
       end;
+
+      wait(300 + random(200));
     end;
-  end;
 
-  if (result) then
-    addToSRLLog('Maze_ClickDoor: Clicked door')
-  else
-    addToSRLLog('Maze_ClickDoor: Failed to clicked door');
-
-  freeDTM(dtmDoorDark);
+  if (not result) then
+    addToSRLLog('Maze_ClickDoor: Failed to click maze door');
 end;
 
 (**
@@ -214,6 +259,7 @@ end;
 function Maze_WalkPath(path: TMazePath): boolean;
 var
   i, t: integer;
+  doorClicked: boolean;
 begin
   if (not loggedIn()) then
     exit;
@@ -228,23 +274,27 @@ begin
     mouse(path.path[i][0], path.path[i][1], 2, 2, mouse_Left);
     flag();
     wait(1500 + random(500));
+    doorClicked := false;
 
     // if we want to look for the door (some rooms have more than one walking point)
     if (path.path[i][2] <> '') then
     begin
-      t := (getSystemTime + 10000); // 10 seconds to click the door
-
       // in a loop in case we misclick the door
       repeat
+        inc(t);
+
         if (Maze_ClickDoor()) then
         begin
           addToSRLLog('Maze_WalkPath: Finished room '+toStr(i));
           result := (i = high(path.path));
+          doorClicked := true;
+          t := 0;
           break;
         end;
-      until(getSystemTime > t);
 
-      if (getSystemTime > t) then
+      until(t >= 10); // maximum 10 click door calls
+
+      if (not doorClicked) then
       begin
         addToSRLLog('Maze_WalkPath: Failed to solve room '+toStr(i));
         result := false;
@@ -308,14 +358,3 @@ begin
     addToSRLLog('Maze_Solve: Didn''t detect maze path');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Maze_Solve();
-end.
-}
-{$ENDIF}

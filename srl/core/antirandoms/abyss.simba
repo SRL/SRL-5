@@ -3,14 +3,11 @@ Abyss
 =====
 
 The Abyss file stores the routines to solve the abyss (Lost and Found) random
-event.
+event.  Since the appendages are very difficult to differentiate with one
+another, this solver walks to the north one and clicks it until it's the right
+one or the maximum tries (defined in Abyss_Solve) has been reached.
 
 *)
-
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
 
 (**
  * Author: Coh3n
@@ -81,14 +78,3 @@ begin
     addToSRLLog('Abyss_Solve: Abyss solver exceeded maximum tries');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  ClearDebug();
-  ActivateClient();
-  SetupSRL();
-
-  Abyss_Solve();
-end.
-}
-{$ENDIF}

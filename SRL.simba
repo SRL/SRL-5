@@ -76,7 +76,11 @@
 {$include SRL/SRL/core/cautorespond.simba}
 {$include SRL/SRL/core/antiban.simba}
 {$include SRL/SRL/core/globalstats.simba}
-{$include SRL/SRL/core/antirandoms/antirandoms.simba}
+
+{$IFNDEF SRL_RANDOMS_TEST}
+  {$include SRL/SRL/core/antirandoms/antirandoms.simba}
+{$ENDIF}
+
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
@@ -131,7 +135,9 @@ begin
   SymbolAccuracy:= 0.8;
   LoadSRLBitMaps;
   LoadSRLFonts;
+  {$IFNDEF SRL_RANDOMS_TEST}
   _SetRandoms();
+  {$ENDIF}
   SetupSRLAutoResponder;
   UseFindMod := True;
   LogoutOnMod := True;

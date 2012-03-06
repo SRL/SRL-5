@@ -6,12 +6,11 @@ Stores all the routines to solve the Cap'n Arnav random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
-*)
+This solver uses DTMs to determine which items are in the middle of the puzzle.
+It will keep rotating the items until the one we're looking for is found in the
+center slot.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 const
   CA_NAME_ARNAV = 'C50!04!05u';
@@ -244,7 +243,7 @@ begin
       begin
         //if (waitNPCTalking(
         if (clickPortal(dtmPortal)) then
-          result := waitTabExists(TAB_MAGIC, 5000);
+          result := waitTabExists(TAB_MAGIC, 10000);
       end else
         inc(tries);
 
@@ -260,14 +259,3 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  CA_Solve();
-end.
-}
-{$ENDIF}

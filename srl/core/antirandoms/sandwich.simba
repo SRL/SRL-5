@@ -6,12 +6,10 @@ Stores all the routines to solve the Sandwich Lady random.  None of these
 routines should be used throughout scripts.  They only need to be called in
 SRL's random detection methods.
 
-*)
+This solver uses text recognition to determine which food to click, then uses
+DTM finding to click the required food.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 const
   DTM_SL_COUNT = 7;
@@ -133,14 +131,3 @@ begin
   freeDTMs(DTMs);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  SL_Solve();
-end.
-}
-{$ENDIF}

@@ -4,12 +4,9 @@ Evil Bob
 
 Stores all the routines to solve the Evil Bob random.
 
-*)
+This solver uses DTMs to determine which fishing spot to fish at.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 const
   DTM_EB_COUNT = 14;
@@ -36,13 +33,14 @@ var
  * Description: Returns true if player is in the random.
  *)
 function EB_Detect(): boolean;
-var
-  x, y: integer;
 begin
+  // check twice to avoid false negatives
   if (not tabExists(TAB_MAGIC)) then
-    if (findColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then // water color
-      if (inRange(countDots('red'), 4, 10)) then
-        result := tabExists(TAB_PRAYER);
+    // the water color
+    if (countColorTolerance(9931907, MMX1, MMY1, MMX2, MMY2, 15) > 6000) then
+      if (inRange(countDots('red'), 3, 7)) then
+        if (inRange(countDots('yellow'), 1, 2)) then
+          result := tabExists(TAB_PRAYER);
 end;
 
 (**
@@ -411,14 +409,3 @@ begin
     addToSRLLog('EB_Solve: Evil Bob solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  EB_Solve();
-end.
-}
-{$ENDIF}

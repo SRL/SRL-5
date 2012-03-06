@@ -6,12 +6,10 @@ Stores all the routines to solve the Frog random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
-*)
+This solver uses a DTM of a frog with a crown to find the royal (Prince or
+Princess) frog.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 const
   FROG_NAME_HERALD   = '8!oqB8!5lg';
@@ -290,44 +288,24 @@ begin
 
   repeat
     if (Frog_ClickRoyal()) then // returns true if Royal Frog is talking
-    begin
       // may have clicked wrong frogs, need to solve large cave
-      if (Frog_InBigCave()) then
+      if (not Frog_InBigCave()) then
       begin
+        doConversation('', false);
+        wait(3000 + random(500)); // wait for the kiss to finish
+        clickContinue(true, true);
+        result := waitTabExists(TAB_MAGIC, 10000);
+      end else
         if (Frog_SolveCave()) then // still get teleported after big cave
         begin
           addToSRLLog('Frog_Solve: Solved frog big cave, but failed random');
           waitTabExists(TAB_MAGIC, 5000);
           break;
         end;
-      end else
-        if (doConversation('', false)) then
-        begin
-          wait(3000 + random(500));
-          clickContinue(true, true);
-          result := true;
-        end;
 
-      if (result) then
-      begin
-        result := false;
-        result := waitTabExists(TAB_MAGIC, 10000);
-      end;
-    end;
   until(result or (getSystemTime > t));
 
   if (not result) then
     addToSRLLog('Frog_Solve: Frog solver failed or timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  Frog_Solve();
-end.
-}
-{$ENDIF}

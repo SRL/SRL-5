@@ -5,35 +5,32 @@ Antirandoms
 The 'master' SRL randoms file.  The 4 "core" functions (solverandoms,
 FindAllrandoms, FindNormalRandoms, and FindNonInventoryRandoms) shouldn't ever
 need to be updated if a new random event is added to the game, or a current one
-is removed.
+is removed.  For a description of how each solver works, see the top of that
+solver's simba file.
 
 *)
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-{$ENDIF}
-
 // include all the solver files
-{$i common.simba}
-{$i rewards.simba}
-{$i demon.simba}
-{$i maze.simba}
-{$i evilbob.simba}
-{$i mordaut.simba}
-{$i certers.simba}
-{$i mime.simba}
-{$i abyss.simba}
-{$i frog.simba}
-{$i pinball.simba}
-{$i sandwich.simba}
-{$i pillory.simba}
-{$i capnarnav.simba}
-{$i quiz.simba}
-{$i leo.simba}
-{$i prisonpete.simba}
-{$i forester.simba}
-{$i molly.simba}
-{$i beekeeper.simba}
+{$include_once common.simba}
+{$include_once rewards.simba}
+{$include_once demon.simba}
+{$include_once maze.simba}
+{$include_once evilbob.simba}
+{$include_once mordaut.simba}
+{$include_once certers.simba}
+{$include_once mime.simba}
+{$include_once abyss.simba}
+{$include_once frog.simba}
+{$include_once pinball.simba}
+{$include_once sandwich.simba}
+{$include_once pillory.simba}
+{$include_once capnarnav.simba}
+{$include_once quiz.simba}
+{$include_once leo.simba}
+{$include_once prisonpete.simba}
+{$include_once forester.simba}
+{$include_once molly.simba}
+{$include_once beekeeper.simba}
 
 // represent the elements of the SRL_Randoms array
 const
@@ -165,7 +162,6 @@ begin
     detect := @MD_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_CERTERS] do
@@ -247,7 +243,6 @@ begin
     detect := @Quiz_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_LEO] do
@@ -277,7 +272,6 @@ begin
     detect := @FF_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_MOLLY] do
@@ -297,7 +291,6 @@ begin
     detect := @BK_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
   end;
 
   with SRL_Randoms[SRL_RAND_REWARDS] do
@@ -491,15 +484,3 @@ begin
   result := _FindAllRandoms(false);
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  findNormalRandoms();
-  SRLRandomsReport();
-end.
-}
-{$ENDIF}

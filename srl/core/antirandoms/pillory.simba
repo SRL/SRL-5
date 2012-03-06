@@ -6,12 +6,10 @@ Stores all the routines to solve the Pillory random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
-*)
+This solver uses very specific color density checks to determine the shape of
+the lock and which key to use.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 (**
  * Author: nielsie95
@@ -46,7 +44,11 @@ var
   tpa: TPointArray;
 begin
   if (not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS)) then
-    result := PL_LockScreen();
+  begin
+    // red doors of the cages
+    findColorsTolerance(tpa, 237, MMCX - 15, MMCY - 15, MMCX + 15, MMCY + 15, 17);
+    result := ((inRange(length(tpa), 3, 18)) and (PL_LockScreen()));
+  end;
 end;
 
 (**
@@ -321,14 +323,3 @@ begin
     addToSRLLog('PL_Solve: Pillory solver timed out');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  PL_Solve();
-end.
-}
-{$ENDIF}

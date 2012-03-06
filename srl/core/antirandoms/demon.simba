@@ -6,12 +6,11 @@ Stores all the routines to solve the Drill Demon random.  None of these routines
 should be used throughout scripts.  They only need to be called in SRL's random
 detection methods.
 
-*)
+This solver uses DTMs of the signs to determine which mat to exercise on.  It
+also uses relocating DTMs in case the sign we're looking for doesn't appear on
+the main screen.
 
-{$IFNDEF IS_INCLUDE}
-  //{$i srl/srl.simba}
-  //{$i common.simba}
-{$ENDIF}
+*)
 
 // the demon's name that appears when he's talking
 const
@@ -175,12 +174,15 @@ begin
         break;
       end;
 
-    end else
+    end else begin
+      doConversation('', false); // GE message or if we get exercise wrong
+
       if (not DD_DoExercise(exerciseDTMs)) then
         DD_Relocate(relocateDTMs);
+    end;
 
+    // just in case ;)
     result := tabExists(TAB_MAGIC);
-    doConversation('', false); // GE message or if we get exercise wrong
 
   until(result or (not loggedIn()) or (t > 30));
 
@@ -192,14 +194,3 @@ begin
     addToSRLLog('DD_Solve: Drill Demon exceeded maximum tries');
 end;
 
-{$IFNDEF IS_INCLUDE}
-{
-begin
-  clearDebug();
-  activateClient();
-  setupSRL();
-
-  DD_Solve();
-end.
-}
-{$ENDIF}
