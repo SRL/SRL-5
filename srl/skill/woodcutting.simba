@@ -122,8 +122,6 @@ begin
         Flag;
         Result := True;
         Wait(500 + Random(300));
-        if (Screenshots) then
-          SaveScreenshot('Birds Nest - SRL - ' + IntToStr(GetTimeRunning) + '.bmp');
         tries := tries + 100;
  //       Birdsnest := Birdsnest + 1;
         Mouse(583, 226, 2, 2, False);
