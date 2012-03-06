@@ -439,6 +439,60 @@ begin
   Result := StrToIntDef(Between('l: ', ')', GetUpText), -1);
 end;
 
+(*
+FindTextEx
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindTextEx(var cx, cy: Integer; txt,font: TStringArray; xs, ys, xe, ye: Integer): Boolean;
+
+Searches for text or texts in specified box with specified font or fonts returns
+true on first find of one of the texts with one of the fonts in the specified
+box, returns x, y values aswell.
+
+.. note::
+
+    by Stupid3ooo, modified by LordJashin
+
+Example:
+
+.. code-block:: pascal
+
+    var
+      x, y, w, h: Integer;
+      fonts, txts: TStringArray;
+    begin
+      fonts := ['MyOwnFontSet', 'SmallCharacters'];
+      txts := ['Simba', 'HakunaMatata'];
+
+      SetDesktopAsClient;
+      GetClientDimensions(w, h);
+
+      if FindTextEx(x, y, txts, fonts, 0, 0, w - 1, h - 1) then
+        MoveMouse(x, y);
+    end.
+*)
+
+function FindTextEx(var cx, cy: Integer; txt, fonts: TStringArray; xs, ys, xe, ye: Integer): Boolean;
+var
+  s, j, i: Integer;
+begin
+  for j := 0 to High(txt) do
+    for i := 0 to High(fonts) do
+    begin
+      s := CreateBitmapMaskFromText(ToStr(txt[j]), ToStr(fonts[i]));
+
+      if (xs < 0) then xs := 0;
+      if (ys < 0) then ys := 0;
+
+      Result := FindBitmapMaskTolerance(S, cx, cy, xs, ys, xe, ye, 30, 30);
+      FreeBitmap(S);
+
+      if (result) then
+        exit;
+    end;
+end;
 
 (*
 FindText
@@ -452,23 +506,16 @@ Searches for text in specified box with specified font.
 
 .. note::
 
-    by Stupid3ooo
+    by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
 *)
-function FindText(var cx, cy: Integer; txt,font: string; xs, ys, xe, ye:
-  Integer): Boolean;
-var
-  S: Integer;
+function FindText(var cx, cy: integer; txt, font: string; xs, ys, xe, ye: integer): boolean;
 begin
-  S := CreateBitmapMaskFromText(txt, font);
-  if (xs < 0) then xs := 0;
-  if (ys < 0) then ys := 0;
-  Result := FindBitmapMaskTolerance(S, cx, cy, xs, ys, xe, ye, 30, 30);
-  FreeBitmap(S);
+  result := findTextEx(cx, cy, [txt], [font], xs, ys, xe, ye);
 end;
 
 (*
@@ -678,19 +725,17 @@ var
 begin
   chars := [UpChars, CharsNPC];
 
-  for i := 0 to high(txt) do
-    for j := 0 to high(chars) do
-      if (findText(x, y, txt[i], chars[j], MCX1, MCY1, MCX2, MCY2)) then
-      begin
-        case action of
-          Move: MMouse(x, y, 6, 3);
-          ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
-          ClickRight: Mouse(x, y, 6, 3, mouse_Right);
-        end;
+  if (findTextEx(x, y, txt, chars, MCX1, MCY1, MCX2, MCY2)) then
+  begin
+    case action of
+      Move: MMouse(x, y, 6, 3);
+      ClickLeft: Mouse(x, y, 6, 3, mouse_Left);
+      ClickRight: Mouse(x, y, 6, 3, mouse_Right);
+    end;
 
-        result := true;
-        exit;
-      end;
+    result := true;
+    exit;
+  end;
 end;
 
 (*
