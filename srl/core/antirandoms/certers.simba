@@ -226,9 +226,9 @@ end;
  * Author: Coh3n
  * Description: Clicks the correct item's text.
  *)
-function CT_SelectItem(Item: TCTItem): boolean;
+function CT_SelectItem(item: TCTItem): boolean;
 begin
-  if (ClickText(Item.text, CharsNPC, 75, 40, 240, 140, mouse_Left)) then
+  if (clickText(item.text, charsNPC, 75, 40, 240, 180, mouse_Left)) then
   begin
     addToSRLLog('CT_SelectItem: Clicked item text');
     result := true;
