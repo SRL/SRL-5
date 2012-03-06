@@ -209,7 +209,7 @@ end;
  *)
 function BK_Solve(): boolean;
 var
-  t, fails: integer;
+  fails: integer;
   pieces: TBeePieceArray;
 begin
   if (not loggedIn()) then
@@ -232,7 +232,7 @@ begin
 
     result := tabExists(TAB_MAGIC); // just in case
 
-  until(result or (fails >= 6)); // Beekeeper gives a maximum of 6 tries
+  until(result or (fails >= 6) or (not loggedIn())); // Beekeeper gives a maximum of 6 tries
 
   if (fails >= 6) then
   begin
