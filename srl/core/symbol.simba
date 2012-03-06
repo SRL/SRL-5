@@ -27,7 +27,7 @@ var
 // Comment fix by drizzt:
 {*******************************************************************************
 Valid Arguments are:
-  - agility                  - furnace                    - rare trees, tree
+  - agility                  - furnace                    - rare trees, tree           -windmill
   - altar                    - gem stall                  - rest, resting spot
   - anvil                    - guide                      - sandpit
   - apothecary               - hair dresser               - saw mill
@@ -42,13 +42,13 @@ Valid Arguments are:
   - cookery shop             - makeover mage              - spinning wheel, spin
   - cookery, cook            - mill                       - staff shop
   - crafing shop             - minigame                   - summoning store
-  - dungeon                  - mining shop                - sword shop
-  - farming shop             - pet shop                   - tanner
-  - farming spot             - platebody shop             - training dummy
-  - fishing shop, fish store - plateskirt shop            - underground
-  - fishing spot, fish       - portal (to player owned houses) - water source, water
-  - food shop                - pottery, pot               - weave
-  - fur trader               - quest                      - windmill
+  - dungeon                  - mining shop                - summoning obelisk
+  - farming shop             - pet shop                   - sword shop
+  - farming spot             - platebody shop             - tanner
+  - fishing shop, fish store - plateskirt shop            - training dummy
+  - fishing spot, fish       - portal (to player owned houses) - underground
+  - food shop                - pottery, pot               - water source, water
+  - fur trader               - quest                      - weave
 
 *******************************************************************************}
 
