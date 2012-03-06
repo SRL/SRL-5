@@ -77,9 +77,7 @@
 {$include SRL/SRL/core/antiban.simba}
 {$include SRL/SRL/core/globalstats.simba}
 
-{$IFNDEF SRL_RANDOMS_TEST}
-  {$include SRL/SRL/core/antirandoms/antirandoms.simba}
-{$ENDIF}
+{$include SRL/SRL/core/antirandoms/antirandoms.simba}
 
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}

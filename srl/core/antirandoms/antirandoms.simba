@@ -67,6 +67,9 @@ var
   SRL_Randoms: array[0..(SRL_RANDOMS_COUNT - 1)] of TRandom;
   SRL_RandomsSet, SRL_DisableRandoms, SRL_RandomScreenShot: boolean;
 
+// needs to be included after variables are declared
+{$include_once randomtool.simba}
+
 (*
 SRLRandomsReport
 ~~~~~~~~~~~~~~~~
@@ -318,8 +321,10 @@ end;
  * Author: Coh3n
  * Description: Detects and solves the random of index 'rand' in the SRL_Randoms
  * array.  Returns true if a random is found, not necessarily if it is solved.
+ * Manually returns true if the random was solved by hand using SRL's Random
+ * tool.
  *)
-function _SolveRandom(rand: integer): boolean;
+function _SolveRandom(rand: integer; var manually: boolean): boolean;
 var
   solved: boolean;
 begin
@@ -329,10 +334,20 @@ begin
   if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
   begin
     addToSRLLog('***** Found Random: '+SRL_Randoms[rand].name+' *****');
+    players[currentPlayer].rand := SRL_Randoms[rand].name;
     result := true;
 
     if (SRL_Procs[SRL_OnFindRandom] <> nil) then
       SRL_Procs[SRL_OnFindRandom]();
+
+    // see if the script is using SRL's random tool
+    if (RT_UseRandomTool) then
+      if (RT_Execute()) then
+      begin
+        addToSRLLog('***** Solved Random Manually: '+SRL_Randoms[rand].name+' *****');
+        manually := true;
+        exit;
+      end;
 
     // only take a screenshot if needed
     if ((SRL_RandomScreenShot) and (not SRL_Randoms[rand].isInvRandom)) then
@@ -347,6 +362,7 @@ begin
       if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
       begin
         addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
+        players[currentPlayer].rand := '';
         inc(SRL_Randoms[rand].solved);
         solved := true;
       end;
@@ -363,7 +379,6 @@ begin
         inc(SRL_Randoms[rand].failed);
 
       // set player to false and logout if the solver failed or is disabled
-      players[currentPlayer].rand := SRL_Randoms[rand].name;
       players[currentPlayer].active := false;
       logout();
     end;
@@ -380,6 +395,7 @@ function _FindAllRandoms(checkInv: boolean): boolean;
 var
   i: integer;
   v: TVariantArray;
+  manually, b: boolean;
 begin
   // no tabs exists if bank is open; could throw false positives
   if (not loggedIn()) or (bankScreen()) then
@@ -397,23 +413,31 @@ begin
     if ((SRL_Randoms[i].isInvRandom) and (not checkInv)) then
       continue;
 
-    if (_SolveRandom(i)) then
+    if (_SolveRandom(i, manually)) then
     begin
-      // solve reward box if a non inventory random was just solved
-      if (not SRL_Randoms[i].isInvRandom) then
+      // if the random was solved by hand, break out of the loop
+      if (manually) then
       begin
-        // reward box doesn't exist if inventory is full/some randoms don't have reward box
-        result := (invFull() or (not SRL_Randoms[i].hasRewardBox));
-
-        if (not result) then
-        begin
-          v := [SRL_RAND_REWARDS];
-          if (waitFuncEx('_SolveRandom', v, 50, 30000)) then
-            _SolveRandom(SRL_RAND_REWARDS); // check if we chose another reward
-        end;
-
+        result := true;
         break;
       end;
+
+      // solve reward box if a non inventory random was just solved
+      if (loggedIn()) then // if solver failed, player would be logged out
+        if (not SRL_Randoms[i].isInvRandom) then
+        begin
+          // reward box doesn't exist if inventory is full/some randoms don't have reward box
+          result := (invFull() or (not SRL_Randoms[i].hasRewardBox));
+
+          if (not result) then
+          begin
+            v := [SRL_RAND_REWARDS, b];
+            if (waitFuncEx('_SolveRandom', v, 50, 30000)) then
+              _SolveRandom(SRL_RAND_REWARDS, b); // check if we chose another reward
+          end;
+
+          break;
+        end;
 
       result := true;
     end;
