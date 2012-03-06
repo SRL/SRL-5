@@ -715,7 +715,7 @@ Example:
 *)
 function FindNPCChatTextMulti(txt: TStringArray; action: fnct_ActionOptions): boolean;
 var
-  i, j, x, y: integer;
+  x, y: integer;
   chars: TStringArray;
 begin
   chars := [UpChars, CharsNPC];
