@@ -85,7 +85,7 @@ begin
 
     path := [[576, 81, 's'], [674, 33, 'w'], [676, 90, 'w'], [578, 93, 'w'],
              [605, 91, 'w'], [593, 76, 's'], [583, 86, 's'], [650, 93, 's'],
-             [639, 143, 'w'], [660, 77, 'w'], [645, 58, 's'], [640, 34, 'w'],
+             [639, 143, 'w'], [660, 77, 'w'], [645, 58, 's'], [640, 47, 'w'],
              [612, 137, 's'], [583, 78, 's']];
   end;
 
@@ -205,7 +205,7 @@ end;
  *)
 function Maze_ClickDoor(): boolean;
 var
-  i, x, y: integer;
+  i, x, y, c: integer;
   doorPts: TPointArray;
   s: string;
   b: TBox;
@@ -225,24 +225,29 @@ begin
         mouse(x, y, 5, 5, mouse_Left);
         addToSRLLog('Maze_ClickDoor: Clicked door');
 
-        if (didRedClick()) then
+        // in case it clicks in between the door bars
+        if (not didRedClick()) then
         begin
-          flag();
-          wait(2500 + random(500));
-
-          // failsafe to make sure we didn't click a wall
-          s := getBlackChatMessage();
-          if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
-          begin
-            addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
-            examineInv(); // don't like this, but it's needed to remove last chat text line
-            wait(2500 + random(500));
+          mouse(x + random(6), y, 5, 5, mouse_Left);
+          if (not didRedClick()) then
             continue;
-          end else
-            result := true;
-
-          break;
         end;
+
+        flag();
+        wait(2500 + random(500));
+
+        // failsafe to make sure we didn't click a wall
+        s := getBlackChatMessage();
+        if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
+        begin
+          addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
+          examineInv(); // don't like this, but it's needed to remove last chat text line
+          wait(2500 + random(500));
+          continue;
+        end else
+          result := true;
+
+        break;
       end;
 
       wait(300 + random(200));
