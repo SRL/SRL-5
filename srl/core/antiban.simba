@@ -533,6 +533,47 @@ begin
 end;
 
 (*
+CompassMovement
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+
+Rotates the compass somewhere between MinMovement and MaxMovement.  Will return
+to original angle if Return is set to true.
+
+.. note::
+
+    Author: Nebula
+    Last Modified: Mar. 6th, 2011 by Nebula
+
+Example:
+
+.. code-block:: pascal
+
+    CompassMovement(10, 30, true);
+*)
+function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+var
+  StartAngle, Movement : Integer;
+begin
+  Result := False;
+  StartAngle := round(rs_GetCompassAngleDegrees());
+  case Random(2) of
+    0: Movement := RandomRange(-MinMovement, -MaxMovement);
+    1: Movement := RandomRange(MinMovement, MaxMovement);
+  end;
+  MakeCompass(StartAngle + Movement);
+  if (Return = true) then
+  begin
+    wait(RandomRange(100,350));
+    MakeCompass(StartAngle);
+  end;
+  Result := true;
+end;
+
+(*
 BoredHuman
 ~~~~~~~~~~
 
