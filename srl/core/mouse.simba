@@ -284,6 +284,30 @@ begin
     srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
 end;
 
+(*
+MouseTBox
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseTBox(Box: TBox; ClickType: variant);
+
+Moves the mouse to the Indicated Box, and performs the ClickType
+
+.. note::
+
+    by PhaseCode
+
+Example:
+    Mouse(InvBox(1),1);
+.. code-block:: pascal
+
+*)
+procedure MouseTBox(Box: TBox; ClickType: variant);
+begin
+  MouseBox(Box.X1, Box.Y1, Box.X2, Box.Y2, ClickType)
+end;
+
 procedure MouseAction(mx, my, rx, ry: Integer; a: fnct_ActionOptions);
 begin
     case (a) of
