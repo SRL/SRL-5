@@ -432,7 +432,7 @@ begin
           if (not result) then
           begin
             v := [SRL_RAND_REWARDS, b];
-            if (waitFuncEx('_SolveRandom', v, 50, 30000)) then
+            if (waitFuncEx('_SolveRandom', v, 50, 5000)) then
               _SolveRandom(SRL_RAND_REWARDS, b); // check if we chose another reward
           end;
 

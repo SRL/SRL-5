@@ -249,20 +249,20 @@ begin
   for i := 0 to high(emotes) do
   begin
     // checks if big/small shifts are in range of emotes[i]
-    if (inRange(tmpEmote.shiftSmall, emotes[i].shiftSmall - 1000, emotes[i].shiftSmall + 1000)) then
+    if (inRange(tmpEmote.shiftSmall, emotes[i].shiftSmall - 1500, emotes[i].shiftSmall + 1500)) then
       scores[i] := scores[i] + 6;
 
-    if (inRange(tmpEmote.shiftBig, emotes[i].shiftBig - 1000, emotes[i].shiftBig + 1000)) then
+    if (inRange(tmpEmote.shiftBig, emotes[i].shiftBig - 1500, emotes[i].shiftBig + 1500)) then
       scores[i] := scores[i] + 6;
 
     // check if pixel shifting is in range of min/max
     if (inRange(tmpEmote.shiftBig + tmpEmote.shiftSmall / 2, emotes[i].shiftSmall, emotes[i].shiftBig)) then
-      scores[i] := scores[i] + 3;
+      scores[i] := scores[i] + 4;
 
     // in range of emote's shiftPercet +/- 3%
     if (scores[i] <> 0) then
       if ((tmpEmote.shiftPercent > (emotes[i].shiftPercent - 3)) and (tmpEmote.shiftPercent < (emotes[i].shiftPercent + 3))) then
-        scores[i] := scores[i] + 8;
+        scores[i] := scores[i] + 9;
   end;
 
   // get the highest score, set result
@@ -275,8 +275,8 @@ begin
       maxIndex := i;
     end;
 
-  // didn't ID if score is < 15
-  if (maxScore > 15) then
+  // didn't ID if score is too low
+  if (maxScore > 18) then
     result := maxIndex;
 
   if (result <> -1) then
