@@ -124,12 +124,74 @@ begin
 end;
 
 (**
+ * Author: Coh3n
+ * Description: Returns a TBox of the exercise area on the minimap. It finds the
+ * distance from the player to each side of the exercise area.  Saves the
+ * distance and points in arrays.  It then uses those arrays to calculate the
+ * top left and bottom right corners of the exercise area.
+ *)
+function DD_GetExerciseArea(var exerciseArea: TBox): boolean;
+var
+  i, c, t, w, h, distFound: integer;
+  dist: array[0..3] of integer;
+  area: array[0..3] of TBox;
+  tpa: array[0..3] of TPoint;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 15000);
+
+  repeat
+    inc(c);
+
+    // search areas for each direction (only one pixel at a time)
+    area[0] := intToBox(MMCX, MMCY - 1 - c, MMCX, MMCY - 1 - c); // north
+    area[1] := intToBox(MMCX + 1 + c, MMCY, MMCX + 1 + c, MMCY); // east
+    area[2] := intToBox(MMCX, MMCY + 1 + c, MMCX, MMCY + 1 + c); // south
+    area[3] := intToBox(MMCX - 1 - c, MMCY, MMCX - 1 - c, MMCY); // west
+
+    // loop through each area (i.e. direction) to get the distance from the player to the fence on the MM
+    for i := 0 to high(area) do
+      if (dist[i] = 0) then
+        // the white color of the fence
+        if (findColorTolerance(tpa[i].x, tpa[i].y, 15068652, area[i].x1, area[i].y1, area[i].x2, area[i].y2, 25)) then
+        begin
+          dist[i] := distance(tpa[i].x, tpa[i].y, MMCX, MMCY);
+          inc(distFound);
+        end;
+
+    // if all 4 distances are found
+    if (distFound = 4) then
+    begin
+      // calculate the top left and bottom right of the exercise box
+      exerciseArea.x1 := tpa[3].x;
+      exerciseArea.y1 := tpa[3].y - dist[0];
+      exerciseArea.x2 := tpa[1].x;
+      exerciseArea.y2 := tpa[1].y + dist[2];
+
+      //SMART_DrawBoxEx(true, exerciseArea, clGreen);
+
+      w := (exerciseArea.x2 - exerciseArea.x1);
+      h := (exerciseArea.y2 - exerciseArea.y1);
+      //writeln('w: '+toStr(w)+', h: '+toStr(h));
+
+      // sometimes the Drill Demon is standing right inline with the player, causing the next white line to be found on the edge of the MM
+      result := (inRange(38, w - 2, w + 2)  and inRange(20, h - 2, h + 2));
+    end;
+
+  until(result or (getSystemTime > t));
+end;
+
+(**
  * Author: DemiseScythe & Coh3n
  * Description: Relocates the player to the center of the exercise area.
  *)
 function DD_Relocate(DTMs: TIntegerArray): boolean;
 var
-  i: integer;
+  i, c: integer;
+  exerciseArea: TBox;
+  p: TPoint;
 begin
   if (not loggedIn()) then
     exit;
@@ -137,13 +199,29 @@ begin
   for i := 0 to high(DTMs) do
     if (clickDTMRotatedIn(DTMs[i], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['alk'], mouse_Left)) then
     begin
-      addToSRLLog('Walking to Center!');
-      flag();
-      wait(1000 + random(100));
       result := true;
       break;
-    end else
-      addToSRLLog('DD_Relocate: Didn''t click relocate DTM: '+IntToStr(i));
+    end;
+
+  if (not result) then
+  begin
+    addToSRLLog('DD_Relocate: Didn''t find any relocate DTMs, using area detection');
+
+    if (DD_GetExerciseArea(exerciseArea)) then
+    begin
+      p := middleBox(exerciseArea);
+      mouse(p.x, p.y + 5, 2, 2, mouse_Left);
+      result := true;
+    end;
+  end;
+
+  if (result) then
+  begin
+    addToSRLLog('DD_Relocate: Walking to Center!');
+    flag();
+    wait(1000 + random(100));
+  end else
+    addToSRLLog('DD_Relocate: Failed to relocate');
 end;
 
 (**
