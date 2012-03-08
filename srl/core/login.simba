@@ -564,7 +564,7 @@ Example:
 function LoginPlayerToLob: Boolean;
 var
   Members, RetryLogin: Boolean;
-  typtmp, t, w, x, y: integer;
+  typtmp, t, w: integer;
   Actions: TVariantArray;
   Attempts: LongInt;
   p: TPoint;

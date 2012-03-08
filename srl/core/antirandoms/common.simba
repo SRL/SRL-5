@@ -221,6 +221,87 @@ begin
 end;
 
 (*
+SRL_GetBlackBackground
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function SRL_GetBlackBackground: integer;
+
+Autocolours the black background colour. Returns -1 if not found.
+
+.. note::
+
+    Author: ZephyrsFury
+    Last Modified: Unknown/March 08, 2012
+
+Example:
+
+.. code-block:: pascal
+
+    blackColour := SRL_GetBlackBackground;
+*)
+function SRL_GetBlackBackground: Integer;
+var
+  CTS, I, H, C, Count, MaxC: Integer;
+  TPA: TPointArray;
+  Cols: TIntegerArray;
+begin
+  Result := -1;
+  if (not(LoggedIn)) then Exit;
+  CTS := GetColorToleranceSpeed;
+
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(100, 100);
+  FindColorsTolerance(TPA, clBlack, MMX1, MMY1, MMX2, MMY2, 3);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then Exit;
+
+  Cols := GetColors(TPA);
+  ClearSameIntegers(Cols);
+
+  H := High(Cols);
+  for I := 0 to H do
+  begin
+    C := Cols[I];
+    Count := CountColor(C, MMX1, MMY1, MMX2, MMY2);
+    if (CountColor(C, MMX1, MMY1, MMX2, MMY2) > MaxC) then
+    begin
+      Result := C;
+      MaxC := Count;
+    end;
+  end;
+
+end;
+
+(*
+PercentBlackMM
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function PercentBlackMM: integer;
+
+Returns the percentage of the minimap which is black.
+
+.. note::
+
+    Author: NaumanAkhlaQ
+    Last Modified: Unknown/March 08, 2012
+
+Example:
+
+.. code-block:: pascal
+
+    blackPercent := PercentBlackMM;
+*)
+function PercentBlackMM: Integer;
+begin
+  Result := PercentColorMM(SRL_GetBlackBackground, 0);
+end;
+
+(*
 FreeDTMs
 ~~~~~~~~
 

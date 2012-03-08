@@ -189,7 +189,7 @@ end;
  *)
 function DD_Relocate(DTMs: TIntegerArray): boolean;
 var
-  i, c: integer;
+  i: integer;
   exerciseArea: TBox;
   p: TPoint;
 begin
