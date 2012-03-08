@@ -92,6 +92,7 @@ Example:
 function TabExists(tab: integer): boolean;
 var
   b: TBox;
+  tmpCTS: integer;
 begin
   result := false;
   if (not loggedIn) then
@@ -103,9 +104,14 @@ begin
     exit;
   end;
 
+  // requires CTS 1, may result in false negatives if CTS 2
+  tmpCTS := getColorToleranceSpeed;
+  colorToleranceSpeed(2);
+
   if (tab = TAB_INV) then
     if (bankScreen) then
     begin
+      colorToleranceSpeed(tmpCTS);
       result := true;
       exit;
     end;
@@ -113,6 +119,7 @@ begin
   if (tab = TAB_LOGOUT) then
   begin
     result := (getColor(746, 0) = 65536);
+    colorToleranceSpeed(tmpCTS);
     exit;
   end;
 
@@ -121,6 +128,8 @@ begin
 
   // the color of the tab background
   result := (countColorTolerance(5005422, b.x1, b.y1, b.x2, b.y2, 55) < 250); // actual count should be 266
+
+  colorToleranceSpeed(tmpCTS);
 end;
 
 (*
