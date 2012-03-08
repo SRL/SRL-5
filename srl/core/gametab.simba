@@ -72,54 +72,55 @@ TabExists
 
 .. code-block:: pascal
 
-    function TabExists(Tab: Integer): Boolean;
+    function TabExists(tab: integer): boolean;
 
-Returns True if the Tab exists.
+Returns true if the gametab 'tab' exists.  Tab constants can be found in
+globals.simba.
 
 .. note::
 
     by Zephyrsfury & Icefire908
+    Last Modified: Mar. 7th, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+    if (not tabExists(TAB_MAGIC)) then
+      writeln('We may be in a random event!');
 *)
-function TabExists(Tab: Integer): Boolean;
+function TabExists(tab: integer): boolean;
 var
-  tP: TPoint;
+  b: TBox;
 begin
-  Result := false;
+  result := false;
   if (not loggedIn) then
     exit;
 
-  if (tab < 20) then
+  if (not inRange(tab, TAB_COMBAT, TAB_LOGOUT)) then
   begin
-    SRL_Warn('TabExists', 'Tab ' + IntToStr(Tab) + ' is not using the new constants! Please upgrade your script.', warn_AllVersions);
-    Exit;
+    SRL_Warn('TabExists', 'Tab ' + toStr(Tab) + ' is not a valid tab number.', warn_AllVersions);
+    exit;
   end;
 
-  if (not(InRange(Tab, Tab_Combat, Tab_LogOut))) then
-  begin
-    SRL_Warn('TabExists', 'Tab ' + IntToStr(Tab) + ' is not a valid tab number.', warn_AllVersions);
-    Exit;
-  end;
-
-  if (Tab = tab_Inv) then
-    if BankScreen then
+  if (tab = TAB_INV) then
+    if (bankScreen) then
     begin
-      Result := True;
-      Exit;
+      result := true;
+      exit;
     end;
 
-  if (Tab = tab_LogOut) then
+  if (tab = TAB_LOGOUT) then
   begin
-    Result := (GetColor(746, 0) = 65536);
-    Exit;
+    result := (getColor(746, 0) = 65536);
+    exit;
   end;
 
-  tP := Point(((Tab - 21) mod 8 * 30) + 537, ((Tab - 21) div 8 * 298) + 186);
-  Result := (CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 600); // the count when no icons are overlapping the GameTab.
+  // small boxes inside the tabs (hardly any of the background showing)
+  b := gridBox(tab - 20, 8, 2, 13, 18, 30, 300, point(536, 186));
+
+  // the color of the tab background
+  result := (countColorTolerance(5005422, b.x1, b.y1, b.x2, b.y2, 55) < 250); // actual count should be 266
 end;
 
 (*
