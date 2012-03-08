@@ -95,12 +95,14 @@ begin
   dtmForester := DTMFromString('mWAAAAHicY2FgYHABYlcg9oLiNiDugtL9QHzt/FmGSb3dDF/fvmI4uGsHAz9QDBkzAjETEgYBAH3DDKU=');
 
   if (clickDTMRotatedIn(dtmForester, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['orester'], mouse_Left)) then
-    result := waitNPCTalking(_NPC_FORESTER, 5000);
+    result := waitNPCTalking(_NPC_FORESTER, 5000)
+  else
+    addToSRLLog('FF_TalkTo: Failed to click Forester');
 
   freeDTM(dtmForester);
 
   if (result) then
-    addToSRLLog('FF_TalkTo: Talking to Forester');
+    addToSRLLog('FF_TalkTo: Talking to Forester')
 end;
 
 (**
@@ -347,6 +349,6 @@ begin
   until(result or (getSystemTime > t));
 
   if (not result) then
-    addToSRLLog('FF_Solve: '' solver timed out');
+    addToSRLLog('FF_Solve: Forester solver timed out');
 end;
 
