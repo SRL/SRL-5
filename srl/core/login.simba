@@ -564,7 +564,7 @@ Example:
 function LoginPlayerToLob: Boolean;
 var
   Members, RetryLogin: Boolean;
-  typtmp, t, w: integer;
+  typtmp, t, w, x, y: integer;
   Actions: TVariantArray;
   Attempts: LongInt;
   p: TPoint;
@@ -719,6 +719,12 @@ begin
 
   T := GetSystemTime;
   repeat
+    // so the lobby appears (gets rid of black screen)
+    if (countColorTolerance(clBlack, 0, 0, 500, 500, 50) > 245000) then
+    begin
+      wait(2000 + random(1500));
+      mouseBox(0, 0, 750, 490, mouse_Move);
+    end;
 
     SetLength(Actions, 0);
 
