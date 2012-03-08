@@ -367,7 +367,7 @@ end;
  *)
 function EB_Solve(): boolean;
 var
-  t: integer;
+  t, i: integer;
   statue: string;
 begin
   t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
@@ -380,9 +380,10 @@ begin
       EB_WalkToCenter();
       wait(1000 + random(500));
 
-      if (EB_TalkToSlave()) then
+      if ((statue <> '') or (EB_TalkToSlave())) then // don't talk to the slave if the statue is already ID'd
       begin
-        statue := EB_GetStatue();
+        if (statue <> '') then // may have already ID'd the statue
+          statue := EB_GetStatue();
 
         if (statue <> '') then
           repeat // since statue was found, keep trying to do the rest
@@ -393,10 +394,12 @@ begin
               if (EB_Uncook()) then
                 if (EB_FeedBob()) then
                 begin
-                  if (ClickPortal(EB_DTMs[DTM_EB_PORTAL])) then
+                  if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
                     result := WaitTabExists(TAB_MAGIC, 10000);
-                end else
+                end else begin
+                  statue := '';
                   break; // wrong fish (or need another), starting over
+                end;
             end;
           until(result or (getSystemTime > t));
       end;
