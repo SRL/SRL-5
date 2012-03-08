@@ -376,18 +376,22 @@ begin
   end;
 
   // sets i to the correct item slot so it can be clicked
-  for i := 0 to 2 do
-    if (tmpObjs[i].use <> useNames[j]) then
-      break;
+  if (j <> -1) then
+  begin
+    for i := 0 to 2 do
+      if (tmpObjs[i].use <> useNames[j]) then
+        break;
 
-  addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
+    addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
 
-  p := middleBox(Quiz_ItemBox(i + 1));
-  mouse(p.x, p.y, 20, 10, mouse_Left);
+    p := middleBox(Quiz_ItemBox(i + 1));
+    mouse(p.x, p.y, 20, 10, mouse_Left);
 
-  wait(500 + random(500));
-  mouse(MIX1, MIY1, 50, 50, mouse_Move); // move away from chat box to get accurate scan
-  result := true;
+    wait(500 + random(500));
+    mouse(MIX1, MIY1, 50, 50, mouse_Move); // move away from chat box to get accurate scan
+    result := true;
+  end else
+    addToSRLLog('Quiz_SolveQuestion: Didn''t properly ID items');
 end;
 
 (**
