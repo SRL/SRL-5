@@ -51,7 +51,7 @@ begin
     name := 'Lid';
     minPixelShift := 2950;
     maxPixelShift := 3500;
-    dragPoint := point(260, 50);
+    dragPoint := point(260, 45);
   end;
 
   with result[BK_PIECE_UPPER] do
@@ -182,7 +182,7 @@ begin
           addToSRLLog('BK_BuildHive: Found '+pieces[j].name+' in slot '+toStr(i));
 
           p := middleBox(BK_PieceBox(i));
-          dragMouse(p.x, p.y, 15, 15, pieces[j].dragPoint.x, pieces[j].dragPoint.y, 15, 15);
+          dragMouse(p.x, p.y, 15, 15, pieces[j].dragPoint.x, pieces[j].dragPoint.y, 5, 5);
 
           // set variables to optimize speed
           compareShifts := false;
