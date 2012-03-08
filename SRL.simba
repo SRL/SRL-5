@@ -137,6 +137,7 @@ begin
   _SetRandoms();
   {$ENDIF}
   SetupSRLAutoResponder;
+  SRL_RandomScreenShot := False;
   UseFindMod := True;
   LogoutOnMod := True;
   UseFindTrade := True;
