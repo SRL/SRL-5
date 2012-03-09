@@ -930,3 +930,63 @@ begin
       Wait(1000+Random(3000));
     end;
 end;
+
+(*
+ExitSquealOfFortune
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExitSquealOfFortune(): boolean;
+
+Finds and exits the annoying Squeal of Fortune pop up.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Mar. 8th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  ExitSquealOfFortune();
+*)
+function ExitSquealOfFortune(): boolean;
+var
+  w, h, x, y, xs, ys, xe, ye: integer;
+begin
+  getClientDimensions(w, h);
+
+  // green color of the goblin thing
+  if (findColorTolerance(x, y, 7457955, 1, 1, w - 1, h - 1, 15)) then
+  begin
+    // to avoid out of bounds warnings
+    xs := x;
+
+    ys := (y - 30);
+    if (ys < 0) then
+      ys := 1;
+
+    xe := (x + 100);
+    if (xe > w) then
+      xe := (w - 1);
+
+    ye := (y + 30);
+    if (ye > h) then
+      ye := (h - 1);
+
+    // gold color in the X
+    if (findColorTolerance(x, y, 4770302, xs, ys, xe, ye, 15)) then
+    begin
+      mouse(x, y, 3, 3, mouse_Move);
+
+      if (waitUptext('elect', 300)) then
+      begin
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+        result := true;
+      end;
+    end;
+  end;
+end;

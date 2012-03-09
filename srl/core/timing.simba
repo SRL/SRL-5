@@ -836,6 +836,47 @@ begin
 end;
 
 (*
+WaitFindDTMEx
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitFindDTM(var x, y: integer; DTM, waitTime: integer): boolean;
+
+waits 'waitTime' for the 'DTM' to be found.  If found, returns true and the
+DTM's coodinates in x and y.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Mar. 8th, 2012 by beginner5
+
+Example:
+
+.. code-block:: pascal
+
+    if (WaitFindDTM(dtmHatchet, x, y, MIX1, MIY1, MIX2, MIY2, 5000)) then
+      mouse(x, y, 5, 5, mouse_Left);
+*)
+function WaitFindDTMEx(DTM: integer; var x, y: integer; xs, ys, xe, ye, WaitPerLoop, MaxTime: integer): boolean;
+var
+  t: integer;
+begin
+  t := (getSystemTime + MaxTime);
+
+  while (getSystemTime < t) do
+  begin
+    if (findDTM(DTM, x, y, xs, ys, xe, ye)) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(WaitPerLoop);
+  end;
+end;
+
+(*
 WaitFindDTM
 ~~~~~~~~~~~
 
@@ -849,7 +890,7 @@ DTM's coodinates in x and y.
 .. note::
 
     Author: Coh3n
-    Last Modified: Jan. 22nd, 2012 by Coh3n
+    Last Modified: Mar. 8th, 2012 by Coh3n
 
 Example:
 
@@ -859,21 +900,8 @@ Example:
       mouse(x, y, 5, 5, mouse_Left);
 *)
 function WaitFindDTM(var x, y: integer; DTM, waitTime: integer): boolean;
-var
-  t: integer;
 begin
-  t := (getSystemTime + waitTime);
-
-  while (getSystemTime < t) do
-  begin
-    if (findDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
-    begin
-      result := true;
-      break;
-    end;
-
-    wait(randomRange(30, 70));
-  end;
+  result := waitFindDTMEx(DTM, x, y, MIX1, MIY1, MIX2, MIY2, 50, waitTime);
 end;
 
 (*
