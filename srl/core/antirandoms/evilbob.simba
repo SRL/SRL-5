@@ -367,7 +367,7 @@ end;
  *)
 function EB_Solve(): boolean;
 var
-  t, i: integer;
+  t: integer;
   statue: string;
 begin
   t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
