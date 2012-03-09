@@ -450,6 +450,7 @@ begin
   findDead();
   findMod();
   findDwarvenPopup();
+  exitSquealOfFortune();
 
   if (SRL_Procs[SRL_OnRandomCall] <> nil) then
     SRL_Procs[SRL_OnRandomCall]();
