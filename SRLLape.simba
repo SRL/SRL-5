@@ -16,15 +16,33 @@ begin
   Result := InitializeHTTPClient(HandleCookies);
 end;
 
+function ThreadSafeCall(s: string; params: TVariantArray): Variant;
+begin
+  WriteLn('Calling proc ', s, ' thread safe (not supported in Lape)');
+  Result := NULL;
+end;
+
 function CallProc(s: string; params: TVariantArray): Variant;
 begin
-  WriteLn('Calling proc', s);
+  WriteLn('Calling proc ', s, ' (not supported in Lape)');
   Result := NULL;
 end;
 
 function GetMufasaBitmap(bmp: Integer): Integer;
 begin
   Result := bmp;
+end;
+
+function ExceptionType: TIFException;
+begin
+  WriteLn('ExceptionType is not supported in Lape');
+  Result := erCustomError;
+end;
+
+function ExceptionParam: string;
+begin
+  WriteLn('ExceptionParam is not supported in Lape');
+  Result := '';
 end;
 
 const
