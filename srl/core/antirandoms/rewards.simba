@@ -1,0 +1,359 @@
+(*
+Rewards
+=======
+
+Stores all the routines to solving reward/inventory random events.
+
+*)
+
+const
+  DTM_REWARD_COUNT = 4;
+    DTM_REWARD_BOX     = 0;
+    DTM_REWARD_MYSTERY = 1;
+    DTM_REWARD_LAMP    = 2;
+    DTM_REWARD_BOOK    = 3;
+
+function RD_GetDTMs(): TIntegerArray;
+begin
+  setLength(result, DTM_REWARD_COUNT);
+
+  result[DTM_REWARD_BOX]     := DTMFromString('mlwAAAHicY2dgYMhmYmBIA+IsIC4A4lIonQzEz4Hy94H4OhDfA+JHQPwWiN8AcQqfI0OnhTDDRg9JhnZzYYYMPhcwH4T5gfK4MCMeDAUADmYPew==');
+  result[DTM_REWARD_MYSTERY] := DTMFromString('mlwAAAHicY2dgYMhhYmBIBeJcIC4G4hIgzgTiFCCeycjAMAGIe4F4EhDPAeIlQDwPiGdHigJ1MzHMtBNlmBIqwtBsJgTmTw0TZeBngAB+JAzjM+LBUAAA3YEMSA==');
+  result[DTM_REWARD_LAMP]    := DTMFromString('mggAAAHicY2NgYMhhYmDIAOIyIK4A4kIgTgPip0C5B0D8kAHCfgXEz4F46hRRIMkExn29ImB6zSoJBn4GBOBHohlxYAgAACyDDBw=');
+  result[DTM_REWARD_BOOK]    := DTMFromString('mrAAAAHic42BgYHBiYmCwBmIfIPYCYlcmiJglFD8CqrkFxHeA+BkQvwDiD0D8FsovyM5mCDGTZPA2EGcwVxZk8DMUZ/DT4WIIN5cCs/mBavBhRgIYBgCtoQ8M');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if one of the reward DTMs are found.
+ *)
+function RD_Detect(): boolean;
+var
+  i, x, y: integer;
+  DTMs: TIntegerArray;
+begin
+  if ((not loggedIn()) or (not gameTab(TAB_INV))) then
+    exit;
+
+  DTMs := RD_GetDTMs();
+
+  // loop through reward DTMs
+  for i := 0 to high(DTMs) do
+    if (findDTM(DTMs[i], x, y, MIX1, MIY1, MIX2, MIY2)) then
+    begin
+      result := true;
+      break;
+    end;
+
+  freeDTMs(DTMs);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Mystery Box (at coords x, y) inventory random.
+ *)
+function RD_SolveMystery(x, y: integer): boolean;
+begin
+  addToSRLLog('RD_SolveMystery: Found mystery box');
+
+  mmouse(x, y, 5, 5);
+  if (waitUptext('ster', 200)) then
+  begin
+    result := true;
+    GetmousePos(x, y);
+    mouse(x, y, 0, 0, mouse_Left);
+    wait(randomRange(200, 500));
+    addToSRLLog('RD_SolveMystery: Clicked mystery box');
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves XP rewards (at coords x, y) with 'uptext'.
+ *)
+function RD_SolveXP(x, y: integer; uptext: string): boolean;
+var
+  slot, skill: integer;
+  b: TBox;
+begin
+  mmouse(x, y, 3, 3);
+  if (waitUptext(uptext, 300)) then
+  begin
+    getmousePos(x, y);
+    mouse(x, y, 0, 0, mouse_Left);
+    addToSRLLog('RD_SolveXP: Clicked XP reward');
+
+    // the color of the background (i.e. scroll color)
+    if (not waitFindColor(x, y, 10803447, MSX1, MSY1, MSX2, MSY2, 5, 5000)) then
+    begin
+      addToSRLLog('RD_SolveXP: XP reward didn''t open');
+      exit;
+    end;
+
+    // in case of runtime out of range
+    if (length(players) <= 0) then
+      skill := SKILL_MINING
+    else
+      skill := players[currentPlayer].lampSkill;
+
+    // slot returned by gridBox below
+    case skill of
+      SKILL_ATTACK              : slot := 1;
+      SKILL_DEFENCE             : slot := 5;
+      SKILL_STRENGTH            : slot := 2;
+      SKILL_HITPointS, SKILL_HP : slot := 7;
+      SKILL_RANGE               : slot := 3;
+      SKILL_PRAYER              : slot := 8;
+      SKILL_MAGIC               : slot := 4;
+      SKILL_COOKING             : slot := 19;
+      SKILL_WOODCUTTING         : slot := 21;
+      SKILL_FLETCHING           : slot := 23;
+      SKILL_FISHING             : slot := 12;
+      SKILL_FIREMAKING          : slot := 20;
+      SKILL_CRAFTING            : slot := 6;
+      SKILL_SMITHING            : slot := 17;
+      SKILL_MINING              : slot := 16;
+      SKILL_HERBLORE            : slot := 10;
+      SKILL_AGILITY             : slot := 9;
+      SKILL_THIEVING            : slot := 11;
+      SKILL_SLAYER              : slot := 14;
+      SKILL_FARMING             : slot := 15;
+      SKILL_RUNECRAFTING        : slot := 13;
+      SKILL_HUNTER              : slot := 18;
+      SKILL_CONSTRUCTION        : slot := 24;
+      SKILL_SUMMONING           : slot := 25;
+      SKILL_DUNGEONEERING       : slot := 26;
+
+      else
+        slot := 16; // Mining
+    end;
+
+    b := gridBox(slot, 7, 4, 40, 40, 59, 57, point(80, 108));
+    mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_Left); // click skill
+
+    wait(500 + random(500));
+    mouse(413, 282, 20, 5, mouse_Left); // click confirm
+
+    addToSRLLog('RD_SolveXP: Solved experience reward');
+    wait(2000 + random(500));
+    clickContinue(true, true);
+    result := true;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Gene Lamp (at coords x, y) inventory random.
+ *)
+function RD_SolveLamp(x, y: integer): boolean;
+begin
+  addToSRLLog('RD_SolveLamp: Found experience lamp');
+  result := RD_SolveXP(x, y, 'amp');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Book of Knowledge (at coords x, y) inventory random.
+ *)
+function RD_SolveBook(x, y: integer): boolean;
+begin
+  addToSRLLog('RD_SolveBook: Found Book of Knowledge');
+  result := RD_SolveXP(x, y, 'ook');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the reward box screen is open.
+ *)
+const
+  _RD_TEXT_COLOR = 2070783;
+  _RD_TEXT_TOL   = 10;
+
+function RD_BoxScreen(): boolean;
+begin
+  // box around the text
+  result := findTextTPA(_RD_TEXT_COLOR, _RD_TEXT_TOL, 189, 31, 328, 51, 'hoose', upCharsEx, nothing);
+end;
+
+(**
+ * Author: Coh3n & Nava2
+ * Description: Finds and clicks the reward box option 'opt' in box 'slot'.
+ * Starts grid at 'gridStart'. Also clicks the confirm button. See RD_SolveBox.
+ *)
+function RD_ClickBoxOption(opt: string; slot: integer; gridStart: TPoint): boolean;
+var
+  x, y, t: integer;
+  b: TBox;
+begin
+  // grid starts at different points if we need to scroll
+  b := gridBox(slot, 2, 3, 159, 63, 167, 71, gridStart);
+
+  // if found box option
+  if (findTextTPA(_RD_TEXT_COLOR, _RD_TEXT_TOL, b.x1, b.y1, b.x2, b.y2, opt, upCharsEx, nothing)) then
+  begin
+    addToSRLLog('RD_ClickBoxOption: Found box option '+opt);
+    mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_Left);
+
+    // box around the confirm choice box
+    if (waitFindColor(x, y, _RD_TEXT_COLOR, 394, 163, 470, 207, _RD_TEXT_TOL, 4000)) then
+    begin
+      mouse(x, y, 10, 10, mouse_Left);
+      t := (getSystemTime + 5000);
+
+      // wait for the box screen to disappear
+      while ((not result) and (getSystemTime < t)) do
+      begin
+        wait(50 + random(50));
+        result := (not RD_BoxScreen());
+      end;
+    end;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the scroll bar is ready to scroll down, false
+ * if ready to scroll up.
+ *)
+function RD_ScrollDown(): boolean;
+var
+  x, y: integer;
+begin
+  // the dark scroll bar color at the bottom of the scroll bar
+  result := findColorTolerance(x, y, 1909544, 373, 293, 379, 299, 10);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Scrolls up or down in the reward screen.
+ *)
+procedure RD_BoxScroll();
+var
+  x, y, t: integer;
+  scrollDown: boolean;
+begin
+  if (not (RD_BoxScreen())) then
+    exit;
+
+  scrollDown := RD_ScrollDown();
+
+  // mouse the top or bottom arrow
+  mmouse(377, 70 + (Ord(scrollDown) * 240), 4, 4);
+  wait(100 + random(100));
+
+  wait(100 + random(100));
+  getMousePos(x, y);
+  t := (getSystemTime + 5000);
+
+  holdMouse(x, y, mouse_Left);
+  while (getSystemTime < t) do
+  begin
+    // break if opposite of scrollDown (i.e. done scrolling)
+    if ((RD_ScrollDown() = (not scrollDown))) then
+      break;
+
+    wait(50 + random(25));
+  end;
+  releaseMouse(x, y, mouse_Left);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Reward Box (at coords x, y) inventory random.
+ *)
+function RD_SolveBox(x, y: integer): boolean;
+var
+  i, slot: integer;
+  boxRewards: TStringArray;
+  tmpReward: string;
+begin
+  addToSRLLog('RD_SolveBox: Found reward box');
+
+  mmouse(x, y, 5, 5);
+  if (waitUptextMulti(['andom', 'event', 'ift', 'pen'], 300)) then
+  begin
+    getMousePos(x, y);
+    mouse(x, y, 0, 0, mouse_Left);
+
+    if (not waitFunc(@RD_BoxScreen, 50, 5000)) then
+    begin
+      addToSRLLog('RD_SolveBox: Reward box didn''t open');
+      exit;
+    end;
+
+    // avoid out of range from scripter error
+    if (length(players) > 0) then
+      boxRewards := players[currentPlayer].boxRewards;
+
+    for i := 0 to (high(boxRewards) + 1) do
+    begin
+      // if no rewards were found, get the default
+      if (i = (high(boxRewards) + 1)) then
+        tmpReward := 'box'
+      else
+        tmpReward := boxRewards[i];
+
+      // loop through each slot, looking for the first reward choice
+      for slot := 1 to 6 do
+        if (RD_ClickBoxOption(tmpReward, slot, point(114, 101))) then
+        begin
+          result := true;
+          exit;
+        end;
+
+      // if not found, scroll if possible
+      if (getColor(385, 70) = 592137) then // scroll bar exists
+      begin
+        RD_BoxScroll(); // scroll down
+
+        for slot := 1 to 6 do
+          if (RD_ClickBoxOption(tmpReward, slot, point(110, 133))) then
+          begin
+            result := true;
+            exit;
+          end;
+
+        RD_BoxScroll(); // scroll back up
+      end;
+    end;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Loops through the rewards DTMs. If one is found, calls the
+ * corresponding solve function. Returns true if solved.
+ *)
+function RD_Solve(): boolean;
+var
+  i, x, y: integer;
+  DTMs: TIntegerArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  DTMs := RD_GetDTMs();
+
+  for i := 0 to high(DTMs) do
+    if (findDTM(DTMs[i], x, y, MIX1, MIY1, MIX2, MIY2)) then
+    begin
+      case i of
+        DTM_REWARD_BOX     : result := RD_SolveBox(x, y);
+        DTM_REWARD_MYSTERY : result := RD_SolveMystery(x, y);
+        DTM_REWARD_LAMP    : result := RD_SolveLamp(x, y);
+        DTM_REWARD_BOOK    : result := RD_SolveBook(x, y);
+      end;
+
+      if (not result) then
+      begin
+        addToSRLLog('RD_Solve: Didn''t solve reward, dropping as a failsafe');
+        dropItem(coordsToItem(x, y));
+        result := true;
+      end;
+
+      break;
+    end;
+
+  freeDTMs(DTMs);
+end;
+

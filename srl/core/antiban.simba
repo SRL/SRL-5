@@ -532,6 +532,47 @@ begin
 end;
 
 (*
+CompassMovement
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+
+Rotates the compass somewhere between MinMovement and MaxMovement.  Will return
+to original angle if Return is set to true.
+
+.. note::
+
+    Author: Nebula
+    Last Modified: Mar. 6th, 2011 by Nebula
+
+Example:
+
+.. code-block:: pascal
+
+    CompassMovement(10, 30, true);
+*)
+function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+var
+  StartAngle, Movement : Integer;
+begin
+  Result := False;
+  StartAngle := round(rs_GetCompassAngleDegrees());
+  case Random(2) of
+    0: Movement := RandomRange(-MinMovement, -MaxMovement);
+    1: Movement := RandomRange(MinMovement, MaxMovement);
+  end;
+  MakeCompass(StartAngle + Movement);
+  if (Return = true) then
+  begin
+    wait(RandomRange(100,350));
+    MakeCompass(StartAngle);
+  end;
+  Result := true;
+end;
+
+(*
 BoredHuman
 ~~~~~~~~~~
 
@@ -756,4 +797,194 @@ Example:
 function LevelUp: Boolean;
 begin
   Result := LevelUpEx(True, False);
+end;
+
+(*
+FindMod
+~~~~~~~
+
+.. code-block:: pascal
+
+    function FindMod: Boolean;
+
+Results true if a mod is found talking in the chat box.  Will logout and wait
+if LogoutOnMod (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+  FindMod();
+*)
+function FindMod: Boolean;
+var
+  tX, tY: Integer;
+begin
+  if (not UseFindMod) or (not LoggedIn) then
+    exit;
+
+  if (not SRLBitmapsLoaded) then
+    LoadSRLBitMaps;
+
+  if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+     (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+       (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    begin
+      Result := True;
+
+      if SRL_HasProc(srl_OnFindMod) then
+        SRL_Procs[srl_OnFindMod]();
+
+      if (LogoutOnMod) then
+      begin
+        Writeln('******** FOUND MOD ********');
+        Writeln('Logging out, waiting 1-2 minutes until mod leaves');
+
+        WaitFunc(@ExitToLobby, 500, 1500);
+        Wait(60000 + Random(60000));
+        LoginPlayer;
+      end;
+    end;
+end;
+
+(*
+FindDead
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDead: Boolean;
+
+Logs out and sets the current player to false if they are found dead. Will not
+logout if Reincarnate (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo and Cazax
+
+Example:
+
+.. code-block:: pascal
+
+  FindDead();
+*)
+function FindDead: Boolean;
+begin
+  Result := False;
+  if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dear', SmallChars, Nothing) then
+    if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dead', SmallChars, Nothing) then
+    begin
+      Result := True;
+
+      if SRL_HasProc(srl_OnFindDead) then
+        SRL_Procs[srl_OnFindDead]();
+
+      if (Reincarnate) then
+        exit;
+
+      LogOut;
+      Players[CurrentPlayer].Rand := 'Dead';
+      Players[CurrentPlayer].Active := False;
+    end;
+end;
+
+(*
+FindDwarvenPopup
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDwarvenPopup: Boolean;
+
+A simple functinds and closes the "please buy RS Members" popup that happens
+when you reach lvl 10 in any skill.
+
+.. note::
+
+    Author: Harry
+
+Example:
+
+.. code-block:: pascal
+
+  FindDwarvenPopup();
+*)
+function FindDwarvenPopup: Boolean;
+begin
+  Result := False;
+  // Parts of red X, checked in two different spots to reduce false-positives
+  if (GetColor(485, 40) = 2569093) then
+    if (GetColor(488, 40) = 11189720) then
+    begin
+      Result := True;
+
+      // Box around the X, to close it.
+      MouseBox(482, 35, 492, 44, mouse_left);
+      Wait(1000+Random(3000));
+    end;
+end;
+
+(*
+ExitSquealOfFortune
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExitSquealOfFortune(): boolean;
+
+Finds and exits the annoying Squeal of Fortune pop up.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Mar. 8th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  ExitSquealOfFortune();
+*)
+function ExitSquealOfFortune(): boolean;
+var
+  w, h, x, y, xs, ys, xe, ye: integer;
+begin
+  getClientDimensions(w, h);
+
+  // green color of the goblin thing
+  if (findColorTolerance(x, y, 7457955, 1, 1, w - 1, h - 1, 15)) then
+  begin
+    // to avoid out of bounds warnings
+    xs := x;
+
+    ys := (y - 30);
+    if (ys < 0) then
+      ys := 1;
+
+    xe := (x + 100);
+    if (xe > w) then
+      xe := (w - 1);
+
+    ye := (y + 30);
+    if (ye > h) then
+      ye := (h - 1);
+
+    // gold color in the X
+    if (findColorTolerance(x, y, 4770302, xs, ys, xe, ye, 15)) then
+    begin
+      mouse(x, y, 3, 3, mouse_Move);
+
+      if (waitUptext('elect', 300)) then
+      begin
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+        result := true;
+      end;
+    end;
+  end;
 end;

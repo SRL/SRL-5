@@ -769,3 +769,107 @@ begin
   if Effect then
     Result := Result + Str[11 + Random(5)];
 end;
+
+(*
+GetNPCChatName
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetNPCChatName(): string;
+
+Gets the name of the random event NPC from the top of the chat box.  The proper
+font doesn't exist yet, so it returns a random string of characters.
+
+.. note::
+
+    Author: DemiseSythe
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    writeln(getNPCChatName());
+*)
+function GetNPCChatName(): string;
+begin
+  result := getTextAtExWrap(152, 345, 366, 370, 0, 50, 30, 7913190, 15, NPCChars);
+end;
+
+(*
+AreTalking
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AreTalking(): boolean;
+
+Returns true if player is talking to an NPC.
+
+.. note::
+
+    Author: Wizzup?
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    while (areTalking()) do
+      clickContinue(true, true);
+*)
+function AreTalking(): boolean;
+begin
+  result := (getNPCChatName <> '');
+end;
+
+(*
+DoConversation
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function DoConversation(resultText: string; clickresult: boolean): boolean;
+
+Goes through the initial dialog of a random.  Will keep clicking to continue
+until the conversation's 'resultText' is found.  Will click to continue when
+'resultText' is found if 'clickresult' is set to true.  Set 'resultText' to ''
+to click continue until conversation is over.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    if (DoConversation('thank', true)) then
+      writeln('Finished conversation');
+*)
+function DoConversation(resultText: string; clickResult: boolean): boolean;
+var
+  t: integer;
+begin
+  while (t < 25) do // max of 25 "click to continue's"
+  begin
+    if (resultText <> '') then
+      if (findNPCChatText(resultText, nothing)) then
+      begin
+        if (clickResult) then
+          clickContinue(true, true);
+
+        result := true;
+        break;
+      end;
+
+    // break if there's no more conversation
+    if (not clickContinue(true, true)) then
+      break;
+
+    wait(100 + random(200));
+    inc(t);
+  end;
+end;

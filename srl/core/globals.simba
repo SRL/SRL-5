@@ -46,7 +46,10 @@ var
 { var LampSkill: String;
   Description: Set Lamp skill. }
 var
-  LampSkill: string;
+  LampSkill: string; // no longer used
+
+var
+  SRL_DisableIPLog: boolean;
 
 { const srl_outline_black
   Description: Black Color outline}
@@ -149,7 +152,7 @@ const
   Description: Varibles to store user-defined procs to be called in SRL. }
 var
   SRL_Procs: array [0..14] of procedure();
-  SRL_OnFindRandomCall : function(var Cont : boolean) : boolean;
+  SRL_OnFindRandomCall : function(var Cont : boolean) : boolean; // no longer used
   
 { const GameTab Constants;
   Description: Constants representing gametab numbers. }

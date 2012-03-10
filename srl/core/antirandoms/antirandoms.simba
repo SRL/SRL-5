@@ -1,1014 +1,512 @@
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               �� AntiRandom Routines                        --//
-//-----------------------------------------------------------------//
-// * procedure SRLRandomsReport;                      // * by Starblaster100
-// * function FindBoxOption(var Box: TBox): Boolean;  // * by Nava2
-// * function UseRewardBox: Boolean;                  // * by Nava2
-// * function FindMod: Boolean;                       // * by Stupid3ooo
-// * function FindLamp(skill: String): Boolean;       // * by pups, Starblaster100 and PriSoner fixed by Lee Lok Hin
-// * function FindDead : boolean;                     // * by Stupid3ooo and Cazax
-// * function Rand_GetRandomType: Integer;            // * by ZephyrsFury
-// * procedure LoadTeleRandoms;                       // * by ZephyrsFury
-// * function SolveTeleportRandoms: Boolean;          // * by ZephyrsFury
-// * function FindNonInventoryRandoms: Boolean;       // * by The SRL Developers Team!... all time sexiness by Mutant
-// * function FindNormalRandoms: Boolean;             // * by The SRL Developers Team!... all time sexiness by Mutant
-//-----------------------------------------------------------------//
+(*
+Antirandoms
+===========
+
+The 'master' SRL randoms file.  The 4 "core" functions (solverandoms,
+FindAllrandoms, FindNormalRandoms, and FindNonInventoryRandoms) shouldn't ever
+need to be updated if a new random event is added to the game, or a current one
+is removed.  For a description of how each solver works, see the top of that
+solver's simba file.
+
+*)
+
+// include all the solver files
+{$include_once common.simba}
+{$include_once rewards.simba}
+{$include_once demon.simba}
+{$include_once maze.simba}
+{$include_once evilbob.simba}
+{$include_once mordaut.simba}
+{$include_once certers.simba}
+{$include_once mime.simba}
+{$include_once abyss.simba}
+{$include_once frog.simba}
+{$include_once pinball.simba}
+{$include_once sandwich.simba}
+{$include_once pillory.simba}
+{$include_once capnarnav.simba}
+{$include_once quiz.simba}
+{$include_once leo.simba}
+{$include_once prisonpete.simba}
+{$include_once forester.simba}
+{$include_once molly.simba}
+{$include_once beekeeper.simba}
+
+// represent the elements of the SRL_Randoms array
+const
+  SRL_RANDOMS_COUNT = 19;
+    SRL_RAND_DEMON     = 0;
+    SRL_RAND_MAZE      = 1;
+    SRL_RAND_EVILBOB   = 2;
+    SRL_RAND_MORDAUT   = 3;
+    SRL_RAND_CERTERS   = 4;
+    SRL_RAND_MIME      = 5;
+    SRL_RAND_ABYSS     = 6;
+    SRL_RAND_FROG      = 7;
+    SRL_RAND_PINBALL   = 8;
+    SRL_RAND_SANDWICH  = 9;
+    SRL_RAND_PILLORY   = 10;
+    SRL_RAND_ARNAV     = 11;
+    SRL_RAND_QUIZ      = 12;
+    SRL_RAND_LEO       = 13;
+    SRL_RAND_PETE      = 14;
+    SRL_RAND_FORESTER  = 15;
+    SRL_RAND_MOLLY     = 16;
+    SRL_RAND_BEEKEEPER = 17;
+    SRL_RAND_REWARDS   = 18;
 
 type
-  TTeleRandom = record
-    Name: string;
-    RandIndex: Integer;
-    TextColors, TypeID: TIntegerArray;
-    TextFonts : TStringArray;
-    IsInRandom, SolveRandom: function: Boolean;
-    Texts, Music: TStringArray;
-    TrustInRandomFunc : boolean;
-    TextBoxes: TBoxArray;
+  TRandom = record
+    name: string;
+    solve, detect: function(): boolean;
+    solved, failed: integer; // for SRL stats/randoms report
+    isInvRandom, hasRewardBox, disabled: boolean;
   end;
 
 var
-  TeleRandoms: array of TTeleRandom;
-  SolveSRLRandoms, r_UseRandomTool: Boolean;
-  RB_SkipArray: TIntegerArray;
-  SoundPath: string;
-  CurRandom: Integer;
+  SRL_Randoms: array[0..(SRL_RANDOMS_COUNT - 1)] of TRandom;
+  SRL_RandomsSet, SRL_DisableRandoms, SRL_RandomScreenShot: boolean;
 
-{*******************************************************************************
-procedure SRLRandomsReport;
-by: Starblaster100
-Description: Displays Randoms Report.
-*******************************************************************************}
+// needs to be included after variables are declared
+{$include_once randomtool.simba}
 
-procedure SRLRandomsReport;
+(*
+SRLRandomsReport
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SRLRandomsReport(): boolean;
+
+Prints a random events progress report for the current script.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SRLRandomsReport();
+*)
+procedure SRLRandomsReport();
 var
-  i, CurrentInt: Integer;
-  CurrentStr, Name: string;
-
-Begin
-  {$ifndef Simba}
-  ChangeReportWidth(280);
-  ClearReport;
-  {$endif}
-  AddToReport('/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\');
-  AddToReport('|     SRL Randoms Report       |');
-  AddToReport('|       www.villavu.com        |');
-  AddToReport('|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|');
-  For i := 0 to 46 do
-  Begin
-    Case i of
-      0: begin CurrentInt := SRL_Logs;                     Name := '| SRL Logs          :'; end;
-      1: begin CurrentInt := tmp_RandSolved[rand_Trade];       Name := '| Trades Made       :'; end;
-      2: begin CurrentInt := tmp_RandFailed[rand_Trade];       Name := '| Trades Missed     :'; end;
-      3: begin CurrentInt := tmp_RandSolved[rand_Fight];       Name := '| Fights            :'; end;
-      4: begin CurrentInt := tmp_RandSolved[rand_Sandwich];    Name := '| Sandwiches Solved :'; end;
-      5: begin CurrentInt := tmp_RandFailed[rand_Sandwich];    Name := '| Sandwiches Missed :'; end;
-      6: begin CurrentInt := tmp_RandSolved[rand_Lamp];        Name := '| Lamps Solved      :'; end;
-      7: begin CurrentInt := tmp_RandFailed[rand_Lamp];        Name := '| Lamps Missed      :'; end;
-      8: begin CurrentInt := tmp_RandSolved[rand_Frog];        Name := '| Frog Solved       :'; end;
-      9: begin CurrentInt := tmp_RandFailed[rand_Frog];        Name := '| Frog Missed       :'; end;
-      10: begin CurrentInt := tmp_RandSolved[rand_Certer];     Name := '| Certers Solved    :'; end;
-      11: begin CurrentInt := tmp_RandFailed[rand_Certer];     Name := '| Certers Missed    :'; end;
-      12: begin CurrentInt := tmp_RandSolved[rand_Demon];      Name := '| Demons Solved     :'; end;
-      13: begin CurrentInt := tmp_RandFailed[rand_Demon];      Name := '| Demons Missed     :'; end;
-      14: begin CurrentInt := tmp_RandSolved[rand_Mod];        Name := '| Mods Found        :'; end;
-      15: begin CurrentInt := tmp_RandSolved[rand_Maze];       Name := '| Mazes Solved      :'; end;
-      16: begin CurrentInt := tmp_RandFailed[rand_Maze];       Name := '| Mazes Missed      :'; end;
-      17: begin CurrentInt := tmp_RandSolved[rand_Mime];       Name := '| Mimes Solved      :'; end;
-      18: begin CurrentInt := tmp_RandFailed[rand_Mime];       Name := '| Mimes Missed      :'; end;
-      19: begin CurrentInt := tmp_RandSolved[rand_Death];      Name := '| Deaths            :'; end;
-      20: begin CurrentInt := tmp_RandSolved[rand_Quiz];       Name := '| Quizes Solved     :'; end;
-      21: begin CurrentInt := tmp_RandFailed[rand_Quiz];       Name := '| Quizes Missed     :'; end;
-      22: begin CurrentInt := tmp_RandSolved[rand_ScapeRune];  Name := '| ScapeRunes Solved :'; end;
-      23: begin CurrentInt := tmp_RandFailed[rand_ScapeRune];  Name := '| ScapeRunes Missed :'; end;
-      24: begin CurrentInt := tmp_RandSolved[rand_BirdNest];   Name := '| Birds Nests       :'; end;
-      25: begin CurrentInt := tmp_RandSolved[rand_Pinball];    Name := '| Pinballs Solved   :'; end;
-      26: begin CurrentInt := tmp_RandFailed[rand_Pinball];    Name := '| Pinballs Missed   :'; end;
-      27: begin CurrentInt := tmp_RandSolved[rand_PrisonPete]; Name := '| Petes Solved      :'; end;
-      28: begin CurrentInt := tmp_RandFailed[rand_PrisonPete]; Name := '| Petes Missed      :'; end;
-      29: begin CurrentInt := tmp_RandSolved[rand_Forester];   Name := '| Foresters Solved  :'; end;
-      30: begin CurrentInt := tmp_RandFailed[rand_Forester];   Name := '| Foresters Missed  :'; end;
-      31: begin CurrentInt := tmp_RandSolved[rand_Leo];        Name := '| Leo''s Solved      :'; end; //Another space due to the ''
-      32: begin CurrentInt := tmp_RandFailed[rand_Leo];        Name := '| Leo''s Missed      :'; end;
-      33: begin CurrentInt := tmp_RandSolved[rand_Molly];      Name := '| Molly''s Solved    :'; end;
-      34: begin CurrentInt := tmp_RandFailed[rand_Molly];      Name := '| Molly''s Missed    :'; end;
-      35: begin CurrentInt := tmp_RandSolved[rand_Pillory];    Name := '| Pillory''s Solved  :'; end;
-      36: begin CurrentInt := tmp_RandFailed[rand_Pillory];    Name := '| Pillory''s Missed  :'; end;
-      37: begin CurrentInt := tmp_RandSolved[rand_CapnArnav];  Name := '| Capn Arnav Solved :'; end;
-      38: begin CurrentInt := tmp_RandFailed[rand_CapnArnav];  Name := '| Capn Arnav Missed :'; end;
-      39: begin CurrentInt := tmp_RandSolved[rand_Beekeeper];  Name := '| Beekeepers Solved :'; end;
-      40: begin CurrentInt := tmp_RandFailed[rand_Beekeeper];  Name := '| Beekeepers Missed :'; end;
-      41: begin CurrentInt := tmp_RandSolved[rand_Abyss];      Name := '| Abysses Solved    :'; end;
-      42: begin CurrentInt := tmp_RandFailed[rand_Abyss];      Name := '| Abysses Missed    :'; end;
-      43: begin CurrentInt := tmp_RandSolved[rand_Mordaut];    Name := '| Mordauts Solved   :'; end;
-      44: begin CurrentInt := tmp_RandFailed[rand_Mordaut];    Name := '| Mordauts Missed   :'; end;
-      45: begin CurrentInt := tmp_RandSolved[rand_RewardBox];  Name := '| Reward Box Solved :'; end;
-      46: begin CurrentInt := tmp_RandFailed[rand_RewardBox];  Name := '| Reward Box Missed :'; end;
-    end;
-
-    if (CurrentInt < 1) then
-      Continue;
-    CurrentStr := IntToStr(CurrentInt);
-    AddToReport(PadR(Name, 30 - Length(CurrentStr)) + CurrentStr + ' |');
-  end;
-  AddToReport('\~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/');
-end;
-
-{*******************************************************************************
-procedure FindBoxOption(var Box: TBox): Boolean;
-By: Nava2
-Description: Finds the text of options, based on the text loaded from the
-player array. Will find text in order of occurance in the array.
-*******************************************************************************}
-
-function FindBoxOption(var Box: TBox; var RewardInd: Integer): Boolean;
-var
-  x, y, H, L, II, i, LL, Col, t: Integer;
-  Text, TPA, xTPA: TPointArray;
-  ATPA: T2DPointArray;
-  Scroll: Boolean;
-  P: TPoint;
-
+  i: integer;
 begin
-  Result := False;
-  RewardInd := -1;
-  Box := IntToBox(-1, -1, -1, -1);
-  if (not LoggedIn) then exit;
-  L := High(Players[CurrentPlayer].BoxRewards);
-  Scroll := (GetColor(385, 70) = 592137); //657930
-  for II := 0 to L + 1 do
+  writeln('|====================================|');
+  writeln('|              ~ SRL ~               |');
+  writeln('|           Randoms Report           |');
+  writeln('|────────────────────────────────────|');
+  writeln('|                                    |');
+
+  for i := 0 to high(SRL_Randoms) do
   begin
-    if (InIntArray(RB_SkipArray, II)) then Continue;
-    if (II < L + 1) then
-      Text := LoadTextTPA(Players[CurrentPlayer].BoxRewards[II], UpCharsEx, H)
-    else
-      Text := LoadTextTPA('box', UpCharsEx, H);
+    if (SRL_Randoms[i].name = '') then
+      continue;
 
-    FindColorsTolerance(TPA, 2070783, 35, 69, 362, 311, 3);
-    ATPA := SplitTPAEx(TPA, 3, 1);
-    LL := High(ATPA);
-    for i := 0 to LL do
-    begin
-      Result := FindTextTPAInTPA(H, Text, ATPA[i], xTPA);
-      if (Result) then Break;
-    end;
+    if (SRL_Randoms[i].solved > 0) then
+      writeln('|    '+padR(SRL_Randoms[i].name
+        +' Solved', 22)+' ~ '+padR(toStr(SRL_Randoms[i].solved), 7)+'|');
 
-    if (not Result) and (Scroll) then
-    begin
-      X := 377;
-      Y := 312 - II mod 2 * 245;
-      Col := 592137 + II mod 2 * 5005417;
-      P := Point(375, 302 - II mod 2 * 224);
-
-      MMouse(X, Y, 0, 0);
-      Wait(RandomRange(30, 60));
-
-      t := (getSystemTime + 5000);
-      HoldMouse(X, y, mouse_left);
-      while (GetColor(P.X, P.Y) <> Col) and (GetColor(385, 70) = 592137) and (not(Result)) do
-      begin
-        if (getSystemTime > t) then
-          break;
-        FindColorsTolerance(TPA, 2070783, 35, 69, 362, 311, 3);
-        Result := FindTextTPAInTPA(H, Text, TPA, xTPA);
-        Wait(RandomRange(40, 50));
-      end;
-      ReleaseMouse(X, Y, mouse_left);
-    end;
-    if (Result) then
-    begin
-      if (II < L + 1) then
-        WriteLn('Found Reward Item: ' + Players[CurrentPlayer].BoxRewards[II])
-      else
-        WriteLn('Found no prefered reward items, chose default reward: Mystery Box');
-      Break;
-    end;
+    if (SRL_Randoms[i].failed > 0) then
+      writeln('|    '+padR(SRL_Randoms[i].name
+        +' Failed', 22)+' ~ '+padR(toStr(SRL_Randoms[i].failed), 7)+'|');
   end;
-  if (not Result) then exit;
-  Box := GetTPABounds(xTPA);
-  Rewardind := II;
-  //Writeln('Box: ' + IntToStr(Box.x1) + ', ' + IntToStr(Box.y1) + ', ' + IntToStr(Box.x2) + ', ' + IntToStr(Box.y2));
+
+  writeln('|                                    |');
+  writeln('|────────────────────────────────────|');
+  writeln('|====================================|');
 end;
 
-{*******************************************************************************
-procedure UseRewardBox: Boolean;
-by: Nava2, Timer
-Description: Finds the reward box, and opens it getting the reward.
-*******************************************************************************}
-function UseRewardBox: Boolean;
+(**
+ * Author: Coh3n
+ * Description: Sets the SRL_Randoms global array.
+ *)
+procedure _SetRandoms();
 var
-  I, Time, Height, fx, fy, Index, bDTM: Integer;
-  Text, TPA: TPointArray;
-  B: TBox;
-  BoxInvSlot: Integer;
+  i: integer;
 begin
-  Result := False;
-  if (not LoggedIn) then
+  if (SRL_RandomsSet) then
     exit;
 
-  GameTab(tab_Inv);
-
-  if (not(FindColorTolerance(fX, fY, 4329061 , MIX1, MIY1, MIX2, MIY2, 22))) then
-    Exit;
-
-  { DTM updated 30th October 2011 - NCDS }
-  bDTM := DTMFromString('mbQAAAHicY2VgYHBiYmBwBGJTIPYHYm8gfgoUvwrEr4H4HRDfBeI0f'
-                         +'mcgyYSC/zNgAkYsGAwAOH0Hlg==');
-
-  for I := 1 to 28 do
+  with SRL_Randoms[SRL_RAND_DEMON] do
   begin
-    B := InvBox(I);
-    if FindItemEx(fx, fy, 'dtm', bDTM, B, []) then
-    begin
-      InvMouse(I, mouse_move);
-      Wait(RandomRange(100, 150));
-      Result := IsUpText('ando');
-      BoxInvSlot := i;
-      if (Result) then
-        Break;
-    end;
+    name := 'Drill Demon';
+    solve := @DD_Solve;
+    detect := @DD_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
   end;
 
-  FreeDTM(bDTM);
-  if (not Result) then
+  with SRL_Randoms[SRL_RAND_MAZE] do
+  begin
+    name := 'Maze';
+    solve := @Maze_Solve;
+    detect := @Maze_Detect;
+    isInvRandom := false;
+    hasRewardBox := false;
+  end;
+
+  with SRL_Randoms[SRL_RAND_EVILBOB] do
+  begin
+    name := 'Evil Bob';
+    solve := @EB_Solve;
+    detect := @EB_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MORDAUT] do
+  begin
+    name := 'Mordaut';
+    solve := @MD_Solve;
+    detect := @MD_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_CERTERS] do
+  begin
+    name := 'Certers';
+    solve := @CT_Solve;
+    detect := @CT_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MIME] do
+  begin
+    name := 'Mime';
+    solve := @Mime_Solve;
+    detect := @Mime_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_ABYSS] do
+  begin
+    name := 'Abyss';
+    solve := @Abyss_Solve;
+    detect := @Abyss_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_FROG] do
+  begin
+    name := 'Frog';
+    solve := @Frog_Solve;
+    detect := @Frog_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PINBALL] do
+  begin
+    name := 'Pinball';
+    solve := @PB_Solve;
+    detect := @PB_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_SANDWICH] do
+  begin
+    name := 'Sandwich Lady';
+    solve := @SL_Solve;
+    detect := @SL_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PILLORY] do
+  begin
+    name := 'Pillory (Cage)';
+    solve := @PL_Solve;
+    detect := @PL_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_ARNAV] do
+  begin
+    name := 'Cap''n Arnav';
+    solve := @CA_Solve;
+    detect := @CA_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_QUIZ] do
+  begin
+    name := 'Quiz Master';
+    solve := @Quiz_Solve;
+    detect := @Quiz_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_LEO] do
+  begin
+    name := 'Leo';
+    solve := @Leo_Solve;
+    detect := @Leo_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_PETE] do
+  begin
+    name := 'Prison Pete';
+    solve := @PP_Solve;
+    detect := @PP_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_FORESTER] do
+  begin
+    name := 'Freaky Forester';
+    solve := @FF_Solve;
+    detect := @FF_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_MOLLY] do
+  begin
+    name := 'Molly';
+    solve := @Molly_Solve;
+    detect := @Molly_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+    disabled := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_BEEKEEPER] do
+  begin
+    name := 'Beekeeper';
+    solve := @BK_Solve;
+    detect := @BK_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
+  with SRL_Randoms[SRL_RAND_REWARDS] do
+  begin
+    name := 'Rewards';
+    solve := @RD_Solve;
+    detect := @RD_Detect;
+    isInvRandom := true;
+    hasRewardBox := true;
+  end;
+
+  // disable all randoms if set to
+  if (SRL_DisableRandoms) then
+  begin
+    addToSRLLog('**** WARNING: Disabling random event solvers');
+
+    for i := 0 to high(SRL_Randoms) do
+      SRL_Randoms[i].disabled := true;
+  end;
+
+  SRL_RandomsSet := true;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Detects and solves the random of index 'rand' in the SRL_Randoms
+ * array.  Returns true if a random is found, not necessarily if it is solved.
+ * Manually returns true if the random was solved by hand using SRL's Random
+ * tool.
+ *)
+function _SolveRandom(rand: integer; var manually: boolean): boolean;
+var
+  solved: boolean;
+begin
+  if (not loggedIn) then
     exit;
 
-  if (Length(Trim(srl_Implode(Players[CurrentPlayer].BoxRewards, ''))) = 0) then
-    Players[CurrentPlayer].BoxRewards := ['XP'];
-
-  GetMousePos(fx, fy);
-  Mouse(fx, fy, 0, 0, mouse_left);
-
-  Result := False;
-  Text := LoadTextTPA('hoose', UpCharsEx, Height);
-  Time := GetTimeRunning + 10000;
-
-  while (not Result and (GetTimeRunning < Time)) do
+  if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
   begin
-    Wait(RandomRange(80, 100));
-    FindColorsTolerance(TPA, 2070783, 185, 34, 327, 50, 3);
-    if (Length(TPA) > 10) then
-      Result := FindTextTPAinTPA(Height, Text, TPA, TPA);
-  end;
+    addToSRLLog('***** Found Random: '+SRL_Randoms[rand].name+' *****');
+    players[currentPlayer].rand := SRL_Randoms[rand].name;
+    result := true;
 
-  if (not Result) then
-  begin
-    SRL_Warn('UseRewardBox', 'Could not open Reward Screen', Warn_AllVersions);
-    DropItem(BoxInvSlot);
-    Inc(tmp_RandFailed[rand_RewardBox]);
-    Exit;
-  end;
+    if SRL_HasProc(SRL_OnFindRandom) then
+      SRL_Procs[SRL_OnFindRandom]();
 
-  WriteLn('looking for box option');
-  if (not FindBoxOption(B, Index)) then
-  begin
-    SRL_Warn('UseRewardBox', 'Could not find a usable option.', Warn_AllVersions);
-    DropItem(BoxInvSlot);
-    Inc(tmp_RandFailed[rand_RewardBox]);
-    Exit;
-  end;
-
-  Mouse(B.X1, B.Y1, 0, 0, mouse_left);
-  Time := GetTimeRunning + 2000;
-  Result := False;
-
-  while (not Result) and (GetTimeRunning < Time) do
-  begin
-    FindColorsTolerance(TPA, 1317148, 35, 70, 362, 311, 3);
-    Result := Length(TPA) > 50;
-    Wait(50 + Random(50));
-  end;
-
-  if (not Result) then
-  begin
-    CloseWindow;
-    DropItem(BoxInvSlot);
-    Inc(tmp_RandFailed[rand_RewardBox]);
-    Exit;
-  end;
-
-  MouseBox(413, 171, 469, 200, mouse_left);
-  Time := GetSystemTime;
-
-  while (CountColorTolerance(1317148, B.x1 - 10, B.y1 - 10, B.x1 + 10, B.y1 + 10, 3) > 50) and (GetSystemTime - Time < 5000) do
-  begin
-    if (Pos('thing else', GetChatBoxText(8, clBlack)) > 0) then
-    begin
-      CloseWindow;
-      Wait(500 + Random(500));
-      SetLength(RB_SkipArray, Length(RB_SkipArray) + 1);
-      RB_SkipArray[High(RB_SkipArray)] := Index;
-      Result := UseRewardBox;
-      Break;
-    end;
-
-    Wait(100 + Random(200));
-  end;
-
-  if (Result) then
-    Inc(tmp_RandSolved[rand_RewardBox]);
-
-  RB_SkipArray := [];
-
-  if (CloseWindow) then
-  begin
-    Result := False;
-    DropItem(BoxInvSlot);
-    Inc(tmp_RandFailed[rand_RewardBox]);
-  end;
-end;
-
-{*******************************************************************************
-procedure UseMysteryBox(): Boolean;
-by: Coh3n
-Description: Finds and clicks the mystery box obtained from random reward boxes
-*******************************************************************************}
-function UseMysteryBox(): Boolean;
-var
-  DTM: Integer;
-  x, y: Integer;
-begin
-  if (not LoggedIn) then
-    Exit;
-
-  DTM := DTMFromString('78DA639CC6C4C0F0940105CC891603D38C503' +
-       'EE322A09A7BA86AC2857830D5BC425533355C1455CD74A09A8FA8' +
-       '6A5A7D8551D57403D5BC25600E48CD7D543593C3D0D44C02AAB98' +
-       '5AAA62B400455CD0CA09ADB04EC9A0054F31E554DB31916373F23' +
-       '60CE224C35186E9E836917BA1A00409C1D23');
-  SetDTMName(DTM, 'Mystery Box');
-
-  if (FindDTM(DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
-  begin
-    MMouse(x, y, 5, 5);
-    if (WaitUptext('ster', 200)) then
-    begin
-      Result := True;
-      GetMousePos(x, y);
-      Mouse(x, y, 0, 0, mouse_left);
-      Wait(RandomRange(200, 500));
-      Writeln('Clicked mystery box');
-    end;
-  end;
-
-  FreeDTM(DTM);
-end;
-
-{*******************************************************************************
-function FindMod: Boolean;
-by: Stupid3ooo
-Description: Results True if a mod is found, then it waits 10-20 mins and logs back in
-*******************************************************************************}
-function FindMod: Boolean;
-var
-  tX, tY: Integer;
-begin
-  if (not UseFindMod) or (not LoggedIn) then exit;
-  if not SRLBitmapsLoaded then
-    LoadSRLBitMaps;
-  if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
-       (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
-    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
-     (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
-    begin
-      Result := True;
-      AddToSRLLog('******** FOUND MOD ********');
-      WriteLn('******** FOUND MOD ********');
-      TakeScreen('Found mod');
-      Inc(tmp_RandSolved[rand_Mod]);
-      SaveToChatLog;
-      if SRL_HasProc(srl_OnFindMod) then
-        SRL_Procs[srl_OnFindMod]();
-      if (LogoutOnMod) then
+    // see if the script is using SRL's random tool
+    if (RT_UseRandomTool) then
+      if (RT_Execute()) then
       begin
-        Players[CurrentPlayer].Rand := 'Found Mod';
-        WaitFunc(@ExitToLobby, 500, 1500);
-        Wait(60000 + Random(60000));
-        LoginPlayer;
-        Players[CurrentPlayer].Rand := '';
+        addToSRLLog('***** Solved Random Manually: '+SRL_Randoms[rand].name+' *****');
+        manually := true;
+        exit;
       end;
-    end;
-end;
 
-{*******************************************************************************
-function FindLamp(skill: String): Boolean;
-by: Pups, Starblaster100,PriSoner, Lee Lok Hin, Timer
-Description: handles Genie. Results True if lamp found and handled.
-skill: Skill to use with lamp eg. 'strength', 'attack', etc.
-*******************************************************************************}
+    // only take a screenshot if needed
+    if ((SRL_RandomScreenShot) and (not SRL_Randoms[rand].isInvRandom)) then
+      takeScreen(SRL_Randoms[rand].name);
 
-function FindLamp(skill: string): Boolean;
-var
-  LampTime, X, Y, I, T: Integer;
-begin
-  GameTab(tab_Inv);
-  if not SRLBitmapsLoaded then
-    LoadSRLBitMaps;
-  if (FindDTM(Lamp, x, y, MIX1, MIY1, MIX2, MIY2) or
-      FindDTM(BookOfKnowledge, x, y, MIX1, MIY1, MIX2, MIY2)) then
-  begin
-    Result := True;
-    Inc(tmp_RandSolved[rand_Lamp]);
-    TakeScreen('Lamp Random Solved');
-    AddToSRLLog('******** SOLVED LAMP RANDOM ********');
-    WriteLn('******** SOLVED LAMP RANDOM ********');
-    Mouse(X, Y, 4, 4, mouse_left);
-    Wait(1500 + Random(500));
-    MarkTime(LampTime);
-    for I := 1 to 4 do
+    // sometimes it gets in the way of objects we need to find
+    toggleMoneyPouch(false);
+
+    // if solver isn't disabled, solve it
+    if (not SRL_Randoms[rand].disabled) then
     begin
-      case (LowerCase(Skill)) of
-        'attack': Mouse(81, 108, 12, 12, mouse_left);
-        'strength': Mouse(139, 108, 12, 12, mouse_left);
-        'ranged': Mouse(196, 108, 12, 12, mouse_left);
-        'magic': Mouse(257, 108, 12, 12, mouse_left);
-        'defence': Mouse(319, 108, 12, 12, mouse_left);
-        'crafting', 'craft': Mouse(376, 108, 12, 12, mouse_left);
-        'hitpoints', 'hp': Mouse(436, 108, 12, 12, mouse_left);
-        'prayer', 'pray': Mouse(81, 166, 12, 12, mouse_left);
-        'agility': Mouse(141, 166, 12, 12, mouse_left);
-        'herblore': Mouse(199, 166, 12, 12, mouse_left);
-        'thieving', 'thief': Mouse(258, 166, 12, 12, mouse_left);
-        'fishing', 'fish': Mouse(325, 166, 12, 12, mouse_left);
-        'runecraft', 'runecrafting': Mouse(375, 166, 12, 12, mouse_left);
-        'slayer', 'slay': Mouse(436, 166, 12, 12, mouse_left);
-        'farming', 'farm': Mouse(83, 220, 12, 12, mouse_left);
-        'mining', 'mine': Mouse(137, 220, 12, 12, mouse_left);
-        'smithing', 'smith': Mouse(197, 220, 12, 12, mouse_left);
-        'hunting', 'hunt', 'hunter': Mouse(257, 220, 12, 12, mouse_left);
-        'cooking', 'cook': Mouse(318, 220, 12, 12, mouse_left);
-        'firemaking', 'fire': Mouse(378, 220, 12, 12, mouse_left);
-        'woodcutting', 'wc': Mouse(439, 220, 12, 12, mouse_left);
-        'fletching', 'fletch': Mouse(141, 277, 12, 12, mouse_left);
-        'construction': Mouse(195, 277, 12, 12, mouse_left);
-        'summoning': Mouse(266, 277, 12, 12, mouse_left);
-        'dungeoneering': Mouse(320, 277, 12, 12, mouse_left);
-      else
-        Mouse(438, 113, 12, 12, mouse_left);
-      end;
-      Wait(750 + Random(200) + Random(100));
-      if FindColorTolerance(X, Y, 5602449, 41, 75, 470, 302, 30) then Break;
-      if (TimeFromMark(LampTime) > 10000) then
+      if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
       begin
-        Result := False;
-        Logout;
-        Players[CurrentPlayer].Rand := 'Lamp';
-        Exit;
+        addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
+        players[currentPlayer].rand := '';
+        inc(SRL_Randoms[rand].solved);
+        solved := true;
       end;
-      ClickToContinue;
-    end;
-    Mouse(416, 281, 7, 1, mouse_left);
-    Wait(1111 + Random(150) + Random(150));
 
-    T := (GetSystemTime + 5000);
-    while ClickContinue(true, true) and (GetSystemTime < T) do
-      wait(500+random(100));
+    end else
+      addToSRLLog(SRL_Randoms[rand].name+' solver currently disabled');
+
+    if (not solved) then
+    begin
+      addToSRLLog('***** Failed Random: '+SRL_Randoms[rand].name+' *****');
+
+      // solver didn't fail, it's disabled
+      if (not SRL_Randoms[rand].disabled) then
+        inc(SRL_Randoms[rand].failed);
+
+      // set player to false and logout if the solver failed or is disabled
+      players[currentPlayer].active := false;
+      logout();
+    end;
   end;
 end;
 
-{*******************************************************************************
-function FindDead: Boolean;
-by: Stupid3ooo and Cazax
-Description: Checks for text "Oh dear you are dead".
-Logs out player if Reincarnate = False.
-*******************************************************************************}
-function FindDead: Boolean;
-begin
-  Result := False;
-  if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dear', SmallChars, Nothing) then
-    if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dead', SmallChars, Nothing) then
-    begin
-      Inc(tmp_RandSolved[rand_Death]);
-      Result := True;
-      SaveToChatLog;
-      if SRL_HasProc(srl_OnFindDead) then
-        SRL_Procs[srl_OnFindDead]();
-      if (Reincarnate) then exit;
-      TakeScreen('Found Dead');
-      LogOut;
-      Players[CurrentPlayer].Rand := 'Oh Dear You Are in Lumby';
-      Players[CurrentPlayer].Active := False;
-    end;
-end;
-
-{*******************************************************************************
-function FindDwarvenPopup: Boolean;
-by: Harry
-Description: A simple functinds and closes the "please buy RS Members" popup
-that happens when you reach lvl 10 in any skill.
-*******************************************************************************}
-function FindDwarvenPopup: Boolean;
-begin
-  Result := False;
-  // Parts of red X, checked in two different spots to reduce false-positives
-  if (GetColor(485, 40) = 2569093) then
-    if (GetColor(488, 40) = 11189720) then
-    begin
-      Result := True;
-      TakeScreen('Found Popup');
-      AddToSRLLog('******** FOUND POPUP ********');
-      WriteLn('******** FOUND POPUP ********');
-      // Box around the X, to close it.
-      MouseBox(482, 35, 492, 44, mouse_left);
-      Wait(1000+Random(3000));
-    end;
-end;
-
-{*******************************************************************************
-function Rand_GetRandomType: Integer;
-by: ZephyrsFury & IceFire908
-Description: Checks for the existance of various tabs to determine the type of
-random we are in:
-  0: All
-  1: All but magic tab, 14 or 15 tabs.
-  2: 6-tab randoms.
-*******************************************************************************}
-
-function Rand_GetRandomType: Integer;
+(**
+ * Author: Coh3n
+ * Description: Finds and solves all the randoms.  Checks inventory if checkInv
+ * is set to true. This function should only be called in FindNormalRandoms and
+ * FindNonInventoryRandoms.
+ *)
+function _FindAllRandoms(checkInv: boolean): boolean;
 var
-  TabConfig: TIntegerArray;
+  i: integer;
+  v: TVariantArray;
+  manually, b: boolean;
 begin
-  if (TabExists(tab_Magic)) then
-    Exit;
-  TabConfig := [tab_Stats, tab_Friends];
-  for Result := 1 to 2 do
-    if (TabExists(TabConfig[Result - 1])) then
-      Exit;
-end;
+  // no tabs exists if bank is open; could throw false positives
+  if (not loggedIn()) or (bankScreen()) then
+    exit;
 
-{*******************************************************************************
-procedure LoadTeleRandoms;
-by: ZephyrsFury
-Description: Loads the teleport random information for each random.
-*******************************************************************************}
+  if (not SRL_RandomsSet) then
+    _SetRandoms();
 
-procedure LoadTeleRandoms;
-begin
-  SetLength(TeleRandoms, 19);
+  // handle the GE update message
+  if (findNPCChatText('exchan', nothing)) then
+    clickContinue(true, true);
 
-  with TeleRandoms[0] do    //
+  for i := 0 to high(SRL_Randoms) do
   begin
-    Name := 'leo the gravedigger';
-    Music := ['spooky'];
-    TypeID := [0, 1];
-    IsInRandom := @InLeoGraveyard;
-    Texts := ['Leo'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveLeo;
-    RandIndex := rand_Leo;
-  end;
+    if ((SRL_Randoms[i].isInvRandom) and (not checkInv)) then
+      continue;
 
-  with TeleRandoms[1] do    //
-  begin
-    Name := 'freaky forester';
-    Music := ['pheasant peasant'];
-    TypeID := [0, 1];
-    IsInRandom := @InForesterRandom;
-    Texts := ['orester'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveForester;
-    RandIndex := rand_Forester;
-  end;
-
-  with TeleRandoms[2] do     //
-  begin
-    Name := 'maze';
-    Music := ['time out'];
-    TypeID := [1];
-    IsInRandom := @InMaze;
-    Texts := ['maze', 'centre of the maze'];
-    TextColors := [0, 0];
-    TextFonts := [NPCChars, SmallChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2), IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveMaze;
-    RandIndex := rand_Maze;
-  end;
-
-  with TeleRandoms[3] do  //
-  begin
-    Name := 'prison pete';
-    Music := ['in the clink'];
-    TypeID := [1];
-    IsInRandom := @InPrisonPete;
-    Texts := [];
-    TextColors := [];
-    TextFonts := [];
-    TextBoxes := [];
-    SolveRandom := @SolvePrisonPete;
-    RandIndex := rand_PrisonPete;
-  end;
-
-  with TeleRandoms[4] do  //
-  begin
-    Name := 'evil bob''s island';
-    Music := ['evil bob''s island'];
-    TypeID := [1,0];
-    IsInRandom := @InEvilBobsIsland;
-    Texts := ['ScapeRune','ask to come here'];
-    TextColors := [clMessage,0];
-    TextFonts := [SmallChars,NPCChars];
-    TextBoxes := [IntToBox(MCX1,MCY1,MCX2,MCY2),IntToBox(MCX1,MCY1,MCX2,MCY2)];
-    SolveRandom := @SolveEvilBob;
-    RandIndex := rand_ScapeRune;
-  end;
-
-  with TeleRandoms[5] do     //
-  begin
-    Name := 'drill demon';
-    Music := ['corporal punishment'];
-    TypeID := [2];
-    IsInRandom := @Demon_InRandom;
-    Texts := ['amien', 'amien'];
-    TextColors := [128, 0];
-    TextFonts := [NPCChars, NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2), IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveDemon;
-    RandIndex := rand_Demon;
-  end;
-
-  with TeleRandoms[6] do        //Quiz with 6 tabs visibile
-  begin
-    Name := 'quiz';
-    Music := ['the quiz master', 'book of', 'of spell', 'k of s'];
-    TypeID := [2];
-    IsInRandom := @InQuizRandom;
-    Texts := ['uiz', 'uiz'];
-    TextColors := [128, 0];
-    TextFonts := [NPCChars, NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2), IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveQuiz;
-    RandIndex := rand_Quiz;
-  end;
-
-  with TeleRandoms[7] do        //Quiz with 13 tabs visible
-  begin
-    Name := 'quiz';
-    Music := [];
-    TypeID := [1];
-    IsInRandom := @InQuizRandom;
-    Texts := ['uiz', 'uiz'];
-    TextColors := [128, 0];
-    TextFonts := [NPCChars, NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2), IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveQuiz;
-    RandIndex := rand_Quiz;
-  end;
-
-  with TeleRandoms[8] do      //
-  begin
-    Name := 'surprise exam';
-    Music := ['school''s out'];
-    TypeID := [2];
-    IsInRandom := @inMordaut;
-    Texts := ['ordaut'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @solveMordaut;
-    RandIndex := rand_Mordaut;
-  end;
-
-  with TeleRandoms[9] do   //
-  begin
-    Name := 'molly''s evil twin';
-    Music := ['head to head'];
-    TypeID := [2];
-    IsInRandom := nil;
-    Texts := ['olly'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveMolly;
-    RandIndex := rand_Molly;
-  end;
-
-   with TeleRandoms[10] do    //
-  begin
-    Name := 'pinball';
-    Music := ['Pinball Wizard'];//No music
-    TypeID := [2];
-    IsInRandom := @Pinball_InRandom;
-    Texts := ['lashing'];
-    TextColors := [8323072];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolvePinball;
-    RandIndex := rand_Pinball;
-  end;
-
-  with TeleRandoms[11] do    //
-  begin
-    Name := 'sandwich lady';
-    Music := ['snack attack'];
-    TypeID := [2];
-    IsInRandom := @Sandwich_InRandom;
-    Texts := ['andwich'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveSandwichLady;
-    RandIndex := rand_Sandwich;
-  end;
-
-  with TeleRandoms[12] do    //
-  begin
-    Name := 'bee keeper';
-    Music := ['Nightfall', 'Workshop', 'Horizon', 'Scape Soft'];
-    TypeID := [2];
-    IsInRandom := nil;
-    Texts := ['keeper'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveBeeKeeper;
-    RandIndex := rand_BeeKeeper;
-  end;
-
-  with TeleRandoms[13] do    //
-  begin
-    Name := 'pillory';
-    Music := [];
-    TypeID := [2];
-    IsInRandom := @Pillory_InRandom;
-    Texts := ['swinging', 'pillory'];
-    TextColors := [127, 0];
-    TextFonts := [NPCChars, NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2), IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolvePilloryPuzzle;
-    RandIndex := rand_Pillory;
-  end;
-
-  with TeleRandoms[14] do  //
-  begin
-    Name := 'cap''n arnav';
-    Music := ['sea shanty', 'sea shanty2','sea shanty 2'];
-    TypeID := [2];
-    IsInRandom := @arnav_InRandom;
-    Texts := ['rnav'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveArnav;
-    RandIndex := rand_CapnArnav;
-  end;
-
-  with TeleRandoms[15] do   // Abyss!
-  begin
-    Name := 'abyssal teleport';
-    Music := ['into the abyss'];
-    TypeID := [2];
-    IsInRandom := @InAbyss;
-    Texts := ['appendage'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveAbyss;
-    RandIndex := rand_Abyss;
-  end;
-
-  with TeleRandoms[16] do   //
-  begin
-    Name := 'certer';
-    Music := [];
-    TypeID := [2];
-    IsInRandom := @certer_InRandom;
-    Texts := ['iles'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveCerter;
-    RandIndex := rand_Certer;
-    TrustInRandomFunc := True;
-  end;
-
-  with TeleRandoms[17] do    //
-  begin
-    Name := 'mime';
-    Music := ['artistry'];
-    TypeID := [2];
-    IsInRandom := @Mime_InRandom;
-    Texts := ['Mime'];
-    TextColors := [0];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveMime;
-    RandIndex := rand_Mime;
-  end;
-
-  with TeleRandoms[18] do   //
-  begin
-    Name := 'frog';
-    Music := ['frogland', ''];
-    TypeID := [2];
-    IsInRandom := @Frog_InRandom;
-    Texts := ['erald'];
-    TextColors := [128];
-    TextFonts := [NPCChars];
-    TextBoxes := [IntToBox(MCX1, MCY1, MCX2, MCY2)];
-    SolveRandom := @SolveFrog;
-    RandIndex := rand_Frog;
-  end;
-end;
-
-procedure r_RunAlert; forward;
-function r_CheckAction: Boolean; forward;
-procedure r_ResetAll; forward;
-
-function SolveTeleRandom(const Num : integer) : boolean;
-var
-  RandResult: Boolean;
-  InitCompAngle: Extended;
-begin
-  InitCompAngle := rs_GetCompassAngleDegrees;
-  WriteLn('***** STR: FOUND RANDOM: ''' + Capitalize(TeleRandoms[Num].Name) + ''' *****');
-  AddToSRLLog('***** STR: FOUND RANDOM: ''' + Capitalize(TeleRandoms[Num].Name) + ''' *****');
-  TakeScreen('Found ' + Capitalize(TeleRandoms[Num].Name) + ' random');
-  Players[CurrentPlayer].Rand := Capitalize(TeleRandoms[Num].Name);
-  if (r_UseRandomTool) then
-  begin
-    PlaySound(SoundPath);
-    CurRandom := Num;
-    r_RunAlert;
-    if (r_CheckAction) then
+    if (_SolveRandom(i, manually)) then
     begin
-      WriteLn('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED BY HAND! *****');
-      AddToSRLLog('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED BY HAND! *****');
-      Players[CurrentPlayer].Rand := '';
-      Wait(5000 + Random(2000));
-      r_ResetAll;
-      Exit;
-    end;
-    r_ResetAll;
-  end;
-  ClickNorth(SRL_ANGLE_HIGH);
-
-  RandResult := False;
-  if (TeleRandoms[Num].SolveRandom <> nil) and (SolveSRLRandoms) then
-    RandResult := TeleRandoms[Num].SolveRandom();
-  Result := RandResult;
-  if (RandResult) then
-  begin
-    WriteLn('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED SUCCESSFULLY! *****');
-    AddToSRLLog('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVED SUCCESSFULLY! *****');
-    Inc(tmp_RandSolved[TeleRandoms[Num].RandIndex]);
-    Players[CurrentPlayer].Rand := '';
-    Wait(10000 + Random(2000));
-  end else
-  begin
-    WriteLn('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVING FAILED! *****');
-    AddToSRLLog('***** STR: ''' + Capitalize(TeleRandoms[Num].Name) + ''' RANDOM SOLVING FAILED! *****');
-    Inc(tmp_RandFailed[TeleRandoms[Num].RandIndex]);
-    Players[CurrentPlayer].Active := False;
-    LogOut;
-    while (LoggedIn) do
-      Wait(2000);
-  end;
-  MakeCompass(InitCompAngle);
-  GameTab(tab_Inv);
-  ClickContinue(True, True);
-end;
-
-{*******************************************************************************
-function SolveTeleportRandoms: Boolean;
-by: ZephyrsFury
-Description: Handles the solving of Teleport randoms. Returns True if one is
-  detected.
-*******************************************************************************}
-
-function SolveTeleportRandoms: Boolean;
-var
-  I,H,HH,J,TypeID : integer;
-  Rand_Music : string;
-  RandResult : boolean;
-  B : TBox;
-
-begin
-  Result := false;
-  TypeID := Rand_GetRandomType;
-  H := High(TeleRandoms);
-  for I := 0 to H do
-    if (InIntArray(TeleRandoms[I].TypeID, TypeID)) then {Seems to change a lot..}
-    begin
-      RandResult := false;
-      if (TeleRandoms[I].IsInRandom <> nil) then
-        RandResult := TeleRandoms[I].IsInRandom();
-      if (TeleRandoms[I].IsInRandom = nil) or (RandResult) then
+      // if the random was solved by hand, break out of the loop
+      if (manually) then
       begin
-        Status('Possible Random: ' + Capitalize(TeleRandoms[I].Name) + '.     Identifying by textbox.');
-        if (Length(TeleRandoms[I].Texts) > 0) then
-        begin
-          HH := High(TeleRandoms[I].Texts);
-          for J := 0 to HH do
-          begin
-            B := TeleRandoms[I].TextBoxes[J];
-            Result := (FindTextTPA(TeleRandoms[I].TextColors[J], 0, B.X1, B.Y1, B.X2, B.Y2, TeleRandoms[I].Texts[J], TeleRandoms[I].TextFonts[J], Nothing));
-            if (Result) then Break;
-          end;
-        end;
-      end;
-      if (not Result) then Continue;
-      SolveTeleRandom(i);
-      Exit;
-    end;
-  Rand_music := '';
-  //We didn't find it without clicking the music tab.. (Clicking will make runescape close the textbox..
-  for I := 0 to H do
-    if (InIntArray(TeleRandoms[I].TypeID, TypeID)) then {Seems to change a lot..}
-    begin
-      RandResult := false;
-      if (TeleRandoms[I].IsInRandom <> nil) then
-        RandResult := TeleRandoms[I].IsInRandom();
-      if (TeleRandoms[I].IsInRandom = nil) or (RandResult) and (Length(TeleRandoms[I].Music) > 0) then
-      begin
-        Status('Possible Random: ' + Capitalize(TeleRandoms[I].Name) + '.     Identifying by music.');
-        if Rand_Music = '' then  Rand_Music := Lowercase(GetMusic);
-        Result := InStrArr(Rand_Music, TeleRandoms[I].Music, False);
-      end else if (RandResult and TeleRandoms[i].TrustInRandomFunc) then
         result := true;
-      if (not Result) then Continue;
-      SolveTeleRandom(i);
-      Exit;
+        break;
+      end;
+
+      // solve reward box if a non inventory random was just solved
+      if (loggedIn()) then // if solver failed, player would be logged out
+        if (not SRL_Randoms[i].isInvRandom) then
+        begin
+          // reward box doesn't exist if inventory is full/some randoms don't have reward box
+          result := (invFull() or (not SRL_Randoms[i].hasRewardBox));
+
+          if (not result) then
+          begin
+            v := [SRL_RAND_REWARDS, b];
+            if (waitFuncEx('_SolveRandom', v, 50, 5000)) then
+              _SolveRandom(SRL_RAND_REWARDS, b); // check if we chose another reward
+          end;
+
+          break;
+        end;
+
+      result := true;
     end;
+
+    // don't want to keep looking for randoms if one was already detected, but failed
+    if ((result) or (not loggedIn())) then
+      break;
+  end;
+
+  findDead();
+  findMod();
+  findDwarvenPopup();
+  exitSquealOfFortune();
+
+  if SRL_HasProc(SRL_OnRandomCall) then
+    SRL_Procs[SRL_OnRandomCall]();
 end;
 
-{*******************************************************************************
-function FindNonInventoryRandoms: Boolean;
-by: The SRL Developers Team!... all time sexiness by Mutant
-Description: Searches for the common NON-Inventory randoms: Won't switch to GameTab(4)!
-*******************************************************************************}
+(*
+FindNormalRandoms
+~~~~~~~~~~~~~~~~~
 
-function FindNonInventoryRandoms: Boolean;
-var
-  I: Byte;
-  Cont: boolean;
+.. code-block:: pascal
+
+    function FindNormalRandoms(): boolean;
+
+Finds and solves Runescape's random events.  Returns true if an event was
+solved.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FindNormalRandoms();
+*)
+function FindNormalRandoms(): boolean;
 begin
-  if ({$IFDEF LAPE}@{$ENDIF}SRL_OnFindRandomCall <> nil) then
-  begin;
-    Result := SRL_OnFindRandomCall(cont);
-    if not Cont then
-      exit;
-  end;
-  for I := 1 to 6 do
-  begin
-    case I of
-      1: Result := SolveTeleportRandoms;
-      2: Respond;
-      3: Result := FindDead;
-      4: Result := RC;
-      5: Result := FindDwarvenPopup;
-      6: if SRL_HasProc(srl_OnRandomCall) then
-           SRL_Procs[srl_OnRandomCall]();
-    end;
-    if (Result) then
-    begin
-      if SRL_HasProc(srl_OnFindRandom) then
-        SRL_Procs[srl_OnFindRandom]();
-      Break;
-    end;
-  end;
+  result := _FindAllrandoms(true);
 end;
 
-{*******************************************************************************
-function FindNormalRandoms: Boolean;
-by: The SRL Developers Team!... all time sexiness by Mutant
-Description: Calls the 'normal' random checks.
-*******************************************************************************}
+(*
+FindNonInventoryRandoms
+~~~~~~~~~~~~~~~~~~~~~~~
 
-function FindNormalRandoms: Boolean;
-var
-  I: Byte;
-  Cont : boolean;
+.. code-block:: pascal
+
+    function FindNonInventoryRandoms(): boolean;
+
+Finds and solves all Runescape's non inventory random events (i.e. the ones that
+teleport the player somewhere else).  Returns true if an event was solved.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FindNonInventoryRandoms();
+*)
+function FindNonInventoryRandoms(): boolean;
 begin
-  if ({$IFDEF LAPE}@{$ENDIF}SRL_OnFindRandomCall <> nil) then
-  begin;
-    Result := SRL_OnFindRandomCall(cont);
-    if not Cont then
-      exit;
-  end;
-  for I := 1 to 10 do
-  begin
-    case I of
-      1:  Result := SolveTeleportRandoms;
-      2:  Respond;
-      3:  Result := FindDead;
-      4:  Result := FindLamp(LampSkill);
-      5:  Result :=  RC;
-      6:  Result := FindMod;
-      7:  Result := FindDwarvenPopup;
-      8:  if SRL_HasProc(srl_OnRandomCall) then
-            SRL_Procs[srl_OnRandomCall]();
-      9:  Result := UseRewardBox;
-      10: Result := UseMysteryBox;
-    end;
-    if (Result) then
-    begin
-      if SRL_HasProc(srl_OnFindRandom) then
-        SRL_Procs[srl_OnFindRandom]();
-      Break;
-    end;
-  end;
+  result := _FindAllRandoms(false);
 end;
+

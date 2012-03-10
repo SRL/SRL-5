@@ -54,7 +54,7 @@ type
   Last Edit: 22 June 2010 -- Nava2
 }
 const
-  SKILL_COUNT         = 26;
+  SKILL_COUNT         = 28;
   SKILL_ATTACK        = 0;
   SKILL_DEFENCE       = 1;
   SKILL_STRENGTH      = 2;

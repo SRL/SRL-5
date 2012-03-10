@@ -1574,6 +1574,7 @@ begin
   UpText := ['Bank booth', 'ank boo'];
 
   case LowerCase(Location) of {            Sort X     Sort Y     Color    Tol   Hue   Sat   Count  SplitTPA?  W   H }
+    'cg', 'cooking guild':        Info := [MSCX,      MSCY,      5666708,  17,   0.06, 0.77, 100,   False,   10, 10];
     'akb', 'al kharid':           Info := [MSCX - 50, MSCY,      11196157, 20,   0.20, 1.15, 100,   False,   10, 10]; // Fixed 12/7, #40
     'lb', 'lumbridge':            Info := [MSCX,      MSCY - 50, 6780805,  10,   0.19, 0.27, 100,   False,   10, 10]; // Fixed 12/7, #40
     'veb', 'varrock east':        Info := [MSCX,      MSCY + 50, 3037545,  5,    0.41, 1.32, 100,   False,   10, 10]; // Fixed 12/7, #40

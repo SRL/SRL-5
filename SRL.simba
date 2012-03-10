@@ -76,27 +76,9 @@
 {$include SRL/SRL/core/cautorespond.simba}
 {$include SRL/SRL/core/antiban.simba}
 {$include SRL/SRL/core/globalstats.simba}
-{$include SRL/SRL/core/antirandoms/common.simba}
-{$include SRL/SRL/core/antirandoms/certer.simba}
-{$include SRL/SRL/core/antirandoms/demon.simba}
-{$include SRL/SRL/core/antirandoms/forester.simba}
-{$include SRL/SRL/core/antirandoms/quiz.simba}
-{$include SRL/SRL/core/antirandoms/sandwich.simba}
-{$include SRL/SRL/core/antirandoms/evilbob.simba}
-{$include SRL/SRL/core/antirandoms/leo.simba}
-{$include SRL/SRL/core/antirandoms/frog.simba}
-{$include SRL/SRL/core/antirandoms/molly.simba}
-{$include SRL/SRL/core/antirandoms/pillory.simba}
-{$include SRL/SRL/core/antirandoms/pinball.simba}
-{$include SRL/SRL/core/antirandoms/maze.simba}
-{$include SRL/SRL/core/antirandoms/capnarnav.simba}
-{$include SRL/SRL/core/antirandoms/beekeeper.simba}
-{$include SRL/SRL/core/antirandoms/abyss.simba}
-{$include SRL/SRL/core/antirandoms/mordaut.simba}
-{$include SRL/SRL/core/antirandoms/prisonpete.simba}
-{$include SRL/SRL/core/antirandoms/mime.simba}
+
 {$include SRL/SRL/core/antirandoms/antirandoms.simba}
-{$include SRL/SRL/core/antirandoms/randomtool.simba}
+
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
@@ -111,7 +93,6 @@ procedure FreeSRL;
 begin
   FreeSRLBitmaps;
   FreeSRLFonts;
-  FreeSRLLog;
 end;
 
 {*******************************************************************************
@@ -142,31 +123,35 @@ begin
   RoadColor := 0;
   WaterColor := 0;
   BankColor := 0;
+
+  // these need to be removed eventually (no longer used)
+  SRL_OnFindRandomCall := nil;
   LampSkill := 'mining';
+
   //SetUpSRLReport;
   LoadCosineArrays;
   SymbolAccuracy:= 0.8;
   LoadSRLBitMaps;
   LoadSRLFonts;
-  LoadTeleRandoms;
-  SolveSRLRandoms := True;
+  {$IFNDEF SRL_RANDOMS_TEST}
+  _SetRandoms();
+  {$ENDIF}
   SetupSRLAutoResponder;
+  SRL_RandomScreenShot := False;
   UseFindMod := True;
   LogoutOnMod := True;
   UseFindTrade := True;
   UseAutoResponder := True;
-  Screenshots := False;
   GraphicsSet := False;
   AllowPVP    := False;
-  ScreenShots := True;
+  SRL_DisableIPLog := false;
+  SRL_SavePath := includePath + 'SRL/logs/';
+  SRL_StartTime := theDate(DATE_MONTH)+' at '+theTime;
   WarnSensitivity := -2;
   SetupAutoColors;
 
 {$IFDEF LoadExtraFonts}
   srl_UpdateFonts(srl_FontsUp2date);
-{$ENDIF}
-{$IFDEF YourMom}
-  InitializeSRLLogFile;
 {$ENDIF}
 
   AddOnTerminate('FreeSRL');
