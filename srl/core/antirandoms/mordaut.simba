@@ -1325,6 +1325,16 @@ begin
 end;
 
 (**
+ * Author: Coh3n
+ * Description: Returns true if the swords appear in 'slot'.  Checks to see if
+ * that slot has already been clicked.
+ *)
+function MD_FindSwords(slot: integer): boolean;
+begin
+  result := false;
+end;
+
+(**
  * Author: Coh3n & DemiseScythe
  * Description: Solves the big 'puzzle'. Constants at the top of the file.  Will
  * randomly choose slots to scan, then remove that slot from an array. Will
@@ -1357,23 +1367,29 @@ begin
     // randomly chooses a slot to look for the objects
     repeat
       index := random(length(slots));
-      p := middleBox(MD_BigBox(slots[index]));
 
-      tmpObj := MD_ScanBigObject(slots[index]);
-      for i := 0 to high(puzzle.objs) do
+      if (not MD_FindSwords(slots[index])) then // if that slot has already been clicked
       begin
-        if (objFound[i]) then // don't want to look for the same object twice
-          continue;
+        p := middleBox(MD_BigBox(slots[index]));
 
-        if (MD_ObjIsObj(tmpObj, puzzle.objs[i])) then
+        tmpObj := MD_ScanBigObject(slots[index]);
+        for i := 0 to high(puzzle.objs) do
         begin
-          addToSRLLog('MD_SolveBigPuzzle: Found '+puzzle.objs[i].name+' in slot '+toStr(slots[index]));
-          mouse(p.x, p.y, 20, 30, mouse_Left);
-          objFound[i] := true;
-          inc(clicks);
-          break;
+          if (objFound[i]) then // don't want to look for the same object twice
+            continue;
+
+          if (MD_ObjIsObj(tmpObj, puzzle.objs[i])) then
+          begin
+            addToSRLLog('MD_SolveBigPuzzle: Found '+puzzle.objs[i].name+' in slot '+toStr(slots[index]));
+            mouse(p.x, p.y, 20, 30, mouse_Left);
+            objFound[i] := true;
+            inc(clicks);
+            break;
+          end;
         end;
-      end;
+
+      end else
+        inc(clicks);
 
       // remove the index so we don't search the same box twice
       deleteValueInIntArray(slots, index);

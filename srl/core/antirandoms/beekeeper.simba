@@ -162,7 +162,17 @@ begin
 
       // no point in scanning if there's only one piece left
       if (numDone <> 3) then
-        tmpShift := BK_ScanPiece(i);
+        tmpShift := BK_ScanPiece(i)
+      else
+        tmpShift := 1001; // to statisfy the next if statement
+
+      // in case a dragging failed during last attempt
+      if (tmpShift < 1000) then
+      begin
+        addToSRLLog('BK_BuildHive: No piece in slot '+toStr(i));
+        slotDone[i] := true;
+        break;
+      end;
 
       addToSRLLog('BK_BuildHive: Piece shift = '+toStr(tmpShift)+' in slot '+toStr(i));
 
@@ -194,7 +204,16 @@ begin
       end;
     end;
 
-    result := (numDone = 4);
+    // if there are no pieces left to drag, we must be done
+    for i := 0 to high(slotDone) do
+      if (not slotDone[i]) then
+        break
+      else
+        result := (i = high(slotDone));
+
+    if (not result) then
+      result := (numDone = 4);
+
     wait(200 + random(300));
 
   until(result or (getSystemTime > t));
