@@ -31,7 +31,8 @@ var
 begin
   if ((not tabExists(TAB_MAGIC)) and (not tabExists(TAB_INV))) then
     if (findColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then // water color
-      result := inRange(countDots('npc'), 3, 5);
+      if (inRange(countDots('npc'), 3, 5)) then
+        result := tabExists(TAB_MUSIC);
 end;
 
 (**

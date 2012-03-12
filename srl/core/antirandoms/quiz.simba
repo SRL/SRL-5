@@ -366,7 +366,7 @@ begin
   // gets the highest use count
   for i := 0 to high(useNames) do
   begin
-    //addToSRLLog('Use: ' + useNames[i] + ', count: ' + InttoStr(useCounts[i]));
+    addToSRLLog('Use: ' + useNames[i] + ', count: ' + toStr(useCounts[i]));
 
     if (useCounts[i] > count) then
     begin

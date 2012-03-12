@@ -60,7 +60,7 @@ begin
     text := lowercase(name);
     DTMs := [
       DTMFromString('mAAEAAHic42FgYGBiZGBgBuKfDBCaD4i/ANmvgFgGyBYG4k9AtiBU3TUg+ywQXwXiuwwQ/kkgfgDEj4H4FBC/A+IPQPwRiAsy5BhyU2UZijLlGIqz5MD88lx5hvx0WQY7Z3GGhBhphsRYGQYHV3EG/wBJBn6gHlIwI8gPJGBkAADRtRm0'),
-      DTMFromString('mlwAAAHicY2dgYGBhZGB4A6TfAzEbkC0DxBJAzAzEd4BiV4D4HRD/BOIXUP4pIC7NU2SoKVFiyEqTZ/Dyl2Zw8pRkiI2VZcjLUmDgB8rjwox4MBQAALnHDuI=')
+      DTMFromString('mlwAAAHicY2dgYJBggABmIJYCYgMg1gFicSAWAmIuIFYBYn0gloPyQaA0T5GhpkSJIStNnsHLX5rByVOSITZWliEvS4GBHyiPCzMCMRMODAUAmFgH6Q==')
     ];
   end;
 

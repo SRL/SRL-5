@@ -355,6 +355,7 @@ begin
 
     // sometimes it gets in the way of objects we need to find
     toggleMoneyPouch(false);
+    exitSquealOfFortune();
 
     // if solver isn't disabled, solve it
     if (not SRL_Randoms[rand].disabled) then
