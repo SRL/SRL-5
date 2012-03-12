@@ -15,6 +15,7 @@ depending on the puzzle that needs to be solved.
 The puzzles are stored in separate arrays (big and small).  The big puzzles are
 the ones where you have to match 3 items to the wording on the right.  The small
 puzzles are the ones you have to click the item that comes next in the sequence.
+
 *)
 
 type
@@ -244,11 +245,11 @@ begin
       begin
         name := 'Martini';
         use := 'Drink';
-        count := 450;
-        width := 17;
-        height := 27;
-        totalCount := 400;
-        coverPercent := 64.0;
+        count := 435;
+        width := 20;
+        height := 32;
+        totalCount := 680;
+        coverPercent := 63.0;
       end;
 
     MD_OBJ_VODKA:
@@ -908,7 +909,7 @@ begin
   with result[MD_PUZZLE_BIG_DISGUISE] do
   begin
     name := 'Big Puzzle: Disguise';
-    idText := ['ace', 'mask', 'disg', 'hidden'];
+    idText := ['face', 'mask', 'disg', 'hidden'];
     objs := [MD_GetObject(MD_OBJ_FROG), MD_GetObject(MD_OBJ_THIEF),
              MD_GetObject(MD_OBJ_MIME)];
   end;
@@ -948,7 +949,7 @@ begin
   with result[MD_PUZZLE_BIG_RANGE] do
   begin
     name := 'Big Puzzle: Range';
-    idText := ['arc', 'arrow', 'as an'];
+    idText := ['archery', 'arrow'];
     objs := [MD_GetObject(MD_OBJ_LONGBOW), MD_GetObject(MD_OBJ_ARROWS),
              MD_GetObject(MD_OBJ_CROSSBOW)];
   end;
@@ -1103,11 +1104,17 @@ begin
   if (inRange(obj1.count, obj2.count - 10, obj2.count + 10)) then
     score := score + 3;
 
-  if (inRange(obj1.width, obj2.width - 2, obj2.width + 2)) then
-    score := score + 6;
+  if (obj1.width = obj2.width) then
+    score := score + 9
+  else
+    if (inRange(obj1.width, obj2.width - 2, obj2.width + 2)) then
+      score := score + 6;
 
-  if (inRange(obj1.height, obj2.height - 2, obj2.height + 2)) then
-    score := score + 6;
+  if (obj1.height = obj2.height) then
+    score := score + 9
+  else
+    if (inRange(obj1.height, obj2.height - 2, obj2.height + 2)) then
+      score := score + 6;
 
   if (inRange(obj1.totalCount, obj2.totalCount - 75, obj2.totalCount + 75)) then
     score := score + 3;
@@ -1116,7 +1123,7 @@ begin
     score := score + 8;
 
   //addToSRLLog('MD_ObjIsObj: Final score - '+toStr(score));
-  result := (score >= 18); // best score is 26, result if score 18/26 or better
+  result := (score >= 20); // best score is 30, result if score 20/30 or better
 end;
 
 (**
@@ -1291,10 +1298,14 @@ begin
     if (not result) then
       addToSRLLog('MD_SolveSmallPuzzle: Didn''t find bottom objects, try '+toStr(t));
 
-  until(result or (t >= 5)); // maximum tries
+  until(result or (t >= 3)); // maximum tries
 
   if (result) then
-    addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name);
+    addToSRLLog('MD_SolveSmallPuzzle: Solved '+puzzle.name)
+  else begin
+    addToSRLLog('MD_SolveSmallPuzzle: Failed '+puzzle.name+', guessing...');
+    mouse(108 + (100 * random(4)), 235, 3, 3, mouse_Left);
+  end;
 end;
 
 (**
@@ -1574,10 +1585,15 @@ begin
     // to bring up the next puzzle or show the solver is done
     if (doConversation('exit', false)) then
       if (MD_Exit()) then
+      begin
         if (incorrect >= 3) then
           addToSRLLog('MD_Solve: Exited Mordaut, but too many incorrect puzzles')
         else
           result := true;
+      end else begin
+        addToSRLLog('MD_Solve: Failed to exit classroom');
+        break;
+      end;
 
     // checks if we've been trying to solve for too long
     if ((getSystemTime > t) and (not result)) then
