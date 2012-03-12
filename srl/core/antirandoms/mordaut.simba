@@ -924,7 +924,7 @@ begin
   with result[MD_PUZZLE_BIG_HAT] do
   begin
     name := 'Big Puzzle: Hat';
-    idText := ['hat', 'cap', 'head'];
+    idText := ['hat', 'cap', 'head', 'tip', 'hink'];
     objs := [MD_GetObject(MD_OBJ_CAVALIER), MD_GetObject(MD_OBJ_JESTER),
              MD_GetObject(MD_OBJ_PIRATE)];
   end;
