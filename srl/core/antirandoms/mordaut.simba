@@ -900,7 +900,7 @@ begin
   with result[MD_PUZZLE_BIG_DRINK] do
   begin
     name := 'Big Puzzle: Drinks';
-    idText := ['thirs', 'drate', 'uench'];
+    idText := ['thirst', 'dehydrate'];
     objs := [MD_GetObject(MD_OBJ_TEA), MD_GetObject(MD_OBJ_BEER),
              MD_GetObject(MD_OBJ_MARTINI)];
   end;
@@ -940,7 +940,7 @@ begin
   with result[MD_PUZZLE_BIG_PIRATE] do
   begin
     name := 'Big Puzzle: Pirate';
-    idText := ['irate', 'tis', 'Yarr'];
+    idText := ['pirate', 'tis', 'Yarr'];
     objs := [MD_GetObject(MD_OBJ_HOOK), MD_GetObject(MD_OBJ_PIRATE),
              MD_GetObject(MD_OBJ_EYEPATCH)];
   end;
@@ -1303,18 +1303,20 @@ end;
  *)
 function MD_IDBigPuzzle(puzzles: TMDBigPuzzleArray): integer;
 var
-  i, j: integer;
+  i, j, h: integer;
+  tpa, m: TPointArray;
 begin
   if (not loggedIn()) then
     exit;
 
   result := -1;
+  findColorsTolerance(tpa, 13290961, 373, 60, 473, 160, 25);
 
   // loops through the possible texts in each puzzle in the 'puzzles' array
   for i := 0 to high(puzzles) do
     for j := 0 to high(puzzles[i].idText) do
       // the text on the right size of the puzzle
-      if (findTextTPA(13290961, 25, 373, 60, 473, 160, puzzles[i].idText[j], smallCharsNS, nothing)) then
+      if (findTPAInTPA(loadTextTPA(puzzles[i].idText[j], smallCharsNS, h), tpa, m)) then
       begin
         addToSRLLog('MD_GetBigPuzzle: Found '+puzzles[i].name);
         result := i;
@@ -1330,8 +1332,23 @@ end;
  * that slot has already been clicked.
  *)
 function MD_FindSwords(slot: integer): boolean;
+var
+  x, y, dtmSwords: integer;
+  b: TBox;
 begin
-  result := false;
+  if (not loggedIn()) then
+    exit;
+
+  dtmSwords := DTMFromString('mbQAAAHicY2VgYPgLxD+AmImRgeELkGYF0i1AuguIO4G4BoonTJzI8O+sJxjLKciDMT9QHB0zYsFgAAB8JQxr');
+  b := MD_BigBox(slot);
+
+  if (findDTM(dtmSwords, x, y, b.x1, b.y1, b.x1 + 50, b.y1 + 50)) then
+  begin
+    addToSRLLog('MD_FindSwords: Slot has already been clicked');
+    result := true;
+  end;
+
+  freeDTM(dtmSwords);
 end;
 
 (**
@@ -1389,7 +1406,8 @@ begin
         end;
 
       end else
-        inc(clicks);
+        if (t = 1) then // in case it's retrying
+          inc(clicks);
 
       // remove the index so we don't search the same box twice
       deleteValueInIntArray(slots, index);
