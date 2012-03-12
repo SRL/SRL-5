@@ -276,7 +276,7 @@ begin
     end;
 
   // didn't ID if score is too low
-  if (maxScore > 18) then
+  if (maxScore > 0) then
     result := maxIndex;
 
   if (result <> -1) then
