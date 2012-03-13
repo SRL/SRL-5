@@ -364,9 +364,9 @@ begin
   count := -1;
 
   // gets the highest use count
-  for i := 0 to high(useNames) do
+  for i := 0 to (length(useNames) - 1) do
   begin
-    addToSRLLog('Use: ' + useNames[i] + ', count: ' + toStr(useCounts[i]));
+    addToSRLLog('Quiz_SolveQuestion: Use: ' + useNames[i] + ', count: ' + toStr(useCounts[i]));
 
     if (useCounts[i] > count) then
     begin
