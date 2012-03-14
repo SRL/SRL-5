@@ -35,22 +35,6 @@ begin
 end;
 
 (**
- * Author: Coh3n
- * Description: Sets up the player the solve the random.
- *)
-procedure FF_Setup();
-begin
-  if (not loggedIn()) then
-    exit;
-
-  clickNorth(SRL_ANGLE_HIGH);
-
-  // need to make room for a raw pheasant
-  if (invFull()) then
-    dropItem(randomRange(12, 16));
-end;
-
-(**
  * Author: Sumilion & Coh3n
  * Description: Finds and attacks the pheasant with number of 'numOfTails'.
  *)
@@ -169,6 +153,10 @@ begin
   // move closer to all the pheasants
   mouse(450, 175, 50, 50, mouse_Right);
     waitOption('alk', 300);
+
+  // need to make room for a raw pheasant
+  if (invFull()) then
+    dropItem(randomRange(12, 16));
 
   t := (getSystemTime + (2 * 60000));
 
@@ -325,7 +313,7 @@ begin
     exit;
 
   t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
-  FF_Setup();
+  clickNorth(SRL_ANGLE_HIGH);
 
   repeat
     if (FF_TalkTo()) then

@@ -272,15 +272,16 @@ begin
     addToSRLLog('PL_GetKey: Didn''t identify key in slot '+toStr(slot));
 end;
 
-{*******************************************************************************
-function SolvePilloryPuzzle: boolean;
-by: Nielsie95 & IceFire908
-Description: Solves the pillory random.
-*******************************************************************************}
+(**
+ * Author: Coh3n
+ * Description: Solves the Pillory random.
+ *)
+const
+  _PL_MAX_FAILS = 3; // maximum fails in a row
 
 function PL_Solve(): boolean;
 var
-  i, t: integer;
+  i, t, wrongKey: integer;
   lock: string;
 begin
   if (not loggedIn()) then
@@ -296,30 +297,49 @@ begin
   end;
 
   repeat
+    // open the lock screen if it's not already open
+    if (not PL_LockScreen()) then
+      PL_ClickCage();
+
     lock := PL_GetLock();
 
     if (lock <> '') then
+    begin
       for i := 0 to 2 do // there's only 3 keys for each puzzle
         if (PL_GetKey(i) = lock) then
         begin
           addToSRLLog('PL_Solve: Found matching key');
 
           // specific coords because only a certain part is "clickable"
-          mouse(208 + (94 * I), 225, 4, 4, mouse_Left);
+          mouse(208 + (94 * i), 225, 4, 4, mouse_Left);
           wait(2000 + random(1000));
+          wrongKey := 0;
           break;
         end;
 
+      // if the matching key wasn't found, exit window so a new lock can be ID'd
+      if (i = 2) then
+      begin
+        addToSRLLog('PL_Solve: Failed to find matching key, resetting...');
+        closeWindow();
+        i := -1; // used to differentiate between a failed/successful attempt
+      end;
+    end;
+
     if (not PL_LockScreen()) then
       if (findNPCChatText('not', nothing)) then
-        PL_ClickCage()
+        inc(wrongKey)
       else
-        result := waitTabExists(TAB_MAGIC, 10000);
+        if (i <> -1) then
+          result := waitTabExists(TAB_MAGIC, 10000);
 
     wait(1500 + random(500));
-  until(result or (getSystemTime > t));
+  until(result or (getSystemTime > t) or (wrongKey = _PL_MAX_FAILS));
 
   if (not result) then
-    addToSRLLog('PL_Solve: Pillory solver timed out');
+    if (wrongKey = _PL_MAX_FAILS) then
+      addToSRLLog('PL_Solve: Picked wrong key too many times in a row')
+    else
+      addToSRLLog('PL_Solve: Pillory solver timed out');
 end;
 

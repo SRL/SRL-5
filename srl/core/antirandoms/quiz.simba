@@ -325,61 +325,22 @@ end;
  *)
 function Quiz_SolveQuestion(): boolean;
 var
-  i, j, count: integer;
-  found: boolean;
+  i: integer;
   tmpObjs: array[0..2] of TRotateObject;
-  useNames: TStringArray;
-  useCounts: TIntegerArray;
+  commonUse: string;
   p: TPoint;
 begin
-  found := false;
-
   // scan each item slots for the rotating objects
   for i := 0 to 2 do
     tmpObjs[i] := Quiz_ScanItem(i + 1);
 
-  // loops through each object and records and counts their 'uses'
-  for i := 0 to 2 do
-  begin
-    for j := 0 to high(useNames) do
-      if (tmpObjs[i].use = useNames[j]) then
-      begin
-        found := true;
-        break;
-      end;
-
-    if (found) then
-      useCounts[j] := useCounts[j] + 1
-    else begin
-      setLength(useNames, length(useNames) + 1);
-      setLength(useCounts, length(useCounts) + 1);
-      useNames[high(useNames)] := tmpObjs[i].use;
-      useCounts[high(useCounts)] := 1;
-    end;
-
-    found := false;
-  end;
-
-  j := -1;
-  count := -1;
-
-  // gets the highest use count
-  for i := 0 to high(useNames) do
-  begin
-    addToSRLLog('Use: ' + useNames[i] + ', count: ' + toStr(useCounts[i]));
-
-    if (useCounts[i] > count) then
-    begin
-      count := useCounts[i];
-      j := i;
-    end;
-  end;
+  commonUse := GetTROAUse(tmpObjs);
 
   // sets i to the correct item slot so it can be clicked
-  if (j <> -1) then
+  if (commonUse <> '') then
   begin
     for i := 0 to 2 do
-      if (tmpObjs[i].use <> useNames[j]) then
+      if (tmpObjs[i].use <> commonUse) then
         break;
 
     addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
