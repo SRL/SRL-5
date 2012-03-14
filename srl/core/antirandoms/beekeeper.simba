@@ -205,7 +205,7 @@ begin
     end;
 
     // if there are no pieces left to drag, we must be done
-    for i := 0 to high(slotDone) do
+    for i := low(slotDone) to high(slotDone) do
       if (not slotDone[i]) then
         break
       else
