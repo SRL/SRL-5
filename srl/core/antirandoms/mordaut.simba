@@ -1027,7 +1027,7 @@ end;
  *)
 function MD_IDObject(scanObj: TRotateObject): TRotateObjectArray;
 var
-  i, c, bestScore, tmpScore: integer;
+  i, c, tmpScore: integer;
   tmpObj: TRotateObject;
 begin
   setLength(result, MD_OBJECT_COUNT);
