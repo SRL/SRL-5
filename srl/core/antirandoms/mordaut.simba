@@ -1494,7 +1494,7 @@ begin
     if (doConversation('exit', false)) then
       if (MD_Exit()) then
       begin
-        if (incorrect >= 3) then
+        if (incorrect > 3) then
           addToSRLLog('MD_Solve: Exited Mordaut, but too many incorrect puzzles')
         else
           result := true;
