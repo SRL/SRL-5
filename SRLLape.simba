@@ -52,5 +52,7 @@ const
   clRed   = 255;
   clPurple= 8388736;
 
+  MaxInt = High(Integer);
+
 {$define Simba}
 {$include SRL/SRL.simba}
