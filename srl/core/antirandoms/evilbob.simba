@@ -186,7 +186,7 @@ begin
   v := [EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, {$IFDEF Lape}Null{$ELSE}['ervant']{$ENDIF}, mouse_Left];
   if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
   begin
-    if (waitFunc(@AreTalking, 50, 4000)) then
+    if (waitFunc(@areTalking, 50, 4000)) then
       for i := 1 to 4 do // click through 4 dialogs
       begin
         clickContinue(true, true);
@@ -382,7 +382,7 @@ begin
 
       if ((statue <> '') or (EB_TalkToSlave())) then // don't talk to the slave if the statue is already ID'd
       begin
-        if (statue <> '') then // may have already ID'd the statue
+        if (statue = '') then // may have already ID'd the statue
           statue := EB_GetStatue();
 
         if (statue <> '') then

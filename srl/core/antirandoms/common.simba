@@ -124,6 +124,76 @@ begin
 end;
 
 (*
+GetTROAUse
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetTROAUse(objs: TRotateObjectArray): string;
+
+Returns the most common use in a TRotateObjectArray.  Used to more accurately
+identify puzzles like Quiz and Mordaut.
+
+.. note::
+
+    Author: Coh3n & Wizzup?
+    Last Modified: Mar. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    commonUse := GetTROAUse(objs);
+*)
+function GetTROAUse(objs: TRotateObjectArray): string;
+var
+  i, j, count: integer;
+  found: boolean;
+  useCounts: TIntegerArray;
+  useNames: TStringArray;
+begin
+  // loops through each object and records and counts their 'uses'
+  for i := 0 to high(objs) do
+  begin
+    for j := 0 to high(useNames) do
+      if (objs[i].use = useNames[j]) then
+      begin
+        found := true;
+        break;
+      end;
+
+    if (found) then
+      useCounts[j] := useCounts[j] + 1
+    else begin
+      setLength(useNames, length(useNames) + 1);
+      setLength(useCounts, length(useCounts) + 1);
+
+      useNames[high(useNames)] := objs[i].use;
+      useCounts[high(useCounts)] := 1;
+    end;
+
+    found := false;
+  end;
+
+  j := -1;
+  count := -1;
+
+  // gets the highest use count
+  for i := 0 to high(useCounts) do
+    if (useCounts[i] > count) then
+    begin
+      count := useCounts[i];
+      j := i;
+    end;
+
+  result := useNames[j];
+
+  addToSRLLog('GetTROAUse: UseNames  - '+toStr(useNames));
+  addToSRLLog('GetTROAUse: UseCounts - '+toStr(useCounts));
+  addToSRLLog('GetTROAUse: Result    - '+result);
+end;
+
+(*
 ClickDTMRotatedIn
 ~~~~~~~~~~~~~~~~~
 

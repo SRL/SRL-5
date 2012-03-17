@@ -162,8 +162,9 @@ begin
   clickNorth(SRL_ANGLE_LOW); // REQUIRED. Data was gathered at this angle
   doConversation('', false); // get past GE messages
 
-  // move the mouse away from chat box so text can be recognized
-  mmouse(MCX2 + 30 + random(100), 170, 100, 100);
+  // click front of stage & move the mouse away from chat box so text can be recognized
+  mouse(250, 300, 10, 10, mouse_Left);
+  mouse(MCX2 + 30 + random(100), 170, 100, 100, mouse_Move);
 end;
 
 (**
@@ -261,8 +262,11 @@ begin
 
     // in range of emote's shiftPercet +/- 3%
     if (scores[i] <> 0) then
-      if ((tmpEmote.shiftPercent > (emotes[i].shiftPercent - 3)) and (tmpEmote.shiftPercent < (emotes[i].shiftPercent + 3))) then
-        scores[i] := scores[i] + 9;
+      if (tmpEmote.shiftPercent = emotes[i].shiftPercent) then
+        scores[i] := scores[i] + 15
+      else
+        if ((tmpEmote.shiftPercent > (emotes[i].shiftPercent - 3)) and (tmpEmote.shiftPercent < (emotes[i].shiftPercent + 3))) then
+          scores[i] := scores[i] + 9;
   end;
 
   // get the highest score, set result
@@ -276,7 +280,7 @@ begin
     end;
 
   // didn't ID if score is too low
-  if (maxScore > 18) then
+  if (maxScore > 0) then
     result := maxIndex;
 
   if (result <> -1) then

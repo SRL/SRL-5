@@ -131,7 +131,6 @@ begin
         continue;
 
       tmpCount := countColorTolerance(clBlack, area.x1, area.y1, area.x2, area.y2, 50);
-      writeln(toStr(tmpCount));
 
       if (inRange(tmpCount, minCount, maxCount)) then
       begin
@@ -141,6 +140,44 @@ begin
         break;
       end;
     end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Examines the old man to remove last chat line text. Used as a
+ * failsafe in case the script accidentially clicks a wall.
+ *)
+function Maze_ExamineOldMan(): boolean;
+var
+  t, dtmMan: integer;
+  chatPrevious: string;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  dtmMan := DTMFromString('mQwAAAHicY2ZgYLgBxJeA+DoQTwPiGUC8GIh5VbQYuGQUGXiU1Bn4gXwYZgRiJigGAgAO2gV/');
+  chatPrevious := getBlackChatMessage(); // get the chat line text
+  t := (getSystemTime + 5000);
+
+  if clickDTMRotatedIn(dtmMan, MSCX - 70, MSCY - 70, MSCX + 70, MSCY + 70, -Pi/4, Pi/4, Pi/30, ['ster'], mouse_Right) then
+  begin
+    if (waitOption('xamin', 300)) then
+      while (getSystemTime < t) do
+      begin
+        // wait for the chat text to change
+        if (getBlackChatMessage() <> chatPrevious) then
+        begin
+          result := true;
+          break;
+        end;
+
+        wait(200);
+      end;
+
+  end else
+    addToSRLLog('Maze_ExamineOldMan: Failed to click Old Man DTM');
+
+  freeDTM(dtmMan);
 end;
 
 (**
@@ -205,7 +242,7 @@ end;
  *)
 function Maze_ClickDoor(): boolean;
 var
-  i, x, y: integer;
+  i, x, y, t, c: integer;
   doorPts: TPointArray;
   s: string;
   b: TBox;
@@ -222,27 +259,37 @@ begin
       // sometimes the uptext doesn't show when moused on the door
       if (spiralMouseMulti(x, y, b.x1, b.y1, b.x2, b.y2, ['pen', 'all'], 5, 8)) then
       begin
-        mouse(x, y, 5, 5, mouse_Left);
+        mouse(x, y, 5, 5, mouse_Right);
         addToSRLLog('Maze_ClickDoor: Clicked door');
 
         // in case it clicks in between the door bars
-        if (not didRedClick()) then
+        if (not waitOption('pen', 300)) then
         begin
-          mouse(x + random(6), y, 5, 5, mouse_Left);
-          if (not didRedClick()) then
+          mouse(x + random(6), y, 5, 5, mouse_Right);
+          if (not waitOption('pen', 300)) then
             continue;
         end;
 
         flag();
-        wait(2500 + random(500));
+
+        t := (getSystemTime + 5000);
+        while (isMoving() and (getSystemTime < t)) do
+          wait(50);
 
         // failsafe to make sure we didn't click a wall
         s := getBlackChatMessage();
         if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
         begin
           addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
-          examineInv(); // don't like this, but it's needed to remove last chat text line
-          wait(2500 + random(500));
+
+          // get rid of the "bad" chat text, tries 3 times
+          for c := 1 to 3 do
+            if (Maze_ExamineOldMan()) then
+            begin
+              addToSRLLog('Maze_ClickDoor: Examined Old Man');
+              break;
+            end;
+
           continue;
         end else
           result := true;

@@ -952,8 +952,14 @@ Example:
 *)
 function ExitSquealOfFortune(): boolean;
 var
-  w, h, x, y, xs, ys, xe, ye: integer;
+  w, h, x, y, xs, ys, xe, ye, tmpCTS: integer;
 begin
+  if (SRL_ExitedSquealOfFortune) then
+    exit;
+
+  tmpCTS := getColorToleranceSpeed();
+  setColorToleranceSpeed(1);
+
   getClientDimensions(w, h);
 
   // green color of the goblin thing
@@ -984,7 +990,10 @@ begin
         getMousePos(x, y);
         mouse(x, y, 0, 0, mouse_Left);
         result := true;
+        SRL_ExitedSquealOfFortune := true;
       end;
     end;
   end;
+
+  setColorToleranceSpeed(tmpCTS);
 end;

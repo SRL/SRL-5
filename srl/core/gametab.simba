@@ -106,7 +106,7 @@ begin
 
   // requires CTS 1, may result in false negatives if CTS 2
   tmpCTS := getColorToleranceSpeed;
-  colorToleranceSpeed(2);
+  colorToleranceSpeed(1);
 
   if (tab = TAB_INV) then
     if (bankScreen) then

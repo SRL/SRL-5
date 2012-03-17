@@ -505,6 +505,8 @@ function Logout: Boolean;
 var
   x, y, c, i: Integer;
 begin
+  SRL_ExitedSquealOfFortune := false;
+
   Result := (not (LoggedIn));
   if (Result) then
     Exit;
@@ -720,7 +722,7 @@ begin
   T := GetSystemTime;
   repeat
     // so the lobby appears (gets rid of black screen)
-    if (countColorTolerance(clBlack, 0, 0, 500, 500, 50) > 245000) then
+    if (countColorTolerance(clBlack, 0, 0, 500, 500, 20) > 245000) then
     begin
       wait(2000 + random(1500));
       mouseBox(0, 0, 750, 490, mouse_Move);
@@ -857,6 +859,7 @@ begin
   begin
     Result := True;
     AddToSRLLog('Current player: ' + Capitalize(Players[CurrentPlayer].Name));
+    SRL_ExitedSquealOfFortune := false;
     PlayerStartTime := GetSystemTime; // PlayerStartTime
     if SRL_HasProc(srl_OnLogIn) then
       SRL_Procs[srl_OnLogIn]();
