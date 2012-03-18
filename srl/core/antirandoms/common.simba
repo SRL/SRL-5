@@ -7,6 +7,9 @@ several random event solvers.
 
 *)
 
+const
+  SRL_NPC_OLDMAN = 'Dygt8!loqgGlgD50'; // chat name for Mysterious Old Man
+
 (**
  * Author: Wizzup? & Coh3n
  * Description: Type used to identify rotating items.  Example, Quiz & Mordaut.
