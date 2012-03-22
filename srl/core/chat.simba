@@ -82,8 +82,8 @@ begin
     if (Lowercase(State) = 'off') then
     begin
       case chat of
-        CHAT_PUBLIC: Mouse(mx, 496 - 33, 8, 3, mouse_left);
-        CHAT_PRIVATE..CHAT_ASSIST: Mouse(mx, 496 - 20, 8, 3, mouse_left);
+        CHAT_PUBLIC, CHAT_ASSIST: Mouse(mx, 496 - 33, 8, 3, mouse_left);
+        CHAT_PRIVATE..CHAT_TRADE: Mouse(mx, 496 - 20, 8, 3, mouse_left);
       end;
 
       Wait(RandomRange(50, 150));
