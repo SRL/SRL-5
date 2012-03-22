@@ -649,19 +649,22 @@ MouseOval
 
     procedure MouseOval(cx, cy, mx, my, clickType: Integer);
 
-Clicks a random point within an oval shape. The size of the oval is
-defined by cx, cy, mx and my and clickType takes same parameters as `MouseBox`.
+Clicks a random point within an oval shape.
+    * cx, cy: The center point of the oval.
+    * rx, ry: X and Y radius of the oval.
+    * clickType: mouse_Move, mouse_Left, mouse_Right, or mouse_Middle.
 
 .. note::
 
     by mixster
+    Last Updated: Unknown.
 
 Example:
 
 .. code-block:: pascal
 
 *)
-procedure MouseOval(cx, cy, mx, my, clickType: Integer);
+procedure MouseOval(cx, cy, rx, ry, clickType: Integer);
 var
   o: TPoint;
 begin
@@ -671,8 +674,8 @@ begin
     exit;
   end;
 
-  o.y := Random(my) * ((Random(2) * 2) - 1);
-  o.x := Random(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
+  o.y := Random(ry) * ((Random(2) * 2) - 1);
+  o.x := Random(Round(Sqrt(Sqr(ry) - Sqr(o.y)) * rx / ry)) * ((Random(2) * 2) - 1);
 
   case clickType of
     mouse_right..mouse_middle: Mouse(cx + o.x, cy + o.y, 0, 0, clickType);
@@ -693,6 +696,7 @@ Same as MouseOval, but clicks within a circle instead.
 .. note::
 
     by mixster
+    Last Updated: Mar. 21st, 2012 by Coh3n
 
 Example:
 
@@ -701,7 +705,7 @@ Example:
 *)
 procedure MouseCircle(MidX, MidY, Radius, clickType: Integer);
 begin
-  MouseOval(MidX - Radius, MidY - Radius, MidX + Radius, MidY + Radius, clickType);
+  MouseOval(MidX, MidY, Radius, Radius, clickType);
 end;
 
 (*
