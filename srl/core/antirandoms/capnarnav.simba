@@ -26,11 +26,9 @@ const
  * Description: Returns true if player is in the random.
  *)
 function CA_Detect(): boolean;
-var
-  x, y: integer;
 begin
   if ((not tabExists(TAB_MAGIC)) and (not tabExists(TAB_INV))) then
-    if (findColorTolerance(x, y, 9931907, MMX1, MMY1, MMX2, MMY2, 15)) then // water color
+    if (countColorTolerance(9931907, MMX1, MMY1, MMX2, MMY2, 15) > 1000) then // water color
       if (inRange(countDots('npc'), 3, 5)) then
         result := tabExists(TAB_MUSIC);
 end;
