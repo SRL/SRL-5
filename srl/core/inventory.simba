@@ -407,7 +407,8 @@ Example:
 *)
 procedure MMouseItem(I: Integer);
 begin
-  InvMouse(I, mouse_move);
+  if (ExistsItem(I)) then
+    InvMouse(I, mouse_move);
 end;
 
 (*
@@ -433,7 +434,8 @@ Example:
 *)
 procedure MouseItem(I: Integer; button: Integer);
 begin
-  InvMouse(i, button);
+  if (ExistsItem(I)) then
+    InvMouse(i, button);
 end;
 
 (*

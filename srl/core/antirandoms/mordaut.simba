@@ -539,11 +539,11 @@ begin
       begin
         name := 'Lamp';
         use := 'Fire';
-        count := 463;
+        count := 425;
         width := 23;
-        height := 26;
-        totalCount := 625;
-        coverPercent := 74.0;
+        height := 27;
+        totalCount := 640;
+        coverPercent := 66.0;
       end;
 
     MD_OBJ_CANDLE:
@@ -898,6 +898,14 @@ begin
              MD_GetObject(MD_OBJ_MARTINI)];
   end;
 
+  with result[MD_PUZZLE_BIG_MAGIC] do
+  begin
+    name := 'Big Puzzle: Magic';
+    idText := ['stic', 'wizard'];
+    objs := [MD_GetObject(MD_OBJ_STAFF), MD_GetObject(MD_OBJ_RUNE),
+             MD_GetObject(MD_OBJ_RUNE)];
+  end;
+
   with result[MD_PUZZLE_BIG_DISGUISE] do
   begin
     name := 'Big Puzzle: Disguise';
@@ -970,7 +978,7 @@ end;
  *)
 function MD_GetSmallPuzzles(): TStringArray;
 begin
-  setLength(result, 14);
+  setLength(result, 15);
 
   result[0]  := 'Weapon';
   result[1]  := 'Smithing';
@@ -986,6 +994,7 @@ begin
   result[11] := 'Magic';
   result[12] := 'Cook';
   result[13] := 'Fruit';
+  result[14] := 'Fire';
 end;
 
 (**
@@ -1193,7 +1202,7 @@ begin
       posObjs := MD_IdObject(MD_ScanSmallObject(i));
 
       for j := 0 to high(posObjs) do
-        if (posObjs[j].use = puzzle) then
+        if (lowercase(posObjs[j].use) = lowercase(puzzle)) then
         begin
           addToSRLLog('MD_SolveSmallPuzzle: Found bottom object in slot '+toStr(i));
 
@@ -1463,7 +1472,9 @@ begin
       puz := MD_IDBigPuzzle(bigPuzzles);
 
       if (puz <> -1) then
-        solved := MD_SolveBigPuzzle(bigPuzzles[puz]);
+        solved := MD_SolveBigPuzzle(bigPuzzles[puz])
+      else
+        break;
     end;
 
     // solve the small puzzle

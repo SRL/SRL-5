@@ -93,7 +93,7 @@ begin
   begin
     name := 'North West';
     area := intToBox(551, 78, 610, 110);
-    minCount := 1300;
+    minCount := 1000;
     maxCount := 2000;
 
     path := [[586, 82, 'w'], [658, 78, 'w'], [602, 97, 's'], [590, 76, 's'],

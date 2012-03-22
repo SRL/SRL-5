@@ -159,7 +159,7 @@ begin
   for i := 0 to high(objs) do
   begin
     for j := 0 to high(useNames) do
-      if (objs[i].use = useNames[j]) then
+      if (lowercase(objs[i].use) = lowercase(useNames[j])) then
       begin
         found := true;
         break;
