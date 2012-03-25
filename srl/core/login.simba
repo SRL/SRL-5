@@ -721,13 +721,6 @@ begin
 
   T := GetSystemTime;
   repeat
-    // so the lobby appears (gets rid of black screen)
-    if (countColorTolerance(clBlack, 0, 0, 500, 500, 20) > 245000) then
-    begin
-      wait(2000 + random(1500));
-      mouseBox(0, 0, 750, 490, mouse_Move);
-    end;
-
     SetLength(Actions, 0);
 
     if ((GetSystemTime - T) > 60000) then
