@@ -277,6 +277,15 @@ begin
     hasRewardBox := true;
   end;
 
+  with SRL_Randoms[SRL_RAND_BEEKEEPER] do
+  begin
+    name := 'Beekeeper';
+    solve := @BK_Solve;
+    detect := @BK_Detect;
+    isInvRandom := false;
+    hasRewardBox := true;
+  end;
+
   with SRL_Randoms[SRL_RAND_MOLLY] do
   begin
     name := 'Molly';
@@ -285,15 +294,6 @@ begin
     isInvRandom := false;
     hasRewardBox := true;
     disabled := true;
-  end;
-
-  with SRL_Randoms[SRL_RAND_BEEKEEPER] do
-  begin
-    name := 'Beekeeper';
-    solve := @BK_Solve;
-    detect := @BK_Detect;
-    isInvRandom := false;
-    hasRewardBox := true;
   end;
 
   with SRL_Randoms[SRL_RAND_REWARDS] do
