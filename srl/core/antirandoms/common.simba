@@ -189,7 +189,10 @@ begin
       j := i;
     end;
 
-  result := useNames[j];
+  if (j <> -1) then
+    result := useNames[j]
+  else
+    addToSRLLog('GetTROAUse: Couldn''t find a use');
 
   addToSRLLog('GetTROAUse: UseNames  - '+toStr(useNames));
   addToSRLLog('GetTROAUse: UseCounts - '+toStr(useCounts));
