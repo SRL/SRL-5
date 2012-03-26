@@ -381,6 +381,7 @@ begin
 
       // set player to false and logout if the solver failed or is disabled
       players[currentPlayer].active := false;
+      result := false;
       logout();
     end;
   end;
