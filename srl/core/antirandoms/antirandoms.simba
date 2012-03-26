@@ -51,8 +51,8 @@ const
     SRL_RAND_LEO       = 13;
     SRL_RAND_PETE      = 14;
     SRL_RAND_FORESTER  = 15;
-    SRL_RAND_MOLLY     = 16;
-    SRL_RAND_BEEKEEPER = 17;
+    SRL_RAND_BEEKEEPER = 16;
+    SRL_RAND_MOLLY     = 17;
     SRL_RAND_REWARDS   = 18;
 
 type
