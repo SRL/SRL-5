@@ -1449,7 +1449,10 @@ begin
       MMouse(TPA[I].X, TPA[I].Y, 2, 2);
 
       if (WaitUptextMulti(['Teleport', 'ele', 'ort'], 400)) then
+      begin
         ClickMouse2(Mouse_Left);
+        Result := true;
+      end;
     end;
 
   ColorToleranceSpeed(CTS);
