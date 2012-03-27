@@ -283,6 +283,7 @@ function PL_Solve(): boolean;
 var
   i, t, wrongKey: integer;
   lock: string;
+  keyFound: boolean;
 begin
   if (not loggedIn()) then
     exit;
@@ -297,6 +298,8 @@ begin
   end;
 
   repeat
+    keyFound := false;
+
     // open the lock screen if it's not already open
     if (not PL_LockScreen()) then
       PL_ClickCage();
@@ -314,11 +317,12 @@ begin
           mouse(208 + (94 * i), 225, 4, 4, mouse_Left);
           wait(2000 + random(1000));
           wrongKey := 0;
+          keyFound := true;
           break;
         end;
 
       // if the matching key wasn't found, exit window so a new lock can be ID'd
-      if (i = 2) then
+      if ((i = 2) and (not keyFound)) then
       begin
         addToSRLLog('PL_Solve: Failed to find matching key, resetting...');
         closeWindow();

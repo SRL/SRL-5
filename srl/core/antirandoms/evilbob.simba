@@ -395,7 +395,11 @@ begin
                 if (EB_FeedBob()) then
                 begin
                   if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
-                    result := WaitTabExists(TAB_MAGIC, 10000);
+                    result := WaitTabExists(TAB_MAGIC, 10000)
+                  else begin
+                    freeDTMs(EB_DTMs);
+                    exit;
+                  end;
                 end else begin
                   statue := '';
                   break; // wrong fish (or need another), starting over
@@ -409,6 +413,6 @@ begin
   freeDTMs(EB_DTMs);
 
   if (not result) then
-    addToSRLLog('EB_Solve: Evil Bob solver timed out');
+    addToSRLLog('EB_Solve: Evil Bob solver has failed or timed out');
 end;
 

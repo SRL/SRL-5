@@ -943,6 +943,7 @@ begin
         else
           MouseBox(263, 362, 372, 383, mouse_left);
       Wait(3000 + Random(2000));
+      RetryLogin := true;
     end;
 
                              {Respond}

@@ -1373,3 +1373,87 @@ begin
   p := RotatePoint(Point(x, y), rs_GetCompassAngleRadians, MMCX, MMCY);
   Mouse(p.x, p.y, randX, randY, mouse_left);
 end;
+
+(*
+LodestoneScreen
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function BankScreen: Boolean;
+
+Finds LodestoneScreen. Returns true if Found.
+
+.. note::
+
+    Author: Home
+
+Example:
+
+.. code-block:: pascal
+
+    If LodestoneScreen then
+      WriteLn('Lodestone Network screen is open!');
+*)
+function LodestoneScreen: Boolean;
+begin
+  Result := CountColor(12378347, 172, 26, 345, 42) > 500;
+end;
+
+
+(*
+LodestoneTeleport
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function LodestoneTeleport(Where: String): Boolean;
+
+Teleports you to chosen location via Lodestone teleport.
+
+.. note::
+
+    Author: Home
+
+Example:
+
+.. code-block:: pascal
+
+    If CastHomeTeleport then
+      Lodestoneteleport('Lumbridge');
+*)
+function LodestoneTeleport(Where: String): Boolean;
+var
+  TPA: TPointArray;
+  TSA: TStringArray;
+  Box: TBox;
+  CTS, I: Integer;
+begin
+  If not LoggedIn then Exit;
+  If not LodestoneScreen then Exit;
+
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(1);
+
+  TSA := ['Lunar Isle', 'Yanille', 'Ardougne', 'Seers Village', 'Catherby', 'Taverley',
+          'Burthorpe', 'Edgeville', 'Falador', 'Port Sarim', 'Draynor Village', 'Lumbridge',
+          'Varrock', 'Al Kharid', 'Bandit Camp'];
+
+  TPA := [Point(45, 78), Point(160, 262), Point(167, 211), Point(192, 158), Point(223, 181),
+          Point(253, 180), Point(251, 145), Point(293, 160), Point(278, 206), Point(276, 249), Point(308, 211),
+          Point(327, 243), Point(345, 182), Point(362, 229), Point(326, 297)];
+
+  for I := 0 to 14 do
+    if Capitalize(Where) = TSA[I] then
+    begin
+      MMouse(TPA[I].X, TPA[I].Y, 2, 2);
+
+      if (WaitUptextMulti(['Teleport', 'ele', 'ort'], 400)) then
+      begin
+        ClickMouse2(Mouse_Left);
+        Result := true;
+      end;
+    end;
+
+  ColorToleranceSpeed(CTS);
+end;

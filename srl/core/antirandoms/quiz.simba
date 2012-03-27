@@ -341,9 +341,14 @@ begin
   begin
     for i := 0 to 2 do
       if (tmpObjs[i].use <> commonUse) then
+      begin
+        addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
         break;
+      end;
 
-    addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
+    // for some reason i gets increased to 3 if the loop's condition isn't met; means failed to ID items properly, so we're going to guess
+    if (i >= 3) then
+      i := random(3);
 
     p := middleBox(Quiz_ItemBox(i + 1));
     mouse(p.x, p.y, 20, 10, mouse_Left);

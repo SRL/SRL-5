@@ -38,7 +38,7 @@ function Maze_Detect(): boolean;
 begin
   // WARNING: sometimes magic tab exists, sometimes it doesn't
 
-  if (getNPCChatName() = 'Dygt8!loqgGlgD50') then
+  if (getNPCChatName() = SRL_NPC_OLDMAN) then
     // the red maze walls on the minimap
     result := (countColorTolerance(197614, MMX1, MMY1, MMX2, MMY2, 15) > 1000);
 end;
@@ -93,7 +93,7 @@ begin
   begin
     name := 'North West';
     area := intToBox(551, 78, 610, 110);
-    minCount := 1300;
+    minCount := 1000;
     maxCount := 2000;
 
     path := [[586, 82, 'w'], [658, 78, 'w'], [602, 97, 's'], [590, 76, 's'],

@@ -23,8 +23,9 @@ function PB_Detect(): boolean;
 begin
   // makes sure friends tab exists and magic doesn't
   if ((not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS))) then
-    if (not areTalking()) then
-      result := (countColor(clBlack, MMCX-20, MMCY-20, MMCX+20, MMCY+20) = 1681);
+    if (getNPCChatName() = SRL_NPC_OLDMAN) then
+      if (findNPCChatTextMulti(['10', 'flashing', 'pillars'], nothing)) then
+        result := (countColor(clBlack, MMCX-20, MMCY-20, MMCX+20, MMCY+20) = 1681);
 end;
 
 (**
