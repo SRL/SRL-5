@@ -93,7 +93,7 @@ begin
   addToSRLLog('CA_TalkToArnav: Talking to Cap''n Arnav');
   dtmArnav := DTMFromString('mQwAAAHicY2ZgYIhiZGAIAeJoIN4N5O8E4m1A7OZmw+DsbMWgoaHEwA/kwzBQGQMTFAMBAO12BWY=');
 
-  if (clickDTMRotatedIn(dtmArnav, MSCX+50, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['rnav'], mouse_Left)) then
+  if (clickDTMRotatedIn(dtmArnav, MSCX+50, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['rnav'], mouse_Left) or waitNPCTalking(CA_NAME_ARNAV, 1000)) then
   begin
     if (waitNPCTalking(CA_NAME_ARNAV, 4000)) then
     begin
@@ -240,7 +240,6 @@ begin
     else
       if (CA_FixLock(DTMs)) then
       begin
-        //if (waitNPCTalking(
         if (clickPortal(dtmPortal)) then
           result := waitTabExists(TAB_MAGIC, 10000);
       end else
