@@ -91,7 +91,7 @@ begin
     exit;
 
   addToSRLLog('CA_TalkToArnav: Talking to Cap''n Arnav');
-  dtmArnav := DTMFromString('mQwAAAHicY2ZgYIhiZGAIAeJoIN4N5O8E4m1A7OZmw+DsbMWgoaHEwA/kwzBQGQMTFAMBAO12BWY=');
+  dtmArnav := DTMFromString('mggAAAHicY2NgYGhiZGCoAeIWIG4H4kYgbgXip0C5V1D8GIjvAfF9IK6tzmEoz3Ri8DDXYPDWF2PYOz2TYWFDJIMkUA4bZsSBIQAAPqYQBQ==');
 
   if (clickDTMRotatedIn(dtmArnav, MSCX+50, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['rnav'], mouse_Left) or waitNPCTalking(CA_NAME_ARNAV, 1000)) then
   begin
