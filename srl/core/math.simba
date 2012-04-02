@@ -167,8 +167,8 @@ function AngleBetween(v1, v2: TVector): Extended;
 var
   a1, a2: Extended;
 begin
-  a1 := ArcTan2(v1.x, v1.y);
-  a2 := ArcTan2(v2.x, v2.y);
+  a1 := ArcTan2(v1.y, v1.x);
+  a2 := ArcTan2(v2.y, v2.x);
 
   Result := fixRad(a1 - a2)
 end;
