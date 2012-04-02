@@ -172,8 +172,9 @@ begin
       end;
     'dungeon':
       begin
-        SymbolBitmap := BitmapFromString(15, 5, 'beNpjYGRgYDyABH5oa8LRBja' +
-     '2+fPnw6WAKilR/HHhQrjKr1lZ+BVD1GOqxKUYAuaDAYpiABPBf1k=');
+        SymbolBitmap :=BitmapFromString(8, 9, 'meJw7cAAEFiz4ExDwBYi0tD4wMMSw' +
+        '5vwDCs6cORMoApHCKg4URBOHiBAUl3b9CxGHG8LPPx8oDkRg50Clg' +
+        'ILp6a+BbEYGhgMwMBMJHEACEKOAJIQLAAEpc48=');
         Result := 2698232;
       end;
     'weave':
