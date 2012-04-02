@@ -37,6 +37,7 @@ Valid Arguments are:
   - bar                      - hunter training            - short cut
   - bank                     - jewelery                   - silk stall
   - candle shop              - kebab shop                 - silver stall
+                             - lodestone
   - churn                    - mace shop                  - slayer master
   - clothes shop             - magic shop                 - spice stall
   - cookery shop             - makeover mage              - spinning wheel, spin
@@ -659,6 +660,13 @@ begin
           'A7VA1GMq1rawgQgCFQCVwdUD9QLFgbLIilV0teCGABFcPcRwoCxEM' +
           'QBG91kH');
         result := 542972;
+      end;
+    'lodestone':
+      begin
+        SymbolBitmap := BitmapFromString(7, 7, 'meJzb09k0KSgPgvZ0Ni2qzb0yDyRS' +
+        'YhkMQUA2UBCIfv/5DWQ72tkBSQh7D1jvw8cPgVwgCdEFIYEiEARUD' +
+        'xfcvXX9y/MHgCTcZCAXyICYCWEDzQQA7QVQBA==');
+        result := 13934210;
       end;
   end;
 end;
