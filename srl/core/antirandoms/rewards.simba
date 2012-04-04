@@ -57,7 +57,7 @@ begin
   addToSRLLog('RD_SolveMystery: Found mystery box');
 
   mmouse(x, y, 5, 5);
-  if (waitUptext('ster', 200)) then
+  if (waitUptext('pen', 200)) then
   begin
     result := true;
     GetmousePos(x, y);

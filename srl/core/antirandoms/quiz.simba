@@ -48,7 +48,7 @@ end;
  *)
 function Quiz_ItemBox(slot: integer): TBox;
 begin
-  result := gridBox(slot, 3, 1, 80, 38, 176, 0, point(84, 432));
+  result := gridBox(slot, 3, 1, 80, 37, 176, 0, point(84, 433));
 end;
 
 (**
@@ -173,11 +173,11 @@ begin
   begin
     name := 'Spade';
     use := 'Tool';
-    count := 162;
-    width := 30;
-    height := 17;
-    totalCount := 508;
-    coverPercent := 31.5;
+    count := 75;
+    width := 21;
+    height := 15;
+    totalCount := 253;
+    coverPercent := 29.5;
   end;
 
   with Quiz_Items[11] do
@@ -217,11 +217,11 @@ begin
   begin
     name := 'Shears Big';
     use := 'Tool';
-    count := 195;
-    width := 25;
-    height := 16;
-    totalCount := 395;
-    coverPercent := 49.0;
+    count := 219;
+    width := 27;
+    height := 14;
+    totalCount := 408;
+    coverPercent := 53.0;
   end;
 
   with Quiz_Items[16] do
@@ -290,13 +290,13 @@ begin
     if (Quiz_Items[i].width = obj.width) and (Quiz_Items[i].height = obj.height) then
       scores[i] := scores[i] + 5
     else
-      if inRange(obj.width, Quiz_Items[i].width - 2, Quiz_Items[i].width + 2) and inRange(obj.height, Quiz_Items[i].height - 2, Quiz_Items[i].height + 2) then
+      if inRange(obj.width, Quiz_Items[i].width - 3, Quiz_Items[i].width + 3) and inRange(obj.height, Quiz_Items[i].height - 3, Quiz_Items[i].height + 3) then
         scores[i] := scores[i] + 3;
 
-    if inRange(obj.count, Quiz_Items[i].count - 8, Quiz_Items[i].count + 8) then
+    if inRange(obj.count, Quiz_Items[i].count - 10, Quiz_Items[i].count + 10) then
       scores[i] := scores[i] + 2;
 
-    if inRange(obj.totalCount, Quiz_Items[i].totalCount - 8, Quiz_Items[i].totalCount + 8) then
+    if inRange(obj.totalCount, Quiz_Items[i].totalCount - 15, Quiz_Items[i].totalCount + 15) then
       scores[i] := scores[i] + 2;
 
     if (obj.coverPercent > Quiz_Items[i].coverPercent - 3) and (obj.coverPercent < Quiz_Items[i].coverPercent + 3) then
@@ -371,7 +371,7 @@ begin
   if (not loggedIn()) then
     exit;
 
-  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+  t := (getSystemTime + (10 * 60000)); // maximum 10 minutes
   Quiz_LoadItems();
 
   repeat
