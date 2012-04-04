@@ -1043,3 +1043,45 @@ begin
 
   setColorToleranceSpeed(tmpCTS);
 end;
+
+(*
+FindSpinTicket
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSpinTicket(): Boolean;
+
+Finds and exits the annoying Squeal of Fortune pop up.
+
+.. note::
+
+    Author: Kyle Undefined
+    Last Modified: Apr. 3rd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  FindSpinTicket();
+*)
+function FindSpinTicket(): Boolean;
+var
+  oneFreeSpin, x, y: Integer;
+begin
+  oneFreeSpin := DTMFromString('mrAAAAHic42BgYMhlYmBIBuJyIC4F4hQgLgPiaiAuAeInQDWvgfg+ED8D4vdQDBK/BcS9BloMHXHWYMzLwwMUYULB/EASH2ZCw4xoGAYA/y4OqA==');
+
+  if (FindDTM(oneFreeSpin, x, y, MIX1, MIY1, MIX2, MIY2)) then
+  begin
+    Mouse(x, y, 5, 5, mouse_Move);
+
+    if (WaitUptext('laim', 300)) then
+    begin
+      ClickMouse2(mouse_Left);
+      Wait(RandomRange(100, 200));
+      Result := True;
+    end;
+  end;
+
+  FreeDTM(oneFreeSpin);
+end;
