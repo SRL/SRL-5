@@ -55,4 +55,3 @@ const
   MaxInt = High(Integer);
 
 {$define Simba}
-{$include SRL/SRL.simba}

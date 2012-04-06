@@ -26,6 +26,10 @@
 
 {$DEFINE SRL5}
 
+{$IFDEF Lape}
+{$include SRLLape.simba}
+{$ENDIF}
+
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
 {$include SRL/SRL/misc/smart.simba}
