@@ -331,7 +331,7 @@ begin
   if (not loggedIn) then
     exit;
 
-  if (SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
+  if ({$IFDEF Lape}@{$ENDIF}SRL_Randoms[rand].detect <> nil) and (SRL_Randoms[rand].detect()) then
   begin
     addToSRLLog('***** Found Random: '+SRL_Randoms[rand].name+' *****');
     players[currentPlayer].rand := SRL_Randoms[rand].name;
@@ -360,7 +360,7 @@ begin
     // if solver isn't disabled, solve it
     if (not SRL_Randoms[rand].disabled) then
     begin
-      if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
+      if ({$IFDEF Lape}@{$ENDIF}SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
       begin
         addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
         players[currentPlayer].rand := '';
