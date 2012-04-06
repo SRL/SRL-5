@@ -437,8 +437,6 @@ begin
             if (waitFuncEx('_SolveRandom', v, 50, 5000)) then
               _SolveRandom(SRL_RAND_REWARDS, b); // check if we chose another reward
           end;
-
-          break;
         end;
 
       result := true;
@@ -452,6 +450,7 @@ begin
   findDead();
   findMod();
   findDwarvenPopup();
+  findSpinTicket();
   exitSquealOfFortune();
 
   if SRL_HasProc(SRL_OnRandomCall) then

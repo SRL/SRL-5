@@ -57,7 +57,7 @@ begin
   addToSRLLog('RD_SolveMystery: Found mystery box');
 
   mmouse(x, y, 5, 5);
-  if (waitUptext('ster', 200)) then
+  if (waitUptext('pen', 200)) then
   begin
     result := true;
     GetmousePos(x, y);
@@ -99,40 +99,40 @@ begin
     // slot returned by gridBox below
     case skill of
       SKILL_ATTACK              : slot := 1;
-      SKILL_DEFENCE             : slot := 5;
-      SKILL_STRENGTH            : slot := 2;
-      SKILL_HITPointS, SKILL_HP : slot := 7;
-      SKILL_RANGE               : slot := 3;
-      SKILL_PRAYER              : slot := 8;
-      SKILL_MAGIC               : slot := 4;
-      SKILL_COOKING             : slot := 19;
-      SKILL_WOODCUTTING         : slot := 21;
-      SKILL_FLETCHING           : slot := 23;
-      SKILL_FISHING             : slot := 12;
-      SKILL_FIREMAKING          : slot := 20;
-      SKILL_CRAFTING            : slot := 6;
-      SKILL_SMITHING            : slot := 17;
-      SKILL_MINING              : slot := 16;
-      SKILL_HERBLORE            : slot := 10;
-      SKILL_AGILITY             : slot := 9;
-      SKILL_THIEVING            : slot := 11;
-      SKILL_SLAYER              : slot := 14;
-      SKILL_FARMING             : slot := 15;
-      SKILL_RUNECRAFTING        : slot := 13;
-      SKILL_HUNTER              : slot := 18;
-      SKILL_CONSTRUCTION        : slot := 24;
-      SKILL_SUMMONING           : slot := 25;
-      SKILL_DUNGEONEERING       : slot := 26;
+      SKILL_DEFENCE             : slot := 15;
+      SKILL_STRENGTH            : slot := 8;
+      SKILL_HITPointS, SKILL_HP : slot := 22;
+      SKILL_RANGE               : slot := 9;
+      SKILL_PRAYER              : slot := 16;
+      SKILL_MAGIC               : slot := 2;
+      SKILL_COOKING             : slot := 24;
+      SKILL_WOODCUTTING         : slot := 4;
+      SKILL_FLETCHING           : slot := 6;
+      SKILL_FISHING             : slot := 17;
+      SKILL_FIREMAKING          : slot := 11;
+      SKILL_CRAFTING            : slot := 18;
+      SKILL_SMITHING            : slot := 10;
+      SKILL_MINING              : slot := 3;
+      SKILL_HERBLORE            : slot := 12;
+      SKILL_AGILITY             : slot := 5;
+      SKILL_THIEVING            : slot := 7;
+      SKILL_SLAYER              : slot := 13;
+      SKILL_FARMING             : slot := 19;
+      SKILL_RUNECRAFTING        : slot := 25;
+      SKILL_HUNTER              : slot := 20;
+      SKILL_CONSTRUCTION        : slot := 14;
+      SKILL_SUMMONING           : slot := 21;
+      SKILL_DUNGEONEERING       : slot := 23;
 
       else
-        slot := 16; // Mining
+        slot := 3; // Mining
     end;
 
-    b := gridBox(slot, 7, 4, 40, 40, 59, 57, point(80, 108));
+    b := gridBox(slot, 7, 4, 40, 40, 65, 57, point(64, 104));
     mouseBox(b.x1, b.y1, b.x2, b.y2, mouse_Left); // click skill
 
     wait(500 + random(500));
-    mouse(413, 282, 20, 5, mouse_Left); // click confirm
+    mouse(387, 263, 20, 5, mouse_Left); // click confirm
 
     addToSRLLog('RD_SolveXP: Solved experience reward');
     wait(2000 + random(500));

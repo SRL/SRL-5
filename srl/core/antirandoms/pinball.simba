@@ -199,7 +199,7 @@ begin
 
   repeat
     // the green path color
-    if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 20)) then
+    if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 25)) then
       if (length(tpa) > 0) then
       begin
         sortTPAFrom(tpa, point(MSCX, MSY2)); // center of the bottom of the MS

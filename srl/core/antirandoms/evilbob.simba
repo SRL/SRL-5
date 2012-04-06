@@ -395,7 +395,7 @@ begin
                 if (EB_FeedBob()) then
                 begin
                   if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
-                    result := WaitTabExists(TAB_MAGIC, 10000)
+                    result := WaitTabExists(TAB_MAGIC, 25000)
                   else begin
                     freeDTMs(EB_DTMs);
                     exit;
