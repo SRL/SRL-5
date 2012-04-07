@@ -63,6 +63,7 @@
 //----------------------------------------------------------------------------//
 
 {$include SRL/SRL/core/animation.simba}
+{$include SRL/SRL/core/nonstaticpixelcount.simba}
 {$include SRL/SRL/core/flag.simba}
 {$include SRL/SRL/core/worldswitcher.simba}
 {$include SRL/SRL/core/login.simba}
