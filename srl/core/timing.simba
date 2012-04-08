@@ -929,10 +929,12 @@ Example:
 *)
 function WaitTabExists(tab, waitTime: integer): boolean;
 var
-  v: TVariantArray;
+  t: Integer;
 begin
-  v := [tab];
-  result := waitFuncEx('tabExists', v, 50, waitTime);
+  t := GetTickCount() + waitTime;
+  repeat
+    Result := TabExists(tab);
+  until Result or (GetTickCount() >= t);
 end;
 
 (*
