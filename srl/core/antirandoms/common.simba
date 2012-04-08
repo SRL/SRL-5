@@ -244,6 +244,13 @@ begin
   end;
 end;
 
+var
+  _Callback_ClickPortal_DTM: Integer;
+function _Callback_ClickPortal: Boolean;
+begin
+  Result := ClickDTMRotatedIn(_Callback_ClickPortal_DTM, MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ortal'], mouse_Left);
+end;
+
 (*
 ClickPortal
 ~~~~~~~~~~~
@@ -270,15 +277,14 @@ Example:
 function ClickPortal(dtmPortal: integer): boolean;
 var
   t: integer;
-  v: TVariantArray;
 begin
   if (not loggedIn()) then
     exit;
 
+  _Callback_ClickPortal_DTM := dtmPortal;
   addToSRLLog('ClickPortal: Exiting random');
 
-  v := [dtmPortal, MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, {$IFDEF Lape}Null{$ELSE}['ortal']{$ENDIF}, mouse_Left];
-  if (waitFuncEx('ClickDTMRotatedIn', v, 50, 5000)) then
+  if (waitFunc(@_Callback_ClickPortal, 50, 5000)) then
   begin
     t := (getSystemTime + 5000);
     while (getSystemTime < t) do

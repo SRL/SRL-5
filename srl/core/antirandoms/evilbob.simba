@@ -169,13 +169,17 @@ begin
     addToSRLLog('EB_WalkToCenter: At center');
 end;
 
+function _Callback_EB_TalkToSlave: Boolean;
+begin
+  Result := clickDTMRotatedIn(EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['ervant'], mouse_Left);
+end;
+
 (**
  * Author: Coh3n & DemiseScythe
  * Description: Talks to slave to start cut scene.
  *)
 function EB_TalkToSlave(): boolean;
 var
-  v: TVariantArray;
   i: integer;
 begin
   if (not loggedIn()) then
@@ -183,8 +187,7 @@ begin
 
   addToSRLLog('EB_TalkToSlave: Talking to the Slave');
 
-  v := [EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, {$IFDEF Lape}Null{$ELSE}['ervant']{$ENDIF}, mouse_Left];
-  if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
+  if (waitFunc(@_Callback_EB_TalkToSlave, 50, 5000)) then
   begin
     if (waitFunc(@areTalking, 50, 4000)) then
       for i := 1 to 4 do // click through 4 dialogs
@@ -239,6 +242,11 @@ begin
   clickContinue(true, true); // need to do this whether or not it fails
 end;
 
+function _Callback_EB_GetFish: Boolean;
+begin
+  Result := clickDTMRotatedIn(EB_DTMs[DTM_EB_FISHSPOT], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ishing'], mouse_Left);
+end;
+
 (**
  * Author: Coh3n & DemiseScythe
  * Description: Relocates to center, walks to fishing spots and returns true
@@ -247,7 +255,6 @@ end;
 function EB_GetFish(Direction: string): boolean;
 var
   x, y: integer;
-  v: TVariantArray;
 begin
   if (not loggedIn()) then
     exit;
@@ -271,8 +278,7 @@ begin
 
     wait(1500 + random(500));
 
-    v := [EB_DTMs[DTM_EB_FISHSPOT], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, {$IFDEF Lape}Null{$ELSE}['ishing']{$ENDIF}, mouse_Left];
-    if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
+    if (waitFunc(@_Callback_EB_GetFish, 50, 5000)) then
     begin
       if (didRedClick) then
         if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 10000)) then // wait to find cooked fish

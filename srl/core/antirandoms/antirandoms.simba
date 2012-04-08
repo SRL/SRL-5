@@ -393,11 +393,17 @@ end;
  * is set to true. This function should only be called in FindNormalRandoms and
  * FindNonInventoryRandoms.
  *)
+function _Callback_SolveRandom: Boolean;
+var
+  b: Boolean;
+begin
+  Result := _SolveRandom(SRL_RAND_REWARDS, b);
+end;
+ 
 function _FindAllRandoms(checkInv: boolean): boolean;
 var
   i: integer;
-  v: TVariantArray;
-  manually, b: boolean;
+  manually: boolean;
 begin
   // no tabs exists if bank is open; could throw false positives
   if (not loggedIn()) or (bankScreen()) then
@@ -433,9 +439,8 @@ begin
 
           if (not result) then
           begin
-            v := [SRL_RAND_REWARDS, b];
-            if (waitFuncEx('_SolveRandom', v, 50, 5000)) then
-              _SolveRandom(SRL_RAND_REWARDS, b); // check if we chose another reward
+            if (waitFunc(@_Callback_SolveRandom, 50, 5000)) then
+              _SolveRandom(SRL_RAND_REWARDS, manually); // check if we chose another reward
           end;
         end;
 
