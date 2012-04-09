@@ -46,6 +46,18 @@ begin
 end;
 
 const
+  GetTickCount_StartTime := GetTickCount;
+function GetTickCount: UInt32; override;
+begin
+  Result := inherited() - GetTickCount_StartTime;
+end;
+
+function GetSystemTime: LongWord; override;
+begin
+  Result := GetTickCount;
+end;
+
+const
   clWhite = 16777215;
   clBlack = 0;
   clBlue  = 16711680;
@@ -53,5 +65,3 @@ const
   clPurple= 8388736;
 
   MaxInt = High(Integer);
-
-{$define Simba}

@@ -7,6 +7,11 @@ using text in RS. It also contains a few useful input routines
 
 *)
 
+{ const VK_ENTER
+  Description: Platform independent virtual enter key. }
+const
+  VK_ENTER = {$IFDEF LINUX}10{$ELSE}VK_RETURN{$ENDIF};
+
 { var OldLine,TheLine, TheName: String;
   Description: ChatLog vars. }
 var
@@ -139,7 +144,7 @@ begin
   end;
 
   if (PressEnter) then
-    TypeByte(VK_RETURN);
+    TypeByte(VK_ENTER);
 end;
 
 (*
