@@ -295,7 +295,7 @@ begin
   while (GetSystemTime < T) do
   begin
     Temp := CallProc(Func, Args);
-    if (not (VarType(Temp) = varString)) then
+    if (not VariantIsString(Temp)) then
       Temp := ToStr(Temp);
     Result := StrToBoolDef(Temp, False);
     if (Result) then

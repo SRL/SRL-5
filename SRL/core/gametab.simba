@@ -668,7 +668,7 @@ var
 begin
   if (not LoggedIn) then exit;
 
-  if ((VarType(Skill) = varInteger) or (VarType(Skill) = varByte)) then
+  if VariantIsInteger(Skill) then
     skNo := Skill
   else
   begin;
@@ -1151,35 +1151,34 @@ begin
   Result := IntToBox(0, 0, 0, 0);
   I := -1;
 
-  case VarType(Which) of
-    varInteger: if (InRange(Which, 1, 11)) then
-        I := Which;
-
-    varString: case Which of
-        'helm', 'helmet' :
-          I := 1;
-        'cape' :
-          I := 2;
-        'amulet', 'neck', 'necklace' :
-          I := 3;
-        'arrows', 'bolts' :
-          I := 4;
-        'right hand', 'weapon' :
-          I := 5;
-        'plate', 'chest', 'platebody' :
-          I := 6;
-        'left hand', 'sheild', 'shield' :
-          I := 7;
-        'legs', 'platelegs', 'skirt', 'plateskirt' :
-          I := 8;
-        'gloves', 'gauntlets' :
-          I := 9;
-        'boots':
-          I := 10;
-        'ring' :
-          I := 11;
-      end;
-  end;
+  if VariantIsString(Which) then
+    case Which of
+      'helm', 'helmet' :
+        I := 1;
+      'cape' :
+        I := 2;
+      'amulet', 'neck', 'necklace' :
+        I := 3;
+      'arrows', 'bolts' :
+        I := 4;
+      'right hand', 'weapon' :
+        I := 5;
+      'plate', 'chest', 'platebody' :
+        I := 6;
+      'left hand', 'sheild', 'shield' :
+        I := 7;
+      'legs', 'platelegs', 'skirt', 'plateskirt' :
+        I := 8;
+      'gloves', 'gauntlets' :
+        I := 9;
+      'boots':
+        I := 10;
+      'ring' :
+        I := 11;
+    end
+  else if VariantIsInteger(Which) then
+    if (InRange(Which, 1, 11)) then
+      I := Which;
 
   if (I = -1) then
   begin

@@ -43,32 +43,29 @@ function variantToDirection(dir: Variant): Extended;
 var
   e: Extended;
 begin
-  case (VarType(dir)) of
-    varInteger, varDouble: Result := FixD(dir + 0.0);
-    varString:
+  if VariantIsNumber(dir) then
+    Result := FixD(dir + 0.0)
+  else if VariantIsString(dir) then
+    case LowerCase(dir) of
+      'n': Result := 0;
+      'e': Result := 90;
+      's': Result := 180;
+      'w': Result := 270;
+      'random', 'rand': Result := RandomRange(0, 360);
+      else
       begin
-        case LowerCase(dir) of
-          'n': Result := 0;
-          'e': Result := 90;
-          's': Result := 180;
-          'w': Result := 270;
-          'random', 'rand': Result := RandomRange(0, 360);
-          else
-          begin
-            e := StrToFloatDef(dir, -1337);
-            if (e <> -1337) then
-              Result := FixD(e)
-            else
-            begin
-              srl_Warn('variantToDirection',
-                'dir [' + toStr(dir) +'] invalid. Returned 0.0 for safety',
-                warn_AllVersions);
-              Result := 0.0;
-            end;
-          end;
+        e := StrToFloatDef(dir, -1337);
+        if (e <> -1337) then
+          Result := FixD(e)
+        else
+        begin
+          srl_Warn('variantToDirection',
+            'dir [' + toStr(dir) +'] invalid. Returned 0.0 for safety',
+          warn_AllVersions);
+          Result := 0.0;
         end;
       end;
-  end;
+    end;
 end;
 
 (*

@@ -203,7 +203,7 @@ var
   iButton: Integer;
 begin
   { Eventually, should be made to just use Integers }
-  if (varType(button) = varBoolean) then
+  if VariantIsBoolean(button) then
   begin
     if (button) then
       iButton := mouse_left

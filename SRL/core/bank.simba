@@ -918,16 +918,13 @@ begin
   if vType = 2 then
     srl_Warn('Deposit', '2 now means store per 2, not ''All''', 15);
   DepositX := False;
-  case VarType(vType) of
-    varInteger: begin
-         DepositX := not InIntArray([1, 5, 10], vType);
-         if vType = 1 then
-           All := False
-         else
-           All := True;
-       end;
-    varBoolean: All := vType;
-  end;
+  if VariantIsInteger(vType) then
+  begin
+    DepositX := not InIntArray([1, 5, 10], vType);
+    All := vType <> 1;
+  end
+  else if VariantIsBoolean(vType) then
+    All := vType;
   if (SlotFrom = 1) and (SlotTo = 28) and (All = true) then
     if DepositAll then
       exit;
@@ -958,7 +955,7 @@ begin
       while (not FindColor(x, y, 8388608, MCX1, MCY1, MCX2, MCY2)) and (GetSystemTime - T < 3000) do
         Wait(100);
       TypeSend(vType);
-    end else if VarType(vType) = varInteger then
+    end else if VariantIsInteger(vType) then
       WaitOptionMulti(['Deposit-' + IntToStr(Integer(vType)), 'Deposit'], 200)
     else
       WaitOptionMulti(['Deposit-All', 'All', 'osit'], 200);
@@ -1960,7 +1957,7 @@ begin
     Exit;
   end;
 
-  if (varType(WhichBank) = varInteger) then
+  if VariantIsInteger(WhichBank) then
     if (OpenBankChest(WhichBank)) then
     begin
       Result := true;

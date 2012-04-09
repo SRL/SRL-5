@@ -133,7 +133,7 @@ var
 begin
   if(not(GameTab(tab_Stats))) then exit;
 
-  if ((VarType(Skill) = varInteger) or (VarType(Skill) = varByte)) then
+  if VariantIsInteger(Skill) then
   begin
 
     if Skill >= 0 then
@@ -257,36 +257,31 @@ begin
     if (StartAngle < 0) or (not LoggedIn) then
       Exit;
 
-    case VarType(Direction) of
-      varInteger, varDouble: DirectionDeg :=
-        FixD(Direction + 0.0);
-
-      varString:
-        begin
-          i := StrToFloatDef(Direction,-1337);
-          if i = -1337 then
-          begin
-            case LowerCase(Direction) of
-              'n': DirectionDeg := 0;
-              'w': DirectionDeg := 270;
-              's': DirectionDeg := 180;
-              'e': DirectionDeg := 90;
-              'random', 'rand': DirectionDeg := RandomRange(0, 360);
-              '' : SetDirection := False;
-            end;
-          end else
-            DirectionDeg := FixD(i);
-        end;
+    if VariantIsNumber(Direction) then
+      DirectionDeg := FixD(Direction + 0.0)
+    else if VariantIsString(Direction) then
+    begin
+      i := StrToFloatDef(Direction,-1337);
+      if i = -1337 then
+      begin
+      case LowerCase(Direction) of
+        'n': DirectionDeg := 0;
+        'w': DirectionDeg := 270;
+        's': DirectionDeg := 180;
+        'e': DirectionDeg := 90;
+        'random', 'rand': DirectionDeg := RandomRange(0, 360);
+        '' : SetDirection := False;
+      end;
+      end else
+        DirectionDeg := FixD(i);
     end;
 
-    case VarType(CameraAngle) of
-      varString:
-        begin
-          if CameraAngle = '' then
-            SetCamera := False
-          else
-            CameraAngle := StrToInt(CameraAngle);
-        end;
+    if VariantIsString(CameraAngle) then
+    begin
+    	if CameraAngle = '' then
+    	  SetCamera := False
+    	else
+        CameraAngle := StrToInt(CameraAngle);
     end;
 
     i := 0.0;

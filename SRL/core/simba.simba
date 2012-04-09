@@ -3,6 +3,49 @@
 //--                        Simba.simba                          --//
 //-----------------------------------------------------------------//
 
+function VariantIsInteger(const v: Variant): Boolean;
+begin
+  case VarType(v) of
+    varByte,
+    varShortInt,
+    varSmallInt,
+    varWord,
+    varInteger,
+    varLongWord,
+    varInt64: Result := True;
+    else Result := False;
+  end;
+end;
+
+function VariantIsFloat(const v: Variant): Boolean;
+begin
+  case VarType(v) of
+    varCurrency,
+    varSingle,
+    varDouble: Result := True;
+    else Result := False;
+  end;
+end;
+
+function VariantIsNumber(const v: Variant): Boolean;
+begin
+  Result := VariantIsInteger(v) or VariantIsFloat(v);
+end;
+
+function VariantIsString(const v: Variant): Boolean;
+begin
+  case VarType(v) of
+    varOleStr,
+    varString: Result := True;
+    else Result := False;
+  end;
+end;
+
+function VariantIsBoolean(const v: Variant): Boolean;
+begin
+  Result := VarType(v) = varBoolean;
+end;
+
 {$ifdef Simba}
 
 //{$define SimbaDebug}

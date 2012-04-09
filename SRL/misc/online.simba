@@ -77,7 +77,7 @@ var
   pStrsH: Integer;
 begin
   { fix var to a string }
-  if (VarType(v) <> varString) then
+  if (not VariantIsString(v)) then
     vString := ToStr(v)
   else
     vString := v;
