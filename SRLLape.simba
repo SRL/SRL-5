@@ -57,6 +57,12 @@ begin
   Result := GetTickCount;
 end;
 
+procedure TerminateScript; override;
+begin
+  WriteLn('Lape TerminateScript -> endless loop');
+  while True do Wait(2000);
+end;
+
 const
   clWhite = 16777215;
   clBlack = 0;
