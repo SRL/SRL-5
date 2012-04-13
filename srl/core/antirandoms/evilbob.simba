@@ -34,10 +34,8 @@ var
  *)
 function EB_Detect(): boolean;
 begin
-  // check twice to avoid false negatives
-  if (not tabExists(TAB_MAGIC)) then
-    // the water color
-    if (countColorTolerance(9931907, MMX1, MMY1, MMX2, MMY2, 15) > 6000) then
+  if (countColorTolerance(9931907, MMX1, MMY1, MMX2, MMY2, 15) > 6000) then // the water color
+    if (countColorTolerance(10995923, MMX1, MMY1, MMX2, MMY2, 15) > 3000) then // the sand color
       if (inRange(countDots('red'), 3, 7)) then
         if (inRange(countDots('yellow'), 1, 2)) then
           result := tabExists(TAB_PRAYER);
