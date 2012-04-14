@@ -327,6 +327,7 @@ end;
 function _SolveRandom(rand: integer; var manually: boolean): boolean;
 var
   solved: boolean;
+  oldCompass: extended;
 begin
   if (not loggedIn) then
     exit;
@@ -360,6 +361,8 @@ begin
     // if solver isn't disabled, solve it
     if (not SRL_Randoms[rand].disabled) then
     begin
+      oldCompass := rs_GetCompassAngleDegrees();
+
       if (SRL_Randoms[rand].solve <> nil) and (SRL_Randoms[rand].solve()) then
       begin
         addToSRLLog('***** Solved Random: '+SRL_Randoms[rand].name+' *****');
@@ -367,6 +370,8 @@ begin
         inc(SRL_Randoms[rand].solved);
         solved := true;
       end;
+
+      makeCompass(oldCompass); // restore the compass to its original angle
 
     end else
       addToSRLLog(SRL_Randoms[rand].name+' solver currently disabled');
