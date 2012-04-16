@@ -184,6 +184,12 @@ begin
   v := [EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['ervant'], mouse_Left];
   if (waitFuncEx('clickDTMRotatedIn', v, 50, 5000)) then
   begin
+    if (findNPCChatTextMulti(['fallen', 'quick'], nothing)) then
+    begin
+      result := true;
+      exit;
+    end;
+
     if (waitFunc(@areTalking, 50, 4000)) then
       for i := 1 to 4 do // click through 4 dialogs
       begin
@@ -380,6 +386,19 @@ begin
 
       if ((statue <> '') or (EB_TalkToSlave())) then // don't talk to the slave if the statue is already ID'd
       begin
+        // in case we've already finished
+        if (findNPCChatTextMulti(['fallen', 'quick'], nothing)) then
+        begin
+          addToSRLLog('Already finished feeding Bob');
+
+          if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
+            if (waitTabExists(TAB_MAGIC, 25000)) then
+            begin
+              result := true;
+              break;
+            end;
+        end;
+
         if (statue = '') then // may have already ID'd the statue
           statue := EB_GetStatue();
 
