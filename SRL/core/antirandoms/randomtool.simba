@@ -220,9 +220,30 @@ begin
 end;
 
 function RT_Execute(): boolean;
+var
+  t: Integer;
 begin
   playSound(RT_SoundPath);
 
+  {$IFDEF Lape}
+  WriteLn('SRL Random Tool: ', Players[CurrentPlayer].Rand);
+  WriteLn('Press F', RT_FKeyFinish, ' to solve by hand (timeout in ', msToTime(RT_WaitTimeOut, 1), ')');
+
+  t := GetTickCount() + RT_WaitTimeOut;
+  while (GetTickCount() < t) do
+    if (not isKeyDown(VK_F1 + RT_FKeyFinish - 1)) then
+      Wait(1000)
+    else
+    begin
+      RT_SelfSolve := True;
+      Break;
+    end;
+
+  if RT_SelfSolve then
+    WriteLn('Start solving! Press F', RT_FKeyFinish, ' when ready.')
+  else
+    WriteLn('No intervention, let SRL handle the random..');
+  {$ELSE}
   try
     RT_SafeCall('RT_Init');
   except
@@ -230,6 +251,7 @@ begin
   finally
     RT_SafeCall('RT_Free');
   end;
+  {$ENDIF}
 
   // return true if user is solving by hand (will exit _FindAllRandoms)
   if (RT_SelfSolve) then

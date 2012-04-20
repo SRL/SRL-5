@@ -59,8 +59,7 @@ end;
 
 procedure TerminateScript; override;
 begin
-  WriteLn('Lape TerminateScript -> endless loop');
-  while True do Wait(2000);
+  Halt();
 end;
 
 const
