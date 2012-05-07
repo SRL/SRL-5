@@ -119,14 +119,13 @@ begin
   result := averageTIA(shifts);
 end;
 
-
 (*
-GetColArr
-~~~~~~~~~~~~~~
+ReturnGridColorsInBox
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function GetColArr(Box : TBox): T2DIntegerArray;
+    function ReturnGridColorsInBox(Box : TBox): T2DIntegerArray;
 
 Returns a 2D color array from the pixels contained by Box.
 
@@ -135,7 +134,7 @@ Returns a 2D color array from the pixels contained by Box.
     Author: m34tcode
     Last Modified: 4/7/2012
 *)
-function GetColArr (Box : TBox) : T2DIntegerArray;
+function ReturnGridColorsInBox (Box : TBox) : T2DIntegerArray;
 var
   x,y : Integer;
 begin
@@ -156,7 +155,7 @@ ValidatePixels
 
 .. code-block:: pascal
 
-    procedure GetColArr(Box : TBox);
+    procedure ReturnGridColorsInBox(Box : TBox);
 
 Checks for which pixels, in OrigCols, have changed
 beyond the specified tolerance, since the last check
@@ -171,7 +170,7 @@ var
   X,Y : Integer;
   NewCols : T2DIntegerArray;
 begin
-  NewCols := GetColArr(Box);
+  NewCols := ReturnGridColorsInBox(Box);
   for X := 0 to Box.X2 - Box.X1-1 do
    for Y := 0 to Box.Y2 - Box.Y1-1 do
    begin
@@ -180,9 +179,10 @@ begin
      boolArr[x][y] := SimilarColors(origCols[x][y],NewCols[x][y],Tolerance);
    end;
 end;
+
 (*
 InitBoolArr
-~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -208,9 +208,10 @@ begin
     end;
   end;
 end;
+
 (*
-InitBoolArr
-~~~~~~~~~~~~~~
+CountBools
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -235,9 +236,10 @@ begin
         Inc(C);
   Result := C;
 end;
+
 (*
-PixelShiftOT - Over Time
-~~~~~~~~~~~~~~
+PixelShiftOT
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -265,7 +267,7 @@ var
   OrigColArr : T2DIntegerArray;
   BoolArr : array of TBoolArray;
 begin
-  OrigColArr := GetColArr(Box);
+  OrigColArr := ReturnGridColorsInBox(Box);
   BoolArr := initBoolArr(Box.X2-Box.X1,Box.Y2-Box.Y1);
   MarkTime(T);
   MarkTime(TT);
@@ -277,11 +279,6 @@ begin
         + IntToStr(Repetitions) + '. Try increasing the interval',1);
       break;
     end;
-    {$IFDEF DEBUG}
-    if (I > 0) then
-      writeln('CalcNonStaticPixelCount: Iteration ' + IntToStr(I) + ' took '
-        + FloatToStr(TimeFromMark(TT)/1000.0) + ' seconds to complete.');
-    {$ENDIF}
     MarkTime(TT);
     wait(Max(0,ShiftInterval-TimeFromMark(TT)));
     ValidatePixels(Box,OrigColArr,BoolArr,Tolerance);
