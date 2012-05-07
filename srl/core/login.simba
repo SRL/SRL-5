@@ -731,7 +731,7 @@ begin
     SetLength(Actions, 0);
 
     if ((GetSystemTime - T) > 60000) then
-      Actions :=       ['One minute has passed...',              0,    5,    'PlayerFalse',   'Login Failed']
+      Actions :=       ['One minute has passed... Debug: ' + ToStr(CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)),              0,    5,    'PlayerFalse',   'Login Failed']
     else
     case (CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)) of //text colour points
                         // WriteLn Error                  Wait for   Retrys     Action      Player[CurrentPlayer].Loc
@@ -744,6 +744,7 @@ begin
       1057: Actions := ['Too many incorrect logins.',    5 * 60000,    2,    'PlayerFalse',   'Too many logins'];
        732: Actions := ['Runescape has been updated.',           0,    0,    'RSUpdate',      'RS Updated'];
        591: Actions := ['Client token changed.',                 0,    0,    'RSUpdate',      'Client Token Changed'];
+      1606: Actions := ['Game session expired.',                 0,    0,    'RSUpdate',      'Session Expired'];
        777: Actions := ['Login limit exceeded.',             20000,   10,    '',              'Waiting for login.'];
     end;
                              {Respond}
@@ -908,7 +909,7 @@ begin
 
     SetLength(Actions, 0);
     if ((GetSystemTime - T) > 60000) then
-      Actions :=       ['One minute has passed...',                    0,     0,  'NextPlayer',   'Login Failed']
+      Actions :=       ['One minute has passed...  Debug: ' + ToStr(CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)),                    0,     0,  'NextPlayer',   'Login Failed']
     else
     case (CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)) of //text colour points
                         // WriteLn Error                          Wait for   Retrys  Action     Player[CurrentPlayer].Loc
@@ -919,6 +920,7 @@ begin
 	     777: Actions := ['Login limit exceeded.',                       0,     10, '',             'Waiting for login.'];
        951: Actions := ['Your account is already logged in',        5000,     5,  'PlayerTrue',   'Already logged in'];
        591: Actions := ['Client token changed.',                       0,     0,    'RSUpdate',   'Client Token Changed'];
+      1606: Actions := ['Game session expired.',                       0,     0,    'RSUpdate',   'Session Expired'];
         -1: Actions := ['You need skill total of 1500.',               0,     9,  'PlayerTrue',   '1500 skill club'];
         -1: Actions := ['You need 20 combat for PvP',                  0,     1,  'PlayerFalse',  'PvP warning'];
     end;
