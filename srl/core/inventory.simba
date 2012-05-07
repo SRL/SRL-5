@@ -559,12 +559,13 @@ Var
 begin
   GameTab(Tab_Inv);
   Result := True;
+
   for i := 1 to 28 do
-    if(not ExistsItem(i))then
-      begin
-        Result := False;
-        exit;
-      end;
+    if (not ExistsItem(i)) then
+    begin
+      Result := False;
+      exit;
+    end;
 end;
 
 (*
