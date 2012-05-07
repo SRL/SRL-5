@@ -1426,7 +1426,6 @@ function LodestoneTeleport(Where: String): Boolean;
 var
   TPA: TPointArray;
   TSA: TStringArray;
-  Box: TBox;
   CTS, I: Integer;
 begin
   If not LoggedIn then Exit;
