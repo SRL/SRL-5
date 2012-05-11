@@ -53,93 +53,6 @@ Valid Arguments are:
 
 *******************************************************************************}
 
-Const     //Symbol Constants, may be changed to integers in SRL6
-  Symbol_agility = 'agility';
-  Symbol_furnace = 'furnace';
-  Symbol_altar = 'altar';
-  Symbol_anvil = 'anvil';
-  Symbol_apothecary = 'apothecary';
-  Symbol_archery_shop = 'archery shop';
-  Symbol_arrow = 'arrow';
-  Symbol_axe_shop = 'axe shop';
-  Symbol_bar = 'bar';
-  Symbol_bank = 'bank';
-  Symbol_candle_shop = 'candle shop';
-  Symbol_lodestone = 'lodestone';
-  Symbol_churn = 'churn';
-  Symbol_clothes_shop = 'clothes shop';
-  Symbol_cookery_shop = 'cookery shop';
-  Symbol_cookery = 'cookery';
-  Symbol_cook = Symbol_cookery;
-  Symbol_crafting_shop = 'crafting shop';
-  Symbol_dungeon = 'dungeon';
-  Symbol_farming_shop = 'farming shop';
-  Symbol_fishing_shop = 'fishing shop';
-  Symbol_fishing_store = Symbol_fishing_shop;
-  Symbol_fishing_spot = 'fishing spot';
-  Symbol_fish = Symbol_fishing_spot;
-  Symbol_food_shop = 'food shop';
-  Symbol_food_store = Symbol_food_shop;
-  Symbol_fur_trader = 'fur trader';
-  Symbol_rare_trees = 'rare trees';
-  Symbol_tree = Symbol_rare_trees;
-  Symbol_resting_spot = 'resting spot';
-  Symbol_rest = Symbol_resting_spot;
-  Symbol_runecrafting = 'runecrafting';
-  Symbol_rcing = Symbol_runecrafting;
-  Symbol_rc = Symbol_runecrafting;
-  Symbol_gem_stall = 'gem stall';
-  Symbol_guide = 'guide';
-  Symbol_hair_dresser = 'hair dresser';
-  Symbol_herbalist = 'herbalist';
-  Symbol_house = 'house';
-  Symbol_hunter_store = 'hunter store';
-  Symbol_hunter_training = 'hunter training';
-  Symbol_jewelery = 'jewelery';
-  Symbol_kebab_shop = 'kebab shop';
-  Symbol_mace_shop = 'mace shop';
-  Symbol_magic_shop = 'magic shop';
-  Symbol_makeover_mage = 'makeover mage';
-  Symbol_mill = 'mill';
-  Symbol_minigame = 'minigame';
-  Symbol_Mini_Obelisk = 'mini obelisk';
-  Symbol_mining_shop = 'mining shop';
-  Symbol_mining_spot = 'mining spot';
-  Symbol_mining_site = Symbol_mining_spot;
-  Symbol_mine = Symbol_mining_spot;
-  Symbol_pet_shop = 'pet shop';
-  Symbol_platebody_shop = 'platebody shop';
-  Symbol_plateskirt_shop = 'plateskirt shop';
-  Symbol_portal = 'portal';
-  Symbol_pottery = 'pottery';
-  Symbol_pot = Symbol_pottery;
-  Symbol_quest = 'quest';
-  Symbol_windmill = 'windmill';
-  Symbol_sandpit = 'sandpit';
-  Symbol_saw_mill = 'saw mill';
-  Symbol_scimitar_shop = 'scimitar shop';
-  Symbol_shield = 'shield';
-  Symbol_shop = 'shop';
-  Symbol_store = Symbol_shop;
-  Symbol_short_cut = 'short cut';
-  Symbol_silk_stall = 'silk stall';
-  Symbol_silver_stall = 'silver stall';
-  Symbol_slayer_master = 'slayer master';
-  Symbol_spice_stall = 'spice stall';
-  Symbol_spinning_wheel = 'spinning wheel';
-  Symbol_spin = Symbol_spinning_wheel;
-  Symbol_staff_shop = 'staff shop';
-  Symbol_summoning_store = 'summoning store';
-  Symbol_summoning_obelisk = 'summoning obelisk';
-  Symbol_sword_shop = 'sword shop';
-  Symbol_tanner = 'tanner';
-  Symbol_training_dummy = 'training dummy';
-  Symbol_transportation = 'transportation';
-  Symbol_underground = 'underground';
-  Symbol_water_source = 'water source';
-  Symbol_water = Symbol_water_source;
-  Symbol_weave = 'weave';
-
 (*
 LoadSymbolBitmapColor
 ~~~~~~~~~~~~~~~~~~~~~
@@ -169,13 +82,6 @@ begin
        '/D9BUUgOR8GILJAlWiKIcogJBAdQAKYiiHqIQiiHpfJyOqRHYNLMa' +
        'ZjEIoBKZB32A==');
         result := 2216175;
-      end;
-    Symbol_Mini_Obelisk:
-      begin
-       SymbolBitmap := BitmapFromString(15, 5, 'meJxjYGDYjwTO75ymWJUpaO7FKyw' +
-        '7f/58ZCkGMEAW0QrM8q3vAapPz/AgqFg2wguoGEhyKfHhVwx0w4NH' +
-        'D4AIaL5TQh4Q4VEMcQNQDVA90HAeRStkw4EqAbnwdxs=');
-        result := 12566463;
       end;
     'mining spot', 'mining site', 'mine':
       begin
