@@ -1232,8 +1232,8 @@ Example:
 procedure Notes(SwitchOn: Boolean);
 begin
   if BankScreen then
-    if (GetColor(254, 306) = 5863290) xor SwitchOn then
-      Mouse(250, 300, 10, 10, mouse_left);
+    if (getColor(225, 302) = 0) xor switchOn then
+      Mouse(228, 306, 10, 10, mouse_left);
 end;
 
 (*
