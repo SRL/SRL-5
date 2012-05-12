@@ -1423,7 +1423,6 @@ function LodestoneTeleport(Where: String): Boolean;
 var
   TPA: TPointArray;
   TSA: TStringArray;
-  Box: TBox;
   CTS, I: Integer;
 begin
   If not LoggedIn then Exit;
@@ -1445,7 +1444,7 @@ begin
     begin
       MMouse(TPA[I].X, TPA[I].Y, 2, 2);
 
-      if (WaitUptextMulti(['Teleport', 'ele', 'ort'], 400)) then
+      if (WaitUptextMulti(['Teleport', 'ele', 'ort', 'lepo', 'epor'], 400)) then
       begin
         ClickMouse2(Mouse_Left);
         Result := true;

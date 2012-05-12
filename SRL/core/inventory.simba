@@ -552,10 +552,20 @@ Example:
     if InvFull then
       walkToBank;
 
-*)
+*)  
 function InvFull: Boolean;
+Var
+  i : integer;
 begin
-  Result := (InvCount = 28);
+  GameTab(Tab_Inv);
+  Result := True;
+
+  for i := 1 to 28 do
+    if (not ExistsItem(i)) then
+    begin
+      Result := False;
+      exit;
+    end;
 end;
 
 (*
