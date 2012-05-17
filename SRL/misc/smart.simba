@@ -1,18 +1,18 @@
 {$DEFINE SRL_SMART}
 {$DEFINE SMART}
-{.loadlib libsmart}
+{$loadlib libsmart}
 
-function IsKeyDown(C:Byte): Boolean;
+function IsKeyDown(C: Word): Boolean; {$IFDEF Lape}override;{$ENDIF}
 begin
   Result := SmartIsKeyDown(C);
 end;
 
-procedure MoveMouse(x, y: Integer);
+procedure MoveMouse(x, y: Integer); {$IFDEF Lape}override;{$ENDIF}
 begin
   SmartMoveMouse(x, y);
 end;
 
-procedure HoldMouse(x, y: Integer; button : integer);
+procedure HoldMouse(x, y: Integer; button : integer); {$IFDEF Lape}override;{$ENDIF}
 begin
   if button = mouse_left then
     SmartHoldMousePlus(x,y,1)
@@ -24,7 +24,7 @@ begin
     raiseexception(ercustomerror,'Unknown mouse button in SmartHoldMousePlus');
 end;
 
-procedure ReleaseMouse(x, y: Integer; button : integer);
+procedure ReleaseMouse(x, y: Integer; button : integer); {$IFDEF Lape}override;{$ENDIF}
 begin
   if button = mouse_left then
     SmartReleaseMousePlus(x,y,1)
@@ -36,21 +36,21 @@ begin
     raiseexception(ercustomerror,'Unknown mouse button in SmartReleaseMousePlus');
 end;
 
-procedure KeyUp(key: Byte);
+procedure KeyUp(key: Word); {$IFDEF Lape}override;{$ENDIF}
 begin
   If Key = 13 Then
     Key := 10;
   SmartReleaseKey(key);
 end;
 
-procedure KeyDown(key: Byte);
+procedure KeyDown(key: Word); {$IFDEF Lape}override;{$ENDIF}
 begin
   If Key = 13 Then
     Key := 10;
   SmartHoldKey(key);
 end;
 
-procedure SendKeys(S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer);
+procedure SendKeys(const S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer); {$IFDEF Lape}override;{$ENDIF}
 begin
   SmartSendKeys(S);
 end;
@@ -74,6 +74,11 @@ procedure GetRealMousePos(var X, Y : Integer);
 var
   KMTarget, ITarget : Integer;
 begin
+  {$IFDEF Lape}
+  WriteLn('GetRealMousePos is not supported in Lape');
+  X := -1;
+  Y := -1;
+  {$ELSE}
   KMTarget := GetKeyMouseTarget;
   ITarget := GetImageTarget;
   FindAndSetTarget('Public SMART', True);
@@ -85,9 +90,10 @@ begin
   // These are not universial offsets, but works somewhat for some Windows themes.
   X := X - 8;
   Y := Y - 25;
+  {$ENDIF}
 end;
 
-procedure GetMousePos(var x, y: Integer);
+procedure GetMousePos(var x, y: Integer); {$IFDEF Lape}override;{$ENDIF}
 begin
   SmartGetMousePos(x, y);
 end;
@@ -100,7 +106,7 @@ begin
   Result := PointInBox(P, B);
 end;
 
-function GetColor(x, y: Integer): Integer;
+function GetColor(x, y: Integer): Integer; {$IFDEF Lape}override;{$ENDIF}
 begin
   result:= SmartGetColor(x, y);
 end;
@@ -115,7 +121,7 @@ begin
   result:= true;
 end;
 
-procedure ActivateClient;
+procedure ActivateClient; {$IFDEF Lape}override;{$ENDIF}
 begin
 end;
 
