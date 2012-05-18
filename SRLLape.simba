@@ -18,14 +18,18 @@ end;
 
 function ThreadSafeCall(s: string; params: TVariantArray): Variant;
 begin
-  WriteLn('Calling proc ', s, ' thread safe (not supported in Lape)');
+  WriteLn('ThreadSafeCall "', s, '" (not supported in Lape)');
   Result := NULL;
 end;
 
 function CallProc(s: string; params: TVariantArray): Variant;
 begin
-  WriteLn('Calling proc ', s, ' (not supported in Lape)');
+  {$IFDEF Lape_ExposeGlobals}
+  Result := VariantInvoke(s, Params);
+  {$ELSE}
+  WriteLn('CallProc "', s, '" (not supported in Lape)');
   Result := NULL;
+  {$ENDIF}
 end;
 
 function GetMufasaBitmap(bmp: Integer): Integer;
