@@ -119,12 +119,12 @@ var
   i, j: Integer;
 begin
   RemoteScriptName:= ScriptName;
-  SetArrayLength(RemoteIntegers, Length(Integers)/2);
-  SetArrayLength(RemoteIntegerNames, Length(Integers)/2);
-  SetArrayLength(RemoteStrings, Length(Strings)/2);
-  SetArrayLength(RemoteStringNames, Length(Strings)/2);
-  SetArrayLength(RemoteBooleans, Length(Booleans)/2);
-  SetArrayLength(RemoteBooleanNames, Length(Booleans)/2);
+  SetArrayLength(RemoteIntegers, Length(Integers) div 2);
+  SetArrayLength(RemoteIntegerNames, Length(Integers) div 2);
+  SetArrayLength(RemoteStrings, Length(Strings) div 2);
+  SetArrayLength(RemoteStringNames, Length(Strings) div 2);
+  SetArrayLength(RemoteBooleans, Length(Booleans) div 2);
+  SetArrayLength(RemoteBooleanNames, Length(Booleans) div 2);
   j:= 0;
   for i:=0 to High(Integers) do
   begin

@@ -338,7 +338,7 @@ begin
     end;
     if not ResultType = ResultString then Result := true;
   end else begin
-    SetLength(T2DVA, HowManyPlayers + 2)
+    SetLength(T2DVA, HowManyPlayers + 2);
     // T2DVA[0] will be used to store string lengths
     // T2DVA[1] will be used to store variable names
     // The others will be used to store Player Info as strings
@@ -431,7 +431,7 @@ begin
 
     for i:= 1 to High(T2DVA) do
       for i2 := 0 to L do
-        T2DVA[0][i2] := Max(T2DVA[0][i2], Length(T2DVA[i][i2]));
+        T2DVA[0][i2] := Max(T2DVA[0][i2], Length(string(T2DVA[i][i2])));
 
     for i:= 1 to High(T2DVA) do
       for i2 := 0 to L do
