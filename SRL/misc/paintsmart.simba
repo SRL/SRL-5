@@ -8,9 +8,18 @@ progress reports.  Also used as a useful debugging tool.
 
 *)
 
+{$IFDEF Lape}
+  {$IFDEF SMART}
+    {$DEFINE Lape_NoSMART}
+    {$UNDEF SMART}
+  {$ENDIF}
+{$ENDIF}
+
+{$IFDEF SMART}
 var
   SMART_Canvas: TBitmap;
   SMART_DebugSetup: Boolean;
+{$ENDIF}
 
 (*
 SMART_SetupDebug
@@ -36,11 +45,15 @@ Example:
       SMART_SetupDebug();
 *)
 procedure SMART_SetupDebug();
+{$IFDEF SMART}
 begin
   SmartSetDebug(True);
   SMART_Canvas := TBitmap.Create;
   SMART_Canvas.canvas.handle := SmartGetDebugDC;
   SMART_DebugSetup := true;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 (*
@@ -707,6 +720,7 @@ Example:
     SMART_DrawTextMulti(true, true, ['Time Run: '+TimeRunning', 'Logs Chopped: 10'], Point(10, 10), LoginChars, clRed);
 *)
 procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TSA: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
+{$IFDEF SMART}
 var
   i, h, TPH: Integer;
   TTP, SArr: TPointArray;
@@ -732,6 +746,9 @@ begin
       SMART_DrawDotsEx(False, SArr, 65536);
     end;
   end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 (*
@@ -814,6 +831,7 @@ Example:
     SMART_DrawBitmap(true, bmp, point(5, 5));
 *)
 procedure SMART_DrawBitmap(Clear: Boolean; Bitmap: Integer; Placement: TPoint);
+{$IFDEF SMART}
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
@@ -822,6 +840,9 @@ begin
     SMART_ClearCanvas();
 
   DrawBitmap(Bitmap, SMART_Canvas.Canvas, Placement.X, Placement.Y);
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 (*
@@ -846,6 +867,7 @@ Example:
     SMART_FreeDebug();
 *)
 procedure SMART_FreeDebug();
+{$IFDEF SMART}
 begin
   try
     if (SMART_DebugSetup) then
@@ -853,4 +875,12 @@ begin
   except
     Writeln('Failed to free SMART_Canvas bitmap: '+ExceptionToString(ExceptionType, ExceptionParam));
   end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
+
+{$IFDEF Lape_NoSMART}
+  {$DEFINE SMART}
+  {$UNDEF Lape_NoSMART}
+{$ENDIF}

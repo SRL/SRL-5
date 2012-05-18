@@ -65,8 +65,12 @@ end;
 const
   clWhite = 16777215;
   clBlack = 0;
-  clBlue  = 16711680;
+
   clRed   = 255;
-  clPurple= 8388736;
+  clGreen = 32768;
+  clBlue  = 16711680;
+
+  clPurple = 8388736;
+  clYellow = 65535;
 
   MaxInt = High(Integer);
