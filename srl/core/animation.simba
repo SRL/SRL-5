@@ -262,7 +262,7 @@ Example:
 *)
 function PixelShiftOT(Box : TBox; ShiftInterval, Repetitions, Tolerance : Integer) : Integer;
 var
-  I,X,Y : Integer;
+  I : Integer;
   T,TT : LongInt;
   OrigColArr : T2DIntegerArray;
   BoolArr : array of TBoolArray;
