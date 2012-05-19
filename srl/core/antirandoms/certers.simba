@@ -47,7 +47,7 @@ end;
 
 (**
  * Author: Coh3n, DTMs by DemiseScythe
- * Updated by: [J]ustin - Fish DTM - 18/05/2012
+ * Updated by: [J]ustin - Spade DTM - 19/05/2012
  * Description: Returns a TCTItemArray of all the Certer items.
  *)
 function CT_GetItems(): TCTItemArray;
@@ -122,7 +122,8 @@ begin
     DTMs := [
       DTMFromString('mJgIAAHick2JgYOAFYj4gFgFiMSifDYiZgZgDiAWhYjAMA6xQdSCaBYi5oFgYqkcSiKWAWBpqtgQQu0KxPRDbQtmOULYNEJsAsQ4Qq0LtAunjAWIhJDuZoPYwQt3HjGQvCHf2BzBUN9gyNLc7MmQXmzFU1NowVNXbMtQ22TG0dDgyZBaaguVBYiB6+pxIsrAI1H20xoxQP9Ma4wYAphgrGg=='),
       DTMFromString('m5wEAAHictdBBSwJRFIbhb1wL7XKhEK2mzBBHSGnhPhhCGaLRURxERv2PLmtVooFBZCJZJLrITT/A13GINi298HAPl8t3DichaYU5pnjDM4Z4wBgTPGKET3zjB4YhxXGIFJI4wglOcWzs8mZR5iteoh7v+MAXFlhj+efPOOq3nWGAe/Rxh6dovkanKC8o6MbP/6q1L1RpWGFdsk3Zbja8t/zepZx6RuVqWhXvTLVWVtduWs0gJ79rhW9Xjqnb5rkOyN8X1qLYnvxzNkLsNe8='),
-      DTMFromString('mfgEAAHicE2JgYGBlBBJAzAjEP4DM/0DMDmRzAjEvEAsCsTAQswExBxCzAPEfqD6QvBgQ8wPxBaDYSSA+AMRHgHgbEB9ConcD8Qkgvg/Ebxggdv1lgJjHDHUDSGxqrzvDjH4PhoUzfPHi/jZzhrY6Y4bGSkOG7iZThoYKAzCuLdMHi/MDzaIGBjmNiQoYEwAAJdUpyQ==')
+      DTMFromString('m6wAAAHic42ZgYChjZmDIAuISIK4F4nwgrgPidiCeBsQTgXgWEC8C4meMDAyPgPg7EH8D4tdA/BeIuZkYGLSB2BiILYHYDIgjXa0YXE30wTjZzwFMR7lbMwTbGzHEeZgxRLmaMmQGWYNpLqA7iMWMJGAkAACJ+RWu'),
+      DTMFromString('m1gAAAHic42JgYPjFyMDwDYjZmBgYeID4D5D9BoglgGw9IJYCYnUgjgaKeQGxCxCHAnEWEMcDsRoQSwExHxTPrk1gmFefyNCYFgimYbgxxYOhM9uboSnVA8zmAtpNDGYkEiMAAP4jFNc=');
     ];
   end;
 
