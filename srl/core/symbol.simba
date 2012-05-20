@@ -25,33 +25,32 @@ var
   SymbolBitmap: Integer;
 
 // Comment fix by drizzt:
-// Updated list 20/05/2012 - [J]ustin
+// Updated list - 20/05/2012 - [J]ustin
 {*******************************************************************************
-
 Valid Arguments are:
-- agility                     - gem stall                           - rest, resting spot
-- altar                  	    - guide	                              - sandpit
-- anvil             	        - hair dresser	                      - saw mill
-- apothecary                  - herbalist	                          - scimitar shop
-- archery shop               	- house	                              - shield
-- arrow             	        - hunter store                        - shop, store
-- axe shop                    - hunter training	                    - short cut
-- bar                         - jewelery	                          - silk stall
-- bank             	          - kebab shop               	          - silver stall
-- candle shop               	- lodestone                           - slayer master
-- churn                      	- mace shop                           - spice stall
-- clothes shop               	- magic shop               	          - spinning wheel, spin
-- cookery shop               	- makeover mage	                      - staff shop
-- cookery, cook             	- mill	                              - summoning store
-- crafing shop               	- minigame	                          - summoning obelisk
-- dungeon                   	- mining shop, mining site, mine	    - sword shop
-- farming shop              	- pet shop	                          - tanner
-- farming spot             	  - platebody shop                      - training dummy
-- fishing shop, fish store    - plateskirt shop	                    - underground
-- fishing spot, fish          - portal (to player owned houses)	    - water source, water
-- food shop             	    - pottery, pot	                      - weave
-- fur trader             	    - quest                             	- windmill
-- furnace             	      - rare trees, tree
+- agility                   - gem stall                        - rest, resting spot
+- altar                     - guide                             - sandpit
+- anvil                     - hair dresser                      - saw mill
+- apothecary                - herbalist                         - scimitar shop
+- archery shop              - house                             - shield
+- arrow                     - hunter store                      - shop, store
+- axe shop                  - hunter training                   - short cut
+- bar                       - jewelery                          - silk stall
+- bank                      - kebab shop                        - silver stall
+- candle shop               - lodestone                         - slayer master
+- churn                     - mace shop                         - spice stall
+- clothes shop              - magic shop                        - spinning wheel, spin
+- cookery shop              - makeover mage                     - staff shop
+- cookery, cook             - mill                              - summoning store
+- crafing shop              - minigame                          - summoning obelisk
+- dungeon                   - mining shop, mining site, mine    - sword shop
+- farming shop              - pet shop                          - tanner
+- farming spot              - platebody shop                    - training dummy
+- fishing shop, fish store  - plateskirt shop                   - underground
+- fishing spot, fish        - portal (to player owned houses)   - water source, water
+- food shop                 - pottery, pot                      - weave
+- fur trader                - quest                             -windmill
+- furnace                   - rare trees, tree
 
 *******************************************************************************}
 
