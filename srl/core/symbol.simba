@@ -28,7 +28,7 @@ var
 // Updated list - 20/05/2012 - [J]ustin
 {*******************************************************************************
 Valid Arguments are:
-- agility                   - gem stall                        - rest, resting spot
+- agility                   - gem stall                         - rest, resting spot
 - altar                     - guide                             - sandpit
 - anvil                     - hair dresser                      - saw mill
 - apothecary                - herbalist                         - scimitar shop
@@ -49,7 +49,7 @@ Valid Arguments are:
 - fishing shop, fish store  - plateskirt shop                   - underground
 - fishing spot, fish        - portal (to player owned houses)   - water source, water
 - food shop                 - pottery, pot                      - weave
-- fur trader                - quest                             -windmill
+- fur trader                - quest                             - windmill
 - furnace                   - rare trees, tree
 
 *******************************************************************************}
