@@ -33,6 +33,7 @@ end;
 (**
  * Author: DemiseScythe
  * Description: Loads all needed DTMs to an integer array.
+ * Updated Pie DTM - [J]ustin - 24/05/2012
  *)
 function SL_GetDTMs(): TIntegerArray;
 begin
@@ -43,7 +44,7 @@ begin
   result[DTM_SL_SQUARE]    := DTMFromString('mFQEAAHic42VgYDBkZGAwB2JbIDYCYl0gVgRiaSDWgIpZAbEDELsAsR0QTwDqawPiWiBuhtKtQDwViGcA8VwgXgxlg9R2A7GvizYYH+iRgbMJYX6gPlIxIxkYBQAAPBoU8Q==');
   result[DTM_SL_TRIANGLE]  := DTMFromString('mwQAAAHic42RgYGBiZWD4zsLA8BeIuYFsaSBWA2JZIOYCYlYg7mFkYCgH4gIgLgXiCiCuAuIWIO4H4ilA7Oeiw9BT48+woDeKYV53JMOcrgiG2R3hDDnxtgyeDpoMNqZKDPxA+whhRiIwHAAAiHwSIA==');
   result[DTM_SL_ROLL]      := DTMFromString('mAAEAAHic42FgYNgGxDuBeCMQr4TSK6Bi+4F4LxAfAOKjQHwciOcA8QQgXgzE84G4D4inAPFyIJ4KxHOh+hcA8QwQXS/OMLNKjGFCsShDZ64Iw7w6cYYVbRIMk0pEwexZ1WIMzZnCDH2FIgzLWiUY+IF6SMGMJGJkAABm7x6B');
-  result[DTM_SL_PIE]       := DTMFromString('m1gAAAHic42JgYFjKyMCwBIhnA/EkIJ4GxKuAeBsUrwTiZUA8D6h2OhD3QOkVQLwOiBcB8SQg7gTihUD8+3kfQ7QpL8PPJz1gNggjs0HYW4ebgR+olhjMSCRGAACeZCHD');
+  result[DTM_SL_PIE]       := DTMFromString('mggAAAHicY2NgYNBiZGCQhWI1INYDYnMgnsgAwT1A3A2le4HY0c6OwcTQkEFPR4fBzMQEzPf38WEQAsphw4w4MAQAAMbbCNs=');
   result[DTM_SL_CHOCOLATE] := DTMFromString('m6wAAAHic42ZgYIhgZGAIA+JMIHYH4mggjgHiBCAOAeIAII4D4kAgvgtUfwKILwLxCyD+AMRPgfg2EF8F4vtAfA6IXwFxiqU8GAfpSzKUuagyZNgogHGatQJDooUcWC7SWAbM5weqJxYzkoCRAABzRBYf');
 end;
 
