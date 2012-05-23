@@ -304,6 +304,7 @@ begin
   if (not (WorldScreen)) then
     Exit;
   Result := WS_CurrentWorldEx = World;
+  World := WS_CurrentWorldEx;
 end;
 
 

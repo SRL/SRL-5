@@ -1402,11 +1402,11 @@ CurrentWorld
 
     function CurrentWorld: Integer;
 
-Returns the current world you are on.
+Returns current world from Friends Tab
 
 .. note::
 
-    by Cheesehunk and Ron, fixed by ZephyrsFury
+    by Home
 
 Example:
 
@@ -1415,19 +1415,19 @@ Example:
 *)
 function CurrentWorld: Integer;
 var
-  TextX, TextY: Integer;
+  Box :TBox;
+  TPA :TPointArray;
 begin
-  Result := -1;
+  Result := - 1;
   if (GetCurrentTab <> tab_Friends) then
   begin
     GameTab(tab_Friends);
     Wait(250 + Random(500));
   end;
-  if (IsTextInAreaEx(635, 205, 727, 226, TextX, TextY, 'RuneSca', 5,
-                     SmallChars, False, False, 0, 0, 3381759)) then
-    Result := StrToIntDef(Trim(GetTextAtEx(TextX + 65, TextY, 5,
-      SmallChars, True, False, 0, 0, 3381759, 3, False, tr_AllChars)), -1);
-  if (Result = -1) then
+  FindColors(TPA, 3381759, 601, 223, 703, 238);
+  Box := GetTPABounds(TPA);
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(Box.X1, Box.Y1, Box.X2, Box.Y2, 0, 3, 4, 3381759, 0, UpChars), Numbers), - 1);
+  if (Result = - 1) then
     srl_Warn('CurrentWorld', 'Could not get Player''s current world', Warn_AllVersions);
 end;
 
