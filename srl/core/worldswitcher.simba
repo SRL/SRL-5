@@ -248,18 +248,18 @@ begin
 end;
 
 (*
-WS_CurrentWorld
+WS_CurrentWorldEx
 ~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function WS_CurrentWorld(var World: Integer): Boolean;
+    function WS_CurrentWorldEx: Integer;
 
-Results true if the current world is members,returns world number. World returns -1 if failed. Only works at world screen.
+Results Current world from WorldScreen
 
 ..note::
 
-    by Icefire908
+    by Home
 
 Example:
 
@@ -279,6 +279,25 @@ begin
 end;
 
 
+(*
+WS_CurrentWorld
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WS_CurrentWorld(var World: Integer): Boolean;
+
+Results true if we are currently in same world as what user inputted.
+
+..note::
+
+    by Home
+
+Example:
+
+.. code-block:: pascal
+
+*)
 
 function WS_CurrentWorld(var World: Integer): Boolean;
 begin
