@@ -25,11 +25,12 @@ const
 (**
  * Author: Coh3n
  * Description: Detects if a player is in the random.
+ * Updated on 28/05/2012 - [J]ustin
  *)
 function FF_Detect(): boolean;
 begin
   if (not (tabExists(TAB_MAGIC))) then
-    if (length(getMinimapDots('npc')) >= 10) then
+    if (length(getMinimapDots('npc')) >= 12) then //Possible 10 NPCS at Yanille (14+ NPCS at random event)
       // forest color
       result := (countColorTolerance(2513745, MMX1, MMY1, MMX2, MMY2, 20) > 5000);
 end;
