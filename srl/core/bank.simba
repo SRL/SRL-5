@@ -1679,7 +1679,7 @@ Opens the bank by using Banker.
 .. note::
 
     Author: Home
-    Last Modified: December 28 by Narcle
+    Last Modified: May 29 by Kyle Undefined
 
 Example:
 
@@ -1716,8 +1716,12 @@ begin
 
     CTS := GetColorToleranceSpeed;
     ColorToleranceSpeed(2);
-    SetColorSpeed2Modifiers(0.13, 1.52);
-    FindColorsTolerance(Colors, 6067652, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 13);
+    // Original colors
+    //SetColorSpeed2Modifiers(0.13, 1.52);
+    //FindColorsTolerance(Colors, 6067652, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 13);
+    // Temporary colors
+    SetColorSpeed2Modifiers(0.10, 1.48);
+    FindColorsTolerance(Colors, 4674189, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 21);
     SetColorSpeed2Modifiers(0.2, 0.2);
     ColorToleranceSpeed(CTS);
     ATPA := TPAToATPAEx(Colors, 15, 20);
