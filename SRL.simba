@@ -83,6 +83,10 @@
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
 
+{$IFDEF SMART}
+{$include SRL/SRL/Misc/SmartParams.Simba}
+{$ENDIF}
+
 {$DEFINE SRL_OPENDEV}
 {*******************************************************************************
 procedure  FreeSRL;
@@ -165,11 +169,16 @@ begin
     Smart_Signed := True;
     Smart_SuperDetail := False;
   end;
+  {
   Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
                  + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
   SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
+  }
+  SetupSmartX(Smart_Server, True);
   SetTargetArray(SmartImageArray, 765,503);
+
   repeat
+    FixSmartSpeed;
     Wait(100);
     if (GetTimeRunning - t) > 120000 then
       Break;
