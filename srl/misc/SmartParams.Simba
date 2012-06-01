@@ -1,6 +1,9 @@
 const
   SmartFileLocation = IncludePath + 'SRL\SRL\Misc\SmartWorlds.INI';        //Location of Saved World Params.
 
+var
+  CurrentSmartWorld: String;
+
 {*
       Convert A Given Time to the 24Hour Clock.
 *}
@@ -16,6 +19,23 @@ begin
   end;
 
   Result:= Time;
+end;
+
+{*
+      Determines If Smart is Running or Not.
+      If Not, it Resets the CurrentWorld variable.
+*}
+Procedure SmartTerminated;
+var
+  T: TSysProcArr;
+  I: Integer;
+begin
+  T:= GetProcesses();
+  For I := 0 to High(T) do
+    if (Not ExecRegExpr('SMART|Public|Benland100', T[I].Title)) then
+    begin
+      CurrentSmartWorld:= '0';
+    end;
 end;
 
 {*
@@ -111,7 +131,7 @@ Function GetAnyValidParams(Server: String): TStringArray;
 var
   I: Integer;
 begin
-  if (ParamsOutdated(Server)) then
+  if (ParamsOutdated(CurrentSmartWorld)) and (ParamsOutdated(Server)) then
   begin
     For I:= 1 To 138 Do
       If (Not ParamsOutdated(IntToStr(I))) then
@@ -123,6 +143,8 @@ begin
       end;
   end else
     begin
+      if (Not ParamsOutdated(CurrentSmartWorld)) then
+        Server:= CurrentSmartWorld;
       SetLength(Result, 2);
       Result[0]:= 'http://world' + Server + '.runescape.com/';
       Result[1]:= ReadINI('World', 'Server' + Server, SmartFileLocation);
@@ -157,6 +179,7 @@ Procedure SetupSmartX(Server: Integer; AnyParams: Boolean);
 var
   Params: TStringArray;
 begin
+  SmartTerminated;
   Params:= GetSmartParams(Server);
   If AnyParams then
     Params:= GetAnyValidParams(IntToStr(Server));
@@ -168,6 +191,8 @@ begin
     Exit;
   end;
   SmartSetup(Params[0], 'l=0/,' + Params[1], 765, 503, 's');
+  CurrentSmartWorld:= ExtractFromStr(Params[0], NUMBERS);
+  AddOnTerminate('SmartTerminated');
 end;
 
 {$IFDEF CompileSmartParams}
