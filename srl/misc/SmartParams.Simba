@@ -1,137 +1,3 @@
-const
-  SmartFileLocation = IncludePath + 'SRL\SRL\Misc\SmartWorlds.INI';        //Location of Saved World Params.
-
-{*
-      Convert A Given Time to the 24Hour Clock.
-*}
-Function Convert24Hours(Time: TStringArray): TStringArray;
-var
-  Value: Integer;
-begin
-  If (Not ExecRegExpr('AM|am', Time[2])) then
-  begin
-    Value:= StrToInt(Time[0]);
-    IncEx(Value, 12);
-    Time[0]:= IntToStr(Value);
-  end;
-
-  Result:= Time;
-end;
-
-{*
-      Checks If A World Parameter Is Outdated.
-      A Paramters is Considered Outdated if it does not exist or if the Time
-      LastWritten is >= 6 Hrs.
-*}
-Function ParamsOutdated(World: String): Boolean;
-var
-  CurrentTime, LastWritten: String;
-  DateTimeData, OldTime, NewTime: TStringArray;
-begin
-  Result:= False;
-  LastWritten:= ReadINI('DateTime', 'Date' + World, SmartFileLocation);
-  if (Length(LastWritten) < 1) then
-  begin
-    Result:= True;
-    Exit;
-  end;
-
-  DateTimeData:= Explode('-', LastWritten);
-
-  if (DateTimeData[0] <> TheDate(Date_Month)) then
-  begin
-    CurrentTime:= TheTime;
-    OldTime:= Convert24Hours(Explode(':', DateTimeData[1]));
-    NewTime:= Convert24Hours(Explode(':', CurrentTime));
-
-    Result:= (Abs((StrToInt(NewTime[0]) - StrToInt(OldTime[0]))) >= 6);
-    Exit;
-  end else
-    Result:= False;
-end;
-
-
-{*
-      Grabs & Saves and returns new Parameters.
-*}
-Function SaveNewParams: TStringArray;
-var
-  P1, P2: Integer;
-  Params: TStringArray;
-  Page, World: String;
-begin
-  Page:= GetPage('http://www.runescape.com/game.ws?j=1');
-  P1:= Pos('http://world', Page);
-  P2:= PosEx('" ', Page, P1 + 1);
-  Page:= Copy(Page, P1, P2 - P1);
-
-  Params:= Explode(',', Page);
-  P1:= Pos('world.', Params[0]);
-  P2:= PosEx('.runescape', Params[0], P1 + 1);
-  World:= Copy(Params[0], P1 + 13, P2 - (P1 + 13));
-
-  writeln('Params Grabbed: ' + ToStr(Params));
-
-  If ParamsOutdated(World) Then
-  begin
-    WriteINI('World', 'Server' + World,  Params[1], SmartFileLocation);
-    WriteINI('DateTime', 'Date' + World, TheDate(Date_Month) + '-' + TheTime, SmartFileLocation);
-  end;
-
-  Result:= Params;
-end;
-
-{*
-      Returns New, Specified, Or Saved Parameters.
-*}
-Function GetSmartParams(Server: Integer): TStringArray;
-var
-  World: String;
-begin
-  World:= IntToStr(Server);
-  If ParamsOutdated(World) then
-  begin
-    Result:= SaveNewParams;
-    Exit;
-  end;
-
-  World:= ReadINI('World', 'Server' + World, SmartFileLocation);
-  If (Length(World) > 0) then
-  begin
-    SetLength(Result, 2);
-    Result[0]:= 'http://world' + IntToStr(Server) + '.runescape.com/';
-    Result[1]:= World;
-  end;
-end;
-
-{*
-      Returns Specified OR Any Valid parameters (New Or Saved).
-*}
-Function GetAnyValidParams(Server: String): TStringArray;
-var
-  I: Integer;
-begin
-  if ParamsOutdated(Server) then
-  begin
-    For I:= 1 To 138 Do
-      If (Not ParamsOutdated(IntToStr(I))) then
-      begin
-        SetLength(Result, 2);
-        Result[0]:= 'http://world' + IntToStr(I) + '.runescape.com/';
-        Result[1]:= ReadINI('World', 'Server' + IntToStr(I), SmartFileLocation);
-        Break;
-      end;
-  end else
-    begin
-      SetLength(Result, 2);
-      Result[0]:= 'http://world' + Server + '.runescape.com/';
-      Result[1]:= ReadINI('World', 'Server' + Server, SmartFileLocation);
-    end;
-end;
-
-{*
-      Quick Function To Speed Up Loading While Keeping CPU Usage The Same.
-*}
 Procedure FixSmartSpeed;
 var
   T: Integer;
@@ -143,35 +9,108 @@ begin
       Break;
     Wait(500);
   end;
-  SmartSetRefresh(SmartGetRefresh + 1);
-  MMouse(4, 4, 0, 0);
-  SmartSetRefresh(SmartGetRefresh - 1);
+
+  If (GetColor(382, 252) = 0) then
+  begin
+    If RSReady Then
+      Exit;
+    SmartSetRefresh(SmartGetRefresh + 1);
+    MMouse(4, 4, 0, 0);
+    SmartSetRefresh(SmartGetRefresh - 1);
+  end;
 end;
 
-{*
-      Loads Smart With Specified Parameters. If AnyParams = True, It will
-      either use Saved parameters or new Parameters.
-      If AnyParams = False, it will always download and use fresh parameters!
-*}
-Procedure SetupSmartX(Server: Integer; AnyParams: Boolean);
+function GetSmartParams: TStringArray;
 var
   Params: TStringArray;
+  Page: String;
 begin
-  Params:= GetSmartParams(Server);
-  If AnyParams then
-    Params:= GetAnyValidParams(IntToStr(Server));
-
-  writeln('Params Used: ' + ToStr(Params));
-  if (Length(Params) < 2) then
-  begin
-    writeln('*** Smart Failed To Grab Parameters ***');
-    Exit;
-  end;
-  SmartSetup(Params[0], 'l=0/,' + Params[1], 765, 503, 's');
+  Page := Between('<iframe id="game" src="', '"', GetPage('http://www.runescape.com/game.ws?j=1'));
+  Params := Explode(',', Page);
+  Result := Params;
 end;
 
-{$IFDEF CompileSmartParams}
+function GetSmartIDs: TIntegerArray;
+var
+  i, count: Integer;
 begin
-  SetupSmartX(72, True);
-end.
-{$ENDIF}
+  count := SmartGetClients(False);
+  SetLength(Result, count);
+  if count > 0 then
+    for i:= 0 to count-1 do
+      Result[i] := SmartClientID(i);
+end;
+
+function PairToSmart(id: Integer): boolean;
+var
+  i, c: Integer;
+  Ids: TIntegerArray;
+begin
+  Ids := GetSmartIDs;
+  c := Length(Ids);
+  if c > 0 then
+    for i:= 0 to c-1 do
+      if (Ids[i] = id) and SmartPairClient(id) then
+      begin
+        SetEIOSTarget('libsmartremote', ToStr(id));
+        Writeln('Paired with SMART['+ToStr(id)+']');
+        Result := True;
+        Exit;
+      end;
+  Writeln('** SMART remote['+ ToStr(id) +'] does not exist **');
+end;
+
+function InitSmart(force_new: boolean): integer;
+var
+  i, c: Integer;
+  Ids: TIntegerArray;
+  Params: TStringArray;
+begin
+  if not force_new then
+  begin
+    Ids := GetSmartIDs;
+    c := Length(Ids);
+    if c > 0 then
+      for i:= 0 to c-1 do
+        if SmartPairClient(Ids[i]) then
+        begin
+          Result := Ids[i];
+          SetEIOSTarget('libsmartremote', ToStr(Result));
+          Writeln('Paired with SMART['+ToStr(Result)+']');
+          Exit;
+        end;
+  end;
+  Params := GetSmartParams;
+  if (Length(Params) < 2) then Exit;
+  Writeln('Loading SMART: ' + params[0] + ',' + params[1]);
+  Result := SmartSpawnClient('./Plugins/', params[0], ',' + params[1], 765, 503,
+    's', '', '', -1);
+  if (Result > 0) then SetEIOSTarget('libsmartremote', ToStr(Result));
+end;
+
+procedure KillAllSmartRemotes;
+var
+  Ids: TIntegerArray;
+  i: Integer;
+begin
+  Ids := GetSmartIDs;
+  for i := High(Ids) downto 0 do
+  begin
+    SmartKillClient(Ids[i]);
+    Writeln('Killed SMART['+ToStr(Ids[i])+']');
+  end;
+end;
+
+procedure SetupSmart;
+var
+  id, t: Integer;
+begin
+  t := GetTimeRunning;
+  id := InitSmart(False);
+  if (id <= 0) then
+  begin
+    Writeln('** SMART failed to load **');
+    TerminateScript;
+  end else
+    Writeln('SMART loaded in ' + ToStr(GetTimeRunning - t) + ' msec');
+end;

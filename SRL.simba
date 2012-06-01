@@ -163,19 +163,8 @@ begin
   Writeln ('SRL Compiled in '+  IntToStr(GetTimeRunning - t) + ' msec');
 
   {$IFDEF SRL_SMART}
-  if (Smart_Server = 0) then
-  begin
-    Smart_Server := RandomWorld(Smart_Members, False);
-    Smart_Signed := True;
-    Smart_SuperDetail := False;
-  end;
-  {
-  Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
-                 + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
-  SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
-  }
-  SetupSmartX(Smart_Server, True);
-  SetTargetArray(SmartImageArray, 765,503);
+  SetupSmart;
+  SetTargetArray(SmartImageArray, 765, 503);
 
   repeat
     FixSmartSpeed;
@@ -183,11 +172,6 @@ begin
     if (GetTimeRunning - t) > 120000 then
       Break;
   until(RSReady);
-  {$ELSE}
-  Smart_Server := 0;
-  Smart_Members := false;
-  Smart_Signed := True;
-  Smart_SuperDetail := false;
   {$ENDIF}
 
   SetupGauss();
