@@ -1,3 +1,9 @@
+{*
+  By: Brandon.
+  Modified By: Mormanman, Benland100.
+
+  Grabs The Correct Parameters For passing to the SmartClient.
+*}
 Function GetSmartParams: TStringArray;
 var
   Params: TStringArray;
@@ -8,6 +14,12 @@ begin
   Result := Params;
 end;
 
+{*
+  By: Brandon.
+  Fixes Smart's Loading Speed.
+
+  Moves the Mouse & Adjusting the Canvas Refresh rate.
+*}
 Procedure FixSmartSpeed;
 var
   T: Integer;
@@ -31,7 +43,10 @@ begin
   end;
 end;
 
-{$IFDEF SMARTREMOTE}
+{*
+    By: Mormanman.
+    Grabs All Client ID's of the current remote.
+*}
 Function SmartGetClientIDs: TIntegerArray;
 var
   I, Count: Integer;
@@ -45,6 +60,10 @@ begin
   end;
 end;
 
+{*
+    By: Mormanman.
+    Kills All Smart Clients.
+*}
 Procedure SmartKillClients;
 var
   I: Integer;
@@ -60,6 +79,38 @@ begin
   end;
 end;
 
+
+{*
+    By: Brandon.
+    Kills The Current Smart Client and Restarts it.
+    Fixes the 6 hour login.
+*}
+Procedure FreeSRL; Forward;
+Procedure SetupSRL; Forward;
+Function SixHourFix: Boolean;
+var
+  Trash: TVariantArray;
+begin
+  FreeSRL;
+  SmartKillClient(SmartCurrentClient);
+  SetupSRL;
+  try
+    CallProc('DeclarePlayers', Trash);
+  except
+    Writeln('Could Not DeclarePlayers');
+    TerminateScript;
+  end;
+  Result:= LoginPlayer;
+end;
+
+{*
+    By: Benland100, Mormanman, Brandon.
+
+    Initializes A Smart Remote Client.
+    Terminates the current script upon failure.
+    Terminates all clients of the current remote upon failure.
+    ForceNew Creates a new client.
+*}
 function InitSmart(ForceNew: boolean): integer;
 var
   I, Count: Integer;
@@ -106,6 +157,13 @@ begin
     end;
 end;
 
+{*
+  By: Mormanman.
+  Modified By: Brandon.
+
+  Sets Up a new Smart Client and waits until it's on screen.
+  Terminates The current script upon failure.
+*}
 Procedure SetupSmart(ForceNewClient: Boolean);
 var
   ID, T: Integer;
@@ -131,126 +189,3 @@ begin
     end;
   end;
 end;
-{$ENDIF}
-{$IFDEF SMART}
-const
-  SmartFileLocation = 'SmartWorlds.INI';
-
-Function Convert24Hours(Time: TStringArray): TStringArray;
-var
-  Value: Integer;
-begin
-  If (Not ExecRegExpr('AM|am', Time[2])) then
-  begin
-    Value:= StrToInt(Time[0]);
-    IncEx(Value, 12);
-    Time[0]:= IntToStr(Value);
-  end;
-
-  Result:= Time;
-end;
-
-Function ParamsOutdated(World: String): Boolean;
-var
-  CurrentTime, LastWritten: String;
-  DateTimeData, OldTime, NewTime: TStringArray;
-begin
-  Result:= False;
-  LastWritten:= ReadINI('DateTime', 'Date' + World, SmartFileLocation);
-  if (Length(LastWritten) < 1) then
-  begin
-    Result:= True;
-    Exit;
-  end;
-
-  DateTimeData:= Explode('-', LastWritten);
-
-  if (DateTimeData[0] <> TheDate(Date_Month)) then
-  begin
-    CurrentTime:= TheTime;
-    OldTime:= Convert24Hours(Explode(':', DateTimeData[1]));
-    NewTime:= Convert24Hours(Explode(':', CurrentTime));
-
-    Result:= (Abs((StrToInt(NewTime[0]) - StrToInt(OldTime[0]))) >= 6);
-    Exit;
-  end else
-    Result:= False;
-end;
-
-Function SaveNewParams: TStringArray;
-var
-  P1, P2: Integer;
-  Params: TStringArray;
-  World: String;
-begin
-  Params:= GetSmartParams;
-  P1:= Pos('world.', Params[0]);
-  P2:= PosEx('.runescape', Params[0], P1 + 1);
-  World:= Copy(Params[0], P1 + 13, P2 - (P1 + 13));
-
-  writeln('Params Grabbed: ' + ToStr(Params));
-
-  If ParamsOutdated(World) Then
-  begin
-    WriteINI('World', 'Server' + World,  Params[1], SmartFileLocation);
-    WriteINI('DateTime', 'Date' + World, TheDate(Date_Month) + '-' + TheTime, SmartFileLocation);
-  end;
-
-  Result:= Params;
-end;
-
-Function GetSmartFileParams(Server: Integer): TStringArray;
-var
-  World: String;
-begin
-  World:= IntToStr(Server);
-  If ParamsOutdated(World) then
-  begin
-    Result:= SaveNewParams;
-    Exit;
-  end;
-
-  World:= ReadINI('World', 'Server' + World, SmartFileLocation);
-  If (Length(World) > 0) then
-  begin
-    SetLength(Result, 2);
-    Result[0]:= 'http://world' + IntToStr(Server) + '.runescape.com/';
-    Result[1]:= World;
-  end;
-end;
-
-Function GetAnyValidParams(Server: String): TStringArray;
-var
-  I: Integer;
-begin
-  if (ParamsOutdated(Server)) then
-  begin
-    For I:= 1 To 138 Do
-      If (Not ParamsOutdated(IntToStr(I))) then
-      begin
-        SetLength(Result, 2);
-        Result[0]:= 'http://world' + IntToStr(I) + '.runescape.com/';
-        Result[1]:= ReadINI('World', 'Server' + IntToStr(I), SmartFileLocation);
-        Break;
-      end;
-  end else
-    begin
-      SetLength(Result, 2);
-      Result[0]:= 'http://world' + Server + '.runescape.com/';
-      Result[1]:= ReadINI('World', 'Server' + Server, SmartFileLocation);
-    end;
-end;
-
-Procedure SetupSmartX(Server: Integer; AnyParams: Boolean);
-var
-  Params: TStringArray;
-begin
-  Params:= GetSmartFileParams(Server);
-  If AnyParams then
-    Params:= GetAnyValidParams(IntToStr(Server));
-
-  writeln('Params Used: ' + ToStr(Params));
-  SmartSetup(Params[0], 'l=2/,' + Params[1], 765, 503, 's');
-end;
-{$ENDIF}
-

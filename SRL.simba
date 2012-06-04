@@ -30,12 +30,6 @@
   {$IFNDEF SRL_SMART}
     {$include SRL/SRL/misc/smart.simba}
   {$ENDIF}
-{$ELSE}
-  {$IFDEF SMARTREMOTE}
-    {$IFNDEF SRL_SMART}
-      {$include SRL/SRL/misc/smart.simba}
-    {$ENDIF}
-  {$ENDIF}
 {$ENDIF}
 
 //{$include SRL/SRL/core/defines.simba}
@@ -89,7 +83,9 @@
 {$include SRL/SRL/misc/fontupdater.simba}
 {$ENDIF}
 
+{$IFDEF SMART}
 {$include SRL/SRL/Misc/SmartParams.Simba}
+{$ENDIF}
 
 {$DEFINE SRL_OPENDEV}
 {*******************************************************************************
@@ -167,26 +163,11 @@ begin
   Writeln ('SRL Compiled in '+  IntToStr(GetTimeRunning - t) + ' msec');
 
   {$IFDEF SRL_SMART}
-    {$IFDEF SMARTREMOTE}
-      SetupSmart(False);
-    {$ELSE}
-      if (Smart_Server = 0) then
-      begin
-        Smart_Server := RandomWorld(Smart_Members, False);
-        Smart_Signed := True;
-        Smart_SuperDetail := False;
-      end;
-      {
-      Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
-                     + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
-      SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
-      }
-      SetupSmartX(SMART_SERVER, True);
-    {$ENDIF}
+  SetupSmart(False);
   SetTargetArray(SmartImageArray, 765, 503);
 
   repeat
-    {$IFDEF FIXSMARTSPEED}
+    {$IFDEF SMART}
     If Smart_FixSpeed then
       FixSmartSpeed;
     {$ENDIF}
@@ -196,7 +177,7 @@ begin
   until(RSReady);
   {$ENDIF}
 
-  SetupGauss();
+  SetupGauss;
 end;
 
 {$ifdef CompileSRL}

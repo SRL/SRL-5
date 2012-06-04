@@ -1,13 +1,6 @@
 {$DEFINE SRL_SMART}
-{$DEFINE FIXSMARTSPEED}
-
-{$IFNDEF SMARTREMOTE}
-  {$DEFINE SMART}
-  {$loadlib libsmart32.dll}
-{$ELSE}
-  {$DEFINE SMARTREMOTE}
-  {$loadlib libsmartremote}
-{$ENDIF}
+{$DEFINE SMART}
+{$loadlib libsmartremote}
 
 function IsKeyDown(C:Byte): Boolean;
 begin
@@ -141,6 +134,7 @@ begin
     WriteINI('SMART', ts[i], v[i], ts[5]);
 end;   }
 
+{
 procedure SmartSetupEx(Server: integer; members, signed, superdetail: boolean);
 var
   prefix: string;
@@ -151,12 +145,10 @@ begin
     writeln('Invalid world number or corrupted world list. Please review your settings');
     TerminateScript;
   end;
-  {$IFDEF SMART}
   SmartSetup('http://'+prefix+'.runescape.com/', 'plugin.js?param=o0,a' + IntToStr((Integer(not(Signed)) + 1) * Integer(not((SuperDetail and Signed)))) + ',m' + IntToStr(Integer(Members)), 765, 503, 's');
-  {$ENDIF}
   //SmartSaveSettings([Server, Members, Signed, SuperDetail, SmartGetDC]);
 end;
-
+}
 {function SmartLastSettings: TStringArray;
 var
   i: Integer;
