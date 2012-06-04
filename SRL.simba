@@ -164,7 +164,6 @@ begin
 
   {$IFDEF SRL_SMART}
   SetupSmart(False);
-  SetTargetArray(SmartImageArray, 765, 503);
 
   repeat
     {$IFDEF SMART}

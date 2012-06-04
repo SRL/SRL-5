@@ -255,6 +255,7 @@ var
 var
   Smart_FixSpeed: Boolean;
   SRL_SixHourFix: Boolean;
+  Smart_CurrentClient: Integer;
 
 { var WarnSensitivity: Integer
   Description: var for srl_Warn. }
