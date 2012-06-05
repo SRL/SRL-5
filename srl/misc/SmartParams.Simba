@@ -177,6 +177,7 @@ begin
   end else
     writeln('Please Wait.. Smart Is Currently Loading..');
 
+  Smart_CurrentClient:= ID;
   While (GetColor(382, 252) <> 0) Do
   begin
     if RSReady then
