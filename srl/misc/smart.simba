@@ -50,9 +50,9 @@ begin
   SmartHoldKey(key);
 end;
 
-procedure SendKeys(S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer);
+procedure SendKeys(S: String; keywait, keymodwait: integer);
 begin
-  SmartSendKeys(S);
+  SmartSendKeys(S, keywait, keymodwait);
 end;
 
 function FindAndSetTarget(TitlePrefix: String; SetAsTarget: Boolean): Boolean;

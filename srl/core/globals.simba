@@ -252,10 +252,12 @@ var
   isACLoaded: array of Boolean;
 
 { vars For Smart}
+{$IFDEF SMART}
 var
   Smart_FixSpeed: Boolean;
   SRL_SixHourFix: Boolean;
   Smart_CurrentClient: Integer;
+{$ENDIF}
 
 { var WarnSensitivity: Integer
   Description: var for srl_Warn. }
