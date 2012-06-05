@@ -1041,8 +1041,11 @@ begin
             Writeln('Runescape has been updated! Please restart Simba.');
             {$IFDEF SMART}
               If SRL_SixHourFix then
+              begin
                 If (Not SixHourFix) then
                   TerminateScript;
+              end else
+                TerminateScript;
             {$ELSE}
               TerminateScript;
             {$ENDIF}
