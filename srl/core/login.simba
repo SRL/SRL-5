@@ -853,11 +853,8 @@ begin
     Inc(Attempts);
     goto ProcStart;
   end;
-end;
 
-{$IFDEF SMART}
-Function SixHourFix: Boolean; Forward;
-{$ENDIF}
+end;
 
 (*
 LoginPLayer
@@ -1041,16 +1038,7 @@ begin
               Exit;
             end;
             Writeln('Runescape has been updated! Please restart Simba.');
-            {$IFDEF SMART}
-              If SRL_SixHourFix then
-              begin
-                If (Not SixHourFix) then
-                  TerminateScript;
-              end else
-                TerminateScript;
-            {$ELSE}
-              TerminateScript;
-            {$ENDIF}
+            TerminateScript;
           end;
       end;
       Exit;

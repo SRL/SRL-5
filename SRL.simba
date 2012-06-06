@@ -28,7 +28,9 @@
 
 {$IFDEF SMART}
   {$IFNDEF SRL_SMART}
-    {$include SRL/SRL/misc/smart.simba}
+    {$DEFINE SRL_SMART}
+    {$DEFINE SMART}
+    {$loadlib libsmartremote}
   {$ENDIF}
 {$ENDIF}
 

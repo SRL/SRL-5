@@ -34,6 +34,8 @@ begin
 
   While (GetColor(382, 252) = 0) Do
   begin
+    If RSReady then
+      Break;
     SmartSetRefresh(SmartGetRefresh + 1);
     MMouse(4, 4, 0, 0);
     SmartSetRefresh(SmartGetRefresh - 1);
@@ -87,7 +89,7 @@ end;
 *}
 Procedure FreeSRL; Forward;
 Procedure SetupSRL; Forward;
-Function SixHourFix: Boolean;
+Procedure SixHourFix;
 var
   Trash: TVariantArray;
 begin
@@ -100,7 +102,12 @@ begin
     Writeln('Could Not DeclarePlayers');
     TerminateScript;
   end;
-  Result:= LoginPlayer;
+
+  If (Not LoginPlayer) then
+  begin
+    Writeln('~SixHourFix~ Could Not Login Player');
+    TerminateScript;
+  end;
 end;
 
 {*
@@ -166,22 +173,25 @@ end;
 *}
 Procedure SetupSmart(ForceNewClient: Boolean);
 var
-  ID, T: Integer;
+  T: Integer;
 begin
   T:= GetSystemTime + 120000;
-  ID:= InitSmart(ForceNewClient);
-  if (ID <= 0) then
+  Smart_CurrentClient:= InitSmart(ForceNewClient);
+  if (Smart_CurrentClient <= 0) then
   begin
     writeln('*** Smart Failed To Load ***');
     TerminateScript;
   end else
     writeln('Please Wait.. Smart Is Currently Loading..');
 
-  Smart_CurrentClient:= ID;
+  if (SRL_SixHourFix) then
+    SRL_Procs[SRL_OnRSUpdate]:= @SixHourFix;
+
   While (GetColor(382, 252) <> 0) Do
   begin
     if RSReady then
       break;
+
     Wait(100);
     if (GetTimeRunning >= 120000) then
     begin
@@ -189,4 +199,62 @@ begin
       TerminateScript;
     end;
   end;
+end;
+
+
+
+
+{*           Functions Below Here are From the Original Smart.Simba           *}
+
+
+{*
+  By: Unknown Author.
+  Finds a Windows by partial title and Sets it as the target.
+*}
+function FindAndSetTarget(TitlePrefix: String; SetAsTarget: Boolean): Boolean;
+var
+  T : TSysProcArr;
+  I : Integer;
+begin
+  T := GetProcesses;
+  for I := High(T) downto 0 do
+    if Pos(TitlePrefix, T[I].Title) <> 0 then
+    begin
+      Result := True;
+      if SetAsTarget then SetTarget(T[I]);
+      Exit;
+    end;
+end;
+
+{*
+  By: Unknown Author.
+  Gets the position of the actual mouse (Not Smart's Mouse).
+*}
+procedure GetRealMousePos(var X, Y : Integer);
+var
+  KMTarget, ITarget: Integer;
+begin
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  FindAndSetTarget('SMART', True);
+  GetTClient.IOManager.GetMousePos(X, Y);
+  FreeTarget(GetImageTarget);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+
+  // These are not universial offsets, but works somewhat for some Windows themes.
+  X := X - 8;
+  Y := Y - 25;
+end;
+
+{*
+  By: Unknown Author.
+  Returns if the "Real Mouse" (Not Smart's Mouse) Is Within a given Box.
+*}
+function IsRealMouseInBox(B : TBox): Boolean;
+var
+  P : TPoint;
+begin
+  GetRealMousePos(P.X, P.Y);
+  Result := PointInBox(P, B);
 end;
