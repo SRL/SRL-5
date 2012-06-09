@@ -26,6 +26,7 @@ end;
 (**
  * Author: Coh3n
  * Description: Returns true if one of the reward DTMs are found.
+ * Updated: 5/06/2012 - [J]ustin
  *)
 function RD_Detect(): boolean;
 var
@@ -62,7 +63,7 @@ begin
     result := true;
     GetmousePos(x, y);
     mouse(x, y, 0, 0, mouse_Left);
-    wait(randomRange(200, 500));
+    wait(randomRange(1200, 1800)); // 2-3 game ticks to stop the random repeating
     addToSRLLog('RD_SolveMystery: Clicked mystery box');
   end;
 end;
