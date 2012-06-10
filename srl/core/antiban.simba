@@ -987,8 +987,8 @@ Finds and exits the annoying Squeal of Fortune pop up.
 
 .. note::
 
-    Author: Coh3n & Ashaman88
-    Last Modified: June 9, 2012 by Ashaman88
+    Author: Coh3n
+    Last Modified: Mar. 8th, 2012 by Coh3n
 
 Example:
 
@@ -998,12 +998,10 @@ Example:
 *)
 function ExitSquealOfFortune(): boolean;
 var
-  w, h, x, y, xs, ys, xe, ye, tmpCTS,SquealDTM: integer;
+  w, h, x, y, xs, ys, xe, ye, tmpCTS: integer;
 begin
   if (SRL_ExitedSquealOfFortune) then
     exit;
-
-  SquealDTM := DTMFromString('mbQAAAHicY2VgYNjOzMCwEIirgLgSiBuB2JiRgUELiGWB2BCIrYH4/1kXhku1MQyLrxcyfPz0iSHA2Z2BH6gfHTNiwWAAAHx8DXE=');
 
   tmpCTS := getColorToleranceSpeed();
   setColorToleranceSpeed(1);
@@ -1014,24 +1012,22 @@ begin
   if (findColorTolerance(x, y, 7457955, 1, 1, w - 1, h - 1, 15)) then
   begin
     // to avoid out of bounds warnings
-    xs := x-70;
-    if (xs < 0) then
-      xs := 1;
+    xs := x;
 
-    ys := (y - 70);
+    ys := (y - 30);
     if (ys < 0) then
       ys := 1;
 
-    xe := (x + 130);
+    xe := (x + 100);
     if (xe > w) then
       xe := (w - 1);
 
-    ye := (y + 70);
+    ye := (y + 30);
     if (ye > h) then
       ye := (h - 1);
 
     // gold color in the X
-    if (findDTM(SquealDTM,x,y,xs,ys,xe,ye)) then
+    if (findColorTolerance(x, y, 4770302, xs, ys, xe, ye, 15)) then
     begin
       mouse(x, y, 3, 3, mouse_Move);
 
@@ -1044,7 +1040,7 @@ begin
       end;
     end;
   end;
-  FreeDTM(SquealDTM);
+
   setColorToleranceSpeed(tmpCTS);
 end;
 

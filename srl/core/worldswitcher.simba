@@ -248,38 +248,6 @@ begin
 end;
 
 (*
-WS_CurrentWorldEx
-~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function WS_CurrentWorldEx: Integer;
-
-Results Current world from WorldScreen
-
-..note::
-
-    by Home
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function WS_CurrentWorldEx: Integer;
-var
-  Box :TBox;
-  TPA :TPointArray;
-begin
-  if (not (WorldScreen)) then
-    Exit;
-  FindColors(TPA, 12378347, 628, 79, 689, 92);
-  Box := GetTPABounds(TPA);
-  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(Box.X1, Box.Y1, Box.X2, Box.Y2, 0, 3, 4, 12378347, 0, UpChars), Numbers), - 1);
-end;
-
-
-(*
 WS_CurrentWorld
 ~~~~~~~~~~~~~~~
 
@@ -287,26 +255,28 @@ WS_CurrentWorld
 
     function WS_CurrentWorld(var World: Integer): Boolean;
 
-Results true if we are currently in same world as what user inputted.
+Results true if the current world is members,returns world number. World returns -1 if failed. Only works at world screen.
 
 ..note::
 
-    by Home
+    by Icefire908
 
 Example:
 
 .. code-block:: pascal
 
 *)
-
 function WS_CurrentWorld(var World: Integer): Boolean;
+var
+  P: TPoint;
 begin
+  World := -1;
   if (not (WorldScreen)) then
     Exit;
-  Result := WS_CurrentWorldEx = World;
-  World := WS_CurrentWorldEx;
+  if (IsTextInAreaEx(618, 74, 705, 96, P.X, P.Y, 'orld', 0, SmallChars, False, False, 0, 1, clWhite)) then
+    World := StrToIntDef(GetNumbers(Trim(GetTextAtEx(P.X, P.Y, 0, SmallChars, False, False, 0, 1, clWhite, 15, False, tr_AllChars))), -1);
+  Result := FindColorTolerance(P.X, P.Y, 3141117, 596, 64, 701, 100, 20);
 end;
-
 
 (*
 OrderWorlds

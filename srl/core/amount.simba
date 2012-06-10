@@ -57,7 +57,7 @@ Returns true if the shop screen is open.
 .. note::
 
     Author: ZephyrsFury
-    Last Modified: 4/16/2012 by Kyle Undefined
+    Last Modified: Unknown by NCDS
 
 Example:
 
@@ -68,7 +68,7 @@ Example:
 *)
 Function ShopScreen : Boolean;
 Begin
-  Result := FindTextTPA(12054007, 10, 54, 240, 172, 258, 'item', UpChars, Nothing);
+  Result := FindTextTPA(2070783, 10, 58, 303, 85, 317, 'Right', StatChars, Nothing);
 End;
 
 (*
