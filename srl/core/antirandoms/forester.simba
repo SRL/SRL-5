@@ -15,7 +15,7 @@ colors are found to determine how many tails there are.
 // colors gathered using ACA
 const
   _PHEASANT_TAIL_COLOR = 9412006; // white tail tip
-  _PHEASANT_TAIL_TOL   = 3;
+  _PHEASANT_TAIL_TOL   = 5;
 
   _PHEASANT_COLOR = 2705758; // brown of pheasant body
   _PHEASANT_TOL   = 7;
