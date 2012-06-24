@@ -146,7 +146,32 @@ end;
 *}
 procedure SMART_DebugATPA(Clear: Boolean; ATPA: T2DPointArray);
 {$IFDEF SMART}
+var
+  i, h, len: Integer;
+  B: TBox;
+  MP: TPoint;
+  TPA: TPointArray;
 begin
+  len := Length(ATPA);
+  if (Len < 1) then
+    Exit;
+
+  for i := 0 to High(ATPA) do
+  begin
+    B := GetTPABounds(ATPA[i]);
+    if len > 1 then
+    begin
+      TPA := LoadTextTPA(ToStr(i), SmallChars, h);
+      OffsetTPA(TPA, Point(B.X1+1, B.Y1+1));
+    end;
+    ATPA[i] := CombineTPA(FindTPAEdges(TPAFromBox(B)), TPA);
+    MP := MiddleTPA(ATPA[i]);
+    TPA := [Point(MP.x-1, MP.y), Point(MP.x+1, MP.y), Point(MP.x, MP.y-1),
+            Point(MP.x, MP.y+1), Point(MP.x-2, MP.y), Point(MP.x, MP.y),
+            Point(MP.x+2, MP.y), Point(MP.x, MP.y-2), Point(MP.x, MP.y+2)];
+    ATPA[i] := CombineTPA(ATPA[i], TPA);
+  end;
+
   SMART_DrawDotsMulti(Clear, ATPA);
 {$ELSE}
 begin
