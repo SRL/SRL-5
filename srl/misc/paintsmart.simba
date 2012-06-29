@@ -250,6 +250,20 @@ begin
       end;
     end;
 
+    if (Fill) then
+    begin
+      if (TBA[I].X1 < 0) then  TBA[I].X1 := 0;
+      if (TBA[I].X2 < 0) then  TBA[I].X2 := 0;
+      if (TBA[I].Y1 < 0) then  TBA[I].Y1 := 0;
+      if (TBA[I].Y2 < 0) then  TBA[I].Y2 := 0;
+    end else
+    begin
+      if (TBA[I].X1 < 0) then  TBA[I].X1 := 0;
+      if (TBA[I].X2 < 2) then  TBA[I].X2 := 2;
+      if (TBA[I].Y1 < 0) then  TBA[I].Y1 := 0;
+      if (TBA[I].Y2 < 2) then  TBA[I].Y2 := 2;
+    end;
+
     SMART_Canvas.Rectangle(TBA[I], Temp);
 
     If (Not Fill) then
@@ -350,15 +364,15 @@ var
   TPA: TPointArray;
   TempMufasa: TMufasaBitmap;
   TempTBitmap: TBitmap;
-begin	
+begin
   if Fill then
   begin
    if (not SMART_DebugSetup) then
     SMART_SetupDebug;
-	
+
     if Clear then
       SMART_ClearCanvas;
-	
+
     TempTBitmap := TBitmap.Create;
     TempTBitmap.Canvas.Brush.COLOR := Color;
 
