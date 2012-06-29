@@ -67,7 +67,13 @@ end;
 *}
 procedure SMART_ClearCanvas;
 begin
-  SMART_CANVAS.FastDrawClear(0);
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug;
+
+  If (SMART_CANVAS.TransparentColorSet) then
+    SMART_CANVAS.FastDrawClear(SMART_CANVAS.GetTransparentColor)
+  else
+    SMART_CANVAS.FastDrawClear(0);
 end;
 
 {*
@@ -300,18 +306,34 @@ end;
   clear the SMART canvas if set to do so (Clear).
 *}
 procedure SMART_DrawLine(Clear: Boolean; TP1, TP2: TPoint; Color: TColor);
+var
+  TempMufasa: TMufasaBitmap;
+  TempTBitmap: TBitmap;
 begin
 {$IFDEF SMART}
   if (not SMART_DebugSetup) then
     SMART_SetupDebug;
 
-  SMART_Canvas.ToTBitmap.Canvas.Pen.Color := Color;
-
   if (Clear) then
     SMART_ClearCanvas;
 
-  SMART_Canvas.ToTBitmap.Canvas.moveto(TP1.x,TP1.y);
-  SMART_Canvas.ToTBitmap.Canvas.LineTo(TP2.x,TP2.y);
+  TempTBitmap := TBitmap.Create;
+  TempTBitmap.Width := Max(1, iAbs(TP2.X - TP1.X));
+  TempTBitmap.Height := Max(1, iAbs(TP2.Y - TP1.Y));
+  TempTBitmap.Canvas.Pen.COLOR := Color;
+
+  TempTBitmap.Canvas.moveto(0, 0);
+  TempTBitmap.Canvas.LineTo(iAbs(TP2.X - TP1.X), iAbs(TP2.Y - TP1.Y));
+
+  TempMufasa := TMufasaBitmap.Create;
+  TempMufasa.LoadFromTBitmap(TempTBitmap);
+  if (SMART_Canvas.TransparentColorSet) then
+    TempMufasa.SetTransparentColor(SMART_Canvas.GetTransparentColor);
+
+  FastDrawTransparent(Min(TP1.X, TP2.X), Min(TP1.Y, TP2.Y), TempMufasa.Index, SMART_Canvas.Index);
+
+  TempMufasa.Free;
+  TempTBitmap.Free;
 {$ENDIF}
 end;
 
@@ -326,17 +348,36 @@ procedure SMART_DrawEllipse(Clear: Boolean; Center: TPoint; XRadius, YRadius: In
 {$IFDEF SMART}
 var
   TPA: TPointArray;
-begin
+  TempMufasa: TMufasaBitmap;
+  TempTBitmap: TBitmap;
+begin	
   if Fill then
   begin
-    SMART_Canvas.ToTBitmap.Canvas.Brush.COLOR := Color;
+   if (not SMART_DebugSetup) then
+    SMART_SetupDebug;
+	
     if Clear then
       SMART_ClearCanvas;
-    SMART_Canvas.ToTBitmap.Canvas.Ellipse(Center.x - XRadius, Center.y - YRadius,
-      Center.x + XRadius, Center.y + YRadius);
+	
+    TempTBitmap := TBitmap.Create;
+    TempTBitmap.Canvas.Brush.COLOR := Color;
+
+    TempTBitmap.Width := (XRadius * 2);
+    TempTBitmap.Height := (YRadius * 2);
+
+    TempTBitmap.Canvas.Ellipse(Center.X - XRadius, Center.Y - YRadius, Center.X + XRadius, Center.Y + YRadius);
+
+    TempMufasa := TMufasaBitmap.Create;
+    TempMufasa.LoadFromTBitmap(TempTBitmap);
+    if (SMART_Canvas.TransparentColorSet) then
+      TempMufasa.SetTransparentColor(SMART_Canvas.GetTransparentColor);
+
+    FastDrawTransparent(0, 0, TempMufasa.Index, SMART_Canvas.Index);
+    TempMufasa.Free;
+    TempTBitmap.Free;
   end else
   begin
-    TPA := TPAFromEllipse(Center.x, Center.y, XRadius, YRadius);
+    TPA := TPAFromEllipse(Center.X, Center.Y, XRadius, YRadius);
 
     if (Length(TPA) >= 1) then
       SMART_DrawDotsEx(Clear, TPA, Color);
@@ -462,9 +503,6 @@ end;
   Will clear the canvas beforehand if specified to do so (Clear).
 *}
 procedure SMART_DrawBitmap(Clear: Boolean; Bitmap: Integer; Placement: TPoint);
-var
-  Width, Height, I, J: Integer;
-  Colors: T2DIntegerArray;
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug;
@@ -472,15 +510,7 @@ begin
   if (Clear) then
     SMART_ClearCanvas;
 
-  GetBitmapSize(Bitmap, Width, Height);
-  Colors:= GetBitmapAreaColors(Bitmap, 0, 0, Width - 1, Height - 1);
-
-  For I:= 0 To Height - 1 Do
-    For J:= 0 To Width - 1 Do
-      Smart_DrawDot(False, Point(Placement.X + J, Placement.Y + I), Colors[J][I]);
-
-
-  //DrawBitmap(Bitmap, SMART_Canvas.ToTBitmap.Canvas, Placement.X, Placement.Y);
+  FastDrawTransparent(Placement.X, Placement.Y, Bitmap, SMART_Canvas.Index);
 end;
 
 {*
