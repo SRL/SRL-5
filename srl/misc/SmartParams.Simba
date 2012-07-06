@@ -1,3 +1,7 @@
+{$DEFINE SRL_SMART}
+{$DEFINE SMART}
+{$LOADLIB LIBSMARTREMOTE}
+
 {*
   By: Brandon.
   Modified By: Mormanman, Benland100.

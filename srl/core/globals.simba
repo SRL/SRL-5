@@ -254,9 +254,14 @@ var
 { vars For Smart}
 {$IFDEF SMART}
 var
-  Smart_FixSpeed: Boolean;
-  SRL_SixHourFix: Boolean;
-  Smart_CurrentClient: Integer;
+  {$IFDEF SIMBAMAJOR980}
+    Smart_Server: Integer;
+    Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean;
+  {$ELSE}
+    Smart_FixSpeed: Boolean;
+    SRL_SixHourFix: Boolean;
+    Smart_CurrentClient: Integer;
+  {$ENDIF}
 {$ENDIF}
 
 { var WarnSensitivity: Integer
