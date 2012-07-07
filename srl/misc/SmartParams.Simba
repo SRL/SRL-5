@@ -1,6 +1,6 @@
 {$DEFINE SRL_SMART}
 {$DEFINE SMART}
-{$LOADLIB LIBSMARTREMOTE}
+{$loadlib libsmartremote}
 
 {*
   By: Brandon.
