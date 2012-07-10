@@ -60,7 +60,7 @@ var
 const
   srl_outline_black = 131072;
   srl_outline_white = clWhite;
-  
+
 { const MMX1, MMY1, MMX2, MMY2;
   Description: MiniMap Edge Points. }
 const
@@ -116,7 +116,7 @@ const
 const
   MCCX = 250;
   MCCY = 401;
-  
+
 { const MBX1, MBY1, MBX2, MBY2;
   Description: BankScreen EdgePoints (where you click the items, does not include tabs). }
 const
@@ -157,7 +157,7 @@ const
 var
   SRL_Procs: array [0..14] of procedure();
   SRL_OnFindRandomCall : function(var Cont : boolean) : boolean; // no longer used
-  
+
 { const GameTab Constants;
   Description: Constants representing gametab numbers. }
 const
@@ -216,7 +216,7 @@ const
 var
   tmp_RandSolved: array[0..rand_Count-1] of Integer;
   tmp_RandFailed: array[0..rand_Count-1] of integer;
-  
+
 { type TAutoColorInfo;
   Description: Set of information that can be used in some functions. }
 type
@@ -251,15 +251,18 @@ var
                prior to calling. Optimizes AutoColors significantly }
   isACLoaded: array of Boolean;
 
-{ var Smart_Server: Integer;
-  Description: Smart Server to Load. }
+{ vars For Smart}
+{$IFDEF SMART}
 var
-  Smart_Server: Integer;
-
-{ var Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean
-  Description: Smart Options to Load. }
-var
-  Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean;
+  {$IFDEF SIMBAMAJOR980}
+    Smart_Server: Integer;
+    Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean;
+  {$ELSE}
+    Smart_FixSpeed: Boolean;
+    SRL_SixHourFix: Boolean;
+    Smart_CurrentClient: Integer;
+  {$ENDIF}
+{$ENDIF}
 
 { var WarnSensitivity: Integer
   Description: var for srl_Warn. }
@@ -561,3 +564,4 @@ Function srl_InFight: Boolean;
 begin
   Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
 end;
+

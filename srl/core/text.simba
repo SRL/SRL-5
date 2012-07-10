@@ -100,6 +100,10 @@ Example:
 *)
 procedure TypeByte(k: Byte);
 begin
+  {$IFDEF SMART}
+  If (K = 13) then
+    K:= 10;
+  {$ENDIF}
   KeyDown(k);
   Wait(10 + Random(50));
   KeyUp(k);

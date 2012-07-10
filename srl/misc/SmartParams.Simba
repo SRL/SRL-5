@@ -1,0 +1,264 @@
+{$DEFINE SRL_SMART}
+{$DEFINE SMART}
+{$loadlib libsmartremote}
+
+{*
+  By: Brandon.
+  Modified By: Mormanman, Benland100.
+
+  Grabs The Correct Parameters For passing to the SmartClient.
+*}
+Function GetSmartParams: TStringArray;
+var
+  Params: TStringArray;
+  Page: String;
+begin
+  Page := Between('<iframe id="game" src="', '"', GetPage('http://www.runescape.com/game.ws?j=1'));
+  Params := Explode(',', Page);
+  Result := Params;
+end;
+
+{*
+  By: Brandon.
+  Fixes Smart's Loading Speed.
+
+  Moves the Mouse & Adjusting the Canvas Refresh rate.
+*}
+Procedure FixSmartSpeed;
+var
+  T: Integer;
+begin
+  T:= GetSystemTime + 2000;
+  While (Not SmartEnabled) Do
+  begin
+    if (GetSystemTime >= T) Then
+      Break;
+    Wait(500);
+  end;
+
+  While (GetColor(382, 252) = 0) Do
+  begin
+    If RSReady then
+      Break;
+    SmartSetRefresh(SmartGetRefresh + 1);
+    MMouse(4, 4, 0, 0);
+    SmartSetRefresh(SmartGetRefresh - 1);
+    if (GetSystemTime >= T) Then
+      Break;
+    Wait(500);
+  end;
+end;
+
+{*
+    By: Mormanman.
+    Grabs All Client ID's of the current remote.
+*}
+Function SmartGetClientIDs: TIntegerArray;
+var
+  I, Count: Integer;
+begin
+  Count:= SmartGetClients(FALSE);
+  If (Count > 0) then
+  begin
+    SetLength(Result, 1);
+    For I:= 0 To (Count - 1) Do
+      Result[I]:= SmartClientID(I);
+  end;
+end;
+
+{*
+    By: Mormanman.
+    Kills All Smart Clients.
+*}
+Procedure SmartKillClients;
+var
+  I: Integer;
+  IDs: TIntegerArray;
+begin
+  IDs:= SmartGetClientIDs;
+  For I:= High(IDs) DownTo 0 Do
+  begin
+    if SmartKillClient(IDs[I]) then
+      Writeln('Killed Client: ' + IntToStr(IDs[I]))
+    else
+      Writeln('Failed To Kill Client: ' + IntToStr(IDs[I]));
+  end;
+end;
+
+
+{*
+    By: Brandon.
+    Kills The Current Smart Client and Restarts it.
+    Fixes the 6 hour login.
+*}
+Procedure FreeSRL; Forward;
+Procedure SetupSRL; Forward;
+Procedure SixHourFix;
+var
+  Trash: TVariantArray;
+begin
+  FreeSRL;
+  SmartKillClient(SmartCurrentClient);
+  SetupSRL;
+  try
+    CallProc('DeclarePlayers', Trash);
+  except
+    Writeln('Could Not DeclarePlayers');
+    TerminateScript;
+  end;
+
+  If (Not LoginPlayer) then
+  begin
+    Writeln('~SixHourFix~ Could Not Login Player');
+    TerminateScript;
+  end;
+end;
+
+{*
+    By: Benland100, Mormanman, Brandon.
+
+    Initializes A Smart Remote Client.
+    Terminates the current script upon failure.
+    Terminates all clients of the current remote upon failure.
+    ForceNew Creates a new client.
+*}
+function InitSmart(ForceNew: boolean): integer;
+var
+  I, Count: Integer;
+  Params: TStringArray;
+begin
+  if (Not ForceNew) then
+  begin
+    Count:= SmartGetClients(True);
+    If (Count > 0) then
+    begin
+      For I:= 0 to Count-1 do
+      begin
+        Result:= SmartClientID(I);
+        if SmartPairClient(Result) then
+        begin
+          SetEIOSTarget('libsmartremote', IntToStr(result));
+          Exit;
+        end;
+      end;
+    end;
+  end;
+  Params:= GetSmartParams;
+  If (Length(Params) < 2) then
+  begin
+    Writeln('*** Failed To Grab Smart Parameters ***');
+    TerminateScript;
+    Exit;
+  end;
+
+  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 503, 's', '', '', -1);
+  If (Result > 0) then
+  begin
+    try
+      SetEIOSTarget('LibSmartRemote', IntToStr(Result));
+    except
+      Writeln('*** Fatal Error: Pairing Clients; Attempting To Kill All Clients ***');
+      SmartKillClients;
+      TerminateScript;
+    end;
+  end else
+    begin
+      Writeln('*** Smart Cannot Spawn Clients ***');
+      TerminateScript;
+    end;
+end;
+
+{*
+  By: Mormanman.
+  Modified By: Brandon.
+
+  Sets Up a new Smart Client and waits until it's on screen.
+  Terminates The current script upon failure.
+*}
+Procedure SetupSmart(ForceNewClient: Boolean);
+var
+  T: Integer;
+begin
+  T:= GetSystemTime + 120000;
+  Smart_CurrentClient:= InitSmart(ForceNewClient);
+  if (Smart_CurrentClient <= 0) then
+  begin
+    writeln('*** Smart Failed To Load ***');
+    TerminateScript;
+  end else
+    writeln('Please Wait.. Smart Is Currently Loading..');
+
+  if (SRL_SixHourFix) then
+    SRL_Procs[SRL_OnRSUpdate]:= @SixHourFix;
+
+  While (GetColor(382, 252) <> 0) Do
+  begin
+    if RSReady then
+      break;
+
+    Wait(100);
+    if (GetTimeRunning >= 120000) then
+    begin
+      Writeln('*** Failed To Detect Clients ***');
+      TerminateScript;
+    end;
+  end;
+end;
+
+
+
+
+{*           Functions Below Here are From the Original Smart.Simba           *}
+
+
+{*
+  By: Unknown Author.
+  Finds a Windows by partial title and Sets it as the target.
+*}
+function FindAndSetTarget(TitlePrefix: String; SetAsTarget: Boolean): Boolean;
+var
+  T : TSysProcArr;
+  I : Integer;
+begin
+  T := GetProcesses;
+  for I := High(T) downto 0 do
+    if Pos(TitlePrefix, T[I].Title) <> 0 then
+    begin
+      Result := True;
+      if SetAsTarget then SetTarget(T[I]);
+      Exit;
+    end;
+end;
+
+{*
+  By: Unknown Author.
+  Gets the position of the actual mouse (Not Smart's Mouse).
+*}
+procedure GetRealMousePos(var X, Y : Integer);
+var
+  KMTarget, ITarget: Integer;
+begin
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  FindAndSetTarget('SMART', True);
+  GetTClient.IOManager.GetMousePos(X, Y);
+  FreeTarget(GetImageTarget);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+
+  // These are not universial offsets, but works somewhat for some Windows themes.
+  X := X - 8;
+  Y := Y - 25;
+end;
+
+{*
+  By: Unknown Author.
+  Returns if the "Real Mouse" (Not Smart's Mouse) Is Within a given Box.
+*}
+function IsRealMouseInBox(B : TBox): Boolean;
+var
+  P : TPoint;
+begin
+  GetRealMousePos(P.X, P.Y);
+  Result := PointInBox(P, B);
+end;
