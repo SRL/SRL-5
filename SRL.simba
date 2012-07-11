@@ -184,6 +184,8 @@ begin
       SetTargetArray(SmartImageArray, 765,503);
     {$ELSE}
       SetupSmart(False);
+      if (SRL_SixHourFix) then
+        SRL_Procs[srl_OnRSUpdate] := @SixHourFix;
     {$ENDIF}
 
   repeat
