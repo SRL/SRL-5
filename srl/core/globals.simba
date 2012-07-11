@@ -65,73 +65,73 @@ const
   Description: MiniMap Edge Points. }
 const
   MMX1 = 550;
-  MMY1 = 8;
+  MMY1 = 58;
   MMX2 = 703;
-  MMY2 = 161;
+  MMY2 = 211;
 
 { const MMCX, MMCY;
   Description: MiniMap Centre Point. }
 const
   MMCX = 627;
-  MMCY = 85;
+  MMCY = 135;
 
 { const MSX1, MSY1, MSX2, MSY2;
   Description: Main Screen EdgePoints. }
 const
   MSX1 = 4;
-  MSY1 = 4;
+  MSY1 = 54;
   MSX2 = 515;
-  MSY2 = 337;
+  MSY2 = 387;
 
 { const MSCX, MSCY;
   Description: Main Screen Centre Points. }
 const
   MSCX = 259;
-  MSCY = 170;
+  MSCY = 220;
 
 { const MIX1, MIY1, MIX2, MIY2;
   Description: Inventory EdgePoints. }
 const
   MIX1 = 547;
-  MIY1 = 202;
+  MIY1 = 252;
   MIX2 = 737;
-  MIY2 = 466;
+  MIY2 = 516;
 
 { const MICX, MICY;
   Description: Inventory Centre Points. }
 const
   MICX = 642;
-  MICY = 334;
+  MICY = 434;
 
 { const MCX1, MCY1, MCX2, MCY2;
   Description: Chat Screen EdgePoints. }
 const
   MCX1 = 4;
-  MCY1 = 342;
+  MCY1 = 392;
   MCX2 = 514;
-  MCY2 = 475;
+  MCY2 = 525;
 
 { const MCCX, MCCY;
   Description: Chat Screen Centre Points. }
 const
   MCCX = 250;
-  MCCY = 401;
+  MCCY = 451;
 
 { const MBX1, MBY1, MBX2, MBY2;
   Description: BankScreen EdgePoints (where you click the items, does not include tabs). }
 const
   MBX1 = 26;
-  MBY1 = 84;
+  MBY1 = 134;
   MBX2 = 480;
-  MBY2 = 292;
+  MBY2 = 342;
 
 { const DBX1, DBY1, DBX2, DBY2;
   Description: Deposit box edgepoints (only where the item appear) }
 const
   DBX1 = 91;
-  DBY1 = 57;
+  DBY1 = 107;
   DBX2 = 443;
-  DBY2 = 262;
+  DBY2 = 312;
 
 { const SRL_Procs Constants;
   Description: Constants for SRL_Procs. }
@@ -564,4 +564,3 @@ Function srl_InFight: Boolean;
 begin
   Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
 end;
-
