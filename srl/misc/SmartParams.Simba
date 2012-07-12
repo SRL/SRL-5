@@ -151,7 +151,7 @@ begin
     Exit;
   end;
 
-  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 503, 's', '', '', -1);
+  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
   If (Result > 0) then
   begin
     try
