@@ -56,8 +56,8 @@ begin
 
   for Result := 0 to (tab_LogOut - tab_Combat)-1 do
   begin
-    tP.X := 535 + Result mod 8 * 30;
-    tP.Y := 169 + Result div 8 * 298;
+    tP.X := (535 + Result mod 8 * 30) + IGX;
+    tP.Y := (169 + Result div 8 * 298) + IGY;
     if (GetColor(tP.X, tP.Y) = 3775974) then
       Break;
   end;
@@ -118,13 +118,13 @@ begin
 
   if (tab = TAB_LOGOUT) then
   begin
-    result := (getColor(746, 0) = 65536);
+    result := (getColor(746 + IGX, 0 + IGY) = 65536);
     colorToleranceSpeed(tmpCTS);
     exit;
   end;
 
   // small boxes inside the tabs (hardly any of the background showing)
-  b := gridBox(tab - 20, 8, 2, 13, 18, 30, 300, point(536, 186));
+  b := gridBox(tab - 20, 8, 2, 13, 18, 30, 300, point(536 + IGX, 186 + IGY));
 
   // the color of the tab background
   result := (countColorTolerance(5005422, b.x1, b.y1, b.x2, b.y2, 55) < 250); // actual count should be 266
@@ -198,10 +198,9 @@ begin
 
   if (TabExists(Tab)) then
   begin
-    tP := Point((Tab - 21) mod 8 * 30 + RandomRange(527, 545),
-      (Tab - 21) div 8 * 298 + RandomRange(177, 197));
+    tP := Point(((Tab - 21) mod 8 * 30 + RandomRange(527, 545)) + IGX, ((Tab - 21) div 8 * 298 + RandomRange(177, 197)) + IGY);
     if (Tab = tab_LogOut) then
-      tP := Point(RandomRange(747, 760), RandomRange(3, 18));
+      tP := Point(RandomRange(747, 760) + IGX, RandomRange(3, 18) + IGY);
 
     Tries := 0;
     while ((Tries < 3) and (not Result)) do
@@ -325,11 +324,11 @@ begin
   GameTab(tab_Combat);
   Wait(200 + Random(100));
 
-  cmbBoxes := [IntToBox(575, 255, 630, 290), IntToBox(660, 255, 710, 290),
-               IntToBox(575, 310, 630, 345), IntToBox(660, 310, 710, 345)];
+  cmbBoxes := [IntToBox(575 + IGX, 255 + IGY, 630 + IGX, 290 + IGY), IntToBox(660 + IGX, 255 + IGY, 710 + IGX, 290 + IGY),
+               IntToBox(575 + IGX, 310 + IGY, 630 + IGX, 345 + IGY), IntToBox(660 + IGX, 310 + IGY, 710 + IGX, 345 + IGY)];
   b := cmbBoxes[oFightMode - 1];
 
-  if (oFightMode = 4) and (not FindColor(x, y, 2070783, 660, 310, 710, 345)) then
+  if (oFightMode = 4) and (not FindColor(x, y, 2070783, 660 + IGX, 310 + IGY, 710 + IGX, 345 + IGY)) then
     b := cmbBoxes[2];
 
   i := 0;
@@ -366,7 +365,7 @@ Example:
 Function GetWeaponName: String;
 begin
   if GameTab(tab_Combat) then
-    Result := GetTextAtExWrap(584, 208, 734, 226, 0, 3, 4, 3907053, 0, UpChars);
+    Result := GetTextAtExWrap(584 + IGX, 208 + IGY, 734 + IGX, 226 + IGY, 0, 3, 4, 3907053, 0, UpChars);
 end;
 
 (*
@@ -407,14 +406,14 @@ begin
     Exit;
   for i := 0 to 3 do
   begin
-    T := Point(680-(i+1) mod 2*85, 270+2 mod (i+1)*28);
+    T := Point((680-(i+1) mod 2*85) + IGX, (270+2 mod (i+1)*28) + IGY);
     if CountColor(2070783, T.x - 27, T.y-18, T.x + 40, T.y + 22) > 10 then
       Inc(L);
   end;
   SetArrayLength(WArr, L);
   for I := 0 to L-1 do
   begin
-    MMouse(680-(i+1) mod 2*85, 270+2 mod (i+1)*28, 12, 12);
+    MMouse((680-(i+1) mod 2*85) + IGX, (270+2 mod (i+1)*28) + IGY, 12, 12);
     wait(100+random(50));
     WaitFindColor(X, Y, 15133931, MIX1-10, MIY1-10, MIX2+10, MIY2+10, 0, 3000);
     GetClientDimensions(TB.X2, TB.Y2);
@@ -530,8 +529,7 @@ begin
   if not Gametab(tab_Combat) then
     exit;
   Wait(100 + Random(100));
-  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680, 229, 718, 245, 0,
-                                   3, 4, 3907053, 20, UpChars), Numbers), -1);
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680 + IGX, 229 + IGY, 718 + IGX, 245 + IGY, 0, 3, 4, 3907053, 20, UpChars), Numbers), -1);
 end;
 
 (*
@@ -563,8 +561,8 @@ Begin
     GameTab(tab_Combat);
     Wait(500 + Random(500));
   end;
-  if (RetTrue) xor FindColorTolerance(X, Y, 1125209, 624, 385, 719, 396, 2) then
-    MouseBox(624, 385, 719, 396, mouse_left);
+  if (RetTrue) xor FindColorTolerance(X, Y, 1125209, 624 + IGX, 385 + IGY, 719 + IGX, 396 + IGY, 2) then
+    MouseBox(624 + IGX, 385 + IGY, 719 + IGX, 396 + IGY, mouse_left);
 End;
 
 (* 
@@ -635,7 +633,7 @@ Example:
 *)
 function SkillCoords(Row, Column : ShortInt): TPoint;
 begin
-  Result := Point(576 + (62 * (Column - 1)), 213 + (28 * (Row - 1)));
+  Result := Point((576 + (62 * (Column - 1))) + IGX, (213 + (28 * (Row - 1))) + IGY);
 end;
 
 (*
@@ -764,7 +762,7 @@ begin
   GameTab(tab_Stats);
   TP := SkillToCoords(Skill);
   if (not(Amount)) then
-    TP := Point(TP.x + 15,TP.y + 12);
+    TP := Point(TP.x + 15, TP.y + 12);
   CTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(0);
   if not FindColors(TPA, 36095, TP.x - 2, TP.y - 2, TP.x + 15, TP.y + 15) then
@@ -821,7 +819,7 @@ Example:
 *)
 function IsResting: Boolean;
 begin
-  result := (CountColorTolerance(3712343,707, 95,732, 122,10)>10);
+  result := (CountColorTolerance(3712343, 707 + IGX, 95 + IGY, 732 + IGX, 122 + IGY, 10)>10);
 end;
 
 (*
@@ -855,10 +853,10 @@ begin;
   Result := -1;
   ColorSign := '';
   case LowerCase(Leveltype) of
-    'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719,27,745,43);
-    'prayer', 'pray'                           : B := IntToBox(735,66,762,82);
-    'run','energy'                             : B := IntToBox(735,103,762,122);
-    'summon', 'summoning'                      : B := IntToBox(719,119,745,156);
+    'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719 + IGX,27 + IGY,745 + IGX,43 + IGY);
+    'prayer', 'pray'                           : B := IntToBox(735 + IGX,66 + IGY,762 + IGX,82 + IGY);
+    'run','energy'                             : B := IntToBox(735 + IGX,103 + IGY,762 + IGX,122 + IGY);
+    'summon', 'summoning'                      : B := IntToBox(719 + IGX,119 + IGY,745 + IGX,156 + IGY);
   else
     begin;
       srl_Warn('GetMMLevels', 'Invalid LevelType: ''' + LevelType + '', warn_AllVersions);
@@ -1105,17 +1103,17 @@ Example:
 function EquipmentCoords(EquipSlot: Integer): TPoint;
 begin
   case EquipSlot of
-    1: Result := Point(640, 225);
-    2: Result := Point(600, 266);
-    3: Result := Point(640, 266);
-    4: Result := Point(684, 266);
-    5: Result := Point(588, 304);
-    6: Result := Point(644, 304);
-    7: Result := Point(700, 304);
-    8: Result := Point(642, 343);
-    9: Result := Point(588, 384);
-    10: Result := Point(643, 384);
-    11: Result := Point(700, 384);
+    1: Result := Point(640 + IGX, 225 + IGY);
+    2: Result := Point(600 + IGX, 266 + IGY);
+    3: Result := Point(640 + IGX, 266 + IGY);
+    4: Result := Point(684 + IGX, 266 + IGY);
+    5: Result := Point(588 + IGX, 304 + IGY);
+    6: Result := Point(644 + IGX, 304 + IGY);
+    7: Result := Point(700 + IGX, 304 + IGY);
+    8: Result := Point(642 + IGX, 343 + IGY);
+    9: Result := Point(588 + IGX, 384 + IGY);
+    10: Result := Point(643 + IGX, 384 + IGY);
+    11: Result := Point(700 + IGX, 384 + IGY);
     else
     begin
       result := Point(-1,-1);
@@ -1402,11 +1400,11 @@ CurrentWorld
 
     function CurrentWorld: Integer;
 
-Returns the current world you are on.
+Returns current world from Friends Tab
 
 .. note::
 
-    by Cheesehunk and Ron, fixed by ZephyrsFury
+    by Home
 
 Example:
 
@@ -1415,19 +1413,19 @@ Example:
 *)
 function CurrentWorld: Integer;
 var
-  TextX, TextY: Integer;
+  Box :TBox;
+  TPA :TPointArray;
 begin
-  Result := -1;
+  Result := - 1;
   if (GetCurrentTab <> tab_Friends) then
   begin
     GameTab(tab_Friends);
     Wait(250 + Random(500));
   end;
-  if (IsTextInAreaEx(635, 205, 727, 226, TextX, TextY, 'RuneSca', 5,
-                     SmallChars, False, False, 0, 0, 3381759)) then
-    Result := StrToIntDef(Trim(GetTextAtEx(TextX + 65, TextY, 5,
-      SmallChars, True, False, 0, 0, 3381759, 3, False, tr_AllChars)), -1);
-  if (Result = -1) then
+  FindColors(TPA, 3381759, 601 + IGX, 223 + IGY, 703 + IGX, 238 + IGY);
+  Box := GetTPABounds(TPA);
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(Box.X1, Box.Y1, Box.X2, Box.Y2, 0, 3, 4, 3381759, 0, UpChars), Numbers), - 1);
+  if (Result = - 1) then
     srl_Warn('CurrentWorld', 'Could not get Player''s current world', Warn_AllVersions);
 end;
 
@@ -1464,7 +1462,7 @@ function ObjectivePercent: Integer;
 begin
   Result := -1;
   if (not GameTab(tab_Objectives)) then exit;
-  Result := Round(CountColor(42516, 596, 390, 690, 400) / 9.73);
+  Result := Round(CountColor(42516, 596 + IGX, 390 + IGY, 690 + IGX, 400 + IGY) / 9.73);
 end;
 
 (*
@@ -1499,8 +1497,8 @@ begin
   Result.x := ObjectiveSlot mod 3;
   if (Result.x = 0) then
     Result.x := 3;
-  Result := Point(RandomRange(20 + 165 * (Result.x - 1), 160 + 165 * (Result.x - 1)),
-    RandomRange(50 + 65 * (Result.y - 1), 160 + 65 * (Result.y - 1)));
+  Result := Point(RandomRange(20 + 165 * (Result.x - 1), (160 + 165 * (Result.x - 1))) + IGX,
+    RandomRange(50 + 65 * (Result.y - 1), 160 + 65 * (Result.y - 1)) + IGY);
 end;
 
 (*
@@ -1526,7 +1524,7 @@ function HasObjective: Boolean;
 begin
   Result := False;
   if (GameTab(tab_Objectives)) then
-    Result := (GetColor(582, 267) <> 3029570)
+    Result := (GetColor(582 + IGX, 267 + IGY) <> 3029570)
   else
     srl_Warn('HasObjective', 'Failed to open GameTab #' +
       IntToStr(tab_Objectives), Warn_AllVersions);
@@ -1555,7 +1553,7 @@ function ClearObjective: Boolean;
 begin
   Result := HasObjective;
   if (Result) then
-    MouseBox(559, 447, 724, 456, mouse_left)
+    MouseBox(559 + IGX, 447 + IGY, 724 + IGX, 456 + IGY, mouse_left)
   else
     srl_Warn('ClearObjective', 'No Objective to Clear', Warn_AllVersions);
 end;
@@ -1596,7 +1594,7 @@ begin
   Mouse(TP.x, TP.y + 3, 2, 2, mouse_right);
   WaitOption('bjec', 300 + Random(500));
   Wait(1000 + Random(250));
-  if (FindTextTpa(clBlack, 0, 100, 390, 235, 410, 'Enter the skill', UpCharsEx, Nothing)) then
+  if (FindTextTpa(clBlack, 0, 100 + IGX, 390 + IGY, 235 + IGX, 410 + IGY, 'Enter the skill', UpCharsEx, Nothing)) then
   begin
     Wait(1000 + Random(250));
     TypeSend(IntToStr(Level));
@@ -1639,7 +1637,7 @@ begin
   if (not GameTab(tab_Objectives)) then exit;
   if (HasObjective) and (KeepOld) then exit;
 
-  MouseBox(556, 422, 725, 432, mouse_left);
+  MouseBox(556 + IGX, 422 + IGY, 725 + IGX, 432 + IGY, mouse_left);
   Wait(400 + Random(350));
   ObjP := ObjectiveCoords(ObjectiveSlot);
   Mouse(ObjP.x, ObjP.y, 0, 0, mouse_left);
@@ -1687,9 +1685,9 @@ Example:
 function SetRun(Run: Boolean): Boolean;
 begin
   Result := false;
-  if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6608616, 10)))  xor (Run)) then
+  if (((CountColorTolerance(3467501, 720 + IGX, 117 + IGY, 723 + IGX, 119 + IGY, 80) > 1) or (SimilarColors(GetColor(725 + IGX, 111 + IGY), 6608616, 10)))  xor (Run)) then
   begin
-    Mouse(715, 95, 10, 10, mouse_left);
+    Mouse(715 + IGX, 95 + IGY, 10, 10, mouse_left);
     Result := True;
   end;
 end;
@@ -1757,7 +1755,7 @@ begin
   Result := False;
   if (not(IsResting)) then
   begin
-    Mouse(715, 95, 10, 10, mouse_right);
+    Mouse(715 + IGX, 95 + IGY, 10, 10, mouse_right);
     if (WaitOption('Rest', 300)) then
       Result := WaitFunc(@IsResting, 100, 5000);
   end;
@@ -1870,7 +1868,7 @@ begin
   if (not LoggedIn) then exit;
   CloseWindow;
 
-  if (not FindColor(x, y, ClBlack, 7, 460, 69, 474)) then   {if you're in chat}
+  if (not FindColor(x, y, ClBlack, 7 + IGX, 460 + IGY, 69 + IGX, 474 + IGY)) then   {if you're in chat}
     if (not ClickContinue(True, True)) then
     begin
       Mouse(MMCX, MMCY, 2, 2, mouse_left);
@@ -1881,7 +1879,7 @@ begin
   while (not FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
-    MouseBox(605, 258, 623, 277, mouse_left);
+    MouseBox(605 + IGX, 258 + IGY, 623 + IGX, 277 + IGY, mouse_left);
     Wait(1000 + Random(500));
     Inc(i);
     if (i > 3) then
@@ -1893,10 +1891,10 @@ begin
   end;
 
   If FindTextTPA(ClWhite, 0, MSX1, MSY1, MSX2, MSY2, 'aphics', UpCharsEx, Nothing) Then
-    Mouse(386, 172, 30, 10, mouse_left);
+    Mouse(386 + IGX, 172 + IGY, 30, 10, mouse_left);
 
-  if GetColor(255, 178) = BrightnessColor then
-    Mouse(255, 178, 2, 2, mouse_left);               //Sets brightness
+  if GetColor(255 + IGX, 178 + IGY) = BrightnessColor then
+    Mouse(255 + IGX, 178 + IGY, 2, 2, mouse_left);               //Sets brightness
   Wait(1000 + Random(400));                 //waits for it
 
   FindColors(TPA, ArrowOptions, MSX1, MSY1, MSX2, MSY2);  //finds drop down arrows
@@ -1913,14 +1911,14 @@ begin
       Mouse(TP.X, TP.Y, 3, 3, mouse_left);
 
       GetMousePos(X, Y);
-      If IntInBox(X, Y, IntToBox(236, 308, 462, 587)) Then
-      if (CountColor(ClWhite, 201, 295, 226, 308) > 5) then  //clicks the correct one
+      If IntInBox(X, Y, IntToBox(236 + IGX, 308 + IGY, 462 + IGX, 587 + IGY)) Then
+      if (CountColor(ClWhite, 201 + IGX, 295 + IGY, 226 + IGX, 308 + IGY) > 5) then  //clicks the correct one
       begin
-        MouseBox(201, 295, 226, 308, mouse_left);
+        MouseBox(201 + IGX, 295 + IGY, 226 + IGX, 308 + IGY, mouse_left);
         Wait(900 + Random(100));
       end;
 
-      If Not IntInBox(X, Y, IntToBox(236, 308, 462, 587)) Then
+      If Not IntInBox(X, Y, IntToBox(236 + IGX, 308 + IGY, 462 + IGX, 587 + IGY)) Then
       if (CountColor(ClWhite, TB.X1, TB.Y1 + 20, TB.X2, TB.Y2 + 15) > 5) then  //clicks the correct one
       begin
         MouseBox(TB.X1, TB.Y1 + 20, TB.X2 - 15, TB.Y2 + 15, mouse_left);
@@ -1981,7 +1979,7 @@ begin
   if (not LoggedIn) then exit;
   CloseWindow;
 
-  if (not FindColor(Tx, Ty, 0, 7, 460, 69, 474)) then
+  if (not FindColor(Tx, Ty, 0, 7 + IGX, 460 + IGY, 69 + IGX, 474 + IGY)) then
     if (not ClickContinue(True, True)) then
       Mouse(MMCX, MMCY, 2, 2, mouse_left);
 
@@ -1989,7 +1987,7 @@ begin
   while (not FindTextTPA(2070753, 0, MSX1, MSY1, MSX2, MSY2, 'Graphics Options', UpCharsEx, Nothing)) and (LoggedIn) do
   begin
     GameTab(tab_Options);
-    MouseBox(605, 258, 623, 277, mouse_left);
+    MouseBox(605 + IGX, 258 + IGY, 623 + IGX, 277 + IGY, mouse_left);
     Wait(500 + Random(200));
     Inc(II);
     if (II > 3) then
@@ -2005,7 +2003,7 @@ begin
   else
     if (Brightness <> 0) then
     begin
-      P := Point(140 + ((Brightness - 1) * 31), 185);
+      P := Point(140 + ((Brightness - 1) * 31) + IGX, 185 + IGY);
       if (GetColor(P.x, P.y) = srl_outline_black) then
         Mouse(P.x - 2, P.y - 2, 5, 5, mouse_left);
     end;
@@ -2020,10 +2018,10 @@ begin
   begin
     if (Settings[II] = '') then Continue;
 
-    TB.x1 := 149 + ((II + 1) div 7) * 239;
-    TB.y1 := 173 + ((II + 1) mod 7) * 17;
-    TB.x2 := TB.x1 + 104;
-    TB.y2 := TB.y1 + 14;
+    TB.x1 := (149 + ((II + 1) div 7) * 239) + IGX;
+    TB.y1 := (173 + ((II + 1) mod 7) * 17) + IGY;
+    TB.x2 := (TB.x1 + 104) + IGX;
+    TB.y2 := (TB.y1 + 14) + IGY;
 
     tArr := [PosSettings[II * 2], PosSettings[II * 2 + 1]];
     if (not(InStrArrEx(Capitalize(Settings[II]), tArr, Where))) then
@@ -2042,7 +2040,7 @@ begin
     begin
       Mouse(Tx, Ty, 10, 5, mouse_left);
       Wait(50 + Random(100));
-      while (CountColor(16777215, 5, 5, 161, 35) > 100) do Wait(100 + Random(50));
+      while (CountColor(16777215, 5 + IGX, 5 + IGY, 161 + IGX, 35 + IGY) > 100) do Wait(100 + Random(50));
     end else
       Mouse(TB.x1 + 10, TB.y1 + 3, 10, 5, mouse_left);
   end;
@@ -2227,12 +2225,12 @@ begin
   end;
 
   case EmoteNumber of
-    01..20: if (GetColor(723, 226) = 2041131) then
-              Mouse(723, 226, 8, 4, mouse_left);
-    21..40: if (GetColor(727, 364) = 1909544) then
-              Mouse(727, 354, 4, 1, mouse_left);
-    41..51: if (GetColor(725, 438) = 1909544) then
-              Mouse(725, 438, 5, 5, mouse_left);
+    01..20: if (GetColor(723 + IGX, 226 + IGY) = 2041131) then
+              Mouse(723 + IGX, 226 + IGY, 8, 4, mouse_left);
+    21..40: if (GetColor(727 + IGX, 364 + IGY) = 1909544) then
+              Mouse(727 + IGX, 354 + IGY, 4, 1, mouse_left);
+    41..51: if (GetColor(725 + IGX, 438 + IGY) = 1909544) then
+              Mouse(725 + IGX, 438 + IGY, 5, 5, mouse_left);
   end;
   Wait(300 + Random(200));
   if InRange(EmoteNumber, 21, 40) then
@@ -2246,8 +2244,8 @@ begin
   Col := (EmoteNumber mod 4);
   if (Col = 0) then Col := 4;
 
-  X := 550 + (44 * (Col - 1));
-  Y := 219 + (49 * (Row - 1));
+  X := 550 + (44 * (Col - 1)) + IGX;
+  Y := 219 + (49 * (Row - 1)) + IGY;
   Mouse(X, Y, 26, 39, mouse_left);
 end;
 
@@ -2273,7 +2271,7 @@ Example:
 function GetLobbyTab: Integer;
 begin
   for result := 1 to 6 do
-    if GetColor(63 + (result-1)*102, 32) = 11516354 then
+    if GetColor((63 + (result-1)*102) + IGX, 32 + IGY) = 11516354 then
       Exit;
   Result := -1;
 end;
@@ -2310,9 +2308,9 @@ begin
   result := GetLobbyTab = Tab;
   if result then
    Exit;
-  if GetColor(63 + (Tab-1)*102, 32) = 8029324 then
+  if GetColor((63 + (Tab-1)*102) + IGX, 32 + IGY) = 8029324 then
   begin
-    Mouse(63 + (Tab-1)*102, 32, 10, 6, mouse_left);
+    Mouse((63 + (Tab-1)*102) + IGX, 32 + IGY, 10, 6, mouse_left);
     result := true;
   end;
 end;
@@ -2354,8 +2352,8 @@ var
 begin
   for i := 0 to 1 do
   begin
-    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
-    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    TPA := TPAFromBox(IntToBox(521 + IGX, 51 + IGY, 546 + IGX, 75 + IGY));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534 + IGX, 63 + IGY);
     P := TPA[Random(Length(TPA))];
     Mouse(P.X, P.Y, 0, 0, mouse_right);
     if WaitOptionMulti(['Pop', 'op', '-up'], 1000) then
@@ -2392,7 +2390,7 @@ Results True if the XP Bar is showing. Counter number 1 to 3
 
 function IsXPBarOpenEx(CounterNum: integer): Boolean;
 begin
-  Result := CountColor(14474460, 481, 10+(CounterNum-1)*22, 489, 22+(CounterNum-1)*22) > 6;
+  Result := CountColor(14474460, 481 + IGX, (10+(CounterNum-1)*22) + IGY, 489 + IGX, (22+(CounterNum-1)*22) + IGY) > 6;
 end;
 
 
@@ -2441,8 +2439,8 @@ var
 begin
   if Open xor IsXPBarOpenEx(CounterNum) then
   begin
-    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
-    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    TPA := TPAFromBox(IntToBox(521 + IGX, 51 + IGY, 546 + IGX, 75 + IGY));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534 + IGX, 63 + IGY);
     P := TPA[Random(Length(TPA))];
     Mouse(P.X, P.Y, 0, 0, mouse_left);
     T := GetSystemTime + 300;
@@ -2497,7 +2495,7 @@ var
 begin
   if ToggleXPBarEx(true, CounterNum) then
   begin
-    FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
+    FindColorsTolerance(TPA, 14474460, 407 + IGX, (10+(CounterNum-1)*22) + IGY, 489 + IGX, (24+(CounterNum-1)*22) + IGY, 0);
     B := GetTPABounds(TPA);
     S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, UpChars), ' ', '');
     P := Pos('x', S);
@@ -2548,8 +2546,8 @@ var
   TPA: TPointArray;
   P: TPoint;
 begin
-  TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
-  FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+  TPA := TPAFromBox(IntToBox(521 + IGX, 51 + IGY, 546 + IGX, 75 + IGY));
+  FilterPointsPie(TPA, 0, 360, 0, 12, 534 + IGX, 63 + IGY);
   P := TPA[Random(Length(TPA))];
   Mouse(P.X, P.Y, 0, 0, mouse_right);
   Result := WaitOptionMulti(['Res', 'ese', 'set'], 1000);
@@ -2587,8 +2585,8 @@ var
 begin
   Cols := [65535, 16777215, 8453888];
   for I := 0 to 2 do
-    If CountColor(Cols[I],450, 90, 510, 109) > 10 then
-      Result := CountColor(Cols[I],450, 90, 510, 109) > 10;
+    If CountColor(Cols[I],450 + IGX, 90 + IGY, 510 + IGX, 109 + IGY) > 10 then
+      Result := CountColor(Cols[I],450 + IGX, 90 + IGY, 510 + IGX, 109 + IGY) > 10;
 end;
 
 (*
@@ -2611,7 +2609,7 @@ begin
   Result := IsMoneyPouchOpen <> Open;
   if (not (Result)) then
     Exit;
-  MouseBox(528, 94, 533, 107, mouse_Left);
+  MouseBox(528 + IGX, 94 + IGY, 533 + IGX, 107 + IGY, mouse_Left);
 end;
 
 (*
@@ -2649,7 +2647,7 @@ begin
   WaitFunc(@IsMoneyPouchOpen, 10, 2750);
   Col := [65535, 65278, 16777215, 8453888];
   for I := 0 to 3 do
-  if (FindColors(TPA, Col[I], 450, 90, 510, 109)) then
+  if (FindColors(TPA, Col[I], 450 + IGX, 90 + IGY, 510 + IGX, 109 + IGY)) then
   begin
     B := GetTPABounds(TPA);
     B := IntToBox(B.X1 - 2, B.Y1 - 2, B.X2 + 2, B.Y2 + 2);
@@ -2720,7 +2718,7 @@ Example:
 *)
 function ToolBeltScreen() : Boolean;
 begin
-  Result := (CountColorTolerance(1158880, 192, 18, 264, 33, 9) > 120);
+  Result := (CountColorTolerance(1158880, 192 + IGX, 18 + IGY, 264 + IGX, 33 + IGY, 9) > 120);
 end;
 
 (*
@@ -2751,7 +2749,7 @@ begin
   ColorToleranceSpeed(2);
   SetColorSpeed2Modifiers(1.86, 0.06);
 
-  FindColorsSpiralTolerance(MSCX, MSCY, TPA, 5855064, 211, 199, 298, 273, 9);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, 5855064, 211 + IGX, 199 + IGY, 298 + IGX, 273 + IGY, 9);
 
   ColorToleranceSpeed(tmpCTS);
   SetColorSpeed2Modifiers(0.2, 0.2);
@@ -2781,7 +2779,7 @@ Example:
 procedure OpenToolBelt();
 begin
   GameTab(tab_Equip);
-  MouseBox(670, 416, 704, 450, mouse_Left);
+  MouseBox(670 + IGX, 416 + IGY, 704 + IGX, 450 + IGY, mouse_Left);
   Wait(RandomRange(250, 750));
 end;
 
@@ -2811,10 +2809,10 @@ var
   tmpCTS : Integer;
 begin
   case(LowerCase(Category))of
-    'general' : catBox := IntToBox(161, 86, 188, 107);
-    'fishing' : catBox := IntToBox(219, 86, 246, 104);
-    'crafting' : catBox := IntToBox(275, 87, 305, 104);
-    'farming' : catBox := IntToBox(332, 88, 359, 105);
+    'general' : catBox := IntToBox(161 + IGX, 86 + IGY, 188 + IGX, 107 + IGY);
+    'fishing' : catBox := IntToBox(219 + IGX, 86 + IGY, 246 + IGX, 104 + IGY);
+    'crafting' : catBox := IntToBox(275 + IGX, 87 + IGY, 305 + IGX, 104 + IGY);
+    'farming' : catBox := IntToBox(332 + IGX, 88 + IGY, 359 + IGX, 105 + IGY);
   end;
 
   tmpCTS := GetColorToleranceSpeed;
@@ -2865,9 +2863,9 @@ begin
 
   for I := 1 to catCount do
   begin
-    if(not(FindTextTpa(1158880, 9, 167, 146, 352, 161, Tool, SmallChars, Nothing)))then
+    if(not(FindTextTpa(1158880, 9, 167 + IGX, 146 + IGY, 352 + IGX, 161 + IGY, Tool, SmallChars, Nothing)))then
     begin
-      Mouse((375 + 397) / 2, (147 + 163) / 2, 1, 1, True);
+      Mouse(((375 + 397) / 2) + IGX, ((147 + 163) / 2) + IGY, 1, 1, True);
       Wait(RandomRange(250, 750))
     end else
       Break;
@@ -2876,7 +2874,7 @@ begin
   Result := itemSlotFilled;
 
   Wait(RandomRange(250, 750));
-  MouseBox(479, 20, 491, 29, mouse_Left);
+  MouseBox(479 + IGX, 20 + IGY, 491 + IGX, 29 + IGY, mouse_Left);
 end;
 
 (*
@@ -2908,10 +2906,10 @@ begin
     GameTab(tab_Music);
     Wait(500 + Random(500));
   end;
-  if (FindColorsTolerance(Pts, 39401, 553, 242, 729, 264, 0)) then
+  if (FindColorsTolerance(Pts, 39401, 553 + IGX, 242 + IGY, 729 + IGX, 264 + IGY, 0)) then
   begin
     B := GetTPABounds(Pts);
-    Result := Trim(GetTextAtEx(B.X1 - 1, 245, 0, UpCharsEx, False, False, 0, 1, 39401, 50, False, tr_AllChars));
+    Result := Trim(GetTextAtEx(B.X1 - 1, 245 + IGY, 0, UpCharsEx, False, False, 0, 1, 39401, 50, False, tr_AllChars));
   end;
 end;
 

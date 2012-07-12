@@ -7,6 +7,12 @@ Globals
 
 *)
 
+const             //Offsets:    LI = Log-In.  |   IG = In-Game
+  LIX = 0;
+  LIY = 22;
+  IGX = 0;
+  IGY = 50;
+
 type
   TBooleanArray = array of Boolean;
 
@@ -64,74 +70,74 @@ const
 { const MMX1, MMY1, MMX2, MMY2;
   Description: MiniMap Edge Points. }
 const
-  MMX1 = 550;
-  MMY1 = 8;
-  MMX2 = 703;
-  MMY2 = 161;
+  MMX1 = 550 + IGX;
+  MMY1 = 8 + IGY;
+  MMX2 = 703 + IGX;
+  MMY2 = 161 + IGY;
 
 { const MMCX, MMCY;
   Description: MiniMap Centre Point. }
 const
-  MMCX = 627;
-  MMCY = 85;
+  MMCX = 627 + IGX;
+  MMCY = 85 + IGY;
 
 { const MSX1, MSY1, MSX2, MSY2;
   Description: Main Screen EdgePoints. }
 const
-  MSX1 = 4;
-  MSY1 = 4;
-  MSX2 = 515;
-  MSY2 = 337;
+  MSX1 = 4 + IGX;
+  MSY1 = 4 + IGY;
+  MSX2 = 515 + IGX;
+  MSY2 = 337 + IGY;
 
 { const MSCX, MSCY;
   Description: Main Screen Centre Points. }
 const
-  MSCX = 259;
-  MSCY = 170;
+  MSCX = 259 + IGX;
+  MSCY = 170 + IGY;
 
 { const MIX1, MIY1, MIX2, MIY2;
   Description: Inventory EdgePoints. }
 const
-  MIX1 = 547;
-  MIY1 = 202;
-  MIX2 = 737;
-  MIY2 = 466;
+  MIX1 = 547 + IGX;
+  MIY1 = 202 + IGY;
+  MIX2 = 737 + IGX;
+  MIY2 = 466 + IGY;
 
 { const MICX, MICY;
   Description: Inventory Centre Points. }
 const
-  MICX = 642;
-  MICY = 334;
+  MICX = 642 + IGX;
+  MICY = 334 + IGY;
 
 { const MCX1, MCY1, MCX2, MCY2;
   Description: Chat Screen EdgePoints. }
 const
-  MCX1 = 4;
-  MCY1 = 342;
-  MCX2 = 514;
-  MCY2 = 475;
+  MCX1 = 4 + IGX;
+  MCY1 = 342 + IGY;
+  MCX2 = 514 + IGX;
+  MCY2 = 475 + IGY;
 
 { const MCCX, MCCY;
   Description: Chat Screen Centre Points. }
 const
-  MCCX = 250;
-  MCCY = 401;
+  MCCX = 250 + IGX;
+  MCCY = 401 + IGY;
 
 { const MBX1, MBY1, MBX2, MBY2;
   Description: BankScreen EdgePoints (where you click the items, does not include tabs). }
 const
-  MBX1 = 26;
-  MBY1 = 84;
-  MBX2 = 480;
-  MBY2 = 292;
+  MBX1 = 26 + IGX;
+  MBY1 = 84 + IGY;
+  MBX2 = 480 + IGX;
+  MBY2 = 292 + IGY;
 
 { const DBX1, DBY1, DBX2, DBY2;
   Description: Deposit box edgepoints (only where the item appear) }
 const
-  DBX1 = 91;
-  DBY1 = 57;
-  DBX2 = 443;
-  DBY2 = 262;
+  DBX1 = 91 + IGX;
+  DBY1 = 57 + IGY;
+  DBX2 = 443 + IGX;
+  DBY2 = 262 + IGY;
 
 { const SRL_Procs Constants;
   Description: Constants for SRL_Procs. }
@@ -481,7 +487,7 @@ begin
   MIBox := IntToBox(MIX1, MIY1, MIX2, MIY2);
   MCBox := IntToBox(MCX1, MCY1, MCX2, MCY2);
   MBBox := IntToBox(MBX1, MBY1, MBX2, MBY2);
-  MFBox := IntToBox(224, 114, 294, 150);
+  MFBox := IntToBox(224 + IGX, 114 + IGY, 294 + IGX, 150 + IGY);
 end;
 
 
@@ -563,5 +569,56 @@ Example:
 Function srl_InFight: Boolean;
 begin
   Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
+end;
+
+
+{*
+  Author: Brandon.
+  Returns True If The Bar Home-Support-Forums-Subscribe Bar is On Screen.
+*}
+
+Function FoundBar: Boolean;
+var
+  Bar, X, Y: Integer;
+begin
+  Bar := BitmapFromString(8, 11, 'meJyr/PGn8scfBiRQCRYpeP0DiJD' +
+        'FISIZ974BEbI4RCTmCgjxaMbJOFcDkVr6XIiI3+HPQOQ4/wyEAUcu' +
+        '2z4CkZBdjZBdLRBJR86FiFgsfw9EyOZDRLSmvwEiZHGIiELXKyBCF' +
+        'oeIiNc/ByJkcYgIXzEIIYtDRACmWWK1');
+
+  Result := FindBitmapToleranceIn(Bar, X, Y, 117, 13, 171, 35, 10);
+  FreeBitmap(Bar);
+end;
+
+
+{*
+  Author: Brandon, Benland100.
+  Changes Target Pointer To The ScanLine After The Bar.
+*}
+
+Procedure IgnoreBar;
+var
+  H: Integer;
+begin
+  H:= 552;
+  {$IFDEF SMART}
+    If (FoundBar) then
+    begin
+      SetTargetArray(SmartImageArray + (765 * 50 * 4), 765, 503); //PtrToRowZero + (ClientWidth * 50 * BGRA);  50 Rows Of Bar PNG. 4 Bytes = BGRA.
+      H := 503;
+    end else
+      begin
+        SetTargetArray(SmartImageArray, 765, 503);
+      end;
+  {$ELSE}
+    if (FoundBar) then
+    begin
+      FreeTarget(SetTargetBitmap(BitmapFromClient(0, 52, 764, 551))); //501 + The PtrRowZero shift.
+      H := 503;
+    end;
+  {$ENDIF}
+  //BMP:= BitmapFromClient(0, 0, 764, H);
+  //DebugBitmap(BMP);
+  //FreeBitmap(BMP);
 end;
 

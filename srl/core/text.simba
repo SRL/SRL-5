@@ -1160,7 +1160,7 @@ begin
   end;
 
   // handles the advanced skill guide window
-  if (findColorTolerance(x, y, 2994428, 728, 8, 753, 30, 20)) then
+  if (findColorTolerance(x, y, 2994428, 728 + IGX, 8 + IGY, 753 + IGX, 30 + IGY, 20)) then
   begin
     mouse(x, y, 3, 3, mouse_Left);
     result := true;
@@ -1183,7 +1183,7 @@ begin
     if InRange(l, 6, 53) or InRange(l, 94, 250) then
     begin
       a := SplitTPA(CombineTPA(b[0], b[1]), 5);
-      SortATPAFromFirstPoint(a, Point(507, 14));
+      SortATPAFromFirstPoint(a, Point(507 + IGX, 14 + IGY));
 
       if (length(a) < 1) then
         Continue;

@@ -964,13 +964,13 @@ function FindDwarvenPopup: Boolean;
 begin
   Result := False;
   // Parts of red X, checked in two different spots to reduce false-positives
-  if (GetColor(485, 40) = 2569093) then
-    if (GetColor(488, 40) = 11189720) then
+  if (GetColor(485 + IGX, 40 + IGY) = 2569093) then
+    if (GetColor(488 + IGX, 40 + IGY) = 11189720) then
     begin
       Result := True;
 
       // Box around the X, to close it.
-      MouseBox(482, 35, 492, 44, mouse_left);
+      MouseBox(482 + IGX, 35 + IGY, 492 + IGX, 44 + IGY, mouse_left);
       Wait(1000+Random(3000));
     end;
 end;
@@ -987,8 +987,8 @@ Finds and exits the annoying Squeal of Fortune pop up.
 
 .. note::
 
-    Author: Coh3n
-    Last Modified: Mar. 8th, 2012 by Coh3n
+    Author: Coh3n & Ashaman88
+    Last Modified: June 9, 2012 by Ashaman88
 
 Example:
 
@@ -998,10 +998,12 @@ Example:
 *)
 function ExitSquealOfFortune(): boolean;
 var
-  w, h, x, y, xs, ys, xe, ye, tmpCTS: integer;
+  w, h, x, y, xs, ys, xe, ye, tmpCTS,SquealDTM: integer;
 begin
   if (SRL_ExitedSquealOfFortune) then
     exit;
+
+  SquealDTM := DTMFromString('mbQAAAHicY2VgYNjOzMCwEIirgLgSiBuB2JiRgUELiGWB2BCIrYH4/1kXhku1MQyLrxcyfPz0iSHA2Z2BH6gfHTNiwWAAAHx8DXE=');
 
   tmpCTS := getColorToleranceSpeed();
   setColorToleranceSpeed(1);
@@ -1012,22 +1014,24 @@ begin
   if (findColorTolerance(x, y, 7457955, 1, 1, w - 1, h - 1, 15)) then
   begin
     // to avoid out of bounds warnings
-    xs := x;
+    xs := x-70;
+    if (xs < 0) then
+      xs := 1;
 
-    ys := (y - 30);
+    ys := (y - 70);
     if (ys < 0) then
       ys := 1;
 
-    xe := (x + 100);
+    xe := (x + 130);
     if (xe > w) then
       xe := (w - 1);
 
-    ye := (y + 30);
+    ye := (y + 70);
     if (ye > h) then
       ye := (h - 1);
 
     // gold color in the X
-    if (findColorTolerance(x, y, 4770302, xs, ys, xe, ye, 15)) then
+    if (findDTM(SquealDTM,x,y,xs,ys,xe,ye)) then
     begin
       mouse(x, y, 3, 3, mouse_Move);
 
@@ -1040,7 +1044,7 @@ begin
       end;
     end;
   end;
-
+  FreeDTM(SquealDTM);
   setColorToleranceSpeed(tmpCTS);
 end;
 

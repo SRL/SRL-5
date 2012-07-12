@@ -42,8 +42,8 @@ begin
     Exit;
 
   Wait(175+Random(120));
-  if (GetColor(678, 341) = 987203) then
-    Mousebox(684, 344, 713, 372, mouse_left);
+  if (GetColor(678 + IGX, 341 + IGY) = 987203) then
+    Mousebox(684 + IGX, 344 + IGY, 713 + IGX, 372 + IGY, mouse_left);
 end;
 
 {*******************************************************************************
@@ -129,8 +129,8 @@ Description: Scrolls to the top of the Friend list.
 *******************************************************************************}
 procedure RC_FixFL;
 begin
-  If (GetColor(729, 248) = 2106924) then
-    Mouse(729, 248, 5, 2, mouse_left);
+  If (GetColor(729 + IGX, 248 + IGY) = 2106924) then
+    Mouse(729 + IGX, 248 + IGY, 5, 2, mouse_left);
 end;
 
 {*******************************************************************************
@@ -149,13 +149,13 @@ begin
   Wait(175+Random(140));
   RC_FixFL;
   for I:=0 to 12 do
-   If not (GetColor(675, 233+(15*I)) = 255) then
+   If not (GetColor(675 + IGX, (233+(15*I)) + IGY) = 255) then
    begin
-     S := LowerCase(Trim(GetTextAtEx(558, 231+(15*I), 45, FriendChars, True, False, 0, 2, 16777215, 20, False, tr_AllChars)));
+     S := LowerCase(Trim(GetTextAtEx(558 + IGX, (231+(15*I)) + IGY, 45, FriendChars, True, False, 0, 2, 16777215, 20, False, tr_AllChars)));
      Writeln(S);
      If S = Lowercase(Master) then
      begin
-       MasterCords := Point(576, 236+(15*I));
+       MasterCords := Point(576 + IGX, 236+(15*I) + IGY);
        Result := True;
        Exit;
      end;

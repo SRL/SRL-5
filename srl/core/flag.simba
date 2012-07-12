@@ -33,7 +33,7 @@ var
   T, M: TPoint;
   B: TBox;
 begin
-  B := IntToBox(529, 9, 557, 39);
+  B := IntToBox(529 + IGX, 9 + IGY, 557 + IGX, 39 + IGY);
   with B do
     FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 1);
   if Length(TPA) < 1 then

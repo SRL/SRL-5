@@ -11,6 +11,9 @@ Princess) frog.
 
 *)
 
+var
+  RoyalPos: TPointArray;
+
 const
   FROG_NAME_HERALD   = '8!oqB8!5lg';
   FROG_NAME_PRINCESS = '8!oqo!l0o8gg';
@@ -37,7 +40,7 @@ end;
  *)
 procedure Frog_Setup();
 begin
-  if (not loggedIn()) then
+  if (not LoggedIn()) then
     exit;
 
   clickNorth(SRL_ANGLE_HIGH);
@@ -272,6 +275,93 @@ begin
 end;
 
 (**
+ * Author: J J
+ * Description: Returns a TPA with the possible Queen locations
+ *)
+function RoyalLoc: Boolean;
+var
+  i, Red, Yellow: Integer;
+  GreenFrog: TPointArray;
+  GreenFrogSplit, GoodFrogSplit: T2DPointArray;
+  SearchBox: TBoxArray;
+
+begin
+  // Finding the frogs by using their green color
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.14, 0.53);
+  if FindColorsSpiralTolerance(MSCX, MSCY, GreenFrog, 3576607, MSX1, MSY1, MSX2, MSY2, 24) then
+    begin
+      SplitTPAExWrap(GreenFrog, 5, 5, GreenFrogSplit);
+      SortATPASize(GreenFrogSplit, True);
+
+      // Sorting out the boxes that are frogs
+      for i:=0 to high(GreenFrogSplit) do
+        if Length(GreenFrogSplit[i]) > 100 then
+          begin
+            SetLength(GoodFrogSplit, Length(GoodFrogSplit)+1);
+            GoodFrogSplit[Length(GoodFrogSplit)-1] := GreenFrogSplit[i];
+          end;
+
+        // Checking for yellow & red colors in each box
+        SetLength(SearchBox, Length(GoodFrogSplit));
+        for i:=0 to high(GoodFrogSplit) do
+          begin
+            SearchBox[i] := IntToBox(GetTPABounds(GoodFrogSplit[i]).X1-5, GetTPABounds(GoodFrogSplit[i]).Y1-5, GetTPABounds(GoodFrogSplit[i]).X2+5, GetTPABounds(GoodFrogSplit[i]).Y2+5);
+            SetColorSpeed2Modifiers(0.15, 1.21);
+            Red := CountColorTolerance(1984209, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 19);
+            SetColorSpeed2Modifiers(0.09, 1.28);
+            Yellow := CountColorTolerance(2012628, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 18);
+
+            if (Red < 20) and (Yellow > 25) then
+              begin
+                SetLength(RoyalPos, Length(RoyalPos)+1);
+                RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2)/2, (SearchBox[i].Y1+SearchBox[i].Y2)/2);
+              end;
+          end;
+    end;
+
+  // The result
+  if (Length(RoyalPos) > 0) then
+    Result := True;
+end;
+
+(**
+ * Author: J J
+ * Description: Returns true when the player is talking to the Royal Frog.
+ *)
+function TalkToRoyal: Boolean;
+var
+  i: Integer;
+
+begin
+  if RoyalLoc then
+    begin
+      for i:=0 to high(RoyalPos) do
+        begin
+          MMouse(RoyalPos[i].X, RoyalPos[i].Y, RandomRange(-2, 2), RandomRange(-2, 2));
+          if WaitUpTextMulti(['rog /', 'Frog /'], 100) then
+            begin
+              case Random(7) of
+                0..4: ClickMouse2(1);
+                5..6: begin
+                        ClickMouse2(0);
+                        WaitOptionMulti(['alk'], 500);
+                      end;
+              end;
+              FFlag(0);
+              repeat
+                Wait(50 + Random(50));
+              until not(IsMoving);
+              Wait(1000 + Random(1000));
+              Break;
+              if (Frog_RoyalTalking()) then
+                Result := True;
+            end;
+        end;
+    end;
+end;
+
+(**
  * Author: Coh3n
  * Description: Solves the Frog random event, returns false if player
  * had to go through the big cave because RS still teleports you.
@@ -287,7 +377,7 @@ begin
   Frog_Setup();
 
   repeat
-    if (Frog_ClickRoyal()) then // returns true if Royal Frog is talking
+    if TalkToRoyal then // returns true if Royal Frog is talking
       // may have clicked wrong frogs, need to solve large cave
       if (not Frog_InBigCave()) then
       begin

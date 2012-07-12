@@ -22,7 +22,7 @@ procedure SMART_SetupDebug;
 begin
   SmartSetDebug(True);
   SMART_Canvas := TMufasaBitmap.Create;
-  SMART_Canvas.SetPersistentMemory(SmartDebugArray, 765, 503);
+  SMART_Canvas.SetPersistentMemory(SmartDebugArray, 765, 565);
   SMART_DebugSetup := true;
   AddOnTerminate('SMART_FreeDebug');
 end;

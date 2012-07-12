@@ -52,8 +52,8 @@ begin
   Inven := Inven - 1;
   Slot := Inven mod 4;
   Row := Inven div 4;
-  IX := 560 + (Slot * 42);
-  IY := 210 + (Row * 36);
+  IX := 560 + (Slot * 42) + IGX;
+  IY := 210 + (Row * 36) + IGY;
   FindColorsTolerance(P, srl_outline_black, IX, IY, IX + 41, IY + 35, 0);
   Result.Count := Length(P);
   if (Result.Count = 0) then Exit;
@@ -148,8 +148,8 @@ begin
     srl_Warn('InvBox', 'Incorrect index: ' + IntToStr(i), warn_AllVersions);
     Exit;
   end;
-  Slot1 := IntToBox(563, 213, 594, 244);
-  Slot6 := IntToBox(605, 249, 31415, 92653);
+  Slot1 := IntToBox(563 + IGX, 213 + IGY, 594 + IGX, 244 + IGY);
+  Slot6 := IntToBox(605 + IGX, 249 + IGY, 31415 + IGX, 92653 + IGY);
   Result.x1 := Slot1.X1 + ((((i + 3) mod 4)) * (Slot6.X1 - Slot1.X1));
   Result.y1 := Slot1.Y1 + ((((i - 1) div 4)) * (Slot6.Y1 - Slot1.Y1));
   Result.x2 := Result.x1 + (Slot1.X2 - Slot1.X1);
