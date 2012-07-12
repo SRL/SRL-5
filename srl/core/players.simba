@@ -137,7 +137,8 @@ Example:
 function LoggedIn: Boolean;
 begin
   //White text on Report Abuse Button
-  Result := (GetColor(472 + IGX, 490 + IGY) = 16777215);
+  IgnoreBar;
+  Result := (GetColor(472, 490) = 16777215);
 end;
 
 (*

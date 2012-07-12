@@ -74,20 +74,20 @@ begin
       srl_Warn('SetChat', state + ' does not exist.', warn_AllVersions);
   end;
 
-  if (not FindColor(x, y, Color, mx - 10 + IGX, 486 + IGY, mx + 10 + IGX, 502 + IGY)) then
+  if (not FindColor(x, y, Color, mx - 10, 486, mx + 10, 502)) then
   begin
-    Mouse(mx + IGX, 496 + IGY, 4, 4, mouse_right);
+    Mouse(mx, 496, 4, 4, mouse_right);
     Wait(RandomRange(50, 150));
 
     if (Lowercase(State) = 'off') then
     begin
       case chat of
-        CHAT_PUBLIC, CHAT_ASSIST: Mouse(mx + IGX, 496 - 33 + IGY, 8, 3, mouse_left);
-        CHAT_PRIVATE..CHAT_TRADE: Mouse(mx + IGX, 496 - 20 + IGY, 8, 3, mouse_left);
+        CHAT_PUBLIC, CHAT_ASSIST: Mouse(mx, 496 - 33, 8, 3, mouse_left);
+        CHAT_PRIVATE..CHAT_TRADE: Mouse(mx, 496 - 20, 8, 3, mouse_left);
       end;
 
       Wait(RandomRange(50, 150));
-      Result := FindColor(x, y, Color, mx - 10 + IGX, 486 + IGY, mx + 10 + IGX, 502 + IGY);
+      Result := FindColor(x, y, Color, mx - 10, 486, mx + 10, 502);
     end else
       Result := WaitOption(Capitalize(State), 300);
   end;
@@ -360,8 +360,8 @@ Example:
 *)
 function TextCoords(textn: Integer): TPoint;
 begin
-  Result.X := 10 + IGX;
-  Result.Y := 346 + (14 * (textn - 1)) + IGY;
+  Result.X := 10;
+  Result.Y := 346 + (14 * (textn - 1));
 end;
 
 (*
@@ -697,13 +697,13 @@ procedure FixChat;
 var
   ScrollX, ScrollY: Integer;
 begin
-  ScrollX := 507 + Random(8) + IGX;
-  ScrollY := 451 + Random(8) + IGY;
-  if (GetColor(505 + IGX, 439 + IGY) = 2041131) then
+  ScrollX := 507 + Random(8);
+  ScrollY := 451 + Random(8);
+  if (GetColor(505, 439) = 2041131) then
   begin
     MMouse(ScrollX, ScrollY, 0, 0);
     HoldMouse(ScrollX, ScrollY, mouse_left);
-    while (GetColor(505 + IGX, 439 + IGY) = 2041131)  do
+    while (GetColor(505, 439) = 2041131)  do
       Wait(10 + random(15));
 	  Wait(50+random(50));
     ReleaseMouse(ScrollX, ScrollY, mouse_left);
@@ -794,7 +794,7 @@ Example:
 *)
 function GetNPCChatName(): string;
 begin
-  result := getTextAtExWrap(152 + IGX, 345 + IGY, 366 + IGX, 370 + IGY, 0, 50, 30, 7913190, 15, NPCChars);
+  result := getTextAtExWrap(152, 345, 366, 370, 0, 50, 30, 7913190, 15, NPCChars);
 end;
 
 (*

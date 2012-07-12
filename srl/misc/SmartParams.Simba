@@ -151,7 +151,7 @@ begin
     Exit;
   end;
 
-  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 565, 's', '', '', -1);
+  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
   If (Result > 0) then
   begin
     try
@@ -193,6 +193,9 @@ begin
 
   While (GetColor(382, 252) <> 0) Do
   begin
+    If FoundBar then
+      break;
+
     if RSReady then
       break;
 

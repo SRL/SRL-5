@@ -39,8 +39,8 @@ function TradeScreen: Integer;
 begin
   for Result := 2 downto 1 do
     case Result of
-      2: if (CountColor(16776960, 127 + IGX, 32 + IGY, 373 + IGX, 51 + IGY) > 20) then Break;
-      1: if (CountColor(2070783, 150 + IGX, 12 + IGY, 350 + IGX, 28 + IGY) > 20) then Break;
+      2: if (CountColor(16776960, 127, 32, 373, 51) > 20) then Break;
+      1: if (CountColor(2070783, 150, 12, 350, 28) > 20) then Break;
     end;
 end;
 
@@ -68,7 +68,7 @@ Example:
 *)
 Function ShopScreen : Boolean;
 Begin
-  Result := FindTextTPA(2070783, 10, 58 + IGX, 303 + IGY, 85 + IGX, 317 + IGY, 'Right', StatChars, Nothing);
+  Result := FindTextTPA(2070783, 10, 58, 303, 85, 317, 'Right', StatChars, Nothing);
 End;
 
 (*
@@ -293,8 +293,8 @@ procedure AreaInfo(area: string; var startx, starty, rowsize, colsize, colnumber
 begin
   case LowerCase(area) of
     'inv', 'inventory': begin
-                          startx := 560 + IGX;
-                          starty := 212 + IGY;
+                          startx := 560;
+                          starty := 212;
 
                           rowsize := 36;
                           colsize := 42;
@@ -303,8 +303,8 @@ begin
                           rownumber := 7;
                         end;
     'shop':             begin
-                          startx := 63 + IGX;
-                          starty := 97 + IGY;
+                          startx := 63;
+                          starty := 97;
 
                           rowsize := 55;
                           colsize := 39;
@@ -313,8 +313,8 @@ begin
                           rownumber := 4; //?
                         end;
     'bank':             begin
-                          startx := 35 + IGX;
-                          starty := 91 + IGY;
+                          startx := 35;
+                          starty := 91;
 
                           rowsize := 44;
                           colsize := 44;
@@ -323,8 +323,8 @@ begin
                           rownumber := 5;
                         end;
     'deposit box':      begin
-                          startx := 97 + IGX;
-                          starty := 60 + IGY;
+                          startx := 97;
+                          starty := 60;
 
                           rowsize := 48;
                           colsize := 50;
@@ -333,8 +333,8 @@ begin
                           rownumber := 4;
                         end;
     'trade':            begin
-                          startx := 310 + IGX;
-                          starty := 75 + IGY;
+                          startx := 310;
+                          starty := 75;
 
                           rowsize := 32;
                           colsize := 49;
@@ -343,8 +343,8 @@ begin
                           rownumber := 7;
                         end;
     'your trade':       begin
-                          startx := 24 + IGX;
-                          starty := 75 + IGY;
+                          startx := 24;
+                          starty := 75;
 
                           rowsize := 32;
                           colsize := 49;
@@ -604,8 +604,8 @@ begin
   case Lowercase(Area) of
     'inv', 'inventory': B := IntToBox(MIX1, MIY1, MIX2, MIY2);
     'bank': B := IntToBox(MBx1, MBy1, MBx2, MBy2);
-    'trade': B := IntToBox(323 + IGX, 73 + IGY, 509 + IGX, 302 + IGY);
-    'your trade': B := IntToBox(9 + IGX, 73 + IGY, 196 + IGX, 302 + IGY);
+    'trade': B := IntToBox(323, 73, 509, 302);
+    'your trade': B := IntToBox(9, 73, 196, 302);
   end;
   V[0] := [1606307, 4, 0.09, 1.32]; //Darker colour (top of coins)
   V[1] := [2209251, 8, 0.04, 1.08]; //Lighter colour (rest of the coins)
@@ -738,5 +738,5 @@ begin
     Exit;
   end;
   if (ShopScreen) then
-    FindTextTpa(1930687, 0, 50 + IGX, 65 + IGY, 225 + IGX, 83 + IGY, Capitalize(Name), SmallChars, ClickLeft);
+    FindTextTpa(1930687, 0, 50, 65, 225, 83, Capitalize(Name), SmallChars, ClickLeft);
 end;

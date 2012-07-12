@@ -55,7 +55,7 @@ Example:
 *)
 function BankScreen: Boolean;
 begin
-  result := findTextTPA(4106994, 20, 20 + IGX, 22 + IGY, 400 + IGX, 45 + IGY, 'Bank', upCharsEx, nothing);
+  result := findTextTPA(4106994, 20, 20, 22, 400, 45, 'Bank', upCharsEx, nothing);
 end;
 
 (*
@@ -83,7 +83,7 @@ function DepositScreen: Boolean;
 var
   X, Y: Integer;
 begin
-  Result := FindText(x, y, 'Deposit Box', UpCharsEx, 92 + IGX, 29 + IGY, 396 + IGX, 54 + IGY);
+  Result := FindText(x, y, 'Deposit Box', UpCharsEx, 92, 29, 396, 54);
 end;
 
 (*
@@ -110,7 +110,7 @@ Example:
 *)
 function PinScreen : Boolean;
 begin
-  Result := FindTextTPA(2070783, 0, 105 + IGX, 62 + IGY, 150 + IGX, 75 + IGY, 'Please', UpCharsEx, Nothing);
+  Result := FindTextTPA(2070783, 0, 105, 62, 150, 75, 'Please', UpCharsEx, Nothing);
 end;
 
 (*
@@ -145,7 +145,7 @@ begin
   begin
     if Timer > GetSystemTime then
       Break;
-    MouseBox(332 + IGX, 258 + IGY, 489 + IGX, 281 + IGY, mouse_left);
+    MouseBox(332, 258, 489, 281, mouse_left);
     Wait(500);
   end;
   Result := not PinScreen;
@@ -192,9 +192,9 @@ begin
     Exit;
   end;
 
-  Boxes := [IntToBox(37 + IGX, 107 + IGY, 100 + IGX, 170 + IGY), IntToBox(127 + IGX, 107 + IGY, 190 + IGX, 170 + IGY), IntToBox(217 + IGX, 107 + IGY, 280 + IGX, 170 + IGY), IntToBox(307 + IGX, 107 + IGY, 370 + IGX, 170 + IGY),
-            IntToBox(37 + IGX, 179 + IGY, 100 + IGX, 242 + IGY), IntToBox(127 + IGX, 179 + IGY, 190 + IGX, 242 + IGY), IntToBox(217 + IGX, 179 + IGY, 280 + IGX, 242 + IGY),
-            IntToBox(37 + IGX, 251 + IGY, 100 + IGX, 314 + IGY), IntToBox(127 + IGX, 251 + IGY, 190 + IGX, 314 + IGY), IntToBox(217 + IGX, 251 + IGY, 280 + IGX, 314 + IGY)];
+  Boxes := [IntToBox(37, 107, 100, 170), IntToBox(127, 107, 190, 170), IntToBox(217, 107, 280, 170), IntToBox(307, 107, 370, 170),
+            IntToBox(37, 179, 100, 242), IntToBox(127, 179, 190, 242), IntToBox(217, 179, 280, 242),
+            IntToBox(37, 251, 100, 314), IntToBox(127, 251, 190, 314), IntToBox(217, 251, 280, 314)];
 
   while PinScreen do
   begin
@@ -202,11 +202,11 @@ begin
     begin
       if not PinScreen then Break;
 
-      ColorCount := CountColorTolerance(clWhite, 150 + IGX, 80 + IGY, 380 + IGX, 100 + IGY, 10);
+      ColorCount := CountColorTolerance(clWhite, 150, 80, 380, 100, 10);
       // Counts the "Now click the NUM_X digit.". This is used later on.
 
       GetMousePos(X, Y);
-      if (FindText(Tx, Ty, Pin[I], UpCharsEx, 30 + IGX, 100 + IGY, 383 + IGX, 319 + IGY)) then
+      if (FindText(Tx, Ty, Pin[I], UpCharsEx, 30, 100, 383, 319)) then
       begin
         H := High(Boxes);
         for J := 0 to H do
@@ -231,7 +231,7 @@ begin
       end;
 
       Wait(100);
-      while (CountColorTolerance(clWhite, 150 + IGX, 80 + IGY, 380 + IGX, 100 + IGY, 10) = ColorCount) do
+      while (CountColorTolerance(clWhite, 150, 80, 380, 100, 10) = ColorCount) do
         Wait(500);
 
       Wait(RandomRange(300, 600));
@@ -246,7 +246,7 @@ begin
     WaitFunc(@BankScreen, 50, 300);
 
     ClickContinue(True, True);
-    while not FindColor(Tx, Ty, 0, 7 + IGX, 460 + IGY, 69 + IGX, 474 + IGY) do
+    while not FindColor(Tx, Ty, 0, 7, 460, 69, 474) do
     begin
       Wait(500);
       if not LoggedIn then
@@ -342,7 +342,7 @@ Example:
 function BankIndexToBankPoint(Index: Integer): TPoint;
 begin
   Index := Index - 1;
-  Result := Point(((Index mod 10)) + IGX, (Floor(Index div 10)) + IGY);
+  Result := Point((Index mod 10), Floor(Index div 10));
 end;
 
 (*
@@ -369,7 +369,7 @@ Example:
 function BankIndexToMSPoint(Index: Integer): TPoint;
 begin
   Index := Index - 1;
-  Result := Point((38 + (Index mod 10) * 44) + IGX, (90 + Floor(Index div 10) * 45) + IGY);
+  Result := Point(38 + (Index mod 10) * 44, 90 + Floor(Index div 10) * 45);
 end;
 
 (*
@@ -505,8 +505,8 @@ Example:
 *)
 function DepositItemBox(Item: Integer): TBox;
 begin
-  Result.X1 := (97 + (Item - 1) mod 7 * 48) + IGX;
-  Result.Y1 := (60 + (Item - 1) div 7 * 50) + IGY;
+  Result.X1 := 97 + (Item - 1) mod 7 * 48;
+  Result.Y1 := 60 + (Item - 1) div 7 * 50;
   Result.X2 := Result.X1 + 48;
   Result.Y2 := Result.Y1 + 50;
 end;
@@ -536,13 +536,13 @@ procedure FixBank;
 var
   Timer   : Integer;
 begin
-  if (SimilarColors(GetColor(481 + IGX, 110 + IGY), 723981, 20)) then
+  if (SimilarColors(GetColor(481, 110), 723981, 20)) then
     if (BankScreen) then
-      if (not (SimilarColors(GetColor(489 + IGX, 101 + IGY), 1316634, 5))) then
+      if (not (SimilarColors(GetColor(489, 101), 1316634, 5))) then
       begin
         Timer := GetTimeRunning + 5000;
-        MouseBox(482 + IGX, 101 + IGY, 488 + IGX, 111 + IGY, mouse_left);
-        while ((not (SimilarColors(GetColor(489 + IGX, 101 + IGY), 1316634, 5))) and (GetTimeRunning < Timer)) do
+        MouseBox(482, 101, 488, 111, mouse_left);
+        while ((not (SimilarColors(GetColor(489, 101), 1316634, 5))) and (GetTimeRunning < Timer)) do
           Wait(50 + Random(50));
         Wait(RandomRange(100, 200));
       end;
@@ -576,8 +576,8 @@ var
    T: Integer;
 begin
   Result := False;
-  FindColorsTolerance(activeTPA, 2896954, 25 + IGX, 45 + IGY, 70 + IGX, 80 + IGY, 5);
-  FindColorsTolerance(notactiveTPA, 2437688, 25 + IGX, 45 + IGY, 70 + IGX, 80 + IGY, 5);
+  FindColorsTolerance(activeTPA, 2896954, 25, 45, 70, 80, 5);
+  FindColorsTolerance(notactiveTPA, 2437688, 25, 45, 70, 80, 5);
 
   if Length(activeTPA) > Length(notactiveTPA) then
   begin
@@ -585,15 +585,15 @@ begin
     Exit;
   end;
 
-  Mouse(40 + IGX, 60 + IGY, 10, 10, mouse_left);
+  Mouse(40, 60, 10, 10, mouse_left);
   T := GetSystemTime;
   while Length(activeTPA) <= Length(notactiveTPA) do
   begin
-    FindColorsTolerance(activeTPA, 2896954, 25 + IGX, 45 + IGY, 70 + IGX, 80 + IGY, 5);
-    FindColorsTolerance(notactiveTPA, 2437688, 25 + IGX, 45 + IGY, 70 + IGX, 80 + IGY, 5);
+    FindColorsTolerance(activeTPA, 2896954, 25, 45, 70, 80, 5);
+    FindColorsTolerance(notactiveTPA, 2437688, 25, 45, 70, 80, 5);
     Wait(500);
     if ((GetSystemTime - T) div 1500) mod 2 = 0 then
-      Mouse(40 + IGX, 60 + IGY, 10, 10, mouse_left);
+      Mouse(40, 60, 10, 10, mouse_left);
     if GetSystemTime - T > 10000 then
       Exit;
   end;
@@ -626,7 +626,7 @@ begin
   if not BankScreen then
     Exit;
   for Result := 1 to 9 do
-    if GetColor((40 + 48 * (Result - 1)) + IGX, 83 + IGY) = 2896954 then
+    if GetColor(40 + 48 * (Result - 1), 83) = 2896954 then
       Exit;
   Result := 0;
 end;
@@ -671,7 +671,7 @@ begin
   if T = 1 then
     Result := true;
 
-  if FindColor(x, y, srl_outline_black, (27+(T-1)*48) + IGX, 51 + IGY, (70+(T-1)*48) + IGX, 81 + IGY) then
+  if FindColor(x, y, srl_outline_black, 27+(T-1)*48, 51, 70+(T-1)*48, 81) then
     Result := true;
 end;
 
@@ -712,7 +712,7 @@ begin
   if not ExistsBankTab(T) then
     srl_Warn('BankTab', 'Bank Tab '+inttostr(T) +' does not Exist.', warn_AllVersions)
   else
-    Mouse((48 * T) + IGX, 57 + IGY, 10, 10, mouse_left);
+    Mouse(48 * T, 57, 10, 10, mouse_left);
 
   Result := T = CurrentBankTab;
 end;
@@ -747,12 +747,12 @@ begin
   for II := 0 to 2 do
   begin
     FixBankTab;
-    Mouse(75 + IGX, 300 + IGY, 20, 10, mouse_left);
+    Mouse(75, 300, 20, 10, mouse_left);
     T := GetSystemTime;
     while (BankScreen) and (GetSystemTime - T < 5000) do
     begin
       Wait(500 + Random(500));
-      if (FindTextTpa(0, 0, 350 + IGX, 392 + IGY, 399 + IGX, 410 + IGY, 'search', UpCharsEx, Nothing)) then
+      if (FindTextTpa(0, 0, 350, 392, 399, 410, 'search', UpCharsEx, Nothing)) then
       begin
         TypeSend(Item);
         Exit;
@@ -842,7 +842,7 @@ begin
         SRL_Warn('QuickDeposit', 'Invalid deposit method ', WARN_ALLVERSIONS);
     end;
 
-    Mouse((StartX - 58 * Integer(DepositScreen)) + IGX, (303 - 29 * Integer(DepositScreen)) + IGY, 15, 10, True);
+    Mouse(StartX - 58 * Integer(DepositScreen), 303 - 29 * Integer(DepositScreen), 15, 10, True);
     Wait(200 + Random(300));
   end;
 end;
@@ -1232,8 +1232,8 @@ Example:
 procedure Notes(SwitchOn: Boolean);
 begin
   if BankScreen then
-    if (getColor(225 + IGX, 302 + IGY) = 0) xor switchOn then
-      Mouse(228 + IGX, 306 + IGY, 10, 10, mouse_left);
+    if (getColor(225, 302) = 0) xor switchOn then
+      Mouse(228, 306, 10, 10, mouse_left);
 end;
 
 (*
@@ -1267,7 +1267,7 @@ begin
   begin
     Timer := GetTimeRunning + 8000;
     repeat
-      Mouse(483 + IGX, 28 + IGY, 10, 12, mouse_left);
+      Mouse(483, 28, 10, 12, mouse_left);
       for i := 0 to 30 do
       begin
         if not BankScreen then
@@ -1645,11 +1645,10 @@ begin
   l := GetArrayLength(Booths) -1;
   for i := 0 to l do
   begin
-
     MMouse(Booths[i].X, Booths[i].Y, 3, 3);
     if WaitUpTextMulti(UpText, 1000) Then
     begin
-      GetMousePos(Booths[i].X, Booths[i].Y);
+      //GetMousePos(Booths[i].X, Booths[i].Y);  Commented Out By Brandon. Useless code.
       Mouse(Booths[i].X, Booths[i].Y, 0, 0, mouse_left);
       FFLag(0);
       MarkTime(c);
@@ -2152,14 +2151,14 @@ var
   T :Integer;
 begin
   Result := False;
-  MouseBox(528 + IGX, 94 + IGY, 533 + IGX, 107 + IGY, mouse_Right);
+  MouseBox(528, 94, 533, 107, mouse_Right);
   If WaitOption('draw', 500) then
   begin
     T := GetSystemTime + 10000;
     repeat
       wait(50);
       InPin(Players[CurrentPlayer].Pin);
-    until (T <= GetSystemTime) or (InRange(CountColor(0, 250 + IGX, 396 + IGY, 307 + IGX, 410 + IGY), 160, 250));
+    until (T <= GetSystemTime) or (InRange(CountColor(0, 250, 396, 307, 410), 160, 175));
     Wait(RandomRange(75, 400));
     TypeSend(IntToStr(Amount));
     Result := True;

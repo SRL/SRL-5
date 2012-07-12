@@ -128,6 +128,14 @@ var
   {$ENDIF}
 begin
   GetMousePos(cx, cy);
+  If SuppressOffset then
+    Y := Y - 25;
+
+  if (BarShowing) then
+    Y := Y + 50
+  else
+    Y := Y + 22;
+
   {$IFDEF UseLaptopMouse}
     miss := (Random(LMouse_MissChance) = 0);
     e:= 0;

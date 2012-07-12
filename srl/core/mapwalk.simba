@@ -224,10 +224,10 @@ procedure ClickNorth(AngleHigh: Integer);
 begin
   if (Random(4) = 1) then
   begin
-    Mouse(542 + IGX, 24 + IGY, 15, 15, mouse_right);
+    Mouse(542, 24, 15, 15, mouse_right);
     WaitOptionMulti(['ace', 'orth'], 1200);
   end else
-    Mouse(542 + IGX, 24 + IGY, 15, 15, mouse_left);
+    Mouse(542, 24, 15, 15, mouse_left);
 
   SetAngle(AngleHigh);
 end;
@@ -267,7 +267,7 @@ begin
   Result := -1.0;
   if High(Ps) = -1 then
     Exit;
-  SortTPAFrom(Ps, Point(((550 + 703) div 2) + IGX, 0 + IGY));  // Sort it from the center.
+  SortTPAFrom(Ps, Point((550 + 703) div 2, 0));  // Sort it from the center.
   {$IFDEF WALL_ANGLELEFT}
   ATPA := SplitTPAEx(Ps, 0, 1);   // This turns a PointArray into
                                   // vertical lines
@@ -1264,7 +1264,7 @@ var
   Dots: TPointArray;
   B: TBox;
 begin
-  B := IntToBox(24, 13, 32, 23);//Xtop, Ytop, Xbot, Ybot
+  B := IntToBox(32, 23, 24, 17);//Xtop, Ytop, Xbot, Ybot
   Dots := GetMiniMapDotsIn(WhatDot, MMCX-Round(B.x1*1.3), MMCY-Round(B.y1*1.3),
                                     MMCX+Round(B.x2*1.3), MMCY+Round(B.y2*1.3));
   L := Length(Dots);
@@ -1445,7 +1445,7 @@ begin
   for I := 0 to 14 do
     if Capitalize(Where) = TSA[I] then
     begin
-      MMouse(TPA[I].X + IGX, TPA[I].Y + IGY, 2, 2);
+      MMouse(TPA[I].X, TPA[I].Y, 2, 2);
 
       if (WaitUptextMulti(['Teleport', 'ele', 'ort', 'lepo', 'epor'], 400)) then
       begin
