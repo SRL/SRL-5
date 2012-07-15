@@ -590,7 +590,7 @@ end;
 
 Procedure IgnoreBar;
 var
-  BMP, H: Integer;
+  H: Integer;
 begin
   H:= 552;
   {$IFDEF SMART}
