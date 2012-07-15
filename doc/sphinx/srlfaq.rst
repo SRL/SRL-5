@@ -1,3 +1,0 @@
-SRL Frequently Asked Questions
-==============================
-
