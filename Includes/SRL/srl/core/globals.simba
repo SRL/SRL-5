@@ -608,7 +608,7 @@ begin
       H := 503;
     end else
       begin
-        SetTargetArray(SmartImageArray, 765, 503);
+        SetTargetArray(SmartImageArray, 765, 565);
       end;
   {$ELSE}
     if (FoundBar) then
