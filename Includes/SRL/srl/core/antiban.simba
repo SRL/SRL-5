@@ -964,13 +964,13 @@ function FindDwarvenPopup: Boolean;
 begin
   Result := False;
   // Parts of red X, checked in two different spots to reduce false-positives
-  if (GetColor(485, 40) = 2569093) then
-    if (GetColor(488, 40) = 11189720) then
+  if (GetColor(485 + IGX, 40 + IGY) = 2569093) then
+    if (GetColor(488 + IGX, 40 + IGY) = 11189720) then
     begin
       Result := True;
 
       // Box around the X, to close it.
-      MouseBox(482, 35, 492, 44, mouse_left);
+      MouseBox(482 + IGX, 35 + IGY, 492 + IGX, 44 + IGY, mouse_left);
       Wait(1000+Random(3000));
     end;
 end;

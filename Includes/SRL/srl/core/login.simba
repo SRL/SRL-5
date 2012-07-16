@@ -24,25 +24,25 @@ procedure NextPlayer(Active: Boolean); forward;
 procedure RandomNextPlayer(Active: Boolean); forward;
 
 const
-  UBx1 = 279; // Username tBox - in use now
-  UBy1 = 180;
-  UBx2 = 486;
-  UBy2 = 190;
+  UBx1 = 279 + LIX; // Username tBox - in use now
+  UBy1 = 180 + LIY;
+  UBx2 = 486 + LIX;
+  UBy2 = 190 + LIY;
 
-  PBx1 = 279; // Password tBox - in use now
-  PBy1 = 225;
-  PBx2 = 486;
-  PBy2 = 240;
+  PBx1 = 279 + LIX; // Password tBox - in use now
+  PBy1 = 225 + LIY;
+  PBx2 = 486 + LIX;
+  PBy2 = 240 + LIY;
 
-  GBx1 = 230; // greeting box in final screen
-  GBy1 = 330;
-  GBx2 = 660;
-  GBy2 = 400;
+  GBx1 = 230 + LIX; // greeting box in final screen
+  GBy1 = 330 + LIY;
+  GBx2 = 660 + LIX;
+  GBy2 = 400 + LIY;
 
-  WDx1 = 88;  // window box (to enter game) "click here to play"
-  WDy1 = 450;
-  WDx2 = 545;
-  WDy2 = 473;
+  WDx1 = 88 + LIX;  // window box (to enter game) "click here to play"
+  WDy1 = 450 + LIY;
+  WDx2 = 545 + LIX;
+  WDy2 = 473 + LIY;
 
   WHITE_TEXT    = 16777215; // white text color
   MESSAGE_BOX   = 11452366; // The "helpful message" box color
@@ -50,15 +50,13 @@ const
   LOGIN_COLOR   = 6865381; // Login button color
   ERROR_BOX     = 2044518; // Error box (comes up on incorrect pw/un or banned acc
 
-const                       //GetScreen
-  LOGIN_TA_X1 = 210;        //Text check area
-  LOGIN_TA_Y1 = 54;
-  LOGIN_TA_X2 = 556;
-  LOGIN_TA_Y2 = 228;
+const                             //GetScreen
+  LOGIN_TA_X1 = 210 + LIX;        //Text check area
+  LOGIN_TA_Y1 = 54 + LIY;
+  LOGIN_TA_X2 = 556 + LIX;
+  LOGIN_TA_Y2 = 228 + LIY;
 
   LOGIN_TEXTCOLOUR = 12378347; //Colour of text
-
-
 
 (*
 LobbyScreen
@@ -148,7 +146,7 @@ Example:
 *)
 function RSReady: Boolean;
 begin
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(347, 279) = 222107) or (GetColor(745, 17) = 16645629); //X button in top right
+  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -402,10 +400,10 @@ Example:
 *)
 function validEmail: Boolean;
 begin
-  while (getColor(473, 418) = 1001495) do
+  while (getColor(473 + IGX, 418 + IGY) = 1001495) do
   begin
     //writeln('found email screen');
-    MouseBox(502, 424, 548, 435, mouse_left);
+    MouseBox(502 + IGX, 424 + IGY, 548 + IGX, 435 + IGY, mouse_left);
     waitFunc(@lobbyScreen, 75, 3000);
   end;
   result := lobbyScreen;
@@ -451,7 +449,7 @@ begin
     Inc(c);
     if(FindText(x, y, 'obb', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
     begin
-      MouseBox(566, 346, 715, 373, mouse_left);
+      MouseBox(566 + IGX, 346 + IGY, 715 + IGX, 373 + IGY, mouse_left);
       for i := 0 to 10 do
       begin
         Wait(1000);
@@ -465,14 +463,13 @@ begin
     end else
     if(FindText(x, y, 'lick', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
     begin
-      MouseBox(579, 367, 699, 386, mouse_left);
+      MouseBox(579 + IGX, 367 + IGY, 699 + IGX, 386 + IGY, mouse_left);
       for i := 0 to 10 do
       begin
         Wait(1000);
         if not(LoggedIn) then
         begin
           Result := True;
-          IgnoreBar;
           Exit;
         end;
       end;
@@ -510,10 +507,9 @@ begin
   T := GetSystemTime;
   while ((not (Result)) and ((GetSystemTime - T) < 30000)) do
   begin
-    MouseBox(678, 24, 699, 43, mouse_left);
+    MouseBox(678 + IGX, 24 + IGY, 699 + IGX, 43 + IGY, mouse_left);
     Wait(RandomRange(1000, 2000));
     Result := (not (LobbyScreen));
-    IgnoreBar;
   end;
 end;
 
@@ -561,10 +557,10 @@ begin
   begin
     Inc(c);
     if(FindText(x, y, 'ogin', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
-      MouseBox(569, 393, 713, 418, mouse_left)
+      MouseBox(569 + IGX, 393 + IGY, 713 + IGX, 418 + IGY, mouse_left)
     else
       if(FindText(x, y, 'lick', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
-        MouseBox(569, 349, 713, 375, mouse_left);
+        MouseBox(569 + IGX, 349 + IGY, 713 + IGX, 375 + IGY, mouse_left);
 
     for i := 0 to 10 do
     begin
@@ -572,7 +568,6 @@ begin
       if not(LoggedIn) then
       begin
         Result := True;
-        IgnoreBar;
         Exit;
       end;
     end;
@@ -766,7 +761,7 @@ begin
       wait(2000 + random(1500));
       mouseBox(0, 0, 750, 490, mouse_Move);
     end;
-    IgnoreBar;
+
     result := validEmail;  // To handle "Validate Email" screen
     if result then
       break;
@@ -776,7 +771,7 @@ begin
     if ((GetSystemTime - T) > 60000) then
       Actions :=       ['One minute has passed... Debug: ' + ToStr(CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)),              0,    5,    'PlayerFalse',   'Login Failed']
     else
-    case (CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)) of //text colour points
+    case (CountColor(LOGIN_TEXTCOLOUR, 260 + LIX, 140 + LIY, 510 + LIX, 400 + LIY)) of //text colour points
                         // WriteLn Error                  Wait for   Retrys     Action      Player[CurrentPlayer].Loc
       763, 2348, 2299:
             Actions := ['Invalid Username / Password',           0,    2,    'PlayerFalse',   'Wrong User/Pass'];
@@ -809,7 +804,7 @@ begin
             Players[CurrentPlayer].Member := False;
             if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
               Players[CurrentPlayer].WorldInfo[0] := False;
-            MouseBox(267, 321, 496, 350, mouse_left); //Play free game instead button
+            MouseBox(267 + IGX, 321 + IGY, 496 + IGX, 350 + IGY, mouse_left); //Play free game instead button
             Wait(3000 + Random(2000));
             Result := True;
             Exit;
@@ -943,7 +938,7 @@ begin
                           {Click Here to Play}
 
   if (LobbyScreen) then
-    MouseBox(270, 450, 490, 470, mouse_left);
+    MouseBox(270 + IGX, 450 + IGY, 490 + IGX, 470 + IGY, mouse_left);
 
                             {Check responses}
 
@@ -952,9 +947,9 @@ begin
 
     SetLength(Actions, 0);
     if ((GetSystemTime - T) > 60000) then
-      Actions :=       ['One minute has passed...  Debug: ' + ToStr(CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)),                    0,     0,  'NextPlayer',   'Login Failed']
+      Actions :=       ['One minute has passed...  Debug: ' + ToStr(CountColor(LOGIN_TEXTCOLOUR, 260 + LIX, 140 + LIY, 510 + LIX, 400 + LIY)),                    0,     0,  'NextPlayer',   'Login Failed']
     else
-    case (CountColor(LOGIN_TEXTCOLOUR, 260, 140, 510, 400)) of //text colour points
+    case (CountColor(LOGIN_TEXTCOLOUR, 260 + LIX, 140 + LIY, 510 + LIX, 400 + LIY)) of //text colour points
                         // WriteLn Error                          Wait for   Retrys  Action     Player[CurrentPlayer].Loc
        364: Actions := ['Error Connecting.',                       20000,     9,  'Terminate',    'Error Connecting'];
        850: Actions := ['You need skill total of 1000.',               0,     9,  'PlayerTrue',   '1000 skill club'];
@@ -968,15 +963,15 @@ begin
         -1: Actions := ['You need 20 combat for PvP',                  0,     1,  'PlayerFalse',  'PvP warning'];
     end;
 
-    if (CountColor(clWhite, 415, 336, 476, 356) = 82) then // HRW login button white colour points
+    if (CountColor(clWhite, 415 + IGX, 336 + IGY, 476 + IGX, 356 + IGY) = 82) then // HRW login button white colour points
     begin
       Wait(RandomRange(500, 1000));
       if (Length(Players[CurrentPlayer].WorldInfo) > 2) then
       begin
         if (Players[CurrentPlayer].WorldInfo[2]) then
-          MouseBox(391, 361, 498, 383, mouse_left)
+          MouseBox(391 + IGX, 361 + IGY, 498 + IGX, 383 + IGY, mouse_left)
         else begin
-          MouseBox(263, 362, 372, 383, mouse_left);
+          MouseBox(263 + IGX, 362 + IGY, 372 + IGX, 383 + IGY, mouse_left);
           Players[CurrentPlayer].WorldInfo := [False, 0, AllowPVP];
           RetryLogin := True;
           Break;
@@ -984,9 +979,9 @@ begin
       end
       else
         if (AllowPVP) then
-          MouseBox(391, 361, 498, 383, mouse_left)
+          MouseBox(391 + IGX, 361 + IGY, 498 + IGX, 383 + IGY, mouse_left)
         else
-          MouseBox(263, 362, 372, 383, mouse_left);
+          MouseBox(391 + IGX, 361 + IGY, 498 + IGX, 383 + IGY, mouse_left);
       Wait(3000 + Random(2000));
       RetryLogin := true;
     end;

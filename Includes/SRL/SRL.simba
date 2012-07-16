@@ -181,7 +181,7 @@ begin
       Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
                      + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
       SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
-      SetTargetArray(SmartImageArray, 765, 553);
+      SetTargetArray(SmartImageArray, 765, 565);
     {$ELSE}
       SetupSmart(False);
       if (SRL_SixHourFix) then
@@ -198,11 +198,10 @@ begin
     Wait(100);
     if (GetTimeRunning - t) > 120000 then
       Break;
-  until(RSReady or FoundBar);
+  until(RSReady);
   {$ENDIF}
 
   SetupGauss;
-  IgnoreBar;
 end;
 
 {$ifdef CompileSRL}
