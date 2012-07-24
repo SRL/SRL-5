@@ -586,7 +586,7 @@ begin
         '2z4CkZBdjZBdLRBJR86FiFgsfw9EyOZDRLSmvwEiZHGIiELXKyBCF' +
         'oeIiNc/ByJkcYgIXzEIIYtDRACmWWK1');
 
-  Result := FindBitmapToleranceIn(Bar, X, Y, 117, 13, 171, 35, 10);
+  Result := FindBitmapToleranceIn(Bar, X, Y, 0, 0, 600, 50, 50);
   FreeBitmap(Bar);
 end;
 

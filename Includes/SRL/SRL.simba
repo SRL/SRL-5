@@ -187,7 +187,6 @@ begin
       if (SRL_SixHourFix) then
         SRL_Procs[srl_OnRSUpdate] := @SixHourFix;
     {$ENDIF}
-
   repeat
     {$IFNDEF SIMBAMAJOR980}
       {$IFDEF SMART}
@@ -201,8 +200,10 @@ begin
   until(RSReady);
   {$ENDIF}
 
+  IgnoreBar;
   SetupGauss;
   IgnoreBar;
+  AddOnTerminate('IgnoreBar');
 end;
 
 {$ifdef CompileSRL}
