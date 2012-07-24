@@ -201,6 +201,13 @@ begin
   until(RSReady);
   {$ENDIF}
 
+  // properly set the client (used for the RS navigation bar)
+  // color of the brown border in the navigation toolbar
+  if (countColorTolerance(994655, 0, 0, 300, 30, 10) > 50) then // if we're in game
+    setupInGameClient()
+  else
+    setupLoginClient();
+
   SetupGauss;
 end;
 

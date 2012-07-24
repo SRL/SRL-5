@@ -564,3 +564,65 @@ Function srl_InFight: Boolean;
 begin
   Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
 end;
+
+(*
+SetupLoginClient
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetupLoginClient();
+
+Sets the client area so it works properly at the login screen.
+
+.. note::
+
+    Author: Coh3n
+    Last Updated: July 24th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SetupLoginClient();
+*)
+procedure SetupLoginClient();
+var
+  w, h: integer;
+begin
+  getClientDimensions(w, h); // get original width/height
+  setClientArea(0, 22, w, h); // height of the black bar in the login screen
+
+  writeln('Resetting game client - Login client');
+end;
+
+(*
+SetupInGameClient
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetupInGameClient();
+
+Sets the client area so it works at the lobby screen and in game screen.
+
+.. note::
+
+    Author: Coh3n
+    Last Updated: July 24th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    SetupInGameClient();
+*)
+procedure SetupInGameClient();
+var
+  w, h: integer;
+begin
+  getClientDimensions(w, h); // get original width/height
+  setClientArea(0, 50, w, h); // height of the navigation toolbar
+
+  writeln('Resetting game client - In-game client');
+end;
