@@ -7,6 +7,10 @@ Globals
 
 *)
 
+const
+  SRL_NAV_BAR_HEIGHT_GAME = 50; // height of the navigation toolbar
+  SRL_NAV_BAR_HEIGHT_LOGIN = 22; // height of the black bar in the login screen
+
 type
   TBooleanArray = array of Boolean;
 
@@ -591,7 +595,8 @@ var
   w, h: integer;
 begin
   getClientDimensions(w, h); // get original width/height
-  setClientArea(0, 22, w, h); // height of the black bar in the login screen
+  imageSetClientArea(0, SRL_NAV_BAR_HEIGHT_LOGIN, w, h);
+  mouseSetClientArea(0, SRL_NAV_BAR_HEIGHT_LOGIN, w, h);
 
   writeln('Resetting game client - Login client');
 end;
@@ -622,7 +627,8 @@ var
   w, h: integer;
 begin
   getClientDimensions(w, h); // get original width/height
-  setClientArea(0, 50, w, h); // height of the navigation toolbar
+  imageSetClientArea(0, SRL_NAV_BAR_HEIGHT_GAME, w, h);
+  mouseSetClientArea(0, SRL_NAV_BAR_HEIGHT_GAME, w, h);
 
   writeln('Resetting game client - In-game client');
 end;
