@@ -146,7 +146,15 @@ Example:
 *)
 function RSReady: Boolean;
 begin
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  Result := (LoggedIn) or (LobbyScreen);
+
+  if (not Result) then
+  begin
+    ImageResetClientArea();
+    Result := (GetColor(745, 17) = 16645629); // X button in top right
+    SetupLoginClient();
+  end;
+
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -751,6 +759,8 @@ begin
     Wait(100 + Random(50));
   end;
 
+
+  setupInGameClient();
                         {Check responses}
 
   T := GetSystemTime;
