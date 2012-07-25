@@ -58,9 +58,10 @@ var
   I, Count: Integer;
 begin
   Count:= SmartGetClients(FALSE);
+  Writeln('Count = '+toStr(count));
   If (Count > 0) then
   begin
-    SetLength(Result, 1);
+    SetLength(Result, count);
     For I:= 0 To (Count - 1) Do
       Result[I]:= SmartClientID(I);
   end;
