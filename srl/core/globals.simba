@@ -1,11 +1,13 @@
-(*
-Globals
-=======
-
-
-.. contents::
-
-*)
+{*
+  Author: Brandon, Coh3n, Wizzup.
+  Navigation Bar Offsets at the top from the top of the client. (The Home, Support, Forums, Subscribe bar)
+  For Use With IgnoreBar or Any Bar Removal Functions.
+*}
+const
+  SRL_NAVBAR_LOGIN_X = 0;
+  SRL_NAVBAR_LOGIN_Y = 22;
+  SRL_NAVBAR_INGAME_X = 0;
+  SRL_NAVBAR_INGAME_Y = 50;
 
 type
   TBooleanArray = array of Boolean;
@@ -40,7 +42,7 @@ var
 { var bmpAdmin, bmpMod, Lamp, BoxMask: Integer;
   Description: Global Bitmaps. Need to be Global because of SCAR Memory leaks. }
 var
-  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge: Integer;
+  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge, SRL_NAVBAR_BITMAP: Integer;     //NavBar Added: Brandon.
 
 { var RoadColor, WaterColor, BankColor: Integer;
   Description: Three variables you will almost always use. :) }
@@ -322,11 +324,18 @@ begin
        '310FF0702C64CA09AAB0C6880094C3242798CE540FE2D026ACA80' +
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
        'EC3');
+
+  SRL_NAVBAR_BITMAP := BitmapFromString(8, 11, 'meJyr/PGn8scfBiRQCRYpeP0DiJD' +
+        'FISIZ974BEbI4RCTmCgjxaMbJOFcDkVr6XIiI3+HPQOQ4/wyEAUcu' +
+        '2z4CkZBdjZBdLRBJR86FiFgsfw9EyOZDRLSmvwEiZHGIiELXKyBCF' +
+        'oeIiNc/ByJkcYgIXzEIIYtDRACmWWK1');
+
   SRLBitmapsLoaded := True;
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
   SetBitmapName(bmpAdmin,'SRL - Admin bitmap');
   SetBitmapName(bmpFlag, 'SRL - Flag bitmap');
   SetDTMName(Lamp,'SRL - Lamp bitmap');
+  SetBitmapName(SRL_NAVBAR_BITMAP, 'SRL - NavBar Bitmap');
 end;
 
 (*
@@ -357,6 +366,7 @@ begin
     FreeBitmap(bmpFlag);
     FreeDTM(Lamp);
     FreeDTM(BookOfKnowledge);
+    FreeBitmap(SRL_NAVBAR_BITMAP);
     SRLBitmapsLoaded := False;
   end;
 end;
@@ -563,4 +573,42 @@ Example:
 Function srl_InFight: Boolean;
 begin
   Result := InRange(Length(GetFightBarTPA(MFBox)), 30, 240);
+end;
+
+
+{*
+  Author: Brandon.
+  Returns True If The Bar Home-Support-Forums-Subscribe Bar is On Screen.
+*}
+
+Function FoundBar: Boolean;
+var
+  X, Y: Integer;
+begin
+  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
+end;
+
+{*
+  Author: Brandon, Benland100.
+  No Longer Changes Target Pointer To The ScanLine After The Bar.
+  Sets the Client-Image/Mouse Offset to Ignore the NavBar. 50 Pixels In Height.
+*}
+
+Procedure IgnoreBar;
+var
+  W, H: Integer;
+begin
+  ImageResetClientArea;
+  MouseResetClientArea;
+  GetClientDimensions(W, H);
+
+  If (FoundBar) then
+  begin
+    ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
+    MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
+  end else
+    begin
+      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+    end;
 end;

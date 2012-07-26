@@ -57,13 +57,11 @@ Function SmartGetClientIDs: TIntegerArray;
 var
   I, Count: Integer;
 begin
-  Count:= SmartGetClients(FALSE);
+  Count := SmartGetClients(True);
+  SetLength(Result, Count);
   If (Count > 0) then
-  begin
-    SetLength(Result, 1);
-    For I:= 0 To (Count - 1) Do
-      Result[I]:= SmartClientID(I);
-  end;
+    For I:= 0 to (Count - 1) do
+      Result[I] := SmartClientID(I);
 end;
 
 {*
@@ -72,19 +70,16 @@ end;
 *}
 Procedure SmartKillClients;
 var
-  I: Integer;
   IDs: TIntegerArray;
+  I: Integer;
 begin
-  IDs:= SmartGetClientIDs;
-  For I:= High(IDs) DownTo 0 Do
-  begin
-    if SmartKillClient(IDs[I]) then
-      Writeln('Killed Client: ' + IntToStr(IDs[I]))
+  IDs := SmartGetClientIDs;
+  For I := High(IDs) DownTo 0 Do
+    If SmartKillClient(IDs[I]) Then
+      Writeln('Killed Client: ' + ToStr(IDs[I]))
     else
-      Writeln('Failed To Kill Client: ' + IntToStr(IDs[I]));
-  end;
+      Writeln('Failed To Kill Client: ' + ToStr(IDs[I]));
 end;
-
 
 {*
     By: Brandon.
@@ -114,6 +109,30 @@ begin
   end;
 end;
 
+
+{*
+    By: Benland100.
+    Pairs A Client To The Current Controller.
+*}
+Function PairSmart(ID: Integer): Boolean;
+var
+  I, Count: Integer;
+  IDs: TIntegerArray;
+begin
+  IDs := SmartGetClientIDs;
+  Count := Length(IDs);
+  If (Count > 0) then
+    For I:= 0 To (Count - 1) Do
+      If (IDs[I] = ID) and SmartPairClient(ID) then
+      begin
+        SetEIOSTarget('libsmartremote', ToStr(ID));
+        Writeln('Paired with SMART[' + ToStr(ID) + ']');
+        Result := True;
+        Exit;
+      end;
+  Writeln('** Failed To Pair Client: ' + ToStr(ID) + '; Client Does Not exist **');
+end;
+
 {*
     By: Benland100, Mormanman, Brandon.
 
@@ -122,48 +141,50 @@ end;
     Terminates all clients of the current remote upon failure.
     ForceNew Creates a new client.
 *}
-function InitSmart(ForceNew: boolean): integer;
+Function InitSmart(ForceNew: Boolean): Integer;
 var
   I, Count: Integer;
+  IDs: TIntegerArray;
   Params: TStringArray;
 begin
-  if (Not ForceNew) then
+  If (Not ForceNew) then
   begin
-    Count:= SmartGetClients(True);
+    Ids := SmartGetClientIDs;
+    Count := Length(IDs);
     If (Count > 0) then
-    begin
-      For I:= 0 to Count-1 do
+      For I:= 0 To (Count - 1) Do
       begin
-        Result:= SmartClientID(I);
-        if SmartPairClient(Result) then
+        If SmartPairClient(IDs[I]) then
         begin
-          SetEIOSTarget('libsmartremote', IntToStr(result));
+          Result := IDs[I];
+          SetEIOSTarget('libsmartremote', ToStr(Result));
+          Writeln('Paired with SMART[' + ToStr(Result) + ']');
           Exit;
         end;
       end;
-    end;
   end;
-  Params:= GetSmartParams;
-  If (Length(Params) < 2) then
+
+  Params := GetSmartParams;
+  If (Length(Params) > 2) then
   begin
-    Writeln('*** Failed To Grab Smart Parameters ***');
+    Writeln('** Failed To Grab Smart Parameters **');
     TerminateScript;
     Exit;
   end;
 
-  Result:= SmartSpawnClient('./Plugins/', Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
-  If (Result > 0) then
+  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
+  If (Result > 0) Then
   begin
     try
-      SetEIOSTarget('LibSmartRemote', IntToStr(Result));
+      SetEIOSTarget('libsmartremote', ToStr(Result));
+      Writeln('Loading SMART: ' + Params[0] + Params[1]);
     except
-      Writeln('*** Fatal Error: Pairing Clients; Attempting To Kill All Clients ***');
-      SmartKillClients;
+      WriteLn('** Fatal Error: Pairing Clients; Terminating Script **');
       TerminateScript;
     end;
   end else
     begin
-      Writeln('*** Smart Cannot Spawn Clients ***');
+      Writeln('** Smart Cannot Spawn Clients **');
       TerminateScript;
     end;
 end;
@@ -185,8 +206,7 @@ begin
   begin
     writeln('*** Smart Failed To Load ***');
     TerminateScript;
-  end else
-    writeln('Please Wait.. Smart Is Currently Loading..');
+  end;
 
   if (SRL_SixHourFix) then
     SRL_Procs[SRL_OnRSUpdate]:= @SixHourFix;
@@ -204,6 +224,7 @@ begin
     end;
   end;
 end;
+
 
 
 
