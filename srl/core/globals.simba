@@ -1,13 +1,40 @@
-{*
-  Author: Brandon, Coh3n, Wizzup.
+(*
+Globals
+=======
+
+
+.. contents::
+
+*)
+
+
+(*
+SRL_NAVBAR_CONSTANTS
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SRL_NAVBAR_CONSTANTS;
+
   Navigation Bar Offsets at the top from the top of the client. (The Home, Support, Forums, Subscribe bar)
   For Use With IgnoreBar or Any Bar Removal Functions.
-*}
+
+.. note::
+
+    by Brandon, Coh3n, Wizzup
+
+Example:
+
+.. code-block:: pascal
+
+*)
 const
   SRL_NAVBAR_LOGIN_X = 0;
   SRL_NAVBAR_LOGIN_Y = 22;
   SRL_NAVBAR_INGAME_X = 0;
   SRL_NAVBAR_INGAME_Y = 50;
+
+
 
 type
   TBooleanArray = array of Boolean;
@@ -576,10 +603,25 @@ begin
 end;
 
 
-{*
-  Author: Brandon.
+(*
+FoundBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function FoundBar: Boolean;
+
   Returns True If The Bar Home-Support-Forums-Subscribe Bar is On Screen.
-*}
+
+.. note::
+
+    by: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
 
 Function FoundBar: Boolean;
 var
@@ -588,13 +630,28 @@ begin
   Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
 end;
 
-{*
-  Author: Brandon, Benland100.
+(*
+SRL_ResetNavBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SRL_ResetNavBar;
+
   No Longer Changes Target Pointer To The ScanLine After The Bar.
   Sets the Client-Image/Mouse Offset to Ignore the NavBar. 50 Pixels In Height.
-*}
 
-Procedure IgnoreBar;
+.. note::
+
+    by: Brandon, Benland100.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+
+Procedure SRL_ResetNavBar;
 var
   W, H: Integer;
 begin

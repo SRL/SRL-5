@@ -154,7 +154,7 @@ begin
   begin
     ImageResetClientArea;
     Result := (GetColor(745, 17) = 16645629) or FoundBar; // X button in top right && Navigation Bar.
-    IgnoreBar;
+    SRL_ResetNavBar;
   end;
 
   if (GetColor(748,66) = 657930) then // X button on resizeable client
@@ -480,7 +480,7 @@ begin
         if not(LoggedIn) then
         begin
           Result := True;
-          IgnoreBar;
+          SRL_ResetNavBar;
           Exit;
         end;
       end;
@@ -521,7 +521,7 @@ begin
     MouseBox(678, 24, 699, 43, mouse_left);
     Wait(RandomRange(1000, 2000));
     Result := (not (LobbyScreen));
-    IgnoreBar;
+    SRL_ResetNavBar;
   end;
 end;
 
@@ -580,7 +580,7 @@ begin
       if not(LoggedIn) then
       begin
         Result := True;
-        IgnoreBar;
+        SRL_ResetNavBar;
         Exit;
       end;
     end;
@@ -774,7 +774,7 @@ begin
       wait(2000 + random(1500));
       mouseBox(0, 0, 750, 490, mouse_Move);
     end;
-    IgnoreBar;
+    SRL_ResetNavBar;
     result := validEmail;  // To handle "Validate Email" screen
     if result then
       break;

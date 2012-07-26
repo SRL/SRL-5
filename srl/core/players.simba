@@ -137,6 +137,7 @@ Example:
 function LoggedIn: Boolean;
 begin
   //White text on Report Abuse Button
+  SRL_ResetNavBar;
   Result := (GetColor(472, 490) = 16777215);
 end;
 
