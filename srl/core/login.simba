@@ -58,6 +58,8 @@ const                       //GetScreen
 
   LOGIN_TEXTCOLOUR = 12378347; //Colour of text
 
+
+
 (*
 LobbyScreen
 ~~~~~~~~~~~
@@ -146,7 +148,15 @@ Example:
 *)
 function RSReady: Boolean;
 begin
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  Result := (LoggedIn) or (LobbyScreen);
+
+  if (not Result) then
+  begin
+    ImageResetClientArea;
+    Result := (GetColor(745, 17) = 16645629) or FoundBar; // X button in top right && Navigation Bar.
+    SRL_ResetNavBar;
+  end;
+
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -470,6 +480,7 @@ begin
         if not(LoggedIn) then
         begin
           Result := True;
+          SRL_ResetNavBar;
           Exit;
         end;
       end;
@@ -510,6 +521,7 @@ begin
     MouseBox(678, 24, 699, 43, mouse_left);
     Wait(RandomRange(1000, 2000));
     Result := (not (LobbyScreen));
+    SRL_ResetNavBar;
   end;
 end;
 
@@ -568,6 +580,7 @@ begin
       if not(LoggedIn) then
       begin
         Result := True;
+        SRL_ResetNavBar;
         Exit;
       end;
     end;
@@ -761,7 +774,7 @@ begin
       wait(2000 + random(1500));
       mouseBox(0, 0, 750, 490, mouse_Move);
     end;
-
+    SRL_ResetNavBar;
     result := validEmail;  // To handle "Validate Email" screen
     if result then
       break;
