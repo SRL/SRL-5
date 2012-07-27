@@ -39,6 +39,9 @@ const
 type
   TBooleanArray = array of Boolean;
 
+var
+  SRL_NAVBAR_OFFSET_DISABLED: Boolean;  //Allows the user to specify if the NavBar Offset should be applied or not.
+
 // used so ExitSquealOfFortune is only called once per login
 var
   SRL_ExitedSquealOfFortune: boolean;
@@ -628,6 +631,7 @@ Function FoundBar: Boolean;
 var
   X, Y: Integer;
 begin
+  If (SRL_NAVBAR_OFFSET_DISABLED) Then Exit;
   Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
 end;
 
@@ -660,13 +664,16 @@ begin
   MouseResetClientArea;
   GetClientDimensions(W, H);
 
-  If (FoundBar) then
+  if (Not SRL_NAVBAR_OFFSET_DISABLED)
   begin
-    ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
-    MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
-  end else
+    If (FoundBar) then
     begin
-      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-    end;
+      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
+      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
+    end else
+      begin
+        ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+        MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+      end;
+  end;
 end;
