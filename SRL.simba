@@ -35,7 +35,7 @@
   {$IFDEF SIMBAMAJOR980}
     {$I SRL/SRL/Misc/Smart.Simba}
   {$ELSE}
-    Procedure ActivateClient;begin end;
+    Procedure ActivateClient;begin end; {$IFDEF LAPE} override; {$ENDIF}
   {$ENDIF}
 {$ENDIF}
 {$ENDIF}

@@ -32,10 +32,12 @@ begin
   {$ENDIF}
 end;
 
+{
 function GetMufasaBitmap(bmp: Integer): Integer;
 begin
   Result := bmp;
 end;
+}
 
 function ExceptionType: TIFException;
 begin
