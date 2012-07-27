@@ -340,7 +340,7 @@ begin
     if CountedColors > Highest then
     begin
       Highest := CountedColors;
-      Result := (10 + i)
+      Result := (10 + i);
       AddToSRLLog('The hook is in box '+ToStr(Result)+'');
     end;
   end;

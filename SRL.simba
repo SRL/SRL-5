@@ -94,7 +94,7 @@
 {$IFNDEF SIMBAMAJOR980}
 {$IFDEF SMART}
   {$IFNDEF SRL_SMART}
-    {$include SRL/SRL/Misc/SmartParams.Simba}
+    {$include SRL/SRL/misc/SmartParams.Simba}
   {$ENDIF}
 {$ENDIF}
 {$ENDIF}
