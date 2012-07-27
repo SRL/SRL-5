@@ -287,6 +287,7 @@ var
     Smart_Server: Integer;
     Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean;
   {$ELSE}
+    Smart_ForceNew: Boolean;
     Smart_FixSpeed: Boolean;
     SRL_SixHourFix: Boolean;
     Smart_CurrentClient: Integer;
