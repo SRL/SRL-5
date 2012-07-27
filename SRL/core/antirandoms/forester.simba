@@ -15,7 +15,7 @@ colors are found to determine how many tails there are.
 // colors gathered using ACA
 const
   _PHEASANT_TAIL_COLOR = 9412006; // white tail tip
-  _PHEASANT_TAIL_TOL   = 3;
+  _PHEASANT_TAIL_TOL   = 5;
 
   _PHEASANT_COLOR = 2705758; // brown of pheasant body
   _PHEASANT_TOL   = 7;
@@ -25,13 +25,15 @@ const
 (**
  * Author: Coh3n
  * Description: Detects if a player is in the random.
+ * Updated on 02/06/2012 - [J]ustin (Thanks J J for the report)
  *)
 function FF_Detect(): boolean;
 begin
   if (not (tabExists(TAB_MAGIC))) then
-    if (length(getMinimapDots('npc')) >= 10) then
+    if (tabExists(TAB_FRIENDS)) then  // Removed false detection when shop window open
+      if (length(getMinimapDots('npc')) >= 12) then //Possible 10 NPCS at Yanille (14+ NPCS at random event)
       // forest color
-      result := (countColorTolerance(2513745, MMX1, MMY1, MMX2, MMY2, 20) > 5000);
+        result := (countColorTolerance(2513745, MMX1, MMY1, MMX2, MMY2, 20) > 5000);
 end;
 
 (**

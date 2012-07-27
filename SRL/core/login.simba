@@ -58,6 +58,8 @@ const                       //GetScreen
 
   LOGIN_TEXTCOLOUR = 12378347; //Colour of text
 
+
+
 (*
 LobbyScreen
 ~~~~~~~~~~~
@@ -146,7 +148,15 @@ Example:
 *)
 function RSReady: Boolean;
 begin
-  Result := (LoggedIn) or (LobbyScreen) or (GetColor(745, 17) = 16645629); //X button in top right
+  Result := (LoggedIn) or (LobbyScreen);
+
+  if (not Result) then
+  begin
+    ImageResetClientArea;
+    Result := (GetColor(745, 17) = 16645629) or FoundBar; // X button in top right && Navigation Bar.
+    SRL_ResetNavBar;
+  end;
+
   if (GetColor(748,66) = 657930) then // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
@@ -377,6 +387,39 @@ begin
 end;
 
 (*
+validEmail
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function validEmail: Boolean;
+
+Recognizes and handles the "Validate Email" screen in RS.
+
+.. note::
+
+    by NCDS
+
+Example:
+
+.. code-block:: pascal
+
+    if not validEmial then
+      writeLn('Failed to get past verification screen');
+
+*)
+function validEmail: Boolean;
+begin
+  while (getColor(473, 418) = 1001495) do
+  begin
+    //writeln('found email screen');
+    MouseBox(502, 424, 548, 435, mouse_left);
+    waitFunc(@lobbyScreen, 75, 3000);
+  end;
+  result := lobbyScreen;
+end;
+
+(*
 ExitToLobby
 ~~~~~~~~~~~
 
@@ -420,11 +463,12 @@ begin
       for i := 0 to 10 do
       begin
         Wait(1000);
-        if (LobbyScreen) then
-        begin
-          Result := True;
-          Exit;
-        end;
+        if (not LobbyScreen) then
+          if validEmail then
+          begin
+            Result := True;
+            Exit;
+          end;
       end;
     end else
     if(FindText(x, y, 'lick', UpCharsEx, MIX1, MIY1, MIX2, MIY2))then
@@ -436,6 +480,7 @@ begin
         if not(LoggedIn) then
         begin
           Result := True;
+          SRL_ResetNavBar;
           Exit;
         end;
       end;
@@ -476,6 +521,7 @@ begin
     MouseBox(678, 24, 699, 43, mouse_left);
     Wait(RandomRange(1000, 2000));
     Result := (not (LobbyScreen));
+    SRL_ResetNavBar;
   end;
 end;
 
@@ -534,6 +580,7 @@ begin
       if not(LoggedIn) then
       begin
         Result := True;
+        SRL_ResetNavBar;
         Exit;
       end;
     end;
@@ -727,6 +774,10 @@ begin
       wait(2000 + random(1500));
       mouseBox(0, 0, 750, 490, mouse_Move);
     end;
+    SRL_ResetNavBar;
+    result := validEmail;  // To handle "Validate Email" screen
+    if result then
+      break;
 
     SetLength(Actions, 0);
 

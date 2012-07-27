@@ -35,25 +35,25 @@ solver's simba file.
 // represent the elements of the SRL_Randoms array
 const
   SRL_RANDOMS_COUNT = 19;
-    SRL_RAND_DEMON     = 0;
-    SRL_RAND_MAZE      = 1;
-    SRL_RAND_EVILBOB   = 2;
-    SRL_RAND_MORDAUT   = 3;
-    SRL_RAND_CERTERS   = 4;
-    SRL_RAND_MIME      = 5;
-    SRL_RAND_ABYSS     = 6;
-    SRL_RAND_FROG      = 7;
-    SRL_RAND_PINBALL   = 8;
-    SRL_RAND_SANDWICH  = 9;
-    SRL_RAND_PILLORY   = 10;
-    SRL_RAND_ARNAV     = 11;
-    SRL_RAND_QUIZ      = 12;
-    SRL_RAND_LEO       = 13;
-    SRL_RAND_PETE      = 14;
-    SRL_RAND_FORESTER  = 15;
-    SRL_RAND_BEEKEEPER = 16;
-    SRL_RAND_MOLLY     = 17;
-    SRL_RAND_REWARDS   = 18;
+  SRL_RAND_DEMON     = 0;
+  SRL_RAND_MAZE      = 1;
+  SRL_RAND_EVILBOB   = 2;
+  SRL_RAND_MORDAUT   = 3;
+  SRL_RAND_CERTERS   = 4;
+  SRL_RAND_MIME      = 5;
+  SRL_RAND_ABYSS     = 6;
+  SRL_RAND_FROG      = 7;
+  SRL_RAND_PINBALL   = 8;
+  SRL_RAND_SANDWICH  = 9;
+  SRL_RAND_PILLORY   = 10;
+  SRL_RAND_ARNAV     = 11;
+  SRL_RAND_QUIZ      = 12;
+  SRL_RAND_LEO       = 13;
+  SRL_RAND_PETE      = 14;
+  SRL_RAND_FORESTER  = 15;
+  SRL_RAND_BEEKEEPER = 16;
+  SRL_RAND_MOLLY     = 17;
+  SRL_RAND_REWARDS   = 18;
 
 type
   TRandom = record
@@ -293,7 +293,7 @@ begin
     detect := @Molly_Detect;
     isInvRandom := false;
     hasRewardBox := true;
-    disabled := true;
+    disabled := false;
   end;
 
   with SRL_Randoms[SRL_RAND_REWARDS] do

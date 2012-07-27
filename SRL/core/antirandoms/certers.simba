@@ -47,12 +47,13 @@ end;
 
 (**
  * Author: Coh3n, DTMs by DemiseScythe
+ * Updated by: [J]ustin - Bowl DTM - 9/06/2012
  * Description: Returns a TCTItemArray of all the Certer items.
  *)
 function CT_GetItems(): TCTItemArray;
 begin
   //setLength(result, CT_ITEM_COUNT);
-  setLength(result, 8);
+  setLength(result, 9);
 
   with result[CT_ITEM_BOWL] do
   begin
@@ -60,7 +61,9 @@ begin
     text := lowercase(name);
     DTMs := [
       DTMFromString('mAAEAAHic42FgYGBiZGBgBuKfDBCaD4i/ANmvgFgGyBYG4k9AtiBU3TUg+ywQXwXiuwwQ/kkgfgDEj4H4FBC/A+IPQPwRiAsy5BhyU2UZijLlGIqz5MD88lx5hvx0WQY7Z3GGhBhphsRYGQYHV3EG/wBJBn6gHlIwI8gPJGBkAADRtRm0'),
-      DTMFromString('mlwAAAHicY2dgYJBggABmIJYCYgMg1gFicSAWAmIuIFYBYn0gloPyQaA0T5GhpkSJIStNnsHLX5rByVOSITZWliEvS4GBHyiPCzMCMRMODAUAmFgH6Q==')
+      DTMFromString('mlwAAAHicY2dgYJBggABmIJYCYgMg1gFicSAWAmIuIFYBYn0gloPyQaA0T5GhpkSJIStNnsHLX5rByVOSITZWliEvS4GBHyiPCzMCMRMODAUAmFgH6Q=='),
+      DTMFromString('mrAAAAHic42BgYLBkZmAIB+JkIM4AYg8gjgTiCCC2AuIHjAwMh4D4FBC/BOIvQPwNiO8A8QsgDrBUY2iL12WYVOrL0JnrxTC13J+hO1mPoTpch8HTWIWBC2gHPsxIAMMAAPvdEnw='),
+      DTMFromString('mwQAAAHic42RgYPBmZmAwAWIZIFYGYkMgdgNiPyD2AGJtID7IyMBwCIjPA/F1IH4CxKeAeDcQXwbiG0AcbqPM0BqrydAQqcGQ7q7KkOGhyqArK8OQ663GEGKlxBBmrcTABbSPEGYkAsMBADNLENU=')
     ];
   end;
 
@@ -121,7 +124,8 @@ begin
     DTMs := [
       DTMFromString('mJgIAAHick2JgYOAFYj4gFgFiMSifDYiZgZgDiAWhYjAMA6xQdSCaBYi5oFgYqkcSiKWAWBpqtgQQu0KxPRDbQtmOULYNEJsAsQ4Qq0LtAunjAWIhJDuZoPYwQt3HjGQvCHf2BzBUN9gyNLc7MmQXmzFU1NowVNXbMtQ22TG0dDgyZBaaguVBYiB6+pxIsrAI1H20xoxQP9Ma4wYAphgrGg=='),
       DTMFromString('m5wEAAHictdBBSwJRFIbhb1wL7XKhEK2mzBBHSGnhPhhCGaLRURxERv2PLmtVooFBZCJZJLrITT/A13GINi298HAPl8t3DichaYU5pnjDM4Z4wBgTPGKET3zjB4YhxXGIFJI4wglOcWzs8mZR5iteoh7v+MAXFlhj+efPOOq3nWGAe/Rxh6dovkanKC8o6MbP/6q1L1RpWGFdsk3Zbja8t/zepZx6RuVqWhXvTLVWVtduWs0gJ79rhW9Xjqnb5rkOyN8X1qLYnvxzNkLsNe8='),
-      DTMFromString('mfgEAAHicE2JgYGBlBBJAzAjEP4DM/0DMDmRzAjEvEAsCsTAQswExBxCzAPEfqD6QvBgQ8wPxBaDYSSA+AMRHgHgbEB9ConcD8Qkgvg/Ebxggdv1lgJjHDHUDSGxqrzvDjH4PhoUzfPHi/jZzhrY6Y4bGSkOG7iZThoYKAzCuLdMHi/MDzaIGBjmNiQoYEwAAJdUpyQ==')
+      DTMFromString('m6wAAAHic42ZgYChjZmDIAuISIK4F4nwgrgPidiCeBsQTgXgWEC8C4meMDAyPgPg7EH8D4tdA/BeIuZkYGLSB2BiILYHYDIgjXa0YXE30wTjZzwFMR7lbMwTbGzHEeZgxRLmaMmQGWYNpLqA7iMWMJGAkAACJ+RWu'),
+      DTMFromString('m1gAAAHic42JgYPjFyMDwDYjZmBgYeID4D5D9BoglgGw9IJYCYnUgjgaKeQGxCxCHAnEWEMcDsRoQSwExHxTPrk1gmFefyNCYFgimYbgxxYOhM9uboSnVA8zmAtpNDGYkEiMAAP4jFNc=')
     ];
   end;
 
@@ -135,16 +139,17 @@ begin
       DTMFromString('mAAEAAHic42FgYPgFxB+A+B0QMzIyMDAD8R8g+y8QvwViNiCfgxFCcwHxe6DYCyB+zABhPwXiR0D8E4i/Q815BsTfgPgTEFekuDNMq4tgaC8KYCiK0mFoTDNgmNEYxdBW6A/GG6alM6ybmsYwtzWaYWlvIgM/UA8pGOgkBiYSMDIAAA0EIiY=')
     ];
   end;
-{
+
   with result[CT_ITEM_FISH] do
   begin
-    name := 'Fish 1';
-    text := 'fish';
+    name := 'Fish';
+    text := lowercase(name);
     DTMs := [
-      DTMFromString('')
+      DTMFromString('m1gAAAHic42JgYGDiZGB4ysHAcAKIlwHxGiC+B8SPgPgrEP8HYl6gGj9GBgZXIDYBYltGCD8SiNOBOBaIw4E4BIjdQtQZ7P2UGZLyrBki0kwZ4nMsGcKT9Rg8I3QYsorNGNKLbcGYC2g3MZiRSIwAAFSFFBo='),
+      DTMFromString('mwQAAAHic42RgYFjPwcBwBYi/Q/FtIL4OxGug4g+AOJGRgcEYiNWB2AqIA4A4G4hzgTgCiH1A/Mokhqp6D4bKWneGju4Ahp5uF4bZc6IZpk2PYOjrdWPo7HRh4ALaRwgzEoHhAACqKhdS')
     ];
   end;
-}
+
 end;
 
 (**

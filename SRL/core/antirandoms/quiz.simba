@@ -16,7 +16,7 @@ is the odd one out.
 *)
 
 const
-  _QUIZ_ACCURACY = 100; // number of tries to scan object
+  _QUIZ_ACCURACY = 250; // number of tries to scan object - Updated 5/06/2012 - [J]ustin
   _QUIZ_NPC = 'GqlzD5gt8!'; // Quiz Master's name
 
 var
