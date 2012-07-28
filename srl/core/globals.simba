@@ -39,9 +39,6 @@ const
 type
   TBooleanArray = array of Boolean;
 
-var
-  SRL_DisableNavBar: Boolean;  //Allows the user to specify if the NavBar Offset should be applied or not.
-
 // used so ExitSquealOfFortune is only called once per login
 var
   SRL_ExitedSquealOfFortune: boolean;
@@ -631,8 +628,70 @@ Function FoundBar: Boolean;
 var
   X, Y: Integer;
 begin
-  If (SRL_DisableNavBar) Then Exit;
   Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
+end;
+
+(*
+SRL_DisableNavBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SRL_DisableNavBar;
+
+  Offsets the client by 50 pixels when logged in, 22 when not logged in. This is to ignore the navigation bar at the top.
+
+.. note::
+
+    by: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+
+Procedure SRL_DisableNavBar;
+var
+  W, H: Integer;
+begin
+  GetClientDimensions(W, H);
+  If (FoundBar) then
+  begin
+    ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
+    MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
+  end else
+    begin
+      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+    end;
+end;
+
+(*
+SRL_EnableNavBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SRL_EnableNavBar;
+
+  Resets The Client Offsets To Normal! All functions will work as they were before the navigation bar.
+  This function does not ignore the navbar.
+
+.. note::
+
+    by: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+
+Procedure SRL_EnableNavBar;
+begin
+  ImageResetClientArea;
+  MouseResetClientArea;
 end;
 
 (*
@@ -657,23 +716,7 @@ Example:
 *)
 
 Procedure SRL_ResetNavBar;
-var
-  W, H: Integer;
 begin
-  ImageResetClientArea;
-  MouseResetClientArea;
-  GetClientDimensions(W, H);
-
-  if (Not SRL_DisableNavBar)
-  begin
-    If (FoundBar) then
-    begin
-      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
-      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
-    end else
-      begin
-        ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-        MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-      end;
-  end;
+  SRL_EnableNavBar;
+  SRL_DisableNavBar;
 end;
