@@ -988,7 +988,7 @@ Finds and exits the annoying Squeal of Fortune pop up.
 .. note::
 
     Author: Coh3n & Ashaman88
-    Last Modified: June 9, 2012 by Ashaman88
+    Last Modified: July 28th, 2012 by Coh3n
 
 Example:
 
@@ -1035,7 +1035,7 @@ begin
     begin
       mouse(x, y, 3, 3, mouse_Move);
 
-      if (waitUptext('elect', 300)) then
+      if (waitUptextMulti(['Select', 'elect', 'lect'], 300)) then
       begin
         getMousePos(x, y);
         mouse(x, y, 0, 0, mouse_Left);
