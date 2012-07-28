@@ -40,7 +40,7 @@ type
   TBooleanArray = array of Boolean;
 
 var
-  SRL_NAVBAR_OFFSET_DISABLED: Boolean;  //Allows the user to specify if the NavBar Offset should be applied or not.
+  SRL_DisableNavBar: Boolean;  //Allows the user to specify if the NavBar Offset should be applied or not.
 
 // used so ExitSquealOfFortune is only called once per login
 var
@@ -631,7 +631,7 @@ Function FoundBar: Boolean;
 var
   X, Y: Integer;
 begin
-  If (SRL_NAVBAR_OFFSET_DISABLED) Then Exit;
+  If (SRL_DisableNavBar) Then Exit;
   Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
 end;
 
@@ -664,7 +664,7 @@ begin
   MouseResetClientArea;
   GetClientDimensions(W, H);
 
-  if (Not SRL_NAVBAR_OFFSET_DISABLED)
+  if (Not SRL_DisableNavBar)
   begin
     If (FoundBar) then
     begin
