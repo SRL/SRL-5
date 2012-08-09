@@ -164,8 +164,10 @@ Procedure SetupSRL; Forward;
 Procedure SixHourFix;
 var
   Trash: TVariantArray;
+  Refresh: Integer;
 begin
   FreeSRL;
+  Refresh := SmartGetRefresh;
   SmartKillClient(SmartCurrentClient);
   SetupSRL;
   try
@@ -174,6 +176,12 @@ begin
     Writeln('Could Not DeclarePlayers');
     TerminateScript;
   end;
+
+  {$IFDEF SMART_GRAPHICS}
+  SMART_FreeDebug;
+  SMART_SetupDebug;
+  {$ENDIF}
+  SmartSetRefresh(Refresh);
 
   If (Not LoginPlayer) then
   begin
