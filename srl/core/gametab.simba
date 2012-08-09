@@ -72,54 +72,64 @@ TabExists
 
 .. code-block:: pascal
 
-    function TabExists(Tab: Integer): Boolean;
+    function TabExists(tab: integer): boolean;
 
-Returns True if the Tab exists.
+Returns true if the gametab 'tab' exists.  Tab constants can be found in
+globals.simba.
 
 .. note::
 
     by Zephyrsfury & Icefire908
+    Last Modified: Mar. 7th, 2012 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
+    if (not tabExists(TAB_MAGIC)) then
+      writeln('We may be in a random event!');
 *)
-function TabExists(Tab: Integer): Boolean;
+function TabExists(tab: integer): boolean;
 var
-  tP: TPoint;
+  b: TBox;
+  tmpCTS: integer;
 begin
-  Result := false;
+  result := false;
   if (not loggedIn) then
     exit;
 
-  if (tab < 20) then
+  if (not inRange(tab, TAB_COMBAT, TAB_LOGOUT)) then
   begin
-    SRL_Warn('TabExists', 'Tab ' + IntToStr(Tab) + ' is not using the new constants! Please upgrade your script.', warn_AllVersions);
-    Exit;
+    SRL_Warn('TabExists', 'Tab ' + toStr(Tab) + ' is not a valid tab number.', warn_AllVersions);
+    exit;
   end;
 
-  if (not(InRange(Tab, Tab_Combat, Tab_LogOut))) then
-  begin
-    SRL_Warn('TabExists', 'Tab ' + IntToStr(Tab) + ' is not a valid tab number.', warn_AllVersions);
-    Exit;
-  end;
+  // requires CTS 1, may result in false negatives if CTS 2
+  tmpCTS := getColorToleranceSpeed;
+  colorToleranceSpeed(1);
 
-  if (Tab = tab_Inv) then
-    if BankScreen then
+  if (tab = TAB_INV) then
+    if (bankScreen) then
     begin
-      Result := True;
-      Exit;
+      colorToleranceSpeed(tmpCTS);
+      result := true;
+      exit;
     end;
 
-  if (Tab = tab_LogOut) then
+  if (tab = TAB_LOGOUT) then
   begin
-    Result := (GetColor(746, 0) = 65536);
-    Exit;
+    result := (getColor(746, 0) = 65536);
+    colorToleranceSpeed(tmpCTS);
+    exit;
   end;
 
-  tP := Point(((Tab - 21) mod 8 * 30) + 537, ((Tab - 21) div 8 * 298) + 186);
-  Result := CountColorTolerance(5005422, tp.x-12, tp.y-12, tp.x+12, tp.y+12, 55) < 500; // the count when no icons are overlapping the GameTab.
+  // small boxes inside the tabs (hardly any of the background showing)
+  b := gridBox(tab - 20, 8, 2, 13, 18, 30, 300, point(536, 186));
+
+  // the color of the tab background
+  result := (countColorTolerance(5005422, b.x1, b.y1, b.x2, b.y2, 55) < 250); // actual count should be 266
+
+  colorToleranceSpeed(tmpCTS);
 end;
 
 (*
@@ -252,7 +262,7 @@ Example:
 *)
 function FTab(Tab: integer): boolean;
 var
-  T: integer;
+  T, F: integer;
 begin
   if (GetCurrentTab = Tab) then
   begin
@@ -260,16 +270,20 @@ begin
     Exit;
   end;
   Case Tab of
-    tab_Inv: t := 1;
-    tab_Equip: t := 2;
-    tab_Prayer: t := 3;
-    tab_Magic: t := 4;
-    tab_Combat: t := 5;
+    tab_Inv: F := 1;
+    tab_Equip: F := 2;
+    tab_Prayer: F := 3;
+    tab_Magic: F := 4;
+    tab_Combat: F := 5;
     else
       writeln('Tab '+inttostr(tab)+' isn''t a valid option.');
   end;
-  TypeByte(111+T)
-  Result := GetCurrentTab = Tab;
+  T := GetSystemTime + 2000;
+  Repeat
+    TypeByte(111+F);
+    Wait(150+random(100));
+    Result := GetCurrentTab = Tab;
+  until Result or (GetSystemTime > T);
 end;
 
 (*
@@ -331,6 +345,32 @@ end;
 
 (*
 
+GetWeaponName
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function GetWeaponName: String;
+
+Returns the name of the weapon your currently using.
+
+.. note::
+
+    by Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+Function GetWeaponName: String;
+begin
+  if GameTab(tab_Combat) then
+    Result := GetTextAtExWrap(584, 208, 734, 226, 0, 3, 4, 3907053, 0, UpChars);
+end;
+
+(*
+
 GetWeaponData
 ~~~~~~~~~~~~~
 
@@ -363,7 +403,8 @@ begin
   Result := False;
   if (not LoggedIn) then
     Exit;
-  GameTab(tab_Combat);
+  if not GameTab(tab_Combat) then
+    Exit;
   for i := 0 to 3 do
   begin
     T := Point(680-(i+1) mod 2*85, 270+2 mod (i+1)*28);
@@ -543,30 +584,34 @@ Gametab 2 related functions.
   Description: Constants representing player skills. }
 { consts in Players.scar ; Here is the list for easier access
 const
-  skill_Attack = 1;
-  skill_Strength = 2;
-  skill_Defence = 3;
-  skill_Range = 4;
-  skill_Prayer = 5;
-  skill_Magic = 6;
-  skill_Runecrafting = 7;
-  skill_Hitpoints = 8;
-  skill_Agility = 9;
-  skill_Herblore = 10;
-  skill_Thieving = 11;
-  skill_Crafting = 12;
-  skill_Fletching = 13;
-  skill_Slayer = 14;
-  skill_Mining = 15;
-  skill_Smithing = 16;
-  skill_Fishing = 17;
-  skill_Cooking = 18;
-  skill_Firemaking = 19;
-  skill_Woodcutting = 20;
-  skill_Farming = 21;
-  skill_Construction = 22;
-  skill_Hunting = 23;
-  skill_Summoning = 24;
+  SKILL_ATTACK        = 0;
+  SKILL_DEFENCE       = 1;
+  SKILL_STRENGTH      = 2;
+  SKILL_HITPOINTS     = 3;    
+  SKILL_RANGE         = 4;
+  SKILL_PRAYER        = 5;
+  SKILL_MAGIC         = 6;
+  SKILL_COOKING       = 7;
+  SKILL_WOODCUTTING   = 8;
+  SKILL_FLETCHING     = 9;
+  SKILL_FISHING       = 10;
+  SKILL_FIREMAKING    = 11;
+  SKILL_CRAFTING      = 12;
+  SKILL_SMITHING      = 13;
+  SKILL_MINING        = 14;
+  SKILL_HERBLORE      = 15;
+  SKILL_AGILITY       = 16;
+  SKILL_THIEVING      = 17;
+  SKILL_SLAYER        = 18;
+  SKILL_FARMING       = 19;
+  SKILL_RUNECRAFTING  = 20;
+  SKILL_HUNTER        = 21;
+  SKILL_CONSTRUCTION  = 22;
+  SKILL_SUMMONING     = 23;
+  SKILL_DUNGEONEERING = 24;
+  SKILL_ALLCOMBAT     = 25;
+  SKILL_EVERYSKILL    = 26;
+  SKILL_NONE          = 27;
 }
 (*
 
@@ -804,19 +849,16 @@ var
   Colors : TIntegerArray;
   Signs: TStringArray;
   P: TPointArray;
-  TP: TPoint;
-  I{,cl}: Integer;
+  I: Integer;
   B: TBox;
-  W,H{, T}: integer;
-  SearchBox : TBox;
 begin;
   Result := -1;
   ColorSign := '';
   case LowerCase(Leveltype) of
-    'health', 'hp', 'hitpoints', 'constitution': TP := Point(715,27);
-    'prayer', 'pray'                           : TP := Point(730,66);
-    'summon', 'summoning'                      : TP := Point(715,140);
-    'run','energy'                             : TP := Point(730,105);
+    'health', 'hp', 'hitpoints', 'constitution': B := IntToBox(719,27,745,43);
+    'prayer', 'pray'                           : B := IntToBox(735,66,762,82);
+    'run','energy'                             : B := IntToBox(735,103,762,122);
+    'summon', 'summoning'                      : B := IntToBox(719,119,745,156);
   else
     begin;
       srl_Warn('GetMMLevels', 'Invalid LevelType: ''' + LevelType + '', warn_AllVersions);
@@ -825,18 +867,14 @@ begin;
   end;
   Colors := [65280, 65535, 2070783, 255];
   Signs  := ['Green', 'Yellow', 'Orange', 'Red'];
-  GetClientDimensions(w,h); //We donnot want to search out of the clients area!
-  SearchBox := IntToBox(TP.X, TP.Y, Min(w-1,TP.X + 30), min(h-1,TP.Y + 15));
   for I := 0 to 3 do
   begin
-    With SearchBox do
+    With B do
       FindColorsTolerance(P, Colors[i], x1, y1, x2, y2, 30);
     if Length(P) < 1 then
       Continue;
-    B := GetTPABounds(P);//GetTextAtEx works better for Simba for Run
-    Result := StrToIntDef(GetNumbers(GetTextAtEx(B.X1 - 1 , B.Y1 - 1, 30, statChars,
-              False, False, 0, 0, Colors[i], 20, False, tr_Digits)), -1);
-    if (Result > 0) then
+    Result := StrToIntDef(GetNumbers(GetTextAtExWrap(B.X1, B.Y1, B.X2, B.Y2, 0, 4, 4, Colors[i], 20, statChars)), -1);
+    if (Result > -1) then
     begin
       ColorSign := Signs[i];
       Exit;
@@ -1364,11 +1402,11 @@ CurrentWorld
 
     function CurrentWorld: Integer;
 
-Returns the current world you are on.
+Returns current world from Friends Tab
 
 .. note::
 
-    by Cheesehunk and Ron, fixed by ZephyrsFury
+    by Home
 
 Example:
 
@@ -1377,19 +1415,19 @@ Example:
 *)
 function CurrentWorld: Integer;
 var
-  TextX, TextY: Integer;
+  Box :TBox;
+  TPA :TPointArray;
 begin
-  Result := -1;
+  Result := - 1;
   if (GetCurrentTab <> tab_Friends) then
   begin
     GameTab(tab_Friends);
     Wait(250 + Random(500));
   end;
-  if (IsTextInAreaEx(635, 205, 727, 226, TextX, TextY, 'RuneSca', 5,
-                     SmallChars, False, False, 0, 0, 3381759)) then
-    Result := StrToIntDef(Trim(GetTextAtEx(TextX + 65, TextY, 5,
-      SmallChars, True, False, 0, 0, 3381759, 3, False, tr_AllChars)), -1);
-  if (Result = -1) then
+  FindColors(TPA, 3381759, 601, 223, 703, 238);
+  Box := GetTPABounds(TPA);
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(Box.X1, Box.Y1, Box.X2, Box.Y2, 0, 3, 4, 3381759, 0, UpChars), Numbers), - 1);
+  if (Result = - 1) then
     srl_Warn('CurrentWorld', 'Could not get Player''s current world', Warn_AllVersions);
 end;
 
@@ -2289,6 +2327,52 @@ XP Counter related functions
 
 *)
 
+ (*
+ToggleXPPopUp
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function ToggleXPPopUp(Disabled: Boolean): Boolean;
+
+Toggles the XP Pop-up to on/off that shows up on main screen.
+This uses the chat messages to determine if its off or on.
+  ToggleXPPopUp(True) turns it off and returns True if successful
+  ToggleXPPopUp(False) turns it on and returns True if successful
+
+.. note::
+
+    by Narcle
+
+*)
+Function ToggleXPPopUp(Disabled: Boolean): Boolean;
+var
+  i: Integer;
+  TPA: TPointArray;
+  P: TPoint;
+  S: String;
+begin
+  for i := 0 to 1 do
+  begin
+    TPA := TPAFromBox(IntToBox(521, 51, 546, 75));
+    FilterPointsPie(TPA, 0, 360, 0, 12, 534, 63);
+    P := TPA[Random(Length(TPA))];
+    Mouse(P.X, P.Y, 0, 0, mouse_right);
+    if WaitOptionMulti(['Pop', 'op', '-up'], 1000) then
+    begin
+      Wait(1500+Random(500))
+      S := GetBlackChatMessage;
+      if Pos('disabled', S) > 0 then
+        Result := Disabled;
+      if Pos('enabled', S) > 0 then
+        Result := not Disabled;
+      if Result then
+        Break;
+    end;
+  end;
+  Writeln(S);
+end;
+
 (*
 ISXPBarOpenEx
 ~~~~~~~~~~~
@@ -2416,7 +2500,7 @@ begin
     FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
     B := GetTPABounds(TPA);
     S := Replace(GetTextAtExWrap(B.x1, B.y1, B.x2, B.y2, 0, 1, 4, 14474460, 0, UpChars), ' ', '');
-    P := Pos('xp', S);
+    P := Pos('x', S);
     if P > 0 then
       Result := StrToIntDef(ExtractFromStr(Copy(s, P, Length(S)), Numbers), 0)
     else
@@ -2696,7 +2780,8 @@ Example:
 *)
 procedure OpenToolBelt();
 begin
-  MouseBox(691, 413, 732, 453, 1);
+  GameTab(tab_Equip);
+  MouseBox(670, 416, 704, 450, mouse_Left);
   Wait(RandomRange(250, 750));
 end;
 
@@ -2789,4 +2874,89 @@ begin
   end;
 
   Result := itemSlotFilled;
+
+  Wait(RandomRange(250, 750));
+  MouseBox(479, 20, 491, 29, mouse_Left);
+end;
+
+(*
+GetMusic
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetMusic: string;
+
+Gets the music that's currently playing.
+
+.. note::
+
+    by Nielsie95 and ZephyrsFury
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetMusic: string;
+var
+  Pts: TPointArray;
+  B: TBox;
+begin
+  if (GetCurrentTab <> tab_Music) then
+  begin
+    GameTab(tab_Music);
+    Wait(500 + Random(500));
+  end;
+  if (FindColorsTolerance(Pts, 39401, 553, 242, 729, 264, 0)) then
+  begin
+    B := GetTPABounds(Pts);
+    Result := Trim(GetTextAtEx(B.X1 - 1, 245, 0, UpCharsEx, False, False, 0, 1, 39401, 50, False, tr_AllChars));
+  end;
+end;
+
+(*
+CloseAllScreens
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CloseAllScreens: boolean;
+
+Gets the music that's currently playing.
+
+.. note::
+
+    by Tickyy
+
+Example:
+
+.. code-block:: pascal
+
+    CloseAllScreens();
+
+*)
+function PinScreen: boolean; forward;
+function CloseAllScreens: boolean;
+var
+  I: Integer;
+begin
+  for I := 0 to 4 do
+  begin
+    case I of
+      0: Result := BankScreen;
+      1: Result := DepositScreen;
+      2: Result := ShopScreen;
+      3: Result := ToolBeltScreen;
+      4: Result := PinScreen;
+    end;
+
+    if Result then
+      if CloseWindow then
+      begin
+        Result := true;
+        Exit;
+      end else
+        Result := false;
+  end;
 end;

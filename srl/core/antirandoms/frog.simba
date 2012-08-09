@@ -1,263 +1,401 @@
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               » Frog Random Solver Routines                 --//
-//-----------------------------------------------------------------//
-// * function InSecondCave: Boolean;                               // * by marpis
-// * function Frog_InRandom: Boolean;                              // * by marpis
-// * function Frog_ClickFrog: Boolean;                             // * by marpis
-// * ffunction SolveFrogCave: Boolean;                             // * by marpis
-// * ffunction SolveFrog: Boolean;                                 // * by Nielsie95 & ZephyrsFury & marpis
-//-----------------------------------------------------------------//
+(*
+Frog
+====
+
+Stores all the routines to solve the Frog random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+This solver uses a DTM of a frog with a crown to find the royal (Prince or
+Princess) frog.
+
+*)
+
+var
+  RoyalPos: TPointArray;
 
 const
-  frog_gasHole     = 9678788;
-  frog_Yellow      = 13552344;
-  princess_Yellow  = 2411005;
-  frog_Red         = 2372855;
-  frog_Green       = 2411005;
+  FROG_NAME_HERALD   = '8!oqB8!5lg';
+  FROG_NAME_PRINCESS = '8!oqo!l0o8gg';
+  FROG_NAME_PRINCE   = '8!oqo!l0o8';
 
-{*******************************************************************************
-function InSecondCave: Boolean;
-by: marpis
-Description: Returns true if the second, larger frog cave is found.
-*******************************************************************************}
-function InSecondCave: Boolean;
-var
-  X, Y, DTM: Integer;
-  A: Extended;
+  FROG_DTM_ROYAL = 0;
+  FROG_DTM_CENTER   = 1; // big cave center
+
+(**
+ * Author: Coh3n
+ * Description: Loads the 'DTM'.
+ *)
+function Frog_GetDTM(DTM: integer): integer;
 begin
-  DTM := DTMFromString('78DA632C666260706200036608C51038A9824' +
-       '112483342F98C0D4035AEA86A9C2A9250D57403D5041250D30654' +
-       '9384AAC6AB3517554D33504D16AA1A473D115435A940355EA86AF' +
-       'CFB4A51D5C400D544A0AAF16ECF47559306549382DBAEFF400000' +
-       '8FEF13BD');
-  Result := FindDTMRotated(DTM, X, Y, MMX1, MMY1, MMX2, MMY2, -Pi, Pi, Pi/50, A);
+  case DTM of
+    FROG_DTM_ROYAL : result := DTMFromString('mlwAAAHicY2dgYGBlgAAeKM0FxGxAzALEnFA+J1SMGaoGRMvEyjJIRcgwyKUqMMinKzD8vefD8PCYC5jmB8rjwoxAzIQDQwEAwHgJcQ==');
+    FROG_DTM_CENTER   : result := DTMFromString('mlwAAAHicY2dgYKhmYmAoAOJcIC4D4jYg7oJieaC8DhDLATE/EEsBsToQmwJxaJAJg4OOGENARTaDb0kGmO9TlAYW44eqx4YZgZgJB4YCADVaCxw=');
+  end;
 end;
 
-{*******************************************************************************
-function Frog_InRandom: Boolean;
-by: marpis
-Description: Checks if we're in the frog random.
-*******************************************************************************}
-function Frog_InRandom: Boolean;
-var
-  X, Y: Integer;
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Sets up to solve the Frog random.
+ *)
+procedure Frog_Setup();
 begin
-  If Length(GetMinimapDots('npc')) >= 4 Then
-    If PercentBlackMM >= 35 Then
-      If FindColorTolerance(X, Y, frog_Green, MSX1, MSY1, MSX2, MSY2, 30) Then // Green
-        If FindColorTolerance(X, Y, frog_Red, MSX1, MSY1, MSX2, MSY2, 30) Then // Red
-          Result := FindColorTolerance(X, Y, frog_Yellow, MSX1, MSY1, MSX2, MSY2, 30); // Yellow
+  if (not LoggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_HIGH);
+  doConversation('', false);
 end;
 
-{*******************************************************************************
-function Frog_ClickFrog: Boolean;
-by: marpis
-Description: Clicks the Frog Prince/Princess.
-*******************************************************************************}
-function Frog_ClickFrog: Boolean;
-Var
-  Yellow, TPAGasHole: TPointArray;
-  GasHole, Middle: TPoint;
-  ATPA: T2DPointArray;
-  I, RedCount: Integer;
-Begin
-  {WriteLn('Entering function: Frog_ClickFrog');}
-  FindColorsTolerance(TPAGasHole, frog_gasHole, MSX1, MSY1, MSX2, MSY2, 15);
-  GasHole := MiddleTPA(TPAGasHole);
-  
-  FindColorsTolerance(Yellow, princess_Yellow, MSX1, MSY1, MSX2, MSY2, 30);
-  ATPA := SplitTPA(Yellow, 10);
-  SortATPAFrom(ATPA, GasHole);
-  InvertATPA(ATPA);
-  
-  For I := 0 To High(ATPA) Do
-  Begin
-    Middle := MiddleTPA(ATPA[I]);
-    RedCount := CountColorTolerance(frog_Red, Middle.X - 20, Middle.Y - 20, Middle.X + 20, Middle.Y + 20, 30);
-    { Length(ATPA[I]) = Yellow count! }
-    If Trunc(RedCount*1.2) < Length(ATPA[I]) Then
-      If InRange(RedCount, 1, 30) Then
-      Begin
-        WriteLn('Trying to click a frog...');
-        Mouse(Middle.X, Middle.Y, 0, 0, mouse_left);
-        Wait(2000 + Random(500));
-        While IsMoving Do
-          Wait(50 + Random(20));
-        Wait(1000 + Random(500));
-
-        While FindNPCChatText('ontinue', ClickLeft) Do
-          Wait(3000 + Random(500));
-
-        If FindNPCChatText('please', ClickLeft) Then
-        Begin
-          Wait(3000 + Random(500));
-          While FindNPCChatText('ontinue', ClickLeft) Do
-            Wait(3000 + Random(500));
-        End;
-
-        Result := Not Frog_InRandom;
-        Exit;
-      End;
-  End;
-  
-  WriteLn('Princess not found!');
-  If Not InSecondCave Then
-    If (Distance(GasHole.X, GasHole.Y, MSCX, MSCY) > 150) Then
-    Begin
-      WriteLn('Walking to Gas Hole...');
-      Mouse(GasHole.X - 50, GasHole.Y + 30, 10, 10, mouse_right);
-      WaitOption('alk here', 500);
-    End;
-End;
-
-
-
-
-{function Frog_ClickFrog: Boolean;
+(**
+ * Author: Coh3n
+ * Description: Returns true if the a royal frog is talking.
+ *)
+function Frog_RoyalTalking(): boolean;
 var
-  i, cts, x, y: Integer;
-  tpa: TPointArray;
-  atpa: T2DPointArray;
-  b: TBox;
+  name: string;
 begin
-  WriteLn('Entering function: Frog_ClickFrog');
-  Result := False;
-  if (FindTextTpa(128, 0, MCX1, MCY1, MCX2, MCY2, 'Princ', NPCChars, Nothing)) then
-  begin
-    Result := True;
-    Exit;
-  end;
-  cts := GetColorToleranceSpeed;
-  ColorToleranceSpeed(2);
-
-  SetColorSpeed2Modifiers(0.05, 1.1);
-  FindColorsTolerance(tpa, 2476797, MSX1, MSY1, MSX2, MSY2, 10);
-  atpa := SplitTPAEx(tpa, 5, 5);
-  SortATPAFromFirstPoint(atpa, Point(MSCX, MSCY));
-
-  SetColorSpeed2Modifiers(0.05, 0.15);
-  for i := 0 to High(atpa) do
-  begin
-    //WriteLn('Len: '+IntToStr(Length(atpa[i])));
-    if (Length(atpa[i]) < 20) then
-      Continue;
-    b := GetTPABounds(atpa[i]);
-    FindColorsTolerance(tpa, 1319846, b.x1 - 20, b.y1 - 20, b.x2 + 20, b.y2 + 20, 11);
-    //WriteLn('Red: '+IntToStr(Length(tpa)));
-    //WriteLn( IntToStr((b.x1 + b.x2) shr 1) +', '+ IntToStr((b.y1 + b.y2) shr 1) );
-    if (Length(tpa) > 10) then
-      Continue;
-    MMouse((b.x1 + b.x2) shr 1, (b.y1 + b.y2) shr 1, 3, 3);
-    if (not IsUpText('Frog')) then
-      Continue;
-    GetMousePos(x, y);
-    Mouse(x, y, 0, 0, True);
-    Wait(500);
-    FFlag(0);
-    x := GetSystemTime;
-    while (not AreTalking) and ((GetSystemTime - x) < 4000) do
-      Wait(100);
-    Break;
-  end;
-
-  SetColorSpeed2Modifiers(0.2, 0.2);
-  ColorToleranceSpeed(cts);
-  Result := (FindTextTpa(128, 0, MCX1, MCY1, MCX2, MCY2, 'Princ', NPCChars, Nothing));
-  if (Result) then WriteLn('Talking to Frog Prince(ss).');
-end;}
-
-
-{*******************************************************************************
-function SolveFrogCave: Boolean;
-by: marpis
-Description: Solves the larger frog cave.
-*******************************************************************************}
-function SolveFrogCave: Boolean;
-Var
-  TPA: TPointArray;
-  Tries, T, CenterX, CenterY, SwampColor: Integer;
-begin
-  WriteLn('In Main Cave...');
-  SwampColor := 7901777;
-  T := GetSystemTime + 5*60000;
-  
-  Repeat
-    If Frog_ClickFrog Then
-      Break;
-      
-    FindColorsTolerance(TPA, SwampColor, MMX1, MMY1, MMX2, MMY2, 30);
-    MiddleTPAEx(TPA, CenterX, CenterY);
-    WriteLn('Moving in cave to point: '+IntToStr(Tries));
-    
-    Case Tries Of
-      0, 2, 4: Mouse(CenterX, CenterY + 50, 2, 2, mouse_left);
-      1:       Mouse(CenterX + 40, CenterY, 2, 2, mouse_left);
-      3:       Mouse(CenterX - 40, CenterY, 2, 2, mouse_left);
-      5:       Mouse(CenterX, CenterY, 2, 2, mouse_left);
-    End;
-    Wait(1900 + Random(200));
-    
-    While IsMoving Do
-      Wait(100 + Random(50));
-      
-    Inc(Tries);
-    If Tries > 5 Then
-      Tries := 0;
-  Until(GetSystemTime > T);
-  
-  Result := Not Frog_InRandom;
+  name := getNPCChatName();
+  result := ((name = FROG_NAME_PRINCESS) or (name = FROG_NAME_PRINCE));
 end;
 
-{*******************************************************************************
-function SolveFrog: Boolean;
-by: Nielsie95 & ZephyrsFury & marpis
-Description: Solves the Frog Random, also solves the larger frog cave.
-*******************************************************************************}
-function SolveFrog: Boolean;
-var
-  t: Integer;
+(**
+ * Author: Coh3n
+ * Description: Returns true if the Frog Herald is talking.
+ *)
+function Frog_HeraldTalking(): boolean;
 begin
-  Result := False;
+  result := (getNPCChatName = FROG_NAME_HERALD);
+end;
 
-  if (not Frog_InRandom) then
+(**
+ * Author: DemiseScythe
+ * Description: Returns true if player is in the Frog random.
+ *)
+function Frog_Detect(): boolean;
+begin
+  result := Frog_HeraldTalking() and (not tabExists(TAB_MAGIC));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Waits for the a frog the be talking (called after clicking
+ * frog).
+ *)
+function Frog_WaitChat(waitTime: integer): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + waitTime);
+
+  while (getSystemTime < t) do
   begin
-    WriteLn('Not in FrogCave!');
-    Exit;
-  end;
-
-  Wait(1000);
-  while FindNPCChatText('ontinue', ClickLeft) do
-    Wait(2000 + Random(500));
-
-  SetAngle(SRL_ANGLE_HIGH);
-  t := GetSystemTime;
-  while (GetSystemTime - T < 180000) do
-  begin
-
-    if (InSecondCave) then
+    // checks to see if we're talking to the Royal Frog
+    if (Frog_RoyalTalking()) then
     begin
-      if (SolveFrogCave) then
-        WriteLn('Solved Frog Cave... but we are now in the middle of nowhere...');
-      Break;
+      addToSRLLog('Frog_WaitChat: Talking to the Royal Frog');
+      result := true;
+      break;
     end;
-    
-    Wait(1000 + Random(500));
-    if (Frog_ClickFrog) then
-      Break
-    Else
-      MakeCompass(rs_GetCompassAngleDegrees + 90);
-  end;
 
-  T := GetSystemTime;
-  while (Frog_InRandom) and (GetSystemTime - T < 30000) do
-  begin
-    while (ClickContinue(True, True)) do
-      Wait(500 + Random(500));
-    Wait(1500 + Random(500));
-  end;
-  
-  Wait(5000);
+    // if we're talkin to the Herald, we clicked the wrong frog
+    if (Frog_HeraldTalking()) then
+    begin
+      addToSRLLog('Frog_WaitChat: Clicked wrong frog');
+      clickContinue(true, true);
+      break;
+    end;
 
-  Result := (not Frog_InRandom);
+    wait(200 + random(100));
+  end;
 end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true when the player is talking to the Royal Frog.
+ *)
+function Frog_ClickRoyal(): boolean;
+var
+  dtmRoyal, i, x, y: integer;
+  dtmPoints: TPointArray;
+  aFound: T2DextendedArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  if (Frog_RoyalTalking()) then
+  begin
+    addToSRLLog('Frog_ClickRoyal: Already talking to the Royal Frog');
+    result := true;
+    exit;
+  end;
+
+  dtmRoyal := Frog_GetDTM(FROG_DTM_ROYAL);
+
+  // it's possible more than one DTM can be found (multiple frogs)
+  if (findDTMsRotatedAlternating(dtmRoyal, dtmPoints, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+  begin
+    filterTPADist(dtmPoints, 35);
+    sortTPAFrom(dtmPoints, point(MSCX, MSCY)); // sort from closest to the player
+
+    // loop through each DTM that was found
+    for i := 0 to high(dtmPoints) do
+    begin
+      x := dtmPoints[i].x;
+      y := dtmPoints[i].y;
+
+      mmouse(x, y, 3, 3);
+
+      // added the '/' so we don't click the 'Frog Herald'
+      if (waitUptextMulti(['Frog /', 'rog /'], 300)) then
+      begin
+        addToSRLLog('Frog_ClickRoyal: Clicked a frog');
+
+        getmousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+
+        if (Frog_WaitChat(10000)) then // wait for frog's name
+        begin
+          result := true;
+          break;
+        end;
+      end;
+    end;
+  end;
+
+  freeDTM(dtmRoyal);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if Frog's text is found that indicated we're in
+ * the big cave.  Finishes the conversation.
+ *)
+function Frog_InBigCave(): boolean;
+begin
+  if (FindNPCChatText('gnore', Nothing) or (FindNPCChatText('pologise', Nothing))) then
+  begin
+    addToSRLLog('Frog_InBigCave: Failed to click Ro, we are in the big cave');
+    DoConversation('', false);
+    result := true;
+  end;
+end;
+
+(**
+ * Author: Marpis & Coh3n
+ * Description: Walks to an area specified by 'Where' in the cave.
+ *)
+function Frog_WalkCave(center: Tpoint; where: integer): boolean;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('Frog_WalkCave: Relocating in cave');
+
+  case Where of
+    0, 2, 4: mouse(center.x, center.y + 50, 2, 2, mouse_Left); // south
+    1:       mouse(center.x + 40, center.y, 2, 2, mouse_Left); // east
+    3:       mouse(center.x - 40, center.y, 2, 2, mouse_Left); // west
+    5:       mouse(center.x, center.y, 2, 2, mouse_Left);      // center
+  end;
+
+  if (flag) then
+  begin
+    result := true;
+    wait(1500 + random(500));
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Goes through the conversation with the Royal Frog in the big
+ * cave.
+ *)
+function Frog_TalkCave(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 30000);
+
+  repeat
+    findNPCChatText('lease', clickLeft);
+    clickContinue(true, true);
+    result := tabExists(TAB_MAGIC);
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    addToSRLLog('Frog_TalkCave: Failed to go through conversation with Royal Frog');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the big cave part of the random event.
+ *)
+function Frog_SolveCave(): boolean;
+var
+  t, x, y, tries, dtmCenter: integer;
+  aFound: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('Frog_SolveCave: Solving frog big cave');
+  t := (getSystemTime + (5 * 60000));
+  dtmCenter := Frog_GetDTM(FROG_DTM_CENTER);
+
+  repeat
+    if (Frog_ClickRoyal()) then
+    begin
+      result := Frog_TalkCave();
+      break;
+    end;
+
+    if (findDTMRotatedAlternating(dtmCenter, x, y, MMX1, MMY1, MMX2, MMY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+      Frog_WalkCave(point(x, y), tries)
+    else
+      addToSRLLog('Frog_SolveCave: Didn''t find DTM_FROG_CENTER');
+
+    Inc(tries);
+
+    // reset so it'll still walk
+    if (tries > 5) then
+      tries := 0;
+  until(getSystemTime > t);
+
+  if (not result) then
+    addToSRLLog('Frog_SolveCave: Failed to solve big frog cave');
+
+  freeDTM(dtmCenter);
+end;
+
+(**
+ * Author: J J
+ * Description: Returns a TPA with the possible Queen locations
+ *)
+function RoyalLoc: Boolean;
+var
+  i, Red, Yellow: Integer;
+  GreenFrog: TPointArray;
+  GreenFrogSplit, GoodFrogSplit: T2DPointArray;
+  SearchBox: TBoxArray;
+
+begin
+  // Finding the frogs by using their green color
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.14, 0.53);
+  if FindColorsSpiralTolerance(MSCX, MSCY, GreenFrog, 3576607, MSX1, MSY1, MSX2, MSY2, 24) then
+    begin
+      SplitTPAExWrap(GreenFrog, 5, 5, GreenFrogSplit);
+      SortATPASize(GreenFrogSplit, True);
+
+      // Sorting out the boxes that are frogs
+      for i:=0 to high(GreenFrogSplit) do
+        if Length(GreenFrogSplit[i]) > 100 then
+          begin
+            SetLength(GoodFrogSplit, Length(GoodFrogSplit)+1);
+            GoodFrogSplit[Length(GoodFrogSplit)-1] := GreenFrogSplit[i];
+          end;
+
+        // Checking for yellow & red colors in each box
+        SetLength(SearchBox, Length(GoodFrogSplit));
+        for i:=0 to high(GoodFrogSplit) do
+          begin
+            SearchBox[i] := IntToBox(GetTPABounds(GoodFrogSplit[i]).X1-5, GetTPABounds(GoodFrogSplit[i]).Y1-5, GetTPABounds(GoodFrogSplit[i]).X2+5, GetTPABounds(GoodFrogSplit[i]).Y2+5);
+            SetColorSpeed2Modifiers(0.15, 1.21);
+            Red := CountColorTolerance(1984209, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 19);
+            SetColorSpeed2Modifiers(0.09, 1.28);
+            Yellow := CountColorTolerance(2012628, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 18);
+
+            if (Red < 20) and (Yellow > 25) then
+              begin
+                SetLength(RoyalPos, Length(RoyalPos)+1);
+                RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2)/2, (SearchBox[i].Y1+SearchBox[i].Y2)/2);
+              end;
+          end;
+    end;
+
+  // The result
+  if (Length(RoyalPos) > 0) then
+    Result := True;
+end;
+
+(**
+ * Author: J J
+ * Description: Returns true when the player is talking to the Royal Frog.
+ *)
+function TalkToRoyal: Boolean;
+var
+  i: Integer;
+
+begin
+  if RoyalLoc then
+    begin
+      for i:=0 to high(RoyalPos) do
+        begin
+          MMouse(RoyalPos[i].X, RoyalPos[i].Y, RandomRange(-2, 2), RandomRange(-2, 2));
+          if WaitUpTextMulti(['rog /', 'Frog /'], 100) then
+            begin
+              case Random(7) of
+                0..4: ClickMouse2(1);
+                5..6: begin
+                        ClickMouse2(0);
+                        WaitOptionMulti(['alk'], 500);
+                      end;
+              end;
+              FFlag(0);
+              repeat
+                Wait(50 + Random(50));
+              until not(IsMoving);
+              Wait(1000 + Random(1000));
+              Break;
+              if (Frog_RoyalTalking()) then
+                Result := True;
+            end;
+        end;
+    end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Frog random event, returns false if player
+ * had to go through the big cave because RS still teleports you.
+ *)
+function Frog_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (10 * 60000)); // 5 minutes max
+  Frog_Setup();
+
+  repeat
+    if TalkToRoyal then // returns true if Royal Frog is talking
+      // may have clicked wrong frogs, need to solve large cave
+      if (not Frog_InBigCave()) then
+      begin
+        doConversation('', false);
+        wait(3000 + random(500)); // wait for the kiss to finish
+        clickContinue(true, true);
+        result := waitTabExists(TAB_MAGIC, 10000);
+      end else
+        if (Frog_SolveCave()) then // still get teleported after big cave
+        begin
+          addToSRLLog('Frog_Solve: Solved frog big cave, but failed random');
+          waitTabExists(TAB_MAGIC, 5000);
+          break;
+        end;
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    addToSRLLog('Frog_Solve: Frog solver failed or timed out');
+end;
+

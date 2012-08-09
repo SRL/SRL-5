@@ -1,233 +1,268 @@
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               »» Pinball Routines                            --//
-//-----------------------------------------------------------------//
-// * function Pinball_InRandom: Boolean;                // * by TRiLeZ
-// * function p_ScanPillar(var x, y: Integer): Boolean; // * by SKy Scripter
-// * function p_GetScore: string;                       // * by ZephyrsFury
-// * function ExitPinball: string;                      // * by ZephyrsFury, SKy Scripter & Wizzup?
-// * function SolvePinball: Boolean;                    // * by SKy Scripter fixed by Wizzup?
+(*
+Pinball
+=======
 
+Stores all the routines to solve the Pinball random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
 
-{*******************************************************************************
-function Pinball_InRandom: Boolean;
-by: TRiLeZ
-Description: Checks if you are in the pinball random.
-Date: December 30, 2009
-*******************************************************************************}
-function Pinball_InRandom: Boolean;
+This solver uses findGapsTPA to determine which post to click.
+
+*)
+
+//{$DEFINE PB_DEBUG}
+
+const
+  PB_SCORE_10 = 60; // the tpa length of when the score is 10
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the Pinball random.
+ *)
+function PB_Detect(): boolean;
 begin
-  if InBlack then
-    if (not (GetColor(504, 348) = 657930)) then //Arrow in chat box
-      Result := (CountColor(0, 204, 17, 280, 43) > 80);
+  // makes sure friends tab exists and magic doesn't
+  if ((not tabExists(TAB_MAGIC)) and (tabExists(TAB_FRIENDS))) then
+    if (getNPCChatName() = SRL_NPC_OLDMAN) then
+      if (findNPCChatTextMulti(['10', 'flashing', 'pillars'], nothing)) then
+        result := (countColor(clBlack, MMCX-20, MMCY-20, MMCX+20, MMCY+20) = 1681);
 end;
 
-{*******************************************************************************
-function p_ScanPillar(var x, y: Integer): Boolean;
-by: SKy Scripter & NCDS
-Updated: July 30, 2011 by NCDS
-Description: Scans for the pinball pillar
-*******************************************************************************}
-function p_ScanPillar(var x, y: Integer): Boolean;
+(**
+ * Author: Coh3n
+ * Description: Returns the length of a tpa found of the yellow color of the
+ * score at the top of the main screen.
+ *)
+function PB_GetScore(): integer;
 var
-  Points: TPointArray;
-  Colors: array of Integer;
-  P2D, pillar: T2DPointArray;
-  I, Hi, Bitmap,
-  J, ind, hi_P, ii: Integer;
-  H, S, L: Extended;
-  OldTarget : integer;
-  Temp : Integer;
+  tpa: TPointArray;
 begin
-  Result := false;
-  Bitmap := -1;
+  // yellow color of the score
+  if (findColorsTolerance(tpa, 381907, 280, 15, 315, 50, 30)) then
+    result := length(tpa);
+end;
+
+(**
+ * Author: SKy Scripter, NCDS, & Coh3n
+ * Description: Returns true if a flashing pillar is found.  Sets coordinates
+ * to x, y.
+ *)
+const
+  _PB_FILL_COLOR = 10;
+  _PB_MIN_LENGTH = 20;
+
+function PB_ScanPost(var x, y: integer): boolean;
+var
+  tpa: TPointArray;
+  pillarCols: array of integer;
+  ATPA, pillarGaps: T2DPointArray;
+  oldTarget, tmpCTS, bmp, i, j, c: integer;
+  hue, sat, lum: extended;
+  tmpBox: TBox;
+begin
+  result := false;
+  bmp := -1;
+
   try
-    Temp := GetColorToleranceSpeed;
-    ColorToleranceSpeed(2);
-    SetColorSpeed2Modifiers(0.10, 1.93);
-    FindColorsTolerance(Points, 8708721, MSX1, MMY1, MSX2, MSY2, 5);
-    HI := High(Points);
-    Result := False;
-    ColorToleranceSpeed(Temp);
+    tmpCTS := getColorToleranceSpeed;
+    setColorToleranceSpeed(3);
 
-    if (Hi < 20) then
-      Exit;
+    // the green of the spinning pillars
+    findColorsTolerance(tpa, 8708721, MSX1, MMY1, MSX2, MSY2, 5);
 
-    Colors := GetColors(Points);
-    Bitmap := CreateBitmap(MSX2+2, MSY2+2);
-    FastDrawClear(Bitmap,10);
-    J := 0;
-    for I := 0 to HI do
+    setColorToleranceSpeed(tmpCTS);
+
+    // if colors aren't found, exit
+    if (length(tpa) < _PB_MIN_LENGTH) then
+      exit;
+
+    bmp := createBitmap(MSX2 + 5, MSY2 + 5); // creats a bitmap of the MS
+    fastDrawClear(bmp, _PB_FILL_COLOR); // fill it with a distinct color
+
+    c := 0;
+    pillarCols := getColors(tpa);
+
+    // draws a rectangle on the bitmap of the colors that are light enough
+    for i := 0 to high(tpa) do
     begin
-      ColortoHSL(Colors[I], H, S, L);
-      if (L > 50.0) then
+      colorToHSL(pillarCols[i], hue, sat, lum);
+
+      if (lum > 50.0) then
       begin
-        RectangleBitmap(bitmap,IntToBox(max(0,Points[I].x - 1), max(0,Points[I].y - 1),
-                        Points[I].x + 1, Points[I].y + 1),clRed);
-        J := J + 1;
+        tmpBox := intToBox(max(0, tpa[i].x - 1), max(0, tpa[i].y - 1), tpa[i].x + 1, tpa[i].y + 1);
+        rectangleBitmap(bmp, tmpBox, clRed);
+        inc(c);
       end;
     end;
-    if (J > 20) then
+
+    if (c > _PB_MIN_LENGTH) then
     begin
-      FloodFillBitmap(Bitmap,Point(2,2),10,0);
-      FloodFillBitmap(Bitmap,Point(MSX2 - 5, MSY2 - 5),10,0);
-      OldTarget := GetImageTarget;
-      SetTargetBitmap(Bitmap);
-      FindColorsTolerance(Points, 10, 0, 0, MSX2-5, MSY2-5, 0);
-      SetImageTarget(OldTarget);
-      if (Length(Points) > 10) then
+      floodFillBitmap(bmp, point(5, 5), _PB_FILL_COLOR, clBlack);
+
+      oldTarget := getImageTarget();
+      setTargetBitmap(bmp);
+
+      findColors(tpa, _PB_FILL_COLOR, 0, 0, MSX2 - 5, MSY2 - 5);
+
+      setImageTarget(oldTarget); // reset target to RS client
+
+      if (length(tpa) > 10) then
       begin
-        P2D := TPAtoATPA(Points, 60);
-        sortATPASize(p2d, true);
-        hi := high(p2d);
-        for i := 0 to hi do
+        ATPA := TPAtoATPA(tpa, 60);
+        sortATPASize(ATPA, true);
+
+        for i := 0 to high(ATPA) do
         begin
-          pillar := findGapsTPA(p2d[i], 10);
-          hi_P := High(pillar);
-          for ii := 0 to hi_P do
-            result := (length(pillar[ii]) > 2);
-        end;
-      end;
-    end;
-    if (result) then
-    begin
-      MiddleTPAEx(P2D[ind], x, y);
-      MMouse(x, y, 0, 0);
-      result := isuptext('ag');
-    end;
-    DisplayDebugImgWindow(MSX2,MSY2);
-    DrawBitmapDebugImg(bitmap);
-  finally
-    if bitmap <> - 1 then
-      FreeBitmap(bitmap);
-  end;
-end;
+          pillarGaps := findGapsTPA(ATPA[i], 10);
 
-{*******************************************************************************
-function p_GetScore: string;
-by: ZephyrsFury
-Description: Gets the pinball score.
-*******************************************************************************}
-
-function P_GetScore: Integer;
-begin
-  Result := -1;
-  case (CountColor(0, 278, 17, 316, 48)) of
-    32, 34: case (CountColor(65535, 278, 17, 316, 48)) of
-              0: Result := 0;
-              56: Result := 4;
-              69: Result := 5;
-              78: Result := 8;
-              62: Result := 9;
+          for j := 0 to high(pillarGaps) do
+            if (length(pillarGaps[j]) > 2) then
+            begin
+              middleTPAEx(ATPA[i], x, y);
+              result := true;
+              break;
             end;
-    26: Result := 1;
-    38: Result := 2;
-    36: Result := 3;
-    33: Result := 6;
-    31: Result := 7;
-    58: Result := 10;
-  else
-    WriteLn('Count: ' + IntToStr(CountColor(0, 278, 17, 316, 48)) + ' Bug in P_GetScore!');
-  end;
-end;
 
-{*******************************************************************************
-function ExitPinball: Boolean;
-by: ZephyrsFury, SKy Scripter & Wizzup?
-Description: Exits the pinball random.
-*******************************************************************************}
-
-function ExitPinball: Boolean;
-var
-  CTS, II, X, Y, T: Integer;
-  TPA: TPointArray;
-  ATPA: T2DPointArray;
-begin
-  CTS := GetColorToleranceSpeed;
-  ColorToleranceSpeed(2);
-  SetColorSpeed2Modifiers(0.57, 0.67);
-  if (FindColorsTolerance(TPA, 8359275, MSX1, MSY1, MSX2, MSY2, 8)) then
-  begin
-    ATPA := SplitTPA(TPA, 30);
-    SortATPASize(ATPA, True);
-    for II := 0 to High(ATPA) do
-    begin
-      MiddleTPAEx(ATPA[II], X, Y);
-      Mouse(X, Y, 0, 0, mouse_right);
-      Wait(200 + Random(100));
-      if (ChooseOptionMulti(['xit C', 'it C', 't Ca'])) then
-      begin
-        WriteLn('Exit Found');
-        T := GetSystemTime;
-        while (GetSystemTime - T < 30000) and (PercentBlackMM = 100) do
-        begin
-           while (ClickContinue(True, True)) do
-             Wait(500 + Random(1000));
-           Wait(1000 + Random(2000));
+          if (result) then
+            break;
         end;
-        Result := (PercentBlackMM < 100);
-        if (Result) then Break;
       end;
-      Wait(500 + Random(1000));
+    end;
+
+    {$IFDEF PB_DEBUG}
+    displayDebugImgWindow(MSX2, MSY2);
+    drawBitmapDebugImg(bmp);
+    {$ENDIF}
+
+  finally
+    if (bmp <> -1) then
+      freeBitmap(bmp);
+  end;
+
+  if (result) then
+    addToSRLLog('PB_ScanPost: Found post');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if player clicks a post and the score changes.
+ *)
+function PB_TagPost(): boolean;
+var
+  t, x, y, oldScore: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  oldScore := PB_GetScore();
+
+  if (PB_ScanPost(x, y)) then
+  begin
+    mmouse(x, y, 5, 5);
+
+    if (waitUptextMulti(['ag', 'ost'], 300)) then
+    begin
+      getMousePos(x, y);
+      mouse(x, y, 0, 0, mouse_Left);
+
+      t := (getSystemTime + 6000);
+      while (getSystemTime < t) do
+      begin
+        if (PB_GetScore() <> oldScore) then
+        begin
+          addToSRLLog('PB_TagPost: Tagged post');
+          result := true;
+          break;
+        end;
+
+        wait(300 + random(200));
+      end;
     end;
   end;
-  ColorToleranceSpeed(CTS);
-  SetColorSpeed2Modifiers(0.2, 0.2);
 end;
 
-{*******************************************************************************
-function SolvePinball: Boolean;
-by: SKy Scripter fixed by Wizzup?
-Description: Attempts to solve the Pinball random.
-*******************************************************************************}
-function SolvePinball: Boolean;
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Uses mainscreen walking to exit the random.
+ *)
+function PB_Exit(): boolean;
 var
-   x, y, i, score, time, time2: Integer;
+  x, y, t: integer;
+  tpa: TPointArray;
 begin
-  Result := false;
-  Try
-    for i := 1 to 3 do
-    begin
-      ClickContinue(True, True);
-      Wait(1000);
-    end;
-    Wait(1000);
-    Writeln('Starting the pinball solver.');
-    Time := GetSystemTime;
-    while (p_GetScore <> 10) and (GetSystemTime - Time < 240000) do
-    begin
-      if p_ScanPillar(x, y) then
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('PB_Exit: Exiting cave');
+  t := (getSystemTime + 20000);
+  clickNorth(SRL_ANGLE_HIGH);
+
+  repeat
+    // the green path color
+    if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 25)) then
+      if (length(tpa) > 0) then
       begin
-        Mouse(x, y, 0, 0, mouse_left);
-        score := p_GetScore;
-        time2 := getsystemtime;
-        while (score = p_GetScore) and (getsystemtime - time2 < 10000) do
-          Wait(1000);
+        sortTPAFrom(tpa, point(MSCX, MSY2)); // center of the bottom of the MS
+        x := tpa[0].x;
+        y := tpa[0].y - 20; // so it's actually on the MS
 
-        Wait(1000 + Random(1000));
-       end;
+        mouse(x, y, 5, 5, mouse_Move);
 
-      Wait(200);
-   end;
-   if (GetSystemTime - Time >= 240000) or (p_GetScore <> 10) Then
-     exit;
-   for i := 0 to 1 do
-   begin;
-     MakeCompass('S');
-     SetAngle(SRL_ANGLE_LOW);
-     Wait(3000 + random(500));
+        // check for the proper uptexts
+        if (waitUptextMulti(['Walk', 'alk', 'here', 'ere'], 200)) then
+        begin
+          getMousePos(x, y);
+          mouse(x, y, 0, 0, mouse_Left);
+        end else
+          if (waitUptextMulti(['Exit', 'xit', 'Cave', 'ave'], 200)) then
+          begin
+            getMousePos(x, y);
+            mouse(x, y, 0, 0, mouse_Left);
 
-     Result := ExitPinball;
+            if (waitTabExists(TAB_MAGIC, 8000)) then
+            begin
+              result := true;
+              break;
+            end;
+          end;
+      end;
 
-     MakeCompass('N');
-     SetAngle(SRL_ANGLE_HIGH);
-     if Result then break;
-   end;
-   if result and (ClickContinue(True, True)) then
-     Wait(500 + Random(1000));
- finally
-   if Result Then
-     Writeln('Pinball Solved.')
- end;
+    result := tabExists(TAB_MAGIC); // just in case
+    wait(2000 + random(300));
+  until((getSystemTime > t) or (result));
 
+  if (result) then
+    addToSRLLog('PB_Exit: Clicked exit cave')
+  else
+    addToSRLLog('PB_Exit: Failed to exit cave');
 end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the Pinball random.
+ *)
+function PB_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (15 * 60000)); // maximum 15 minutes
+  doConversation('', false);
+
+  repeat
+    if (PB_GetScore = PB_SCORE_10) then // length of "Score: 10"
+    begin
+      if (PB_Exit()) then
+      begin
+        result := true;
+        break;
+      end;
+    end else
+      PB_TagPost();
+
+    wait(500 + random(200));
+  until(result or (getSystemTime > t));
+end;
+

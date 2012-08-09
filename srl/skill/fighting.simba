@@ -80,12 +80,12 @@ var
   x, y, i: integer;
   Colors: TIntegerArray;
 begin
-  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
+  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2];
   for i := 0 to High(Colors) do
-    if FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MFBox.X1, MSY2, 0) or
-       FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MSX2, MFBox.Y1, 0) or
-       FindColorTolerance(x, y, Colors[i], MFBox.X2, MSY1, MSX2, MSY2, 0) or
-       FindColorTolerance(x, y, Colors[i], MSX1, MFBox.Y2, MSX2, MSY2, 0) then
+    if FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MFBox.X1, MSY2, 2) or
+       FindColorTolerance(x, y, Colors[i], MSX1, MSY1, MSX2, MFBox.Y1, 2) or
+       FindColorTolerance(x, y, Colors[i], MFBox.X2, MSY1, MSX2, MSY2, 2) or
+       FindColorTolerance(x, y, Colors[i], MSX1, MFBox.Y2, MSX2, MSY2, 2) then
     begin
       Result := True;
       Exit;
@@ -116,20 +116,9 @@ Example:
 
 *)
 function IsFightAt(var X, Y: Integer): Boolean;
-var
-  B: TBox;
-  H, I: integer;
-  ATPA: T2DPointArray;
-  Colors: TIntegerArray;
 begin
-  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
-  H := High(Colors);
-  SetArrayLength(ATPA, H+1);
-  B := IntToBox(x-20, y-40, x+20, y+10);
-  for i := 0 to H do
-   with B do
-    FindColorsSpiralTolerance(x, y, ATPA[i], Colors[i], Max(X1, MSX1), Max(Y1, MSY1), X2, Y2, 0);
-  Result := Length(MergeATPA(ATPA)) > 0;
+  Result := Length(GetFightBarTPA(IntToBox(Max(MSX1, x-20), Max(MSY1, y-40),
+              Min(MSX2, x+20), Min(MSY2, y+10)))) > 0;
 end;
 
 (*
@@ -156,17 +145,11 @@ Example:
 *)
 function FindAllHPBars(Sx, Sy, x1, y1, x2, y2: Integer): TBoxArray;
 var
-  Colors: TIntegerArray;
   ATPA : T2DPointArray;
   TPA : TPointArray;
   H, I : Integer;
 begin
-  Colors := [HP_BAR_COLOR1, HP_BAR_COLOR2, HP_BAR_COLOR3];
-  H := High(Colors);
-  SetArrayLength(ATPA, H+1);
-  for i := 0 to H do
-    FindColorsSpiralTolerance(Sx, Sy, ATPA[i], Colors[i], X1, Y1, X2, Y2, 0);
-  TPA := MergeATPA(ATPA);
+  TPA := GetFightBarTPA(IntToBox(X1, Y1, X2, Y2));
   if Length(TPA) < 1 then
     Exit;
   ATPA := TPAToATPAEx(TPA, HP_BAR_WIDTH , HP_BAR_HEIGHT);

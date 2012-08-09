@@ -115,58 +115,29 @@ begin
 end;
 
 (*
-SMART_DrawDotsMulti
-~~~~~~~~~~~~~~~~~~~
+SMART_ClearMS
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-  procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
+  procedure SMART_ClearMS;
 
-Draws an ATPA onto the SMART canvas.  Will clear the canvas if 'Clear' is set
-to true.
+Clears the mainscreen section of the SMART canvas.
 
 .. note::
 
-    Author: Sir R. Magician
-    Last Modified: Unknown
+    Author: mormonman
+    Last Modified: January 20th, 2012
 
 Example:
 
 .. code-block:: pascal
 
-    SMART_DrawDotsMulti(true, ATPA);
+    SMART_ClearMS;
 *)
-procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
-{$IFDEF SMART}
-var
-  i, h, color : integer;
+procedure SMART_ClearMS;
 begin
-  if (not SMART_DebugSetup) then
-    SMART_SetupDebug();
-
-  if Clear then SMART_ClearCanvas;
-
-  for h := 0 to High(pixels) do
-  begin
-
-    color := h div 5 + h mod 5;
-    case color of
-      0 : SMART_Canvas.canvas.Pen.Color := clWhite;
-      1 : SMART_Canvas.canvas.Pen.Color := clYellow;
-      2 : SMART_Canvas.canvas.Pen.Color := clBlue;
-      3 : SMART_Canvas.canvas.Pen.Color := clLime;
-      4 : SMART_Canvas.canvas.Pen.Color := clGreen;
-    end;
-
-    for i:= 0 to High(pixels[h]) do
-    begin
-      SMART_Canvas.canvas.moveto(pixels[h][i].x-1, pixels[h][i].y);
-      SMART_Canvas.canvas.LineTo(pixels[h][i].x, pixels[h][i].y);
-    end;
-  end;
-{$ELSE}
-begin
-{$ENDIF}
+  SMART_ClearCanvasArea(MSBox);
 end;
 
 (*
@@ -199,18 +170,152 @@ begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
 
-  SMART_Canvas.canvas.Pen.Color := color;
   if Clear then SMART_ClearCanvas;
 
   for i:= 0 to high(pixels) do
-  begin
-    SMART_Canvas.canvas.moveto(pixels[i].x-1,pixels[i].y);
-    SMART_Canvas.canvas.LineTo(pixels[i].x,pixels[i].y);
-  end;
+    SMART_Canvas.Canvas.Pixels[pixels[i].x, pixels[i].y] := color;
 
 {$ELSE}
 begin
 {$ENDIF}
+end;
+
+(*
+SMART_DrawDotsMulti
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
+
+Draws an ATPA onto the SMART canvas.  Will clear the canvas if 'Clear' is set
+to true.
+
+.. note::
+
+    Author: Sir R. Magician
+    Last Modified: January 20th, 2012 by mormonman
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DrawDotsMulti(true, ATPA);
+*)
+procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
+{$IFDEF SMART}
+var
+  i, h, color : integer;
+begin
+  if (not SMART_DebugSetup) then
+    SMART_SetupDebug();
+
+  if Clear then SMART_ClearCanvas;
+
+  for h := 0 to High(pixels) do
+  begin
+
+    color := h div 10 + h mod 10;
+    case color of
+      0 : color := clWhite;
+      1 : color := clYellow;
+      2 : color := clBlue;
+      3 : color := clLime;
+      4 : color := 26367;//orange
+      5 : color := clPurple;
+      6 : color := clAqua;
+      7 : color := clFuchsia;
+      8 : color := clGreen;
+      9 : color := clRed;
+    end;
+
+    SMART_DrawDotsEx(False, pixels[i], color);
+  end;
+{$ELSE}
+begin
+{$ENDIF}
+end;
+
+(*
+SMART_DebugATPA
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure SMART_DebugATPA(Clear: Boolean; ATPA: T2DPointArray);
+
+Draws the box of each TPA in the ATPA and write the index number in the top
+left corner and a cross at the point found by MiddleTPA.
+
+.. note::
+
+    Author: mormonman
+    Last Modified: January 20, 2012
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DebugATPA(True, ATPA);
+*)
+procedure SMART_DebugATPA(Clear: Boolean; ATPA: T2DPointArray);
+{$IFDEF SMART}
+var
+  i, h, len: Integer;
+  B: TBox;
+  MP: TPoint;
+  TPA: TPointArray;
+begin
+  len := Length(ATPA);
+  if (Len < 1) then
+    Exit;
+
+  for i := 0 to High(ATPA) do
+  begin
+    B := GetTPABounds(ATPA[i]);
+    if len > 1 then
+    begin
+      TPA := LoadTextTPA(ToStr(i), SmallChars, h);
+      OffsetTPA(TPA, Point(B.X1+1, B.Y1+1));
+    end;
+    ATPA[i] := CombineTPA(FindTPAEdges(TPAFromBox(B)), TPA);
+    MP := MiddleTPA(ATPA[i]);
+    TPA := [Point(MP.x-1, MP.y), Point(MP.x+1, MP.y), Point(MP.x, MP.y-1),
+            Point(MP.x, MP.y+1), Point(MP.x-2, MP.y), Point(MP.x, MP.y),
+            Point(MP.x+2, MP.y), Point(MP.x, MP.y-2), Point(MP.x, MP.y+2)];
+    ATPA[i] := CombineTPA(ATPA[i], TPA);
+  end;
+
+  SMART_DrawDotsMulti(Clear, ATPA);
+{$ELSE}
+begin
+{$ENDIF}
+end;
+
+(*
+SMART_DebugTPA
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure SMART_DebugTPA(Clear: Boolean; TPA: TPointArray);
+
+Draws the TPA bounds and puts a cross at the point created by MiddleTPA.
+
+.. note::
+
+    Author: mormonman
+    Last Modified: January 12, 2012
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DebugTPA(True, TPA);
+*)
+procedure SMART_DebugTPA(Clear: Boolean; TPA: TPointArray);
+begin
+  SMART_DebugATPA(Clear, [TPA]);
 end;
 
 (*
@@ -451,6 +556,53 @@ begin
 end;
 
 (*
+SMART_DrawEllipse
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure SMART_DrawEllipse(Clear: Boolean; Center: TPoint; XRadius, YRadius: Integer; Fill: Boolean; Color: TColor);
+
+Draws an ellipse on the SMART canvas defined by 'Center', 'XRadius', and
+'YRadius'. If 'Fill' is true it will fill the ellipse, otherwise it draws just
+the border.  Will clear the SMART canvas if set to do so (Clear).
+
+.. note::
+
+    Author: mormonman
+    Last Modified: January 20th, 2012
+
+Example:
+
+.. code-block:: pascal
+
+    SMART_DrawEllipse(true, point(300, 300), 35, 35, true, clYellow);
+*)
+procedure SMART_DrawEllipse(Clear: Boolean; Center: TPoint; XRadius, YRadius: Integer; Fill: Boolean; Color: TColor);
+{$IFDEF SMART}
+var
+  TPA: TPointArray;
+begin
+  if Fill then
+  begin
+    SMART_Canvas.Canvas.Brush.COLOR := Color;
+    if Clear then
+      SMART_ClearCanvas;
+    SMART_Canvas.Canvas.Ellipse(Center.x - XRadius, Center.y - YRadius,
+      Center.x + XRadius, Center.y + YRadius);
+  end else
+  begin
+    TPA := TPAFromEllipse(Center.x, Center.y, XRadius, YRadius);
+
+    if (Length(TPA) >= 1) then
+      SMART_DrawDotsEx(Clear, TPA, Color);
+  end;
+{$ELSE}
+begin
+{$ENDIF}
+end;
+
+(*
 SMART_DrawCircle
 ~~~~~~~~~~~~~~~~
 
@@ -474,21 +626,8 @@ Example:
     SMART_DrawCircle(true, point(300, 300), 35, true, clYellow);
 *)
 procedure SMART_DrawCircle(Clear: Boolean; Center: TPoint; Radius: Integer; Fill: Boolean; Color: TColor);
-{$IFDEF SMART}
-var
-  TPA: TPointArray;
 begin
-  TPA := TPAFromBox(IntToBox(Center.X - Radius, Center.Y - Radius, Center.X + Radius, Center.Y + Radius));
-  FilterPointsPie(TPA, 0, 360, -1, Radius, Center.X, Center.Y);
-
-  if (not Fill) then
-    FilterPointsDist(TPA, Radius-1, Radius, Center.X, Center.Y);
-
-  if (Length(TPA) >= 1) then
-    SMART_DrawDotsEx(Clear, TPA, Color);
-{$ELSE}
-begin
-{$ENDIF}
+  SMART_DrawEllipse(Clear, Center, Radius, Radius, Fill, Color);
 end;
 
 (*
@@ -545,13 +684,13 @@ SMART_DrawTextMulti
 
 .. code-block:: pascal
 
-  procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
+  procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TSA: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
 
 Draws text on the SMART canvas.  Used mainly for progress reports.  Parameters
 are as follows:
     * Clear: Clear the SMART canvas before drawing
     * Shadow: if set to true, will add a shadow to the text
-    * TP: the string array of what to be printed; each element is a different line
+    * TSA: the string array of what to be printed; each element is a different line
     * Placement: the point to start the text drawing
     * Font: the font to use (see Simba/Fonts/)
     * Colour: the color of the font
@@ -559,7 +698,7 @@ are as follows:
 .. note::
 
     Author: Flight & Coh3n
-    Last Modified: January 10th, 2012 by Coh3n
+    Last Modified: January 20th, 2012 by mormonman
 
 Example:
 
@@ -567,10 +706,10 @@ Example:
 
     SMART_DrawTextMulti(true, true, ['Time Run: '+TimeRunning', 'Logs Chopped: 10'], Point(10, 10), LoginChars, clRed);
 *)
-procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TP: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
+procedure SMART_DrawTextMulti(Clear, Shadow: Boolean; TSA: TStringArray; Placement: TPoint; Font: string; Colour: TColor);
 var
-  i, b, h, TPH, Numb: Integer;
-  TTP: TPointArray;
+  i, h, TPH: Integer;
+  TTP, SArr: TPointArray;
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug();
@@ -578,19 +717,19 @@ begin
   if (Clear) then
     SMART_ClearCanvas();
 
-  TPH := High(TP);
+  TPH := High(TSA);
 
   for i := 0 to TPH do
   begin
-    TTP := LoadTextTPA(TP[i], Font, h);
-
-    for b := 0 to High(TTP) do
+    TTP := LoadTextTPA(TSA[i], Font, h);
+    OffsetTPA(TTP, Point(Placement.x, Placement.y+(i*h)));
+    SMART_DrawDotsEx(False, TTP, Colour);
+    if Shadow then
     begin
-      Numb := (i * H);
-
-      SMART_DrawDot(false, Point(TTP[b].x + Placement.x, TTP[b].y + Placement.y + Numb), Colour);
-      if (Shadow) then
-        SMART_DrawDot(false, Point(TTP[b].x + Placement.x + 1, TTP[b].y + + Placement.y + Numb + 1), 131072);
+      SArr := CopyTPA(TTP);
+      OffsetTPA(SArr, Point(1, 1));
+      SArr := ClearTPAFromTPA(SArr, TTP);
+      SMART_DrawDotsEx(False, SArr, 65536);
     end;
   end;
 end;

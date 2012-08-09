@@ -12,7 +12,7 @@ Player Management
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
-//--                » PlayerArray Routines                       --//
+//--                ï¿½ PlayerArray Routines                       --//
 //-----------------------------------------------------------------//
 // * function  LoggedIn: Boolean;                                  // by WT-Fakawi
 // * procedure NumberOfPlayers(Number: Integer);                   // by BenLand100 & Wizzup?
@@ -36,6 +36,7 @@ type
     Loc: string;                    // * User Location
     Status: string;                 // * User Status
     Skill: string;                  // * User Action to Perform
+    LampSkill: Integer;
     Worked: Integer;                // * Time User has worked
     Banked: Integer;                // * Number of Banks User has done
     Rand: string;                   // * Current Random
@@ -53,7 +54,7 @@ type
   Last Edit: 22 June 2010 -- Nava2
 }
 const
-  SKILL_COUNT         = 26;
+  SKILL_COUNT         = 28;
   SKILL_ATTACK        = 0;
   SKILL_DEFENCE       = 1;
   SKILL_STRENGTH      = 2;
@@ -136,6 +137,7 @@ Example:
 function LoggedIn: Boolean;
 begin
   //White text on Report Abuse Button
+  SRL_ResetNavBar;
   Result := (GetColor(472, 490) = 16777215);
 end;
 
@@ -252,8 +254,10 @@ function PlayerWorked(player: integer): integer;
 begin
   if (player = currentPlayer) then
     if (playerStartTime > 0) then // if it's been set at all
+    begin
       incEx(players[player].worked, (getSystemTime - playerStartTime));
+      playerStartTime := getSystemTime;
+    end;
 
-  playerStartTime := getSystemTime();
   result := players[player].worked;
 end;

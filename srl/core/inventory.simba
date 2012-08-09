@@ -407,7 +407,8 @@ Example:
 *)
 procedure MMouseItem(I: Integer);
 begin
-  InvMouse(I, mouse_move);
+  if (ExistsItem(I)) then
+    InvMouse(I, mouse_move);
 end;
 
 (*
@@ -433,7 +434,8 @@ Example:
 *)
 procedure MouseItem(I: Integer; button: Integer);
 begin
-  InvMouse(i, button);
+  if (ExistsItem(I)) then
+    InvMouse(i, button);
 end;
 
 (*
@@ -550,10 +552,20 @@ Example:
     if InvFull then
       walkToBank;
 
-*)
+*)  
 function InvFull: Boolean;
+Var
+  i : integer;
 begin
-  Result := (InvCount = 28);
+  GameTab(Tab_Inv);
+  Result := True;
+
+  for i := 1 to 28 do
+    if (not ExistsItem(i)) then
+    begin
+      Result := False;
+      exit;
+    end;
 end;
 
 (*
@@ -1088,9 +1100,7 @@ begin
   if not GameTab(tab_Inv) then
     exit;
   TB := InvBox(Slot);
-  Result := FindColor(x, y, srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2) and InRange(
-                    CountColor(srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2) -
-                    CountColor(srl_outline_black, TB.x1, TB.y1, TB.x2, TB.y2),-40,40);
+  Result := FindColor(x, y, srl_outline_white, TB.x1, TB.y1, TB.x2, TB.y2);
 end;
 
 (*

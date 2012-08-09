@@ -1,522 +1,412 @@
-//-----------------------------------------------------------------//
-//--               SRL Resource Library                          --//
-//--               ? Maze Routines                               --//
-//-----------------------------------------------------------------//
-// * function InMaze: Boolean;                                                      // * by ZephyrsFury
-// * Function Maze_FindDoor : Boolean;                                              // * by Naum
-// * function Maze_TouchShrine: Boolean;                                            // * by Sumilion edited by Naum
-// * Function Maze_GetBlackBackground : Integer;                                    // * by Naum
-// * Procedure Maze_LoadPath(Const Path : Integer);                                 // * by Naum
-// * Function Maze_DetectStart : Integer;                                           // * by Naum
-// * Procedure Maze_WalkPath(Path : Integer);                                       // * by Naum
-// * function SolveMaze: Boolean;                                                   // * by Naum & Sum
+(*
+Maze
+====
 
-{ Zeph -<3
+The Maze file stores the routines to solve the maze random event.
 
-~ SPECIAL Thank-you's go to (in no particular order):
-    > niels
-    > nickrules
-    > bbri06 (I love him!) !1!!11
-    > aran armath
-    > masterBB
-    > Heysus
-    > Hackncrack1 (I <3 him!)
-    > Town
-    > g0tp0t
-    > Broh3n (Cohen)
-    > keller
-    > Mrbanana
-    > Heavenguard
-    > IcePyre908 (Homie)
-    > Zyt3x!
-    > Tim0Suprm0
-    > Any other person I might have missed (PM me)
+This solver uses black minimap color counts in specific areas to determine which
+path to solve.  It uses specific minimap corrdinate clicking to walk to each
+door, and uses simple TPA work to find and click each door.
 
-Check these guys out, without them this would not be here.              }
+*)
 
-//Need to test the 'Turquoise' Path!!!!
+type
+  TMazePath = record
+    name: string;
+    area: TBox;                  // area to search for black on MM
+    minCount, maxCount: integer; // range for lenght of black found on MM
 
-Type
-  TMazeLoc = Record
-    Name : String;            //The name of the path
-    Path : Integer;         //The path index
-    SearchBox : TBox;            // the box to search for black colour in
-    Counts : TIntegerArray;   //0 is min count, 1 is max count
-  End;
+    // [x, y, compassAngle] if compassAngle = '', it won't look for the door (some rooms need to walk further)
+    // compass angle should be so you can see the DARK side of the door
+    path: array of TVariantArray;
+  end;
+  TMazePathArray = array of TMazePath;
 
-Type TMazeLocArray = Array Of TMazeLoc;   // the type that stores the location details.
+const
+  MAZE_PATH_COUNT = 5;
+    MAZE_PATH_SW     = 0;
+    MAZE_PATH_NE     = 1;
+    MAZE_PATH_SE     = 2;
+    MAZE_PATH_NW     = 3;
+    MAZE_PATH_COMMON = 4;
 
-
-Const
-   Maze_Door = -999;           //Point manipulation to show information
-   ChangeCompass = 999;
-
-Const                      //consts relating to the paths (in the atpa)
-   Maze_StartFail = -3;
-
-   PurplePath = 0;
-   GreenPath = 1;
-   TurquoisePath = 2;
-   BluePath = 3;
-
-   NoOfPaths = 4;
-
-
-Var
-  Paths : T2DPointArray;         //Variable which stores the paths
-  DetectedPath : Integer;       //Integer type which holds the path which has been detected
-  StartSpots : TMazeLocArray;   //The record of start points within the maze
-
-{*******************************************************************************
-function InMaze: Boolean;
-by: ZephyrsFury
-Description: Checks if we're in the Maze Random.
-*******************************************************************************}
-
-function InMaze: Boolean;
-var
-  X, Y: Integer;
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns true if player is in the random.
+ *)
+function Maze_Detect(): boolean;
 begin
-  if (FindColorTolerance(X, Y, 237, MMCX - 10, MMCY - 10, MMCX + 10, MMCY + 10, 17)) then
-    if (CountColorTolerance(237, MMX1, MMY1, MMX2, MMY2, 17) > 500) then
-      Result := (CountColor(15395562, 128, 24, 395, 55) > 500);
+  // WARNING: sometimes magic tab exists, sometimes it doesn't
+
+  if (getNPCChatName() = SRL_NPC_OLDMAN) then
+    // the red maze walls on the minimap
+    result := (countColorTolerance(197614, MMX1, MMY1, MMX2, MMY2, 15) > 1000);
 end;
 
-{*******************************************************************************
-Function Maze_FindDoor : Boolean;
-By Naum
-Description: Opens the maze Maze_Door: using density, axis checks and sorting.
-*******************************************************************************}
-
-Const
-  Maze_Hue = 0.10;
-  Maze_Sat = 0.07;
-  Maze_DoorColor = 4868684;
-  Maze_DoorTolerance = 30;
-  Maze_DoorSplit = 1;
-  Maze_DoorSize = 1000;
-  Maze_DoorYLength = 60;
-  Maze_DoorArea = 950;
-  Maze_DoorUpText = 'all';
-
-Function Maze_FindDoor : Boolean;
-Var
-  TPA : TPointArray;                 //variables
-  ATPA, ATPA2 : T2DPointArray;
-  I, II, X, Y : Integer;
-  TB : TBox;
-
-Begin
-  If Not LoggedIn Then Exit;
-
-  Wait(600 + Random(400));        //waits for char to stop moving
-  ColorToleranceSpeed(2);                      //sets mods
-  SetColorSpeed2Modifiers(Maze_Hue, Maze_Sat);
-  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Maze_DoorColor, MSCX - 120,     //searches for gray colors
-                 MSCY - 120, MSCX + 120, MSCY + 113, Maze_DoorTolerance);  //in a box around the character
-
-  ATPA := SplitTPA(TPA, Maze_DoorSplit);   //to get the blocks and Maze_Door pane
-  SortATPAFromSize(ATPA, Maze_DoorSize, True);      //sorts it
-
-  SetLength(ATPA2, 4);                        /// to avoid errors
-  ATPA2 := [ATPA[0], ATPA[1], ATPA[2], ATPA[3]];     //picks out the first 4 biggest ones
-
-  SortATPAFromFirstPoint(ATPA2, Point(MSCX, MSCY));   //sorts it from the char
-
-  For I := 0 To High(ATPA2) Do                //loops through the atpa2
-  Begin
-  If MiddleTPAEx(ATPA[I], X, Y) Then   //gets the middle of the suspected Maze_Door
-  Begin
-    TB := GetTPABounds(ATPA[I]);   //gets the bounds of the 'suspected foor'
-    If (TB.y2 - TB.y1) < Maze_DoorYLength Then  // checks that the height is less than 60
-    If (TB.x2 - TB.x1) * (TB.y2 - TB.y1) > Maze_DoorArea Then  // checks that the suspected
-    Begin                            //Maze_Door covers an area of at least 950px
-      MMouse(X, Y, 0, 0);                   //moves the mouse over it
-      WriteLn('   ~ Found a suspected Maze_Door');
-      Wait(300 + Random(100));
-      { v FAILSAFE v }
-      For II := 0 To 10 Do                          //uses a loop to see if it gets the uptext
-      Begin
-        If WaitUpText(Maze_DoorUpText, SRL_MaxWaitTime) Then  //if the uptext is there then it breaks
-          Break;
-
-        If Not WaitUpText(Maze_DoorUpText, SRL_MaxWaitTime) Then
-        Begin
-          WriteLn('     + Didn''t Get UpText of Maze_Door, Trying again to find it');
-          GetMousePos(X, Y);
-          MMouse(X - 1, Y, 0, 0);       //moves the mouse to get on the Maze_Door if it missed it
-          GetMousePos(X, Y);              //if it finds it, it gets the mouse pos
-        End;
-      End;
-
-      If WaitUpText(Maze_DoorUpText, SRL_MaxWaitTime) Then
-      Begin
-        Begin                                       //now clicks the Maze_Door
-          Mouse(X, Y, 0, 0, mouse_right);
-          WaitOption('pen', SRL_MaxWaitTime);    //always side clicks
-        End;
-
-        Result := DidRedClick;                  //to see if clicked
-        If Not Result Then
-        Begin
-          Maze_FindDoor;
-          WriteLn('     - Didn''t Red Click, Trying to find it again');
-        End Else
-          FFlag(0);
-
-        While LoggedIn And IsMoving Do                        //waits while the Maze_Door is opened
-          Wait(200 + Random(200));
-
-        Wait(800 + Random(400));
-         Exit;
-         SetColorSpeed2Modifiers(0.2, 0.2);
-         ColorToleranceSpeed(1);
-       End;
-     End;
-   End;
-  End;
-End;
-
-{*******************************************************************************
-function TouchShrine: Boolean;
-by: Sumilion edited by Naum
-Description: Touches the shrine at the end of the maze.
-*******************************************************************************}
-function Maze_TouchShrine: Boolean;
-var
-  sx, sy, i: Integer;
-  p: TPoint;
-  arP: TPointArray;
-  ararP: T2DPointArray;
-  bmp1, bmp2: Integer;
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns an array of all the different maze paths.
+ *)
+function Maze_GetPaths(): TMazePathArray;
 begin
-  If Not LoggedIn Then Exit;
+  setLength(result, MAZE_PATH_COUNT);
 
-  MMouse(MSCX + 6, MSCY - 40, 0, 0);
-  Wait(200 + Random(200));
-  Result := IsUpText('Touch');
-
-  if Result then
+  with result[MAZE_PATH_NE] do
   begin
-    GetMousePos(sx, sy);
-    Mouse(sx, sy, 0, 0, mouse_left);
-    Wait(8000);
-  end else
+    name := 'North East';
+    area := intToBox(668, 60, 687, 73);
+    minCount := 100;
+    maxCount := 1200;
+
+    path := [[630, 86, 's'], [672, 94, 's'], [676, 83, 's'], [609, 78, 's'],
+             [645, 78, 's'], [581, 77, 's'], [670, 80, 's'], [604, 49, 'w'],
+             [608, 94, 's'], [575, 81, 'w'], [611, 128, 's'], [583, 78, 's']];
+  end;
+
+  with result[MAZE_PATH_SE] do
   begin
-    Writeln('Quick Shrine finding failed. Trying motion detector.');
-    bmp1 := BitmapFromString(MSX2 - MSX1, MSY2 - MSY1, '');
-    bmp2 := BitmapFromString(MSX2 - MSX1, MSY2 - MSY1, '');
+    name := 'South East';
+    area := intToBox(MMCX, MMCY, MMX2, MMY2);
+    minCount := 800;
+    maxCount := 3400;
 
-    CopyClientToBitmap(bmp1, MSX1, MSY1, MSX2, MSY2);
-    Wait(100);
-    CopyClientToBitmap(bmp2, MSX1, MSY1, MSX2, MSY2);
+    path := [[580, 82, 's'], [698, 79, 's'], [560, 81, ''], [637, 116, 'w'],
+             [676, 81, 'w'], [648, 82, 'w'], [574, 83, 'w'], [690, 83, ''],
+             [643, 90, 'w'], [663, 86, 'w'], [645, 95, 's'], [561, 94, 'w'],
+             [662, 83, 'w'], [657, 97, 's']];
+  end;
 
-    for sx := 0 to MSX2 - MSX1 - 1 do
-      for sy := 0 to MSY2 - MSY1 - 1 do
-        if (FastGetPixel(bmp1, sx, sy) <> FastGetPixel(bmp2, sx, sy)) then
-        begin
-          SetLength(arP, Length(arP) + 1);
-          arP[High(arP)] := Point(sx, sy);
-          FastSetPixel(bmp1, sx, sy, ClRed);
-        end;
+  with result[MAZE_PATH_SW] do
+  begin
+    name := 'South West';
+    area := intToBox(MMX1, MMCY, MMCX, MMY2);
+    minCount := 3500;
+    maxCount := 9999;
 
-    DisplayDebugImgWindow(MSX2 - MSX1, MSY2 - MSY1);
+    path := [[576, 81, 's'], [674, 33, 'w'], [676, 90, 'w'], [578, 93, 'w'],
+             [605, 91, 'w'], [593, 76, 's'], [583, 86, 's'], [650, 93, 's'],
+             [639, 143, 'w'], [660, 77, 'w'], [645, 58, 's'], [640, 47, 'w'],
+             [612, 137, 's'], [583, 78, 's']];
+  end;
 
-    DrawBitmapDebugImg(Bmp1);
+  with result[MAZE_PATH_NW] do
+  begin
+    name := 'North West';
+    area := intToBox(551, 78, 610, 110);
+    minCount := 1000;
+    maxCount := 2000;
 
-    ararP := SplitTPA(arP, 1);
+    path := [[586, 82, 'w'], [658, 78, 'w'], [602, 97, 's'], [590, 76, 's'],
+             [642, 80, 's'], [594, 73, 'w'], [604, 89, 'w'], [578, 89, 'w'],
+             [612, 90, 'w'], [584, 79, 's'], [628, 152, ''], [638, 92, 's'],
+             [583, 78, 's']];
+  end;
 
-    SortATPAFromSize(ararP, 0, False);
-
-    for i := 0 to High(ararP) do
-    begin
-      p := MiddleTPA(ararP[i]);
-      MMouse(p.x, p.y, 0, 0);
-      Wait(200 + Random(50));
-      Result := IsUpText('Touch');
-      if Result then
-        Break;
-    end;
-
-    if (i <> Length(ararP)) then
-    begin
-      Mouse(p.x, p.y, 0, 0, mouse_left);
-      Wait(8000);
-    end else
-
-    If SpiralMouse(SX, SY, MSCX - 70, MSCY - 70, MSCX + 70, MSCY + 70,
-       'ouch', 5, 5) Then
-    Begin
-      Mouse(SX, SY, 0, 0, mouse_left);
-      Result := True;
-    End Else
-      Writeln('Shrine not found!');
-
-    FreeBitmap(bmp1);
-    FreeBitmap(bmp2);
+  // the end of each path is commone throughout
+  with result[MAZE_PATH_COMMON] do
+  begin
+    name := 'Common';
+    path := [[614, 100, 'w'], [662, 83, 's'], [627, 51, 's'], [637, 89, 'w']];
   end;
 end;
 
-{*******************************************************************************
-Function Maze_GetBlackBackground : Integer;
-By Naum
-Description: Gets the black background color for location detection.
-*******************************************************************************}
+(**
+ * Author: Naum & Coh3n
+ * Description: Returns the path for the current player.
+ *)
+function Maze_DetectPath(paths: TMazePathArray; var resultPath: TMazePath): boolean;
+var
+  i, tmpCount: integer;
+begin
+  if (not loggedIn()) then
+    exit;
 
-Const
-  Maze_BlackTol = 50;
-  Maze_BlackBackCTS = 1;
+  clickNorth(SRL_ANGLE_HIGH); // REQUIRED!
 
-Function Maze_GetBlackBackground : Integer;
-Var
-  TPA : TPointArray;
-  CTS : Integer;
+  for i := 0 to high(paths) do
+    with paths[i] do
+    begin
+      // so it doesn't look for MAZE_PATH_COMMON spawn (doesn't exist)
+      if (i = MAZE_PATH_COMMON) then
+        continue;
 
-Begin                                        //gets the black color by using a related colour
-  If Not LoggedIn Then Exit;
+      tmpCount := countColorTolerance(clBlack, area.x1, area.y1, area.x2, area.y2, 50);
 
-  CTS := GetColorToleranceSpeed;
-  ColorToleranceSpeed(Maze_BlackBackCTS);
-  FindColorsTolerance(TPA, ClBlack, MMX1, MMY1, MMX2, MMY2, Maze_BlackTol);
+      if (inRange(tmpCount, minCount, maxCount)) then
+      begin
+        addToSRLLog('Maze_DetectPath: Found path - '+name);
+        resultPath := paths[i];
+        result := true;
+        break;
+      end;
+    end;
+end;
 
-  FilterPointsPie(TPA, 0.0, 360.0, 10.0, 76.0, MMCX, MMCY);
+(**
+ * Author: Coh3n
+ * Description: Examines the old man to remove last chat line text. Used as a
+ * failsafe in case the script accidentially clicks a wall.
+ *)
+function Maze_ExamineOldMan(): boolean;
+var
+  t, dtmMan: integer;
+  chatPrevious: string;
+begin
+  if (not loggedIn()) then
+    exit;
 
-  If Length(TPA) > 0 Then
-    Result := GetColor(TPA[0].X, TPA[0].Y);
+  dtmMan := DTMFromString('mQwAAAHicY2ZgYLgBxJeA+DoQTwPiGUC8GIh5VbQYuGQUGXiU1Bn4gXwYZgRiJigGAgAO2gV/');
+  chatPrevious := getBlackChatMessage(); // get the chat line text
+  t := (getSystemTime + 5000);
 
-  WriteLn('Maze Background color = '+IntToStr(Result));
-  SetColorSpeed2Modifiers(0.2, 0.2);
-  ColorToleranceSpeed(CTS);
-End;
+  if clickDTMRotatedIn(dtmMan, MSCX - 70, MSCY - 70, MSCX + 70, MSCY + 70, -Pi/4, Pi/4, Pi/30, ['ster'], mouse_Right) then
+  begin
+    if (waitOption('xamin', 300)) then
+      while (getSystemTime < t) do
+      begin
+        // wait for the chat text to change
+        if (getBlackChatMessage() <> chatPrevious) then
+        begin
+          result := true;
+          break;
+        end;
 
-{*******************************************************************************
-Procedure Maze_LoadPath(Const Path : Integer);
-By Naum
-Description: Loads the 4 walk-paths and ways to the maze.
-*******************************************************************************}
+        wait(200);
+      end;
 
-Procedure Maze_LoadPath(Const Path : Integer);
-Begin
-  SetLength(Paths, NoOfPaths);
+  end else
+    addToSRLLog('Maze_ExamineOldMan: Failed to click Old Man DTM');
 
-  Paths[PurplePath] := [//0
-  Point(-4, -2), Point(Maze_Door, -1), Point(-45, -8),
-  Point(Maze_Door, -1), Point(-45, 3), Point(Maze_Door, -1), Point(22, 9),
-  Point(Maze_Door, -1), Point(-20, 7), Point(Maze_Door, -1), Point(50, 9),
-  Point(Maze_Door, -1), Point(-50, 9), Point(Maze_Door, -1), Point(-37, 26),
-  Point(ChangeCompass, 90), Point(Maze_Door, -1), Point(ChangeCompass, 0),
-  Point(15, -13), Point(Maze_Door, -1), Point(2, 43), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1), Point(ChangeCompass, 0), Point(19, -46), Point(ChangeCompass, 180),
-  Point(Maze_Door, -1), Point(ChangeCompass, 0), Point(40, 7), Point(Maze_Door, -1),
-  Point(17, 15), Point(ChangeCompass, 90), Point(Maze_Door, -1), Point(9, 35),
-  Point(ChangeCompass, 180), Point(Maze_Door, -1), Point(ChangeCompass, 0), Point(4, 35),
-  Point(Maze_Door, -1), Point(4, -12), Point(ChangeCompass, 90), Point(Maze_Door, -1)
-  ];
+  freeDTM(dtmMan);
+end;
 
-  Paths[TurquoisePath] := [//1     //the unsure one.
-  Point(60, 10), Point(Maze_Door, -1), Point(-70, 8),
-  Point(Maze_Door, -1), Point(70, -8), Point(34, -15), Point(ChangeCompass, 270),
-  Point(Maze_Door, -1), Point(44, -10), Point(Maze_Door, -1), Point(22, -10),
-  Point(Maze_Door, -1), Point(-55, -6), Point(Maze_Door, -1), Point(40, 3),
-  Point(38, 3), Point(Maze_Door, -1), Point(34, -3), Point(Maze_Door, -1),
-  Point(5, -20), Point(ChangeCompass, 0), Point(Maze_Door, -1), Point(-2, 67),
-  Point(ChangeCompass, 270), Point(Maze_Door, -1), Point(30, -3), Point(Maze_Door, -1),
-  Point(-3, -25), Point(ChangeCompass, 0), Point(Maze_Door, 1), Point(13, 23),
-  Point(ChangeCompass, 270), Point(Maze_Door, -1), Point(-5, -38),
-  Point(ChangeCompass, 180), Point(Maze_Door, -1), Point(ChangeCompass, 0),
-  Point(0, 38), Point(Maze_Door, -1), Point(4, -12), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1)
-  ];
+(**
+ * Author: Coh3n & Naum
+ * Description: Returns true if any doors are found.  Returns their points in
+ * doorPts.
+ *)
+//{$i srl/srl/misc/paintsmart.simba}
+function Maze_FindDoors(var doorPts: TPointArray): boolean;
+var
+  tpa: TPointArray;
+  atpa: T2DPointArray;
+  i, c, tmpCTS: integer;
+begin
+  if (not loggedIn()) then
+    exit;
 
-  Paths[GreenPath] := [//2
-  Point(51, 4), Point(Maze_Door, -1), Point(-50, -45), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1), Point(-45, -5), Point(Maze_Door, -1), Point(45, -10),
-  Point(Maze_Door, -1), Point(23, -10), Point(Maze_Door, -1), Point(6, -34),
-  Point(ChangeCompass, 0), Point(Maze_Door, -1), Point(40, -3), Point(Maze_Door, -1),
-  Point(-20, -3), Point(Maze_Door, -1), Point(60, -10), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1), Point(-35, 10), Point(Maze_Door, -1), Point(ChangeCompass, 0),
-  Point(-17, 30), Point(Maze_Door, -1), Point(-40, -10), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1), Point(ChangeCompass, 0), Point(11, -48), Point(Maze_Door, -1),
-  Point(40, 7), Point(Maze_Door, -1), Point(17, 15), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1), Point(9, 35), Point(ChangeCompass, 0), Point(Maze_Door, -1),
-  Point(4, 35), Point(Maze_Door, -1), Point(4, -12), Point(ChangeCompass, 90),
-  Point(Maze_Door, -1)
-  ];
+  tmpCTS := getColorToleranceSpeed();
+  setColorToleranceSpeed(3);
 
-  Paths[BluePath] := [//3
-  Point(-4, 36), Point(ChangeCompass, 270), Point(Maze_Door, -1), Point(30, -10),
-  Point(Maze_Door, -1), Point(13, 23), Point(ChangeCompass, 0), Point(Maze_Door, -1),
-  Point(31, 7), Point(Maze_Door, -1), Point(-15, 7), Point(Maze_Door, -1), Point(-13, 35),
-  Point(ChangeCompass, 120), Point(Maze_Door, -1), Point(25, -20), Point(Maze_Door, -1),
-  Point(ChangeCompass, 90), Point(43, -13), Point(Maze_Door, -1), Point(16, -10),
-  Point(Maze_Door, -1), Point(ChangeCompass, 0), Point(40, -10), Point(Maze_Door, -1),
-  Point(-30, -20), Point(18, -48), Point(Maze_Door, -1), Point(40, 7), Point(Maze_Door, -1),
-  Point(17, 15), Point(ChangeCompass, 90), Point(Maze_Door, -1), Point(9, 35),
-  Point(ChangeCompass, 0), Point(Maze_Door, -1), Point(4, 35), Point(Maze_Door, -1),
-  Point(4, -12), Point(ChangeCompass, 90), Point(Maze_Door, -1)
-  ];
+  // the darker door color & smaller main screen box
+  findColorsTolerance(tpa, 4342341, MSX1+100, MSY1+75, MSX2-100, MSY2-75, 5);
+  //SMART_DrawDots(tpa);
+  //SMART_ClearCanvas();
 
-  // Next here.
-End;
+  setColorToleranceSpeed(tmpCTS);
 
-{*******************************************************************************
-Function Maze_DetectStart : Integer;
-By Naum
-Description: Uses the countcolor on the minimap to get the location.
-*******************************************************************************}
+  // make sure the door is found
+  if (length(tpa) <= 0) then
+  begin
+    addToSRLLog('Maze_FindDoor: Failed to find maze door color');
+    exit;
+  end;
 
-Function Maze_DetectStart : Integer;
-Var
-  II : Integer;
-                                                  //loads all the types for the path
-Begin
-  SetLength(StartSpots, NoOfPaths);
-  With StartSpots[PurplePath] Do //Purple Path
-  Begin
-    Name := 'Purple Path';
-    Path := PurplePath;
-    SearchBox := IntToBox(668, 60, 687, 73);
-    Counts := [100, 1200];
-  End;
+  // split the colors into boxes
+  atpa := splitTPA(tpa, 1);
+  setLength(doorPts, length(atpa));
 
-  With StartSpots[GreenPath] Do  //Green Path
-  Begin
-    Name := 'Green Path';
-    Path := GreenPath;
-    SearchBox := IntToBox(550, 84, 626, 166);
-    Counts := [3500, 9999];
-  End;
-  
-  With StartSpots[TurquoisePath] Do //Turquoise Path
-  Begin
-    Name := 'Turquoise Path';
-    Path := TurquoisePath;
-    SearchBox := IntToBox(MMCX, MMCY, MMX2, MMY2);
-    Counts := [800, 3400];
-  End;
+  // loop through all the boxes, filtering out wall points
+  for i := 0 to high(atpa) do
+  begin
+    // if there aren't enough points, it's probably a wall point
+    if (length(atpa[i]) < 220) then
+      continue;
 
-  With StartSpots[BluePath] Do //Blue Path
-  Begin
-    Name := 'Blue Path';
-    Path := BluePath;
-    SearchBox := IntToBox(551, 78, 610, 110);
-    Counts := [1300, 2000];
-  End;
+    //SMART_DrawBoxEx(false, getTPABounds(atpa[i]), clRed);
+    doorPts[c] := middleTPA(atpa[i]);
+    inc(c);
+  end;
 
-  For II := 0 To High(StartSpots) Do                        //checks if the count lies within two values
-  If InRange(
-       CountColor(Maze_GetBlackBackground, StartSpots[II].SearchBox.X1,
-       StartSpots[II].SearchBox.Y1, StartSpots[II].SearchBox.X2,
-       StartSpots[II].SearchBox.Y2),
-     StartSpots[II].Counts[0],
-     StartSpots[II].Counts[1]) Then
-  Begin
-    WriteLn('Detected '+ StartSpots[II].Name);
-    WriteLn(CountColor(Maze_GetBlackBackground, StartSpots[II].SearchBox.X1,
-       StartSpots[II].SearchBox.Y1, StartSpots[II].SearchBox.X2,
-       StartSpots[II].SearchBox.Y2));
-    Result := (Maze_StartFail * 0);
-    Break;                               //sets the result
-  End Else
-    Result := Maze_StartFail;
+  setLength(doorPts, c); // gets rid of the empty elements
+  sortTPAFrom(doorPts, point(MSCX, MSCY)); // sort from the player
 
-  If Result = Maze_StartFail Then
-  Begin
-    WriteLn('Couldn''t detect a start point, maze failed');
-    Exit;
-  End;
+  result := (c > 0);
 
-  Result := StartSpots[II].Path;
-End;
+  addToSRLLog('Maze_FindDoors: Found '+toStr(c)+' possible doors');
+end;
 
-{*******************************************************************************
-Procedure Maze_WalkPath(Path : Integer);
-By Naum
-Description: Walks a specified path, opens Maze_Doors and such; used in a loop.
-*******************************************************************************}
+(**
+ * Author: Coh3n
+ * Description: Clicks a maze door.
+ *)
+function Maze_ClickDoor(): boolean;
+var
+  i, x, y, t, c: integer;
+  doorPts: TPointArray;
+  s: string;
+  b: TBox;
+begin
+  if (not loggedIn()) then
+    exit;
 
-Procedure Maze_WalkPath(Path : Integer);
-Var
-  I : Integer;
+  if (Maze_FindDoors(doorPts)) then
+    for i := 0 to high(doorPts) do
+    begin
+      // small box to spiral the mouse
+      b := intToBox(doorPts[i].x - 20, doorPts[i].y - 20, doorPts[i].x + 20, doorPts[i].y + 20);
 
-Begin
-  If Not LoggedIn Then Exit;
+      // sometimes the uptext doesn't show when moused on the door
+      if (spiralMouseMulti(x, y, b.x1, b.y1, b.x2, b.y2, ['pen', 'all'], 5, 8)) then
+      begin
+        mouse(x, y, 5, 5, mouse_Right);
+        addToSRLLog('Maze_ClickDoor: Clicked door');
 
-  For I := 0 To High(Paths[Path]) Do
-  Begin
-    If (Paths[Path][I].X = ChangeCompass) And (LoggedIn) Then     //if the point has a 'change compass' then
-       MakeCompass(Paths[Path][I].Y)        //changes the compass to the angle
-    Else
-    If (Paths[Path][I].X = Maze_Door) And (LoggedIn) Then    //if the point has a 'Maze_Door' in it, then it opens it
-      If Maze_FindDoor() Then
-        WriteLn('   ~ Found Door')         //debugs a message
-    Else
-      Begin
-        WriteLn('   * Door Not Found');
-        Exit;                             //exits.
-      End
-    Else
-    Begin
-      WriteLn('');
-       WriteLn('-> Walking '+ StartSpots[Path].Name + ' : '
-            +IntToStr(I)+' / '+IntToStr(High(Paths[Path])));
+        // in case it clicks in between the door bars
+        if (not waitOption('pen', 300)) then
+        begin
+          mouse(x + random(6), y, 5, 5, mouse_Right);
+          if (not waitOption('pen', 300)) then
+            continue;
+        end;
 
-      WriteLn('>> X = ' +IntToStr(Paths[Path][I].X)+', Y = '+IntToStr(Paths[Path][I].Y));
-      Mouse(MMCX + Paths[Path][I].X, MMCY + Paths[Path][I].Y, 2, 2, mouse_left);
-      FFlag(0);                   //^ clicks on the path
+        flag();
 
-      While IsMoving And LoggedIn Do
-      If Random(10) = 0 Then                     //does some mouse movements whilst moving
-        SleepAndMoveMouse(200 + Random(300));
-    End;
-  End;
-End;
+        t := (getSystemTime + 5000);
+        while (isMoving() and (getSystemTime < t)) do
+          wait(50);
 
-{*******************************************************************************
-Function SolveMaze : Boolean;
-By: Naum
-Description: Solves the maze random
-*******************************************************************************}
+        // failsafe to make sure we didn't click a wall
+        s := getBlackChatMessage();
+        if ((pos('reach', s) > 0) or (pos('open', s) > 0)) then
+        begin
+          addToSRLLog('Maze_ClickDoor: Accidentially clicked the wall');
 
-Function SolveMaze : Boolean;
-Begin                                       //solves the maze using all the procs from before
-  While ClickContinue(False, False) Do
-    ClickToContinue;
-  Wait(600 + Random(200));
+          // get rid of the "bad" chat text, tries 3 times
+          for c := 1 to 3 do
+            if (Maze_ExamineOldMan()) then
+            begin
+              addToSRLLog('Maze_ClickDoor: Examined Old Man');
+              break;
+            end;
 
-  If rs_GetCompassAngleDegrees <> 0 Then   {antirandoms.scar also sets north}
-    ClickNorth(SRL_ANGLE_HIGH);
+          continue;
+        end else
+          result := true;
 
-  DetectedPath := Maze_DetectStart;   //gets the start
+        break;
+      end;
 
-  If DetectedPath = TurquoisePath Then
-  Begin
-    WriteLn('Turquoise path is not fully done, PM the debug to Naum');
-    WriteLn('Saving a screenshot, please send this also.');
-    TakeScreen('Maze');
-    WriteLn('Screenshot is located within the program folder.');
-  End;
-  If DetectedPath = Maze_StartFail Then
-  Begin
-    Result := False;
-    Exit;
-  End Else
-  Begin
-    Maze_LoadPath(DetectedPath);
+      wait(300 + random(200));
+    end;
 
-    Maze_WalkPath(DetectedPath);
+  if (not result) then
+    addToSRLLog('Maze_ClickDoor: Failed to click maze door');
+end;
 
-    If Not Maze_TouchShrine Then
-    Begin
-      WriteLn('Couldn''t touch shrine!');
-      Result := False
-      Exit;
-    End Else
-    Begin
-      Result := True;        // if it succeeds :)
-      WriteLn('');
-      WriteLn('Touched the shrine!');
-      WriteLn('MAZE SOLVED!');
-    End;
-  End;
-End;
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Walks the path.
+ *)
+function Maze_WalkPath(path: TMazePath): boolean;
+var
+  i, t: integer;
+  doorClicked: boolean;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('Maze_WalkPath: Walking '+path.name+' path');
+
+  for i := 0 to high(path.path) do
+  begin
+    if (path.path[i][2] <> '') then
+      makeCompass(path.path[i][2]);
+
+    mouse(path.path[i][0], path.path[i][1], 2, 2, mouse_Left);
+    flag();
+    wait(1500 + random(500));
+    doorClicked := false;
+
+    // if we want to look for the door (some rooms have more than one walking point)
+    if (path.path[i][2] <> '') then
+    begin
+      // in a loop in case we misclick the door
+      repeat
+        inc(t);
+
+        if (Maze_ClickDoor()) then
+        begin
+          addToSRLLog('Maze_WalkPath: Finished room '+toStr(i));
+          result := (i = high(path.path));
+          doorClicked := true;
+          t := 0;
+          break;
+        end;
+
+      until(t >= 10); // maximum 10 click door calls
+
+      if (not doorClicked) then
+      begin
+        addToSRLLog('Maze_WalkPath: Failed to solve room '+toStr(i));
+        result := false;
+        break;
+      end;
+    end;
+  end;
+
+  if (result) then
+    addToSRLLog('Maze_WalkPath: Finished path '+path.name)
+  else
+    addToSRLLog('Maze_WalkPath: Didn''t finish path '+path.name);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Touches the shrine in the middle of the maze.
+ *)
+function Maze_TouchShrine(): boolean;
+var
+  dtmShrine, t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 5000);
+  dtmShrine := DTMFromString('mggAAAHicY2NgYPgDxD+B+DcQfwJiDkYGhr9A+ggQnwHiy0B8AIgPAvE+IO5obmIwNjRgyEpLZcjLyGAIDw5mqC4rY+AHymHDjDgwBAAAz2UQ6Q==');
+
+  // in a loop to make sure we don't misclick
+  repeat
+    if (clickDTMRotatedIn(dtmShrine, 220, 175, 285, 225, -Pi/4, Pi/4, Pi/60, ['ouch'], mouse_Left)) then
+      result := (not didYellowClick());
+
+    wait(100 + random(300));
+  until(result or (getSystemTime > t));
+
+  freeDTM(dtmShrine);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the Maze random event.
+ *)
+function Maze_Solve(): boolean;
+var
+  paths: TMazePathArray;
+  path: TMazePath;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  paths := Maze_GetPaths();
+
+  if (Maze_DetectPath(paths, path)) then
+  begin
+    if (Maze_WalkPath(path)) then
+      if (Maze_WalkPath(paths[MAZE_PATH_COMMON])) then
+        if (Maze_TouchShrine()) then
+          result := waitTabExists(TAB_MAGIC, 15000);
+  end else
+    addToSRLLog('Maze_Solve: Didn''t detect maze path');
+end;
+

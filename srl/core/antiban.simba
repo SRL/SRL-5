@@ -164,8 +164,10 @@ begin
     Mouse(TP.X, TP.Y, 10, 10, mouse_left);
     Wait(3000+Random(3000));
     CloseWindow;
-  end else
+  end else begin
     MMouse(TP.x, TP.y, 10, 10);
+    Wait(1000 + Random(500));
+  end;
 end;
 
 (*
@@ -486,6 +488,50 @@ begin
 end;
 
 (*
+MultiMouse
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MultiMouse(x, y, chance, maxClicks: integer; red: boolean): boolean;
+
+Will simulate "spam" clicking on the point x, y.  Will do it a random amount
+between 1 and 'maxClicks'.  Will click once no matter what, then has a percent
+'chance' of clicking again after that.  Will not exceed 'maxClicks'.  if 'red'
+then will return true if the red X appears after clicking an object, else will
+return true after clicking.
+
+.. note::
+
+  | Author: Coh3n
+  | Last Updated: 21 July 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  if (waitUptext('ree', 200)) then
+    MSI_MultiMouse(x, y, 35, 5, true);
+*)
+function MultiMouse(x, y, chance, maxClicks: integer; red: boolean): boolean;
+var
+  clicks: integer;
+begin
+  repeat
+    inc(clicks);
+    mouse(x, y, 0, 0, true);
+
+    if (red) then
+      result := didRedClick
+    else
+      result := true;
+
+    if (random(100) > chance) or (not result) then
+      break;
+  until(clicks >= maxClicks);
+end;
+
+(*
 RandomMovement
 ~~~~~~~~~~~~~~
 
@@ -528,6 +574,47 @@ begin
   end else
    if (Random(3) = 0) then
     SleepAndMoveMouse(1000 + random(200));
+end;
+
+(*
+CompassMovement
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+
+Rotates the compass somewhere between MinMovement and MaxMovement.  Will return
+to original angle if Return is set to true.
+
+.. note::
+
+    Author: Nebula
+    Last Modified: Mar. 6th, 2011 by Nebula
+
+Example:
+
+.. code-block:: pascal
+
+    CompassMovement(10, 30, true);
+*)
+function CompassMovement(MinMovement, MaxMovement: Integer; Return: Boolean): Boolean;
+var
+  StartAngle, Movement : Integer;
+begin
+  Result := False;
+  StartAngle := round(rs_GetCompassAngleDegrees());
+  case Random(2) of
+    0: Movement := RandomRange(-MinMovement, -MaxMovement);
+    1: Movement := RandomRange(MinMovement, MaxMovement);
+  end;
+  MakeCompass(StartAngle + Movement);
+  if (Return = true) then
+  begin
+    wait(RandomRange(100,350));
+    MakeCompass(StartAngle);
+  end;
+  Result := true;
 end;
 
 (*
@@ -756,4 +843,249 @@ Example:
 function LevelUp: Boolean;
 begin
   Result := LevelUpEx(True, False);
+end;
+
+(*
+FindMod
+~~~~~~~
+
+.. code-block:: pascal
+
+    function FindMod: Boolean;
+
+Results true if a mod is found talking in the chat box.  Will logout and wait
+if LogoutOnMod (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo
+
+Example:
+
+.. code-block:: pascal
+
+  FindMod();
+*)
+function FindMod: Boolean;
+var
+  tX, tY: Integer;
+begin
+  if (not UseFindMod) or (not LoggedIn) then
+    exit;
+
+  if (not SRLBitmapsLoaded) then
+    LoadSRLBitMaps;
+
+  if (FindColorTolerance(tX, tY, 14737632, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+     (FindColorTolerance(tX, tY, 589815, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    if (FindBitmapToleranceIn(bmpMod, tX, tY, MCX1, MCY1, MCX1 + 40, MCY2, 15)) or
+       (FindBitmapToleranceIn(bmpAdmin, tx, ty, MCX1, MCY1, MCX1 + 40, MCY2, 15)) then
+    begin
+      Result := True;
+
+      if (SRL_Procs[srl_OnFindMod] <> nil) then
+        SRL_Procs[srl_OnFindMod]();
+
+      if (LogoutOnMod) then
+      begin
+        Writeln('******** FOUND MOD ********');
+        Writeln('Logging out, waiting 1-2 minutes until mod leaves');
+
+        WaitFunc(@ExitToLobby, 500, 1500);
+        Wait(60000 + Random(60000));
+        LoginPlayer;
+      end;
+    end;
+end;
+
+(*
+FindDead
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDead: Boolean;
+
+Logs out and sets the current player to false if they are found dead. Will not
+logout if Reincarnate (global boolean) is set to true.
+
+.. note::
+
+    Author: Stupid3ooo and Cazax
+
+Example:
+
+.. code-block:: pascal
+
+  FindDead();
+*)
+function FindDead: Boolean;
+begin
+  Result := False;
+  if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dear', SmallChars, Nothing) then
+    if FindTextTPA(0, 0, MCX1, MCY1, MCX2, MCY2, 'dead', SmallChars, Nothing) then
+    begin
+      Result := True;
+
+      if (SRL_Procs[srl_OnFindDead] <> nil) then
+        SRL_Procs[srl_OnFindDead]();
+
+      if (Reincarnate) then
+        exit;
+
+      LogOut;
+      Players[CurrentPlayer].Rand := 'Dead';
+      Players[CurrentPlayer].Active := False;
+    end;
+end;
+
+(*
+FindDwarvenPopup
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindDwarvenPopup: Boolean;
+
+A simple functinds and closes the "please buy RS Members" popup that happens
+when you reach lvl 10 in any skill.
+
+.. note::
+
+    Author: Harry
+
+Example:
+
+.. code-block:: pascal
+
+  FindDwarvenPopup();
+*)
+function FindDwarvenPopup: Boolean;
+begin
+  Result := False;
+  // Parts of red X, checked in two different spots to reduce false-positives
+  if (GetColor(485, 40) = 2569093) then
+    if (GetColor(488, 40) = 11189720) then
+    begin
+      Result := True;
+
+      // Box around the X, to close it.
+      MouseBox(482, 35, 492, 44, mouse_left);
+      Wait(1000+Random(3000));
+    end;
+end;
+
+(*
+ExitSquealOfFortune
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ExitSquealOfFortune(): boolean;
+
+Finds and exits the annoying Squeal of Fortune pop up.
+
+.. note::
+
+    Author: Coh3n & Ashaman88
+    Last Modified: July 28th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  ExitSquealOfFortune();
+*)
+function ExitSquealOfFortune(): boolean;
+var
+  w, h, x, y, xs, ys, xe, ye, tmpCTS,SquealDTM: integer;
+begin
+  if (SRL_ExitedSquealOfFortune) then
+    exit;
+
+  SquealDTM := DTMFromString('mbQAAAHicY2VgYNjOzMCwEIirgLgSiBuB2JiRgUELiGWB2BCIrYH4/1kXhku1MQyLrxcyfPz0iSHA2Z2BH6gfHTNiwWAAAHx8DXE=');
+
+  tmpCTS := getColorToleranceSpeed();
+  setColorToleranceSpeed(1);
+
+  getClientDimensions(w, h);
+
+  // green color of the goblin thing
+  if (findColorTolerance(x, y, 7457955, 1, 1, w - 1, h - 1, 15)) then
+  begin
+    // to avoid out of bounds warnings
+    xs := x-70;
+    if (xs < 0) then
+      xs := 1;
+
+    ys := (y - 70);
+    if (ys < 0) then
+      ys := 1;
+
+    xe := (x + 130);
+    if (xe > w) then
+      xe := (w - 1);
+
+    ye := (y + 70);
+    if (ye > h) then
+      ye := (h - 1);
+
+    // gold color in the X
+    if (findDTM(SquealDTM,x,y,xs,ys,xe,ye)) then
+    begin
+      mouse(x, y, 3, 3, mouse_Move);
+
+      if (waitUptextMulti(['Select', 'elect', 'lect'], 300)) then
+      begin
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+        result := true;
+        SRL_ExitedSquealOfFortune := true;
+      end;
+    end;
+  end;
+  FreeDTM(SquealDTM);
+  setColorToleranceSpeed(tmpCTS);
+end;
+
+(*
+FindSpinTicket
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSpinTicket(): Boolean;
+
+Finds and exits the annoying Squeal of Fortune pop up.
+
+.. note::
+
+    Author: Kyle Undefined
+    Last Modified: Apr. 3rd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  FindSpinTicket();
+*)
+function FindSpinTicket(): Boolean;
+var
+  oneFreeSpin, x, y: Integer;
+begin
+  oneFreeSpin := DTMFromString('mrAAAAHic42BgYMhlYmBIBuJyIC4F4hQgLgPiaiAuAeInQDWvgfg+ED8D4vdQDBK/BcS9BloMHXHWYMzLwwMUYULB/EASH2ZCw4xoGAYA/y4OqA==');
+
+  if (FindDTM(oneFreeSpin, x, y, MIX1, MIY1, MIX2, MIY2)) then
+  begin
+    Mouse(x, y, 5, 5, mouse_Move);
+
+    if (WaitUptext('laim', 300)) then
+    begin
+      ClickMouse2(mouse_Left);
+      Wait(RandomRange(100, 200));
+      Result := True;
+    end;
+  end;
+
+  FreeDTM(oneFreeSpin);
 end;

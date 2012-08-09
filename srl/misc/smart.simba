@@ -50,7 +50,7 @@ begin
   SmartHoldKey(key);
 end;
 
-procedure SendKeys(S: String);
+procedure SendKeys(S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer);
 begin
   SmartSendKeys(S);
 end;
@@ -144,7 +144,7 @@ begin
     writeln('Invalid world number or corrupted world list. Please review your settings');
     TerminateScript;
   end;
-  SmartSetup('http://'+prefix+'.runescape.com/', 'plugin.js?param=o0,a' + IntToStr((Integer(not(Signed)) + 1) * Integer(not((SuperDetail and Signed)))) + ',m' + IntToStr(Integer(Members)), 765, 503, 's');
+  SmartSetup('http://'+prefix+'.runescape.com/', 'plugin.js?param=o0,a' + IntToStr((Integer(not(Signed)) + 1) * Integer(not((SuperDetail and Signed)))) + ',m' + IntToStr(Integer(Members)), 765, 553, 's');
   //SmartSaveSettings([Server, Members, Signed, SuperDetail, SmartGetDC]);
 end;
 
@@ -158,3 +158,4 @@ begin
   for i := 0 to 4 do
     Result[i] := ReadINI('SMART', ts[i], ts[5]);
 end; }
+

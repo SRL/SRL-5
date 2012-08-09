@@ -67,7 +67,7 @@ Example:
 *)
 function GetGEItems(v: Variant): TGEItemArray;
 var
-  vString, query, page: string;
+  vString, query : string;
   rsr: record
     e: string;
     rc: Integer;

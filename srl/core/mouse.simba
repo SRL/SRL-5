@@ -284,6 +284,30 @@ begin
     srl_Warn('MouseBox', 'ClickType is NOT a valid number!', warn_AllVersions);
 end;
 
+(*
+MouseTBox
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MouseTBox(Box: TBox; ClickType: variant);
+
+Moves the mouse to the Indicated Box, and performs the ClickType
+
+.. note::
+
+    by PhaseCode
+
+Example:
+    Mouse(InvBox(1),1);
+.. code-block:: pascal
+
+*)
+procedure MouseTBox(Box: TBox; ClickType: variant);
+begin
+  MouseBox(Box.X1, Box.Y1, Box.X2, Box.Y2, ClickType)
+end;
+
 procedure MouseAction(mx, my, rx, ry: Integer; a: fnct_ActionOptions);
 begin
     case (a) of
@@ -523,10 +547,12 @@ DidClick
     function DidClick(Red: Boolean; Time: integer): boolean;
 
 Checks for the X after a click, Times Out after Time.
+DidClick Time must be at LEAST 200 now.
 
 .. note::
 
     by Rasta Magician
+    Modded by Narcle on Feb. 4th, 2012
 
 Example:
 
@@ -535,7 +561,7 @@ Example:
 *)
 function DidClick(Red: Boolean; Time: integer): boolean;
 var
-  TimeOut, x, y, Trash, w, h: integer;
+  TimeOut, x, y, w, h, R, G: integer;
   B: TBox;
 begin
   GetMousePos(x, y);
@@ -548,26 +574,21 @@ begin
   TimeOut := GetSystemTime + Time;
   while (GetSystemTime < TimeOut) do
   begin
-    With B do
-    if FindColor(Trash, Trash, 254, x1, y1, x2, y2) then
+    R := CountColorTolerance(395675, B.x1, B.y1, B.x2, B.y2, 15);
+    G := CountColorTolerance(1695663, B.x1, B.y1, B.x2, B.y2, 15);
+    if Red then
     begin
-      if Red then
-        Result := true
-      else
-        Result := false;
-      exit;
-    end;
-
-    With B do
-    if FindColor(Trash, Trash, 65278, x1, y1, x2, y2) then
+      if (G > 8) then
+        Exit;
+      Result := (R > 20);
+    end else
     begin
-      if Red then
-        Result := false
-      else
-        Result := True;
-      exit;
+      if (R > 5) then
+        Exit;
+      Result := (G > 35);
     end;
-    wait(5);
+    if Result then
+      Exit;
   end;
 end;
 
@@ -628,19 +649,22 @@ MouseOval
 
     procedure MouseOval(cx, cy, mx, my, clickType: Integer);
 
-Clicks a random point within an oval shape. The size of the oval is
-defined by cx, cy, mx and my and clickType takes same parameters as `MouseBox`.
+Clicks a random point within an oval shape.
+    * cx, cy: The center point of the oval.
+    * rx, ry: X and Y radius of the oval.
+    * clickType: mouse_Move, mouse_Left, mouse_Right, or mouse_Middle.
 
 .. note::
 
     by mixster
+    Last Updated: Unknown.
 
 Example:
 
 .. code-block:: pascal
 
 *)
-procedure MouseOval(cx, cy, mx, my, clickType: Integer);
+procedure MouseOval(cx, cy, rx, ry, clickType: Integer);
 var
   o: TPoint;
 begin
@@ -650,8 +674,8 @@ begin
     exit;
   end;
 
-  o.y := Random(my) * ((Random(2) * 2) - 1);
-  o.x := Random(Round(Sqrt(Sqr(my) - Sqr(o.y)) * mx / my)) * ((Random(2) * 2) - 1);
+  o.y := Random(ry) * ((Random(2) * 2) - 1);
+  o.x := Random(Round(Sqrt(Sqr(ry) - Sqr(o.y)) * rx / ry)) * ((Random(2) * 2) - 1);
 
   case clickType of
     mouse_right..mouse_middle: Mouse(cx + o.x, cy + o.y, 0, 0, clickType);
@@ -672,6 +696,7 @@ Same as MouseOval, but clicks within a circle instead.
 .. note::
 
     by mixster
+    Last Updated: Mar. 21st, 2012 by Coh3n
 
 Example:
 
@@ -680,7 +705,7 @@ Example:
 *)
 procedure MouseCircle(MidX, MidY, Radius, clickType: Integer);
 begin
-  MouseOval(MidX - Radius, MidY - Radius, MidX + Radius, MidY + Radius, clickType);
+  MouseOval(MidX, MidY, Radius, Radius, clickType);
 end;
 
 (*
