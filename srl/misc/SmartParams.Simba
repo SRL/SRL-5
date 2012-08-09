@@ -282,7 +282,7 @@ begin
     Exit;
   end;
 
-  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '');
+  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
   If (Result > 0) Then
   begin
     try
