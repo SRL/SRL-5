@@ -1061,7 +1061,7 @@ Withdraw
 
     function Withdraw(Col, Row, Amount: Integer): Boolean;
 
-Withdraws Amount at Column/Row.
+Withdraws Amount at Column/Row. Column/Row start at 0. Columns are left/right - Rows are up/down.
 
 .. note::
 
@@ -1072,7 +1072,7 @@ Example:
 
 .. code-block:: pascal
 
-    Withdraw(1, 3, 28);
+    Withdraw(0, 0, 28) withdraws 28 of the item in the upper-left most bank slot.
 *)
 function Withdraw(col, row, Amount: Integer): Boolean;
 begin
