@@ -184,57 +184,87 @@ end;
 (**
  * Author: DemiseScythe & Coh3n
  * Description: Uses mainscreen walking to exit the random.
+ * Updated: Added a backup to the exit as it can sometimes miss it. - [J]ustin - 03/08/2012
  *)
 function PB_Exit(): boolean;
 var
-  x, y, t: integer;
-  tpa: TPointArray;
+  x, y, t, i: integer;
+  tpa, tpa_Exit: TPointArray;
+  ATPA: T2DPointArray;
 begin
-  if (not loggedIn()) then
-    exit;
+ if (not loggedIn()) then
+   exit;
+ addToSRLLog('PB_Exit: Exiting cave');
+ t := (getSystemTime + 20000);
+ clickNorth(SRL_ANGLE_HIGH);
+ repeat
+   // the green path color
+   if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 15)) then
+     if (length(tpa) > 0) then
+     begin
+       sortTPAFrom(tpa, point(MSCX, MSY2)); // center of the bottom of the MS
+       x := tpa[0].x;
+       y := tpa[0].y - 20; // so it's actually on the MS
 
-  addToSRLLog('PB_Exit: Exiting cave');
-  t := (getSystemTime + 20000);
-  clickNorth(SRL_ANGLE_HIGH);
+       mouse(x, y, 5, 5, mouse_Move);
 
-  repeat
-    // the green path color
-    if (findColorsTolerance(tpa, 9283213, MSX1, MMCY, MSX2, MSY2, 25)) then
-      if (length(tpa) > 0) then
-      begin
-        sortTPAFrom(tpa, point(MSCX, MSY2)); // center of the bottom of the MS
-        x := tpa[0].x;
-        y := tpa[0].y - 20; // so it's actually on the MS
+       // check for the proper uptexts
+       if (waitUptextMulti(['Walk', 'alk', 'here', 'ere'], 200)) then
+       begin
+         getMousePos(x, y);
+         mouse(x, y, 0, 0, mouse_Left);
+       end
+       else if (waitUptextMulti(['Exit', 'xit', 'Cave', 'ave'], 200)) then
+       begin
+         getMousePos(x, y);
+         mouse(x, y, 0, 0, mouse_Left);
 
-        mouse(x, y, 5, 5, mouse_Move);
-
-        // check for the proper uptexts
-        if (waitUptextMulti(['Walk', 'alk', 'here', 'ere'], 200)) then
-        begin
-          getMousePos(x, y);
-          mouse(x, y, 0, 0, mouse_Left);
-        end else
-          if (waitUptextMulti(['Exit', 'xit', 'Cave', 'ave'], 200)) then
-          begin
-            getMousePos(x, y);
-            mouse(x, y, 0, 0, mouse_Left);
-
-            if (waitTabExists(TAB_MAGIC, 8000)) then
-            begin
-              result := true;
-              break;
-            end;
-          end;
-      end;
-
-    result := tabExists(TAB_MAGIC); // just in case
-    wait(2000 + random(300));
-  until((getSystemTime > t) or (result));
-
-  if (result) then
-    addToSRLLog('PB_Exit: Clicked exit cave')
-  else
-    addToSRLLog('PB_Exit: Failed to exit cave');
+         if (waitTabExists(TAB_MAGIC, 8000)) then
+         begin
+           result := true;
+           break;
+         end;
+       end;
+     end;
+   result := tabExists(TAB_MAGIC); // just in case
+   wait(2000 + random(300));
+ until ((getSystemTime > t) or (result));
+ if (result) then
+   addToSRLLog('PB_Exit: Clicked exit cave')
+ else
+ begin
+   addToSRLLog('PB_Exit: Took to long to find exit... Looking for backup');
+   t := (getSystemTime + 20000);
+   repeat
+     if (FindColorsTolerance(tpa_Exit, 10390671, MSX1, MSY1, MSX2, MSY2, 10)) then
+       ATPA := TPAToATPAEx(tpa_Exit, 70, 5);
+     if (length(ATPA) > 0) then
+     begin
+       SortATPASize(ATPA, True);
+       for i := 0 to High(ATPA) do
+       begin
+         MiddleTPAEx(ATPA[i], x, y);
+         mouse(x, y, 5, 5, mouse_Move);
+         if (waitUptextMulti(['Exit', 'xit', 'Cave', 'ave'], 200)) then
+         begin
+           getMousePos(x, y);
+           mouse(x, y, 0, 0, mouse_Left);
+           if (waitTabExists(TAB_MAGIC, 8000)) then
+           begin
+             result := true;
+             break;
+           end;
+         end;
+       end;
+     end;
+     result := tabExists(TAB_MAGIC);
+     wait(2000 + random(300));
+   until ((getSystemTime > t) or (result));
+   if (result) then
+     addToSRLLog('PB_Exit: Clicked exit cave with backup')
+   else
+     addToSRLLog('PB_Exit: Failed to exit')
+ end;
 end;
 
 (**
