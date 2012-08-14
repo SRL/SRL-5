@@ -287,6 +287,7 @@ var
     Smart_Server: Integer;
     Smart_Members, Smart_Signed, Smart_SuperDetail: Boolean;
   {$ELSE}
+    Smart_ForceNew: Boolean;
     Smart_FixSpeed: Boolean;
     SRL_SixHourFix: Boolean;
     Smart_CurrentClient: Integer;
@@ -656,6 +657,69 @@ begin
 end;
 
 (*
+SRL_DisableNavBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SRL_DisableNavBar;
+
+  Offsets the client by 50 pixels when logged in, 22 when not logged in. This is to ignore the navigation bar at the top.
+
+.. note::
+
+    by: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+
+Procedure SRL_DisableNavBar;
+var
+  W, H: Integer;
+begin
+  GetClientDimensions(W, H);
+  If (FoundBar) then
+  begin
+    ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
+    MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
+  end else
+    begin
+      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
+    end;
+end;
+
+(*
+SRL_EnableNavBar
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Procedure SRL_EnableNavBar;
+
+  Resets The Client Offsets To Normal! All functions will work as they were before the navigation bar.
+  This function does not ignore the navbar.
+
+.. note::
+
+    by: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+
+Procedure SRL_EnableNavBar;
+begin
+  ImageResetClientArea;
+  MouseResetClientArea;
+end;
+
+(*
 SRL_ResetNavBar
 ~~~~~~~~~~~~~~
 
@@ -677,20 +741,7 @@ Example:
 *)
 
 Procedure SRL_ResetNavBar;
-var
-  W, H: Integer;
 begin
-  ImageResetClientArea;
-  MouseResetClientArea;
-  GetClientDimensions(W, H);
-
-  If (FoundBar) then
-  begin
-    ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);  //H - Offset to remove black bar at the bottom.
-    MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_INGAME_Y, W, H);
-  end else
-    begin
-      ImageSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-      MouseSetClientArea(SRL_NAVBAR_INGAME_X, SRL_NAVBAR_LOGIN_Y, W, H);
-    end;
+  SRL_EnableNavBar;
+  SRL_DisableNavBar;
 end;

@@ -35,7 +35,7 @@ var
 begin
   B := IntToBox(529, 9, 557, 39);
   with B do
-    FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 1);
+    FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 0);
   if Length(TPA) < 1 then
    Exit;
   M := MiddleBox(B);

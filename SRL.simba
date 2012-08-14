@@ -187,7 +187,7 @@ begin
       SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
       SetTargetArray(SmartImageArray, 765, 553);
     {$ELSE}
-      SetupSmart(False);
+      SetupSmart(Smart_ForceNew);
       if (SRL_SixHourFix) then
         SRL_Procs[srl_OnRSUpdate] := @SixHourFix;
     {$ENDIF}
