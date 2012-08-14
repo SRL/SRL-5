@@ -431,8 +431,8 @@ begin
   if not(Box = HookBox) then
   begin
     // Horizontal movement
-    BoxRow := (Box / 10);
-    HookBoxRow := (HookBox / 10);
+    BoxRow := (Box div 10);
+    HookBoxRow := (HookBox div 10);
     AddToSRLLog('BoxRow : '+IntToStr(BoxRow)+', HookBoxRow: '+IntToStr(HookBoxRow)+'');
 
     if not(BoxRow = HookBoxRow) then

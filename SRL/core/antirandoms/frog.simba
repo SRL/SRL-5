@@ -315,7 +315,7 @@ begin
             if (Red < 20) and (Yellow > 25) then
               begin
                 SetLength(RoyalPos, Length(RoyalPos)+1);
-                RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2)/2, (SearchBox[i].Y1+SearchBox[i].Y2)/2);
+                RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2) div 2, (SearchBox[i].Y1+SearchBox[i].Y2) div 2);
               end;
           end;
     end;
