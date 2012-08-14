@@ -6,6 +6,11 @@ begin
     Result := i;
 end;
 
+function ReplaceWrap(Text, FindStr, ReplaceStr: string; Flags: TReplaceFlags): string;
+begin
+  Result := StringReplace(Text, FindStr, ReplaceStr, Flags);
+end;
+
 function GetTextAtExWrap(const xs, ys, xe, ye, minvspacing, maxvspacing, hspacing, color, tol: Integer; const font: string): string;
 begin
   Result := GetTextAtEx(xs, ys, xe, ye, minvspacing, maxvspacing, hspacing, color, tol, font);

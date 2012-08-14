@@ -282,7 +282,7 @@ begin
     Exit;
   end;
 
-  Result:= SmartSpawnClient({$IFDEF LAPE}Replace{$ELSE}ReplaceWrap{$ENDIF}(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
+  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
   If (Result > 0) Then
   begin
     try
@@ -384,7 +384,7 @@ var
   KMTarget, ITarget: Integer;
 begin
   {$IFDEF LAPE}
-  writeln('GetRealMousePos not implemented yet in SRL-5 Lape!')
+  writeln('GetRealMousePos not implemented yet in SRL-5 Lape!');
   TerminateScript;
   {$ELSE}
   KMTarget := GetKeyMouseTarget;
