@@ -20,7 +20,7 @@ Returns the compass angle in radians.
 
 .. note::
 
-    by Narcle
+    by Narcle & Flight
 
 Example:
 
@@ -30,17 +30,16 @@ Example:
 Function rs_GetCompassAngleRadians: Extended;
 var
   TPA: TPointArray;
-  T, M: TPoint;
+  T: TPoint;
   B: TBox;
 begin
-  B := IntToBox(529, 9, 557, 39);
+  B := IntToBox(524, 5, 562, 43);
   with B do
     FindColorsSpiralTolerance(T.x, T.y, TPA, 65536, x1, y1, x2, y2, 0);
   if Length(TPA) < 1 then
    Exit;
-  M := MiddleBox(B);
   T := MiddleTPA(TPA);
-  Result := ArcTan2(-(T.Y - M.Y), T.X - M.X+0.5) + Radians(90);
+  Result := ArcTan2(-(T.Y - 24), T.X - 543) + Radians(90);
   Result := fixRad(Result - Pi);
 end;
 
