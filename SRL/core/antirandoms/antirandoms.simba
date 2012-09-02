@@ -462,6 +462,7 @@ begin
   findDwarvenPopup();
   findSpinTicket();
   exitSquealOfFortune();
+  closeAdWindow();
 
   if SRL_HasProc(SRL_OnRandomCall) then
     SRL_Procs[SRL_OnRandomCall]();
@@ -520,4 +521,3 @@ function FindNonInventoryRandoms(): boolean;
 begin
   result := _FindAllRandoms(false);
 end;
-
