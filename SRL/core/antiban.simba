@@ -278,7 +278,7 @@ begin
 
     if VariantIsString(CameraAngle) then
     begin
-    	if CameraAngle = '' then
+        if CameraAngle = '' then
     	  SetCamera := False
     	else
         CameraAngle := StrToInt(CameraAngle);
@@ -1081,4 +1081,47 @@ begin
   end;
 
   FreeDTM(oneFreeSpin);
+end;
+(*
+CloseAdWindow
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function CloseAdWindow(): Boolean;
+
+Finds and exits the wicked hood and dwarven army axe pop up ads.
+
+.. note::
+
+    Author: litoris
+    Last Modified: September 2nd, 2012 by litoris
+
+Example:
+
+.. code-block:: pascal
+
+  CloseAdWindow();
+*)
+function CloseAdWindow(): Boolean;
+var
+Cross, x, y: Integer;
+begin
+  Cross := BitmapFromString(10, 9, 'meJzT1jbX0HDWzp6jYxipqOwNRDI' +
+          'yXkoq3lKRfSIiKjo6FiCpDX+0pj/QMshQUgqVVE4AsoEikpG9ioqW' +
+          'QF0QLpBUMKvRmgFiq02+yyHiJCVlLy3tpaiSDhGEILUpd3nEAtnYj' +
+          'GVkDYEKpKSCRLVL4LJi2iU8PE4cnMYiIlpCwpbCUpFA9Zh6ublVOE' +
+          'WdIFJAEqgLygbaK2zNzCwlGdkHVS8eCDQQSEIUAN3MyMgNUcApYg0' +
+          '0CoKAbKAUE5MQAMPoVvw=');
+  if  FindBitmapTolerancein(Cross, x, y, MSCX, MSY1, MSX2, MSCY, 5) then
+  begin
+    MMouse(x, y, 2, 2);
+    if (WaitUptext('lose', 300)) then
+    begin
+      ClickMouse2(mouse_Left);
+      Wait(RandomRange(100, 200));
+      Result := True;
+    end;
+  end;
+  FreeBitmap(Cross);
 end;
