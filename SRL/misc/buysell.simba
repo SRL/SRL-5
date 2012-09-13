@@ -12,6 +12,37 @@
 // * function  FindItems(color, tol: Integer; text: string; num: Integer): TPointArray; // * by RSN
 // * procedure SellItems(Color, Tol, Num, Amount: Integer; Text: string); // * by RSN
 
+{
+  Re-make of the old 'buysell.simba' because of the outdated code.
+    This include is essentially an edit-over the previous made functions.
+
+    -Lj
+}
+
+function help_nothing: boolean;
+begin
+  result := false;
+end;
+
+function Shop_Screen: Boolean;
+begin
+  Result := FindTextTPA(12054007, 10, MSX1, MSY1, MSX2, MSY2, 'splay', 'UpChars', Nothing);
+end;
+
+function Close_Shop: boolean; // Not particually needed.. simply apart of another script I use
+var                           // could be helpful?
+  x, y, Shops_X: Integer;
+begin
+  result := false;
+  Shops_X := BitmapFromString(5, 5, 'meJzT2fiXAQZ0wWwdMKmLIQ4ByLI6qOIAcvoQrw==');
+  if findbitmaptolerancein(Shops_X, x, y, msx1, msy1, msx2, msy2, 25) then
+  begin
+    mouse(x, y, 3, 3, mouse_left);
+    result := true;
+  end;
+  FreeBitmap(Shops_X);
+end;
+
 {*******************************************************************************
 function ShopItemCoords(I: Integer): TPoint;
 By: N1ke!
@@ -22,13 +53,13 @@ var
   row, col: Integer;
 begin
   row := i div 10;
-  col := i - (row * 10) - 1;
+  col := i - (row * 9) - 1;
   if (col < 0) then
   begin
     col := 9;
     row := row - 1;
   end;
-  Result := Point(78+(col * 39), 107+(row * 55));
+  Result := Point(42+(col * 52), 92+(row * 52));
 end;
 
 {*******************************************************************************
@@ -42,10 +73,10 @@ var
   X, Y: Integer;
 begin
   Result := False;
-  if not ShopScreen then
+  if not Shop_Screen then
     Exit;
   Cords := ShopItemCoords(I);
-  Result := FindColor(X, Y, 65536, Cords.X-20, Cords.Y-20, Cords.X+20, Cords.Y+20);
+  Result := FindColor(X, Y, 131072, Cords.X-20, Cords.Y-20, Cords.X+20, Cords.Y+20);
 end;
 
 {*******************************************************************************
@@ -59,7 +90,7 @@ var
   S: String;
 begin
   Result := False;
-  if not ShopScreen then Exit;
+  if not Shop_Screen then Exit;
 
   if Amount < 1 then
   begin
@@ -71,16 +102,18 @@ begin
   while AmountLeft > 0 do
   begin
     MMouse(x, y, 5, 5);
-    if not WaitUpText('alue', 300)then
-      Exit;
+    {if not WaitUpText('more', 1000) then
+      Exit;}
     GetMousePos(xz, yz);
-    Mouse(xz, yz, 0, 0, False);
+    Mouse(xz, yz, 0, 0, mouse_right);
 
     case AmountLeft of
       1: S := '1';
       5: S := '5';
       10: S := '10';
-      else S := 'Buy X';
+      50: S := '50';
+      500: S := '500';
+      else S := 'Buy All'; // use 'Buy All' b/c 'Buy x' doesn't exist?
     end;
     if not WaitOption(S, 400)then
       Exit;
@@ -145,7 +178,7 @@ var
   S: String;
 begin
   Result := False;
-  if not ShopScreen then Exit;
+  if not Shop_Screen then Exit;
 
   if Amount < 1 then
   begin
@@ -157,8 +190,8 @@ begin
   while AmountLeft > 0 do
   begin
     MMouse(x, y, 5, 5);
-    if not WaitUpText('alue', 300)then
-      Exit;
+   { if not WaitUpText('alue', 300)then
+      Exit; } // No longer has 'value' in the string. + Any txt is hard to read with current shop interface colors..
     GetMousePos(xz, yz);
     Mouse(xz, yz, 0, 0, False);
 
