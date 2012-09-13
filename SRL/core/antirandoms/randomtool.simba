@@ -220,8 +220,10 @@ begin
 end;
 
 function RT_Execute(): boolean;
+{$IFDEF Lape}
 var
   t: Integer;
+{$ENDIF}
 begin
   playSound(RT_SoundPath);
 
