@@ -43,6 +43,8 @@ begin
   if (not LoggedIn()) then
     exit;
 
+  // Setting the mousespeed higher to avoid misclicking on the quickly moving frogs
+  MouseSpeed := 30;
   clickNorth(SRL_ANGLE_HIGH);
   doConversation('', false);
 end;
@@ -73,8 +75,24 @@ end;
  * Description: Returns true if player is in the Frog random.
  *)
 function Frog_Detect(): boolean;
+var
+  name: String;
+  frogDTM, frogX, frogY: Integer;
+
 begin
-  result := Frog_HeraldTalking() and (not tabExists(TAB_MAGIC));
+  if not (tabExists(TAB_MAGIC)) then
+  begin
+    name := getNPCChatName();
+    case name of
+      FROG_NAME_HERALD: begin result := true; exit; end;
+      FROG_NAME_PRINCESS:begin result := true; exit; end;
+      FROG_NAME_PRINCE: begin result := true; exit; end;
+    end;
+
+    frogDTM := DTMFromString('mWAAAAHicY2FgYEhnZWAoBuIkIE4D4mlMDAzTgXgiEM8DYr50AQbRGfEMAqXCDALlwgxcQD3ImBENgwAAnKIHDg==');
+    if (FindDTM(frogDTM, frogX, frogY, MSX1, MSY1, MSX2, MSY2)) then
+      result := true;
+  end;
 end;
 
 (**
@@ -290,35 +308,35 @@ begin
   ColorToleranceSpeed(2);
   SetColorSpeed2Modifiers(0.14, 0.53);
   if FindColorsSpiralTolerance(MSCX, MSCY, GreenFrog, 3576607, MSX1, MSY1, MSX2, MSY2, 24) then
-    begin
-      SplitTPAExWrap(GreenFrog, 5, 5, GreenFrogSplit);
-      SortATPASize(GreenFrogSplit, True);
+  begin
+    SplitTPAExWrap(GreenFrog, 5, 5, GreenFrogSplit);
+    SortATPASize(GreenFrogSplit, True);
 
-      // Sorting out the boxes that are frogs
-      for i:=0 to high(GreenFrogSplit) do
-        if Length(GreenFrogSplit[i]) > 100 then
-          begin
-            SetLength(GoodFrogSplit, Length(GoodFrogSplit)+1);
-            GoodFrogSplit[Length(GoodFrogSplit)-1] := GreenFrogSplit[i];
-          end;
+    // Sorting out the boxes that are frogs
+    for i:=0 to high(GreenFrogSplit) do
+      if Length(GreenFrogSplit[i]) > 100 then
+      begin
+        SetLength(GoodFrogSplit, Length(GoodFrogSplit)+1);
+        GoodFrogSplit[Length(GoodFrogSplit)-1] := GreenFrogSplit[i];
+      end;
 
-        // Checking for yellow & red colors in each box
-        SetLength(SearchBox, Length(GoodFrogSplit));
-        for i:=0 to high(GoodFrogSplit) do
-          begin
-            SearchBox[i] := IntToBox(GetTPABounds(GoodFrogSplit[i]).X1-5, GetTPABounds(GoodFrogSplit[i]).Y1-5, GetTPABounds(GoodFrogSplit[i]).X2+5, GetTPABounds(GoodFrogSplit[i]).Y2+5);
-            SetColorSpeed2Modifiers(0.15, 1.21);
-            Red := CountColorTolerance(1984209, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 19);
-            SetColorSpeed2Modifiers(0.09, 1.28);
-            Yellow := CountColorTolerance(2012628, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 18);
+      // Checking for yellow & red colors in each box
+      SetLength(SearchBox, Length(GoodFrogSplit));
+      for i:=0 to high(GoodFrogSplit) do
+      begin
+        SearchBox[i] := IntToBox(GetTPABounds(GoodFrogSplit[i]).X1-5, GetTPABounds(GoodFrogSplit[i]).Y1-5, GetTPABounds(GoodFrogSplit[i]).X2+5, GetTPABounds(GoodFrogSplit[i]).Y2+5);
+        SetColorSpeed2Modifiers(0.15, 1.21);
+        Red := CountColorTolerance(1984209, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 19);
+        SetColorSpeed2Modifiers(0.09, 1.28);
+        Yellow := CountColorTolerance(2012628, SearchBox[i].X1, SearchBox[i].Y1, SearchBox[i].X2, SearchBox[i].Y2, 18);
 
-            if (Red < 20) and (Yellow > 25) then
-              begin
-                SetLength(RoyalPos, Length(RoyalPos)+1);
-                RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2) div 2, (SearchBox[i].Y1+SearchBox[i].Y2) div 2);
-              end;
-          end;
-    end;
+        if (Red < 20) and (Yellow > 25) then
+        begin
+          SetLength(RoyalPos, Length(RoyalPos)+1);
+          RoyalPos[Length(RoyalPos)-1] := Point((SearchBox[i].X1+SearchBox[i].X2) div 2, (SearchBox[i].Y1+SearchBox[i].Y2) div 2);
+        end;
+      end;
+  end;
 
   // The result
   if (Length(RoyalPos) > 0) then
@@ -328,37 +346,40 @@ end;
 (**
  * Author: J J
  * Description: Returns true when the player is talking to the Royal Frog.
+ * Credits to [J]ustin for pointing out a mistake with the break placement!
  *)
 function TalkToRoyal: Boolean;
 var
   i: Integer;
 
 begin
-  if RoyalLoc then
+  if (RoyalLoc) then
+  begin
+    for i:=0 to high(RoyalPos) do
     begin
-      for i:=0 to high(RoyalPos) do
-        begin
-          MMouse(RoyalPos[i].X, RoyalPos[i].Y, RandomRange(-2, 2), RandomRange(-2, 2));
-          if WaitUpTextMulti(['rog /', 'Frog /'], 100) then
-            begin
-              case Random(7) of
-                0..4: ClickMouse2(1);
-                5..6: begin
-                        ClickMouse2(0);
-                        WaitOptionMulti(['alk'], 500);
-                      end;
-              end;
-              FFlag(0);
-              repeat
-                Wait(50 + Random(50));
-              until not(IsMoving);
-              Wait(1000 + Random(1000));
-              Break;
-              if (Frog_RoyalTalking()) then
-                Result := True;
-            end;
+      MMouse(RoyalPos[i].X, RoyalPos[i].Y, RandomRange(-2, 2), RandomRange(-2, 2));
+      if WaitUpTextMulti(['rog /', 'Frog /'], 100) then
+      begin
+        case Random(7) of
+          0..4: ClickMouse2(1);
+          5..6: begin
+                  ClickMouse2(0);
+                  WaitOptionMulti(['alk'], 500);
+                end;
         end;
+        FFlag(0);
+        repeat
+          Wait(50 + Random(50));
+        until not(IsMoving);
+        Wait(1000 + Random(1000));
+        if (Frog_RoyalTalking()) then
+        begin
+          Result := True;
+          break;
+        end;
+      end;
     end;
+  end;
 end;
 
 (**
@@ -392,10 +413,11 @@ begin
           waitTabExists(TAB_MAGIC, 5000);
           break;
         end;
-
   until(result or (getSystemTime > t));
+
+  // Setting back the normal mousespeed
+  MouseSpeed := 15;
 
   if (not result) then
     addToSRLLog('Frog_Solve: Frog solver failed or timed out');
 end;
-
