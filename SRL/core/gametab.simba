@@ -2485,7 +2485,7 @@ Counter number 1 to 3
 
 .. note::
 
-    by Narcle & IceFire908
+    by Narcle & IceFire908 edited by Ashaman88
 *)
 Function GetXPBar(CounterNum: integer): LongInt;
 var
@@ -2494,6 +2494,7 @@ var
   S: String;
   P: integer;
 begin
+  Result:=-1;
   if ToggleXPBarEx(true, CounterNum) then
   begin
     FindColorsTolerance(TPA, 14474460, 407, 10+(CounterNum-1)*22, 489, 24+(CounterNum-1)*22, 0);
