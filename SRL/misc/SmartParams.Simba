@@ -177,10 +177,12 @@ begin
     TerminateScript;
   end;
 
-  {$IFDEF SMART_GRAPHICS}
-  SMART_FreeDebug;
-  SMART_SetupDebug;
-  {$ENDIF}
+  try
+    CallProc('SMART_FreeDebug', Trash);
+    CallProc('SMART_SetupDebug', Trash);
+  except
+  end;
+
   SmartSetRefresh(Refresh);
 
   If (Not LoginPlayer) then
@@ -282,7 +284,7 @@ begin
     Exit;
   end;
 
-  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
+  Result:= SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', '');
   If (Result > 0) Then
   begin
     try
