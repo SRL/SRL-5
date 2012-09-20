@@ -120,7 +120,7 @@ end;
 procedure SMART_DrawDotsMulti(Clear: boolean; pixels : T2DPointArray);
 {$IFDEF SMART}
 var
-  i, h, color : integer;
+  h, color : integer;
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug;
@@ -144,7 +144,7 @@ begin
       9 : color := clRed;
     end;
 
-    SMART_DrawDotsEx(False, pixels[i], color);
+    SMART_DrawDotsEx(False, pixels[h], color);
   end;
 {$ELSE}
 begin
@@ -164,28 +164,31 @@ var
   B: TBox;
   MP: TPoint;
   TPA: TPointArray;
+  Points: T2DPointArray;
 begin
   len := Length(ATPA);
-  if (Len < 1) then
+  if (len < 1) then
     Exit;
+  SetLength(Points, len);
 
   for i := 0 to High(ATPA) do
   begin
     B := GetTPABounds(ATPA[i]);
-    if len > 1 then
+    len := Length(ATPA[i]);
+    if (len > 0) then
     begin
       TPA := LoadTextTPA(ToStr(i), SmallChars, h);
       OffsetTPA(TPA, Point(B.X1+1, B.Y1+1));
     end;
-    ATPA[i] := CombineTPA(FindTPAEdges(TPAFromBox(B)), TPA);
+    Points[i] := CombineTPA(FindTPAEdges(TPAFromBox(B)), TPA);
     MP := MiddleTPA(ATPA[i]);
     TPA := [Point(MP.x-1, MP.y), Point(MP.x+1, MP.y), Point(MP.x, MP.y-1),
             Point(MP.x, MP.y+1), Point(MP.x-2, MP.y), Point(MP.x, MP.y),
             Point(MP.x+2, MP.y), Point(MP.x, MP.y-2), Point(MP.x, MP.y+2)];
-    ATPA[i] := CombineTPA(ATPA[i], TPA);
+    Points[i] := CombineTPA(Points[i], TPA);
   end;
 
-  SMART_DrawDotsMulti(Clear, ATPA);
+  SMART_DrawDotsMulti(Clear, Points);
 {$ELSE}
 begin
 {$ENDIF}
