@@ -200,7 +200,7 @@ coords are between slots (or not in the inventory area at all) it will return 0.
 
 .. note::
 
-    by Boreas
+    by Boreas and BraK
 
 Example:
 
@@ -210,24 +210,13 @@ Example:
 
 *)
 function CoordsToItem(X, Y: Integer): Integer;
-var
-  tmpBox: TBox;
 begin
-  if not PointInBox(Point(X, Y), IntToBox(MIX1, MIY1, MIX2, MIY2)) then exit;
-  for Result := 1 to 4 do
-  begin
-    tmpBox := InvBox(result);
-    if InRange(X, tmpBox.x1, tmpBox.x2) then break;
-  end;
-  while (not InRange(Y, tmpBox.y1, tmpBox.y2)) do
-  begin
-    IncEx(Result, 4);
-    if (Result > 28) then
-      Break;
-    tmpBox := InvBox(Result);
-  end;
-  if (not PointInBox(Point(X, Y), tmpBox)) then
-    Result := 0;
+  if not PointInBox(Point(X, Y), IntToBox(MIX1, MIY1, MIX2, MIY2)) then
+    exit;
+  for Result := 1 to 28 do
+    if PointInBox(Point(X, Y), InvBox(result)) then
+      exit;
+  Result := 0;
 end;
 
 (*
