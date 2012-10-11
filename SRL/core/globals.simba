@@ -378,10 +378,11 @@ begin
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
        'EC3');
 
-  SRL_NAVBAR_BITMAP := BitmapFromString(8, 11, 'meJyr/PGn8scfBiRQCRYpeP0DiJD' +
-        'FISIZ974BEbI4RCTmCgjxaMbJOFcDkVr6XIiI3+HPQOQ4/wyEAUcu' +
-        '2z4CkZBdjZBdLRBJR86FiFgsfw9EyOZDRLSmvwEiZHGIiELXKyBCF' +
-        'oeIiNc/ByJkcYgIXzEIIYtDRACmWWK1');
+  SRL_NAVBAR_BITMAP := BitmapFromString(7, 9, 'meJxjFzbklbPXTe5ymHMCiGSsw7kE' +
+        'ZMQMYxznn1ZLm2PVt93v8GeXLe/4JLV0Wo9bLHsrG9LDKhkk4ZjLo' +
+        'xnHIahtOO+VxfL3QARkKJYfETXNYhMy5nHsUeh4rjX9DRwBxcWzD7' +
+        'HJRHNqZgJlxbOPKHS9Es86JF7/nDd6N1AQKMUqFQQUF/KfzVf8HII' +
+        '4Y48DZTky7nGIO3Aqx3K4zwGxMx9wBKxjF3fkFlICAOtnRFs=');
 
   SRLBitmapsLoaded := True;
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
@@ -641,7 +642,7 @@ FoundBar
 
 .. note::
 
-    by: Brandon.
+    by: Brandon, edited by riwu.
 
 Example:
 
@@ -653,7 +654,7 @@ Function FoundBar: Boolean;
 var
   X, Y: Integer;
 begin
-  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 117, 13, 171, 35, 10);
+  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 482, 20, 489, 29, 10);
 end;
 
 (*
