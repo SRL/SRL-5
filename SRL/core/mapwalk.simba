@@ -708,8 +708,6 @@ begin
     srl_Warn('RadialWalkEx', 'StartRadial = EndRadial, using LinearWalkEx.', warn_Warning);
     Result := LinearWalkEx(tpa, cx, cy, TheColor, tol, StartRadial, Radius);
   end;
-  if (SD > ED) then
-    Swap(SD, ED);
 
   time := GetSystemTime;
   try
