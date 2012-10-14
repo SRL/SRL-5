@@ -1,0 +1,283 @@
+(*
+SRL Random Tool
+===============
+
+The SRL random tool is an optional tool for scripters that allows the user to
+decide whether they want the script to solve a random, or if they want to use
+SRL's solvers.  It's useful if a player encounters a disabled random, or an
+enabled random that isn't working properly.
+
+The SRL Random Tool was originally developed by N1ke! and was cleaned up and
+updated by Coh3n on March 6th, 2012.
+
+*)
+
+var
+  RT_WaitTimeOut, RT_CountMS, RT_FKeyFinish: integer;
+  RT_SelfSolve, RT_UseRandomTool: boolean;
+  RT_SoundPath: string;
+
+const
+  RT_LABEL_COUNT = 4;
+    RT_LABEL_TITLE   = 0;
+    RT_LABEL_RAND    = 1;
+    RT_LABEL_PLAYER  = 2;
+    RT_LABEL_TIMEOUT = 3;
+
+  RT_BUTTON_COUNT = 2;
+    RT_BUTTON_SELF = 0;
+    RT_BUTTON_SRL  = 1;
+
+{$IFNDEF Lape}
+var
+  RT_Form: TForm;
+
+  RT_Labels: array[0..(RT_LABEL_COUNT - 1)] of TLabel;
+  RT_Buttons: array[0..(RT_BUTTON_COUNT - 1)] of TButton;
+  RT_UseBox: TCheckBox;
+
+  RT_Timer_UntilClose, RT_Timer_Countdown: TTimer;
+{$ENDIF}
+
+function RT_GetRandomByName(name: string): integer;
+var
+  i: integer;
+begin
+  result := -1;
+
+  for i := 0 to high(SRL_Randoms) do
+    if (SRL_Randoms[i].name = name) then
+    begin
+      result := i;
+      break;
+    end;
+end;
+
+{$IFNDEF Lape}
+procedure RT_OnClick(sender: TObject);
+begin
+  case sender of
+    RT_Buttons[RT_BUTTON_SELF]:
+      begin
+        RT_SelfSolve := true;
+        showMessage('Hit OK, then press F'+toStr(RT_FKeyFinish)+' when you have solved the random.');
+        RT_Form.ModalResult := mrOk;
+      end;
+
+    RT_Buttons[RT_BUTTON_SRL]:
+      RT_Form.ModalResult := mrOk;
+  end;
+end;
+
+procedure RT_OnTimer(sender: TObject);
+begin
+  case sender of
+    RT_Timer_UntilClose:
+      RT_Form.ModalResult := mrOk;
+
+    RT_Timer_CountDown:
+      begin
+        inc(RT_CountMS);
+        RT_Labels[RT_LABEL_TIMEOUT].caption :=
+          'Timeout in: ' + msToTime(RT_WaitTimeOut - (RT_CountMS * 1000), 1);
+      end;
+  end;
+end;
+
+procedure RT_OnClose(sender: TObject; var action: TCloseAction);
+begin
+  case sender of
+    RT_Form:
+      RT_UseRandomTool := (not RT_UseBox.checked);
+  end;
+end;
+{$ENDIF}
+
+procedure RT_Init();
+var
+  i, randIndex: integer;
+  tmpArr: TStringArray;
+begin
+  {$IFNDEF Lape}
+  RT_Form := TForm.create(nil);
+  with RT_Form do
+  begin
+    caption := 'SRL Random Tool';
+    setBounds(0, 0, 200, 210);
+    position := poScreenCenter;
+    formStyle := fsStayOnTop;
+    borderStyle := bsSingle;
+    borderIcons := [biSystemMenu];
+    onClose := @RT_OnClose;
+  end;
+
+  RT_Labels[RT_LABEL_TITLE] := TLabel.create(RT_Form);
+  with RT_Labels[RT_LABEL_TITLE] do
+  begin
+    parent := RT_Form;
+    top := 5;
+    width := 140;
+    height := 15;
+    left := (parent.width / 2) - (width / 2);
+    font.size := 15;
+    font.style := [fsBold];
+    caption := 'Random Found!';
+  end;
+
+  tmpArr := ['Random: ' + players[currentPlayer].rand,
+             'Player: ' + players[currentPlayer].name,
+             'Timeout in: ' + msToTime(RT_WaitTimeOut, 1)];
+
+  for i := 1 to 3 do
+  begin
+    RT_Labels[i] := TLabel.create(RT_Form);
+    with RT_Labels[i] do
+    begin
+      parent := RT_Form;
+      top := 30 + (i * 17);
+      width := 100;
+      height := 13;
+      left := 20;
+      caption := tmpArr[i - 1];
+    end;
+  end;
+
+  tmpArr := ['Solve it yourself', 'Let SRL solve it'];
+
+  for i := 0 to high(RT_Buttons) do
+  begin
+    RT_Buttons[i] := TButton.Create(RT_Form);
+    with RT_Buttons[i] do
+    begin
+      parent := RT_Form;
+      width := 130;
+      height := 28;
+      left := (parent.width / 2) - (width / 2);
+      top := 110 + (i * 30);
+      caption := tmpArr[i];
+      font.height := -11;
+      onClick := @RT_OnClick;
+    end;
+  end;
+
+  // if the solver is disabled, disable the "Solve SRL" button
+  randIndex := RT_GetRandomByName(players[currentPlayer].rand);
+  if (randIndex <> -1) then
+    RT_Buttons[RT_BUTTON_SRL].enabled := (not SRL_Randoms[randIndex].disabled);
+
+  RT_Timer_UntilClose := TTimer.create(RT_Form);
+  with RT_Timer_UntilClose do
+  begin
+    interval := RT_WaitTimeOut;
+    enabled := true;
+    onTimer := @RT_OnTimer;
+  end;
+
+  RT_Timer_Countdown := TTimer.create(RT_Form);
+  with RT_Timer_Countdown do
+  begin
+    interval := 1000;
+    enabled := true;
+    onTimer := @RT_OnTimer;
+  end;
+
+  RT_UseBox := TCheckBox.create(RT_Form);
+  with RT_UseBox do
+  begin
+    parent := RT_Form;
+    left := 8;
+    width := 200;
+    height := 13;
+    top := parent.height - height - 10;
+    caption := ' Stop using SRL''s RandomTool?';
+  end;
+
+  RT_Form.showModal;
+  {$ENDIF}
+end;
+
+procedure RT_Reset();
+begin
+  RT_CountMS := 0;
+  RT_SelfSolve := false;
+end;
+
+procedure RT_SafeCall(proc: string);
+var
+  v: TVariantArray;
+begin
+  setLength(v, 0);
+  threadSafeCall(proc, v);
+end;
+
+procedure RT_Free();
+begin
+  {$IFNDEF Lape}
+  RT_Timer_Countdown.enabled := false;
+  RT_Timer_UntilClose.enabled := false;
+  RT_Form.free();
+  {$ENDIF}
+end;
+
+function RT_Execute(): boolean;
+{$IFDEF Lape}
+var
+  t: Integer;
+{$ENDIF}
+begin
+  playSound(RT_SoundPath);
+
+  {$IFDEF Lape}
+  WriteLn('SRL Random Tool: ', Players[CurrentPlayer].Rand);
+  WriteLn('Press F', RT_FKeyFinish, ' to solve by hand (timeout in ', msToTime(RT_WaitTimeOut, 1), ')');
+
+  t := GetTickCount() + RT_WaitTimeOut;
+  while (GetTickCount() < t) do
+    if (not isKeyDown(VK_F1 + RT_FKeyFinish - 1)) then
+      Wait(1000)
+    else
+    begin
+      RT_SelfSolve := True;
+      Break;
+    end;
+
+  if RT_SelfSolve then
+    WriteLn('Start solving! Press F', RT_FKeyFinish, ' when ready.')
+  else
+    WriteLn('No intervention, let SRL handle the random..');
+  {$ELSE}
+  try
+    RT_SafeCall('RT_Init');
+  except
+    writeln(exceptionToString(exceptionType, exceptionParam));
+  finally
+    RT_SafeCall('RT_Free');
+  end;
+  {$ENDIF}
+
+  // return true if user is solving by hand (will exit _FindAllRandoms)
+  if (RT_SelfSolve) then
+  begin
+    result := true;
+
+    while (not isKeyDown(VK_F1 + RT_FKeyFinish - 1)) do
+      wait(1);
+  end;
+
+  RT_Reset();
+end;
+
+procedure SetupRandomTool(timeOutWait, FKeyFinish: integer; soundPath: string);
+begin
+  if (not inRange(FKeyFinish, 1, 12)) then
+  begin
+    writeln('SetupRandomTool: Invalid FKeyFinish, using F1');
+    RT_FKeyFinish := 1;
+  end else
+    RT_FKeyFinish := FKeyFinish;
+
+  RT_WaitTimeOut := timeOutWait;
+  RT_SoundPath  := soundPath;
+  RT_UseRandomTool := true;
+end;
+

@@ -1,0 +1,319 @@
+//----------------------------------------------------------------------------//
+//--                  SRL Resource Library                                  --//
+//--                   » Remote Control Routines Beta                       --//
+//----------------------------------------------------------------------------//
+// * procedure RC_SetStandards;                                               // * by N1ke!
+// * function RCReadCommand: String;                                          // * by WT-Fakawi
+// * function RC_MasterCalls(var RC_S: String): Boolean;                      // * by N1ke!
+// * function RC_PMFound: Boolean;                                            // * by N1ke!
+// * function RC_Busy: Boolean;                                               // * by N1ke!
+// * function RC_ReturnStatus: string;                                        // * by N1ke!
+// * procedure RC_FixFL;                                                      // * by N1ke!
+// * function RC_MasterOnline(Var MasterCords: TPoint; Master: String): Boolean; // * by N1ke!
+// * function RC_TakeAction(AN: Integer; RC_Master: String): Boolean;         // * by WT-Fakawi
+// * function RC: Boolean                                                     // * by WT-Fakawi Rewritten by N1ke!
+// * procedure SetupRC(Masters: TStringArray);                                // * by N1ke!
+
+Type
+  RC_Action = Record
+    Triggers: TStringArray;
+    Action: Integer;
+  end;
+
+var
+  RC_Actions: Array [0..4] of RC_Action;
+  RC_Masters: TStringArray;
+  RC_TSL : Integer;
+  RC_InUse: Boolean;
+  RC_StartLocs: TStringArray;
+
+{*******************************************************************************
+Procedure RC_SetStandards;
+by: N1ke!
+Description: Sets your account settings so that you can use the
+features in RC.Scar.
+*******************************************************************************}
+procedure RC_SetStandards;
+begin
+  SetChat('hide', 1);
+  SetChat('friends', 2);
+
+  if not GameTab(tab_Options) then
+    Exit;
+
+  Wait(175+Random(120));
+  if (GetColor(678, 341) = 987203) then
+    Mousebox(684, 344, 713, 372, mouse_left);
+end;
+
+{*******************************************************************************
+function RCReadCommand: String;
+by: WT-Fakawi Small fix by N1ke!
+Description: Returns string of red typed message (color 128)
+*******************************************************************************}
+function RC_ReadCommand: string;
+var
+  LC:TPoint;
+begin
+  LC := TextCoords(8);
+  Result := LowerCase(Trim(GetTextAtEx(LC.x - 2, LC.y - 2, 45, SmallChars, False, False, 0,
+    2, 128, 45, False, tr_NormalChars)));
+end;
+
+{*******************************************************************************
+function RC_MasterCalls(var RC_S: string): Boolean;
+by: N1ke!
+Description: Checks if it's a master typing to you and if so it will
+get the masters name.
+*******************************************************************************}
+function RC_MasterCalls(var RC_S: string): Boolean;
+var
+  S: String;
+  I, H: Integer;
+begin
+  S := LowerCase(GetChatBoxText(8, clBlack));
+  H := High(RC_Masters);
+  for I:= 0 to H do
+   If Pos(RC_Masters[i], S) > 0 then
+   begin
+     Result := True;
+     Delete(S, 1, 5);
+     Delete(S, Length(S), Length(S));
+     RC_S := S;
+     Exit;
+   end;
+end;
+
+{*******************************************************************************
+function RC_PMFound: Boolean;
+by: WT-Fakawi
+Description: Returns True if Color 128 (red) was found in ChatWindow.
+*******************************************************************************}
+function RC_PMFound: Boolean;
+var
+  dumX, dumY: Integer;
+begin
+  Result := FindColor(dumX, dumY, 128, MCX1, MCY1, MCX1 + 30, MCY2);
+end;
+
+{*******************************************************************************
+function RC_Busy: Boolean;
+by: N1ke!
+Description: Checks if you've done a trigger in the last 5 mins.
+*******************************************************************************}
+function RC_Busy: Boolean;
+begin
+  Result := (GetSystemTime - RC_TSL < 60000*5);
+end;
+
+{*******************************************************************************
+function RC_ReturnStatus: string;
+by: N1ke!
+Description: Returns how many players are active.
+If every player is active it results "Everything is cool."
+*******************************************************************************}
+function RC_ReturnStatus: string;
+begin
+  If PlayersActive < HowManyPlayers then
+  begin
+    Result := IntToStr(PlayersActive) + ' out of ' + IntToStr(HowManyPlayers);
+    Exit;
+  end;
+  Result := 'Everything is cool.';
+end;
+
+{*******************************************************************************
+procedure RC_FixFL;
+by: N1ke!
+Description: Scrolls to the top of the Friend list.
+*******************************************************************************}
+procedure RC_FixFL;
+begin
+  If (GetColor(729, 248) = 2106924) then
+    Mouse(729, 248, 5, 2, mouse_left);
+end;
+
+{*******************************************************************************
+function RC_MasterOnline(Var MasterCords: TPoint; Master: string): Boolean;
+by: N1ke!
+Description: Checks if the master given is online, and results
+his cords on the Friend list.
+*******************************************************************************}
+function RC_MasterOnline(Var MasterCords: TPoint; Master: string): Boolean;
+var
+  I: Integer;
+  S: string;
+begin
+  If not GameTab(tab_Friends) then
+    Exit;
+  Wait(175+Random(140));
+  RC_FixFL;
+  for I:=0 to 12 do
+   If not (GetColor(675, 233+(15*I)) = 255) then
+   begin
+     S := LowerCase(Trim(GetTextAtEx(558, 231+(15*I), 45, FriendChars, True, False, 0, 2, 16777215, 20, False, tr_AllChars)));
+     Writeln(S);
+     If S = Lowercase(Master) then
+     begin
+       MasterCords := Point(576, 236+(15*I));
+       Result := True;
+       Exit;
+     end;
+   end;
+end;
+
+{*******************************************************************************
+function RC_TakeAction(AN: Integer; RC_Master: String): Boolean;
+by: N1ke!
+Description: Performs the action given in AN and sometimes responds
+them using the given master.
+*******************************************************************************}
+function RC_TakeAction(AN: Integer; RC_Master: string): Boolean;
+var
+  S: String;
+  MasterCords: TPoint;
+  I: Integer;
+begin
+  Result := False;
+  Case AN Of
+    1:
+    begin
+      Writeln('[RC.Scar] - Checking player status..');
+      S := RC_ReturnStatus;
+      Writeln('[RC.Scar] - ' + S);
+      If Not GameTab(tab_Friends)then
+        Exit;
+      Wait(175+Random(125));
+      If Not RC_MasterOnline(MasterCords, Lowercase(RC_Master))then
+      begin
+        srl_Warn('RC_TakeAction', 'Problems finding master', warn_AllVersions);
+        Exit;
+      end;
+      Mouse(MasterCords.X, MasterCords.Y, 25, 3, mouse_left);
+      Wait(255+Random(175));
+      TypeSend(S);
+      Result := True;
+    end;
+
+    2:
+    begin
+      Writeln('[RC.Scar] - Reseting players..');
+      For I:=0 to High(RC_StartLocs)do
+       If Not I = CurrentPlayer then
+       begin
+         Players[i].Active := True;
+         Players[i].Loc := RC_StartLocs[i];
+       end;
+      AddToSRLLog('********** RC.SCAR RESET ');
+      Result := True;
+    end;
+
+    3:
+    begin
+      Writeln('[RC.Scar] - Stopping script..');
+      If LoggedIn then
+        Logout;
+      TerminateScript;
+    end;
+
+    4:
+    begin
+      Writeln('[RC.Scar] - Logging out..');
+      Logout;
+      Result := True;
+    end;
+
+    5:
+    begin
+      if SRL_HasProc(srl_OnCustomRC) then
+         SRL_Procs[srl_OnCustomRC]();
+      Result := True;
+    end;
+
+    else
+    begin
+      srl_Warn('RC_TakeAction', 'Unknown action trigger, [' + IntToStr(AN) + ']', warn_AllVersions);
+      Exit;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function RC: Boolean;
+by: WT-Fakawi rewritten by N1ke!
+Description: High Level Remote Control Command. Handles Remote Control.
+Works as follows:
+Checks for existence of red color in chat window.
+If red color is found, it checks if it's from any of the given masters.
+If found it waits peforms the given action.
+Then RC sleeps five minutes to get rid of the red text.
+*******************************************************************************}
+function RC: Boolean;
+var
+  S, Master: string;
+  I, II: Integer;
+begin
+  Result := False;
+  if not RC_InUse then
+    Exit;
+  if (RC_Busy) or (not RC_PMFound) then
+    Exit;
+  if not RC_MasterCalls(Master) then
+    Exit;
+  S := RC_ReadCommand;
+  if (S = '') then
+    Exit;
+  Writeln('Got a PM from master(' + Master + '), checking for triggers...');
+
+  for I:=0 to High(RC_Actions) do
+   for II:=0 to High(RC_Actions[i].Triggers) do
+    If Pos(RC_Actions[i].Triggers[II], S) > 0 then
+    begin
+      RC_TakeAction(RC_Actions[i].Action, Master);
+      RC_TSL := GetSystemTime;
+      Exit;
+    end;
+end;
+
+{*******************************************************************************
+procedure SetupRC(Masters: TStringArray);
+by: N1ke!
+Description: Sets up everything needed to use RC.scar.
+Needs to be executed AFTER DeclarePlayers.
+*******************************************************************************}
+procedure SetupRC(Masters: TStringArray);
+var
+  I: Integer;
+begin
+  If GetArrayLength(Masters) = 0 then
+  begin
+    srl_Warn('SetupRC', 'No masters given - RC will not be used.', warn_AllVersions);
+    Exit;
+  end;
+  Writeln('Setting up RC..');
+
+  RC_Masters := Masters;
+  RC_InUse := True;
+
+  SetArrayLength(RC_StartLocs, HowManyPlayers);
+  For I:=0 to High(RC_StartLocs)do
+    RC_StartLocs[i] := Players[CurrentPlayer].Loc;
+
+  RC_Actions[0].Triggers := ['status', 'check', 'hows it going'];
+  RC_Actions[0].Action := 1;
+
+  RC_Actions[1].Triggers := ['reset', 'back from square one', 'rewind'];
+  RC_Actions[1].Action := 2;
+
+  RC_Actions[2].Triggers := ['stop', 'enough', 'come outside'];
+  RC_Actions[2].Action := 3;
+
+  RC_Actions[3].Triggers := ['logout', 'log'];
+  RC_Actions[3].Action := 4;
+
+  RC_Actions[4].Triggers := ['that thing', 'hey', 'remember'];
+  RC_Actions[4].Action := 5;
+
+  If LoggedIn Then
+    RC_SetStandards;
+end;

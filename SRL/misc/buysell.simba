@@ -1,0 +1,338 @@
+//-----------------------------------------------------------------//
+//--               SRL Resource Library                          --//
+//--                Buying and Selling routines                  --//
+//-----------------------------------------------------------------//
+// * function ShopItemCoords(I: Integer): TPoint;                  // * by N1ke!
+// * function ExistsShopItem(i: Integer): Boolean;                 // * by N1ke!
+// * function BuyCoords(x, y, Amount: Integer): Boolean;           // * by RSN re-done by N1ke!
+// * function BuyAmount(i, Amount: Integer): Boolean;              // * by RSN modified by N1ke!
+// * function BuyColor(UpText: String; Color, Tol, Amount: Integer): Boolean; // * by RSN Modified by N1ke!
+// * function SellCoords(x, y, Amount: Integer): boolean;          // * by RSN redone by N1ke!
+// * function Sell(i, Amount: Integer): Boolean;                   // * RSN small edit by N1ke!
+// * function  FindItems(color, tol: Integer; text: string; num: Integer): TPointArray; // * by RSN
+// * procedure SellItems(Color, Tol, Num, Amount: Integer; Text: string); // * by RSN
+
+{
+  Re-make of the old 'buysell.simba' because of the outdated code.
+    This include is essentially an edit-over the previous made functions.
+
+    -Lj
+}
+
+function help_nothing: boolean;
+begin
+  result := false;
+end;
+
+function Shop_Screen: Boolean;
+begin
+  Result := FindTextTPA(12054007, 10, MSX1, MSY1, MSX2, MSY2, 'splay', 'UpChars', Nothing);
+end;
+
+function Close_Shop: boolean; // Not particually needed.. simply apart of another script I use
+var                           // could be helpful?
+  x, y, Shops_X: Integer;
+begin
+  result := false;
+  Shops_X := BitmapFromString(5, 5, 'meJzT2fiXAQZ0wWwdMKmLIQ4ByLI6qOIAcvoQrw==');
+  if findbitmaptolerancein(Shops_X, x, y, msx1, msy1, msx2, msy2, 25) then
+  begin
+    mouse(x, y, 3, 3, mouse_left);
+    result := true;
+  end;
+  FreeBitmap(Shops_X);
+end;
+
+{*******************************************************************************
+function ShopItemCoords(I: Integer): TPoint;
+By: N1ke!
+Description: Results the coords for shop item. (Left to right).
+*******************************************************************************}
+function ShopItemCoords(I: Integer): TPoint;
+var
+  row, col: Integer;
+begin
+  row := i div 10;
+  col := i - (row * 9) - 1;
+  if (col < 0) then
+  begin
+    col := 9;
+    row := row - 1;
+  end;
+  Result := Point(42+(col * 52), 92+(row * 52));
+end;
+
+{*******************************************************************************
+function ExistsShopItem(i: Integer): Boolean;
+By: N1ke!
+Description: Checks if the shop item exists. (Left to right).
+*******************************************************************************}
+function ExistsShopItem(i: Integer): Boolean;
+var
+  Cords: TPoint;
+  X, Y: Integer;
+begin
+  Result := False;
+  if not Shop_Screen then
+    Exit;
+  Cords := ShopItemCoords(I);
+  Result := FindColor(X, Y, 131072, Cords.X-20, Cords.Y-20, Cords.X+20, Cords.Y+20);
+end;
+
+{*******************************************************************************
+function BuyCoords(x, y, Amount: Integer): Boolean;
+By: RSN re-done by N1ke!
+Description: Buys the specified amout of the Item at x, y
+*******************************************************************************}
+function BuyCoords(x, y, Amount: Integer): Boolean;
+var
+  AmountLeft, xz, yz, iTime: Integer;
+  S: String;
+begin
+  Result := False;
+  if not Shop_Screen then Exit;
+
+  if Amount < 1 then
+  begin
+    srl_Warn('BuyCoords', 'Invalid amount parameter', warn_Warning);
+    Exit;
+  end;
+  AmountLeft := Amount;
+
+  while AmountLeft > 0 do
+  begin
+    MMouse(x, y, 5, 5);
+    {if not WaitUpText('more', 1000) then
+      Exit;}
+    GetMousePos(xz, yz);
+    Mouse(xz, yz, 0, 0, mouse_right);
+
+    case AmountLeft of
+      1: S := '1';
+      5: S := '5';
+      10: S := '10';
+      50: S := '50';
+      500: S := '500';
+      else S := 'Buy All'; // use 'Buy All' b/c 'Buy x' doesn't exist?
+    end;
+    if not WaitOption(S, 400)then
+      Exit;
+
+    if (S = 'Buy X') then
+    begin
+      iTime := GetSystemTime + 7000;
+      while not (CountColor(0, 211, 392, 307, 410) > 200) do
+        Wait(150+Random(100));
+
+      if AmountLeft > 49999 then
+        S := '50000' else S := IntToStr(AmountLeft);
+
+      TypeSend(S);
+    end;
+
+    AmountLeft := AmountLeft - StrToInt(S);
+  end;
+  Result := True;
+end;
+
+{*******************************************************************************
+function BuyAmount(i, Amount: Integer): Boolean;
+By: RSN modified by N1ke!
+Description: Buys the specified amount of the Item at assigned row and column
+*******************************************************************************}
+function BuyAmount(i, Amount: Integer): Boolean;
+var
+  Cords: TPoint;
+begin
+  Result := False;
+  if not ExistsShopItem(i) then
+    Exit;
+  Cords := ShopItemCoords(I);
+  Result := BuyCoords(Cords.X, Cords.Y, Amount);
+end;
+
+{*******************************************************************************
+function BuyColor(UpText: string; Color, Amount: Integer): Boolean;
+By: RSN Modified by N1ke!
+Description: Buys all items with that color
+*******************************************************************************}
+function BuyColor(UpText: string; Color, Tol, Amount: Integer): Boolean;
+var
+  x, y: Integer;
+begin
+  Result := False;
+  if not(FindItem(x, y, 'color', Color, 19, 27, 499, 325, [Tol, 4]))then
+    Exit;
+
+  Result := BuyCoords(X, Y, Amount);
+end;
+
+{*******************************************************************************
+function SellCoords(x, y, Amount: Integer): boolean;
+By: RSN redone by N1ke!
+Description: Sells Item at x, y
+*******************************************************************************}
+function SellCoords(x, y, Amount: Integer): boolean;
+var
+  AmountLeft, xz, yz: Integer;
+  S: String;
+begin
+  Result := False;
+  if not Shop_Screen then Exit;
+
+  if Amount < 1 then
+  begin
+    srl_Warn('SellCoords', 'Invalid amount parameter', warn_Warning);
+    Exit;
+  end;
+  AmountLeft := Amount;
+
+  while AmountLeft > 0 do
+  begin
+    MMouse(x, y, 5, 5);
+   { if not WaitUpText('alue', 300)then
+      Exit; } // No longer has 'value' in the string. + Any txt is hard to read with current shop interface colors..
+    GetMousePos(xz, yz);
+    Mouse(xz, yz, 0, 0, False);
+
+    case AmountLeft of
+      1..4: S := '1';
+      5..9: S := '5';
+      10..49: S := '10';
+      else
+      if (Random(20) = 0)then
+        S := '10' else
+        S := '50';
+    end;
+    if not WaitOption(S, 400)then
+      Exit;
+
+    AmountLeft := AmountLeft - StrToInt(S);
+  end;
+  Result := True;
+end;
+
+{*******************************************************************************
+function Sell(i, Amount: Integer): Boolean;
+By: RSN small edit by N1ke!
+Description: Sells Items at specified Inv Slot
+*******************************************************************************}
+function Sell(i, Amount: Integer): Boolean;
+var
+  ItemPoint: TPoint;
+begin
+  Result := False;
+  if not (ExistsItem(i)) then
+    Exit;
+  ItemPoint := ItemCoords(i);
+  Result := SellCoords(ItemPoint.x, ItemPoint.y, Amount);
+end;
+
+{*******************************************************************************
+function FindItemsArray(color, tol: Integer; Text: string; num: Integer): TPointArray;
+By: RSN
+Description: Returns Array of all Coords of that Item
+*******************************************************************************}
+function FindItemsArray(color, tol: Integer; Text: string; num: Integer)
+  : TPointArray;
+var
+  xi, yi, tx, ty, Used: Integer;
+  x, y: Integer;
+begin
+  GameTab(tab_Inv);
+  SetArrayLength(Result, 0);
+  if (num = 0) then
+    num := -1;
+  ty := 190;
+  tx := 548;
+  repeat
+    yi := yi + 1;
+    ty := ty + 37;
+    xi := 0;
+    repeat
+      xi := xi + 1;
+      tx := tx + 41;
+      if (FindColorTolerance(x, y, color, tx - 13, ty - 13, tx + 13, ty + 13,
+        tol) and (Text <> '')) then
+      begin
+        MMouse(tx, ty, 2, 2)
+          Wait(250);
+        if (IsUpText(Text)) then
+        begin
+          Used := Used + 1;
+          SetArrayLength(Result, Used);
+          GetMousePos(Result[Used - 1].x, Result[Used - 1].y);
+          Wait(150);
+        end;
+      end
+      else
+        if (FindColorTolerance(x, y, color, tx - 13, ty - 13, tx + 13, ty + 13,
+          tol)) then
+        begin
+          Used := Used + 1;
+          SetArrayLength(Result, Used);
+          Result[Used - 1].x := tx;
+          Result[Used - 1].y := ty;
+        end;
+    until (xi = 4) or (Used = num);
+    tx := 544;
+  until (yi = 7) or (Used = num);
+end;
+
+{*******************************************************************************
+function FindItems(color, tol: Integer; text: string; num: Integer): TPointArray;
+By: Mutant Squirrle
+Description: Finds Items with color and up text.
+*******************************************************************************}
+function FindItems(color, tol: Integer; text: string; num: Integer):
+  TPointArray;
+var
+  xi, yi, tx, ty, Used: Integer;
+  x, y: Integer;
+begin
+  GameTab(tab_Inv);
+  SetArrayLength(Result, 0);
+  if (num = 0) then
+    num := -1;
+  ty := 190;
+  tx := 548;
+  repeat
+    yi := yi + 1;
+    ty := ty + 37;
+    xi := 0;
+    repeat
+      xi := xi + 1;
+      tx := tx + 41;
+      if (FindColorTolerance(x, y, color, tx - 13, ty - 13, tx + 13, ty + 13,
+        tol)) then
+      begin
+        MMouse(tx, ty, 2, 2);
+        Wait(250);
+        if (IsUpText(text)) then
+        begin
+          Used := Used + 1;
+          SetArrayLength(Result, Used);
+          GetMousePos(Result[Used - 1].x, Result[Used - 1].y)
+            Wait(150);
+        end;
+      end;
+    until ((xi = 4) or (Used = num));
+    tx := 544;
+  until ((yi = 7) or (Used = num));
+end;
+
+{*******************************************************************************
+procedure SellItems(Color, Tol, Num, Amount: Integer; Text: string);
+By: RSN
+Description: Sells items with that color, UpText and Tolerance by
+Amount Specified
+*******************************************************************************}
+procedure SellItems(Color, tol, Num, Amount: Integer; Text: string);
+var
+  TP: TPointArray;
+  i: Integer;
+begin
+  TP := FindItems(Color, tol, Text, Num);
+  for i := 0 to GetArrayLength(TP) - 1 do
+    SellCoords(TP[i].x, TP[i].y, Amount);
+end;

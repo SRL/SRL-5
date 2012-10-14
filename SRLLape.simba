@@ -1,0 +1,87 @@
+function iAbs(i: Integer): Integer;
+begin
+  if (i < 0) then
+    Result := -i
+  else
+    Result := i;
+end;
+
+function ReplaceWrap(Text, FindStr, ReplaceStr: string; Flags: TReplaceFlags): string;
+begin
+  Result := StringReplace(Text, FindStr, ReplaceStr, Flags);
+end;
+
+function GetTextAtExWrap(const xs, ys, xe, ye, minvspacing, maxvspacing, hspacing, color, tol: Integer; const font: string): string;
+begin
+  Result := GetTextAtEx(xs, ys, xe, ye, minvspacing, maxvspacing, hspacing, color, tol, font);
+end;
+
+function InitializeHTTPClientWrap(HandleCookies: Boolean): Integer;
+begin
+  Result := InitializeHTTPClient(HandleCookies);
+end;
+
+function ThreadSafeCall(s: string; params: TVariantArray): Variant;
+begin
+  WriteLn('ThreadSafeCall "', s, '" (not supported in Lape)');
+  Result := NULL;
+end;
+
+function CallProc(s: string; params: TVariantArray): Variant;
+begin
+  {$IFDEF Lape_ExposeGlobals}
+  Result := VariantInvoke(s, Params);
+  {$ELSE}
+  WriteLn('CallProc "', s, '" (not supported in Lape)');
+  Result := NULL;
+  {$ENDIF}
+end;
+
+{
+function GetMufasaBitmap(bmp: Integer): Integer;
+begin
+  Result := bmp;
+end;
+}
+
+function ExceptionType: TIFException;
+begin
+  WriteLn('ExceptionType is not supported in Lape');
+  Result := erCustomError;
+end;
+
+function ExceptionParam: string;
+begin
+  WriteLn('ExceptionParam is not supported in Lape');
+  Result := '';
+end;
+
+const
+  GetTickCount_StartTime := GetTickCount;
+function GetTickCount: UInt32; override;
+begin
+  Result := inherited() - GetTickCount_StartTime;
+end;
+
+function GetSystemTime: LongWord; override;
+begin
+  Result := GetTickCount;
+end;
+
+procedure TerminateScript; override;
+begin
+  Halt();
+end;
+
+const
+  clWhite = 16777215;
+  clBlack = 0;
+
+  clRed   = 255;
+  clGreen = 32768;
+  clBlue  = 16711680;
+
+  clPurple = 8388736;
+  clYellow = 65535;
+
+  MaxInt = High(Integer);

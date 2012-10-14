@@ -1,0 +1,293 @@
+(*
+Certers
+=======
+
+Stores all the routines to solve the Certers random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+This solver uses multiple DTMs to identify each item.  If an item can't be
+identified right away, it will rotate the item and loop through the items again.
+
+*)
+
+const
+  CT_ITEM_COUNT = 9;
+    CT_ITEM_BOWL      = 0;
+    CT_ITEM_SHEARS    = 1;
+    CT_ITEM_RING      = 2;
+    CT_ITEM_SWORD     = 3;
+    CT_ITEM_BATTLEAXE = 4;
+    CT_ITEM_SHIELD    = 5;
+    CT_ITEM_SPADE     = 6;
+    CT_ITEM_HELMET    = 7;
+    CT_ITEM_FISH      = 8;
+
+type
+  TCTItem = record
+    name, text: string; // name and text to click
+    DTMs: TIntegerArray;
+  end;
+  TCTItemArray = array of TCTItem;
+
+(**
+ * Author: DemiseScythe
+ * Description: Detects if a player is in the Certers random.
+ *)
+function CT_Detect(): boolean;
+var
+  s: string;
+begin
+  if (tabExists(TAB_MAGIC)) then
+    exit;
+
+  s := getNPCChatname();
+  result := (s = 'Dll8g' {Miles/Niles}) or (s = 'Gll8g' {Giles});
+end;
+
+(**
+ * Author: Coh3n, DTMs by DemiseScythe
+ * Updated by: [J]ustin - Bowl DTM - 9/06/2012
+ * Description: Returns a TCTItemArray of all the Certer items.
+ *)
+function CT_GetItems(): TCTItemArray;
+begin
+  //setLength(result, CT_ITEM_COUNT);
+  setLength(result, 9);
+
+  with result[CT_ITEM_BOWL] do
+  begin
+    name := 'Bowl';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mAAEAAHic42FgYGBiZGBgBuKfDBCaD4i/ANmvgFgGyBYG4k9AtiBU3TUg+ywQXwXiuwwQ/kkgfgDEj4H4FBC/A+IPQPwRiAsy5BhyU2UZijLlGIqz5MD88lx5hvx0WQY7Z3GGhBhphsRYGQYHV3EG/wBJBn6gHlIwI8gPJGBkAADRtRm0'),
+      DTMFromString('mlwAAAHicY2dgYJBggABmIJYCYgMg1gFicSAWAmIuIFYBYn0gloPyQaA0T5GhpkSJIStNnsHLX5rByVOSITZWliEvS4GBHyiPCzMCMRMODAUAmFgH6Q=='),
+      DTMFromString('mrAAAAHic42BgYLBkZmAIB+JkIM4AYg8gjgTiCCC2AuIHjAwMh4D4FBC/BOIvQPwNiO8A8QsgDrBUY2iL12WYVOrL0JnrxTC13J+hO1mPoTpch8HTWIWBC2gHPsxIAMMAAPvdEnw='),
+      DTMFromString('mwQAAAHic42RgYPBmZmAwAWIZIFYGYkMgdgNiPyD2AGJtID7IyMBwCIjPA/F1IH4CxKeAeDcQXwbiG0AcbqPM0BqrydAQqcGQ7q7KkOGhyqArK8OQ663GEGKlxBBmrcTABbSPEGYkAsMBADNLENU=')
+    ];
+  end;
+
+  with result[CT_ITEM_SHEARS] do
+  begin
+    name := 'Shears';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mPwEAAHic42dgYOBgZGBgBWIRIBYAYm4g5gdiUSBmAGI2IP4JZDIB6d9A+gcQfwXil0D8Coi/QOkPUDZIzXcgfg7ED6D4JhBfBuJjQHwNiC8CcVqyK0NDVTBDYa4XQ1SkHUNmmhtYDERnpLgxuLgaMgT4WzC4uRsz+PkYMCTHWTKEBpkwZKfaMvAD9ZOLQd5iIhOjAQCPQCJj'),
+      DTMFromString('mVAEAAHicE2BgYPgPxD+A+DMQ/4LyPwDxayB+D8RfoeJvgfglEHMxMjAwAjEPELMD8WWg2HUgvgvED4D4BhA/har/CDXnORA/BOIXQLwfiE8B8VEgPgvECXGODGWFfgx5WZ4MwcFWDH5+5gy1Ja4M7bVeDKkJVgzhIaYMnh56DIVZDgz5mQ4M5UX+DI3VIQwZqW4MmWnuDPxAMyjBQC8wMFGA0QEAfj0reg==')
+    ];
+  end;
+
+  with result[CT_ITEM_RING] do
+  begin
+    name := 'Ring';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mVAEAAHicE2BgYPgDxD+A+DsQMzKCCAgbxgfJg8R+AikmIP0Xqp4Ryn4BxI+B+DWUfgPEnxkg6n8B8Tcg/gLEd4D4NhBfhOJLQHwaiBOirRjSk2wZinOdGDw99BnCQ80YqopdGSZ0xDLkZ3sz5Gc6gtWkJFgzeHsZMAQGWDF0N0cxmFvqMNja6zPwA82gBIO8zEQBRgcA6YwpHQ=='),
+      DTMFromString('mFQEAAHic42VgYGBjZGBgBmI+IGYFYk4g/g8U/wXFIDYnVF4QiHmB+A5Q7BkQPwXi11B8C4gvAfFJID4MxIeA+DgQnwPiG0BcX+rG0NcaxbBqbhZDeooVQ3NNKENuqh1Daa4jQ3WhM0NThTtDXYkrWCw/3Q7M5wfqIxUDncfARCJGAQD5FyAT'),
+      DTMFromString('mrAAAAHic42BgYDjEycBwFoiPA/EBIN4DxDuA+CCUbcnIwKAGxIpQWg+ITaB8VSDevDSWoTzPgKG3wZIhNU6DoSBDl2FSqw1DfpoOWJwLaAc+zEgAwwAA2mURbw=='),
+      DTMFromString('m6wAAAHic42ZgYDjBycBwGIjPAfF1ID7LiRAD4d1AfACI9wCxMSMDgwwQKwKxDhDbALEDEFsCsT0QawCxIVS+udGGob7agKEwX5MhK0eeYUKvM0Nbiy1DT6cDQ0GBJkNbozFDfp4mQ0ezCQMX0B3EYkYSMBIAAAyrGGs=')
+    ];
+  end;
+
+  with result[CT_ITEM_SWORD] do
+  begin
+    name := 'Sword';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mPwEAAHic42dgYPgNxD+h9Fcg/g/l/4CK/YDy/0H5IPk/QMzIyMBwA0g/AeLXQPwBiD8D8Scg/o6k5gKQPgnEB4F4JxBvAOJVQNxUGcxQWeTHUJbnw1BX7MKQn2bLUJHnwDCpI4ahuzGCoSTLnqG62I+htymCoaU6mGFqdyxDR30YWI4fqJ9czEQBRgMABzot8Q=='),
+      DTMFromString('mAAEAAHic42FgYPgFxb+xsEH0DyD+gyT3EUqzMjIw8AOxKBC/BPLvAfEVID4DxKeA+AgQ7wNiL3dDBl9PY4bkWAcwrir0YUhPdGLwcDVgyEx0ZqgvcmII8zdgiAi2ZPD31GHgB+ohBQOtZ2AiASMDADBgH6M=')
+    ];
+  end;
+
+  with result[CT_ITEM_BATTLEAXE] do
+  begin
+    name := 'BattleAxe';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mJgIAAHick2JgYOBnZGAQBGJRIBYGYglGiBgXEPMAMRsQcwIxMxAzAPEfBgj+BsRfgfgzlAbpEQJiEagZUkAsB2WDxF4A1TwE4jtAfA2IzwPxRyD+BMQ/gPgfA8SO70D6N1T8FRC/hqr7CcT/gZiFEUKzQd3zCyrGCXV3VYknQ2WxB0NxnhtDeZEHQ2GOK5iuLfMCy9VXeDNUl3oxlJcEMXQ0xzAUFwQwZGd6M+Tn+DJUl4cwVJWFMNRWhDJM7klkaKgJZ+hujWUoKw4CqyvM82dorIkAY36Qn+mAQd5kogPGDQCBfztn'),
+      DTMFromString('mJgIAAHicvdA/S4JRHMXxUwgRKQU2hCj4HkKTECIcSkJFUVSeEkX6I4kU5FKTb6ctSFBSVEiMlnBobeoFFC3aEH59uGurFz7cy7mH34XrkbS2JDmxYWxiBQ6swgW3yee24DO7B3548cesX0yNH3zjCxO8Yox3fOATz3hCFy100MQ9HvBo8p7pDdE3vQFe0Db3I7zhOBeyZVIB5TNBpRLbKp/s6qwUlpXd0eX5oazcnupXcTVu07qrJ+1z5fRApUJE1YuoapWoCta+3Z3n8VhIN7WY7bp6pHIxonXeWgS+VssL8P+aAXLdOcY=')
+    ];
+  end;
+
+  with result[CT_ITEM_SHIELD] do
+  begin
+    name := 'Shield';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mfgEAAHicE2JgYPgAxC+A+DsQ/wXiz0B8B4ivAvElIL4IxKeB+D5UDScjA4MEEAswQtiCjBA9N4D4GhBfAOKbQPwUiK8A8RkgPgDE94D4DdS+o0B8GyoGMv8UVP17IJ5Q5s4wsdyDYXqtF8OkCg+GvlI3MD2j1huMu4pcGRqzHBnKEmzAfJDa6hRbuJ7KZBuGllwnBn6gWdTAQO8xMFEBYwIAOLkzag=='),
+      DTMFromString('mVAEAAHicE2BgYBBjZGAQAmIZIFYGYh0gtgJieyBWAmIRIOYFYnYg5gDiP0A9n4D4GxB/BOKjQHwYiA8B8UEgPgLEx4H4FBCfhGKYmhNQ+cNQ8dNAPKXMn2FSiR/DgpZkhkWtQNyWAhYriXZk6Mn3YWjN9ASLgeS787wZegt8GMrjnBkKojwY0gKsGfiBZlCCgV5iYKIAowMAy0onqA==')
+    ];
+  end;
+
+  with result[CT_ITEM_SPADE] do
+  begin
+    name := 'Spade';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mJgIAAHick2JgYOAFYj4gFgFiMSifDYiZgZgDiAWhYjAMA6xQdSCaBYi5oFgYqkcSiKWAWBpqtgQQu0KxPRDbQtmOULYNEJsAsQ4Qq0LtAunjAWIhJDuZoPYwQt3HjGQvCHf2BzBUN9gyNLc7MmQXmzFU1NowVNXbMtQ22TG0dDgyZBaaguVBYiB6+pxIsrAI1H20xoxQP9Ma4wYAphgrGg=='),
+      DTMFromString('m5wEAAHictdBBSwJRFIbhb1wL7XKhEK2mzBBHSGnhPhhCGaLRURxERv2PLmtVooFBZCJZJLrITT/A13GINi298HAPl8t3DichaYU5pnjDM4Z4wBgTPGKET3zjB4YhxXGIFJI4wglOcWzs8mZR5iteoh7v+MAXFlhj+efPOOq3nWGAe/Rxh6dovkanKC8o6MbP/6q1L1RpWGFdsk3Zbja8t/zepZx6RuVqWhXvTLVWVtduWs0gJ79rhW9Xjqnb5rkOyN8X1qLYnvxzNkLsNe8='),
+      DTMFromString('m6wAAAHic42ZgYChjZmDIAuISIK4F4nwgrgPidiCeBsQTgXgWEC8C4meMDAyPgPg7EH8D4tdA/BeIuZkYGLSB2BiILYHYDIgjXa0YXE30wTjZzwFMR7lbMwTbGzHEeZgxRLmaMmQGWYNpLqA7iMWMJGAkAACJ+RWu'),
+      DTMFromString('m1gAAAHic42JgYPjFyMDwDYjZmBgYeID4D5D9BoglgGw9IJYCYnUgjgaKeQGxCxCHAnEWEMcDsRoQSwExHxTPrk1gmFefyNCYFgimYbgxxYOhM9uboSnVA8zmAtpNDGYkEiMAAP4jFNc=')
+    ];
+  end;
+
+  with result[CT_ITEM_HELMET] do
+  begin
+    name := 'Helmet';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('mkwEAAHicE2ZgYGBkZGBgA2J2IOYGYiZGhNg/oPwfBogYiP0DiD8CMQuQLwTE/4FsVqg+QSC+CuTfAOLLQHwTiG8B8T0oBsmdB+ILQHwaSc0zIL4CxMeB+BgQnwLic0BcVmTKUJQlz5CTKstQlqfAkJ8hxzBzoidDf4czQ2ayDENKvBRDeqIMw+QeV4ZpfW4MnU32DBUlZmD19aXKDKsWBDGsnB8IluMHmkctzAgKDyphLAAATHotqg=='),
+      DTMFromString('mqAEAAHicE2FgYGBnhGBuIGYEYgYg/g+kvgPxV6g8BxCLALEoEPMBMQ8QC0LFJKHif4BqWYD0AyD9GIjvAfE1IH4ExG+h9Ecg/gLE/4D4DhA/BOI3QPwLKv4KygfZ+xSIPwBxfoY5g5uDEIO1OT9Db5MHw6xef4baEnuG9loXhowkY4ZwfwkGf3dRhto8FYaNi2LA8lWFtgxTO30Y1s6LAuO5EwIZ+ls8GcrybBj4gWZSE4OCjImKGBsAAK6vMEA='),
+      DTMFromString('mAAEAAHic42FgYPgFxB+A+B0QMzIyMDAD8R8g+y8QvwViNiCfgxFCcwHxe6DYCyB+zABhPwXiR0D8E4i/Q815BsTfgPgTEFekuDNMq4tgaC8KYCiK0mFoTDNgmNEYxdBW6A/GG6alM6ybmsYwtzWaYWlvIgM/UA8pGOgkBiYSMDIAAA0EIiY=')
+    ];
+  end;
+
+  with result[CT_ITEM_FISH] do
+  begin
+    name := 'Fish';
+    text := lowercase(name);
+    DTMs := [
+      DTMFromString('m1gAAAHic42JgYGDiZGB4ysHAcAKIlwHxGiC+B8SPgPgrEP8HYl6gGj9GBgZXIDYBYltGCD8SiNOBOBaIw4E4BIjdQtQZ7P2UGZLyrBki0kwZ4nMsGcKT9Rg8I3QYsorNGNKLbcGYC2g3MZiRSIwAAFSFFBo='),
+      DTMFromString('mwQAAAHic42RgYFjPwcBwBYi/Q/FtIL4OxGug4g+AOJGRgcEYiNWB2AqIA4A4G4hzgTgCiH1A/Mokhqp6D4bKWneGju4Ahp5uF4bZc6IZpk2PYOjrdWPo7HRh4ALaRwgzEoHhAACqKhdS')
+    ];
+  end;
+
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Sets up to solve random.
+ *)
+procedure CT_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_HIGH);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Clicks the "Change spin" button 'clicks' times.
+ *)
+procedure CT_ChangeSpin(clicks: integer);
+var
+  i, x, y: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  mouse(364, 162, 5, 5, mouse_Move);
+  if (waitUptextMulti(['ange', 'nge', 'spin', 'pin'], 200)) then
+  begin
+    getMousePos(x, y);
+
+    for i := 1 to clicks do
+      mouse(x, y, 0, 0, mouse_Left);
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Identifies the item, waits for a mazimum of 30 seconds.
+ *)
+function CT_IdentifyItem(items: TCTItemArray): integer;
+var
+  i, j, t, t2, x, y: integer;
+  aFound: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  result := -1;
+  t := (getSystemTime + 60000);
+  addToSRLLog('CT_IdentifyItem: Identifying item...');
+  markTime(t2);
+
+  // loops through DTMs while item is rotating on screen
+  repeat
+    for i := 0 to high(items) do
+      for j := 0 to high(items[i].DTMs) do
+        // look in the box where the item is rotating
+        if (findDTMRotatedAlternating(items[i].DTMs[j], x, y, 145, 150, 370, 295, -Pi, Pi, Pi/30, aFound)) then
+        begin
+          addToSRLLog('CT_IdentifyItem: Found item ~ '+items[i].name);
+          result := i;
+          exit;
+        end;
+
+    // change the spin every 15000
+    if (timeFromMark(t2) >= 15000) then
+    begin
+      addToSRLLog('CT_IdentifyItem: Didn''t ID item, changing spin...');
+      CT_ChangeSpin(randomRange(5, 10));
+      markTime(t2);
+    end;
+
+  until(getSystemTime > t);
+
+  if (result = -1) then
+    addToSRLLog('CT_IdentifyItem: Didn''t identify item');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Clicks the correct item's text.
+ *)
+function CT_SelectItem(item: TCTItem): boolean;
+begin
+  if (clickText(item.text, charsNPC, 75, 40, 240, 180, mouse_Left)) then
+  begin
+    addToSRLLog('CT_SelectItem: Clicked item text');
+    result := true;
+  end else
+    addToSRLLog('CT_SelectItem: Didn''t click text; may have ID''d wrong item');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the random event, returns true when the portal is
+ * clicked.
+ *)
+function CT_Solve(): boolean;
+var
+  dtmPortal, i, t: integer;
+  items: TCTItemArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  CT_Setup();
+  dtmPortal := DTMFromString('mbQAAAHicY2VgYHjGyMDwCIjvAfEnIH4HxJuB4quAeBsQrwPiPUA8YWsSw8RtSQzTdqYytC2OZujeGM/ADxRHx4xYMBgAAJveEIE=');
+  items := CT_GetItems();
+  t := (getSystemTime + (3 * 60000)); // maximum 3 minutes
+
+  repeat
+    if (findNPCChatTextMulti(['ortal', 'atch'], nothing)) then
+      if (clickPortal(dtmPortal)) then
+      begin
+        result := waitTabExists(TAB_MAGIC, 8000);
+        break;
+      end;
+
+    if (not areTalking) then
+    begin
+      i := CT_IdentifyItem(items);
+
+      if (i <> -1) then
+        if (CT_SelectItem(items[i])) then
+          wait(2000 + random(500));
+
+    end else
+      clickContinue(true, true); // in case there are extra messages (GE) or we get one wrong
+
+  until(getSystemTime > t);
+
+  freeDTM(dtmPortal);
+  for i := 0 to high(items) do
+    freeDTMs(items[i].DTMs);
+
+  if (not result) then
+    addToSRLLog('CT_Solve: Certers solver timed out');
+end;
+

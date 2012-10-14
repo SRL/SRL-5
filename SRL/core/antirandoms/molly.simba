@@ -1,0 +1,860 @@
+(*
+Molly
+=====
+
+Stores all the routines to solve the Molly random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+Remaked on 25/06/2012 by J J
+Development blog (includes resources): http://villavu.com/forum/showthread.php?t=83175
+This should be working now :)
+
+*)
+
+var
+  HookBox, PreviousBox, MollyTime, MaxMollyTime, FalseMolly: Integer;
+  MollyHair: String;
+  CorrectMolly: Boolean;
+
+(**
+ * Author: Coh3n and/or [J]ustin?
+ * Description: Detects if a player is in the random.
+ *)
+function Molly_Detect(): boolean;
+begin
+  if (not tabExists(TAB_MAGIC)) then
+    if (areTalking()) then
+      if (countColorTolerance(clBlack, MMCX-30, MMCY-30, MMCX+30, MMCY+30, 20) = 3721) then
+        result := (getNPCChatName <> SRL_NPC_OLDMAN);
+end;
+
+{*******************************************************************************
+procedure TalkToMolly;
+by: J J
+Description: Talks to Molly at start
+*******************************************************************************}
+procedure TalkToMolly;
+var
+  FloorColors, MollyColors: TPointArray;
+  SearchBox: TBox;
+  MollySplit: T2DPointArray;
+  P: TPoint;
+
+begin
+  AddToSRLLog('Trying to click on Molly');
+  SearchBox := IntToBox(60, 215, 125, 265);
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.17, 0.54);
+  if FindColorsSpiralTolerance(260, 200, FloorColors, 4215386, SearchBox.X1, SearchBox.Y1, SearchBox.X2, SearchBox.Y2, 8) then
+  begin
+    MollyColors := TPAFromBox(SearchBox);
+    MollyColors := ClearTPAFromTPA(MollyColors, FloorColors);
+    SplitTPAExWrap(MollyColors, 1, 1, MollySplit);
+    SortATPASize(MollySplit, True);
+    if Length(MollySplit[0]) > 20 then
+    begin
+      P := MiddleTPA(MollySplit[0]);
+      MMouse(P.X, P.Y, RandomRange(-2, 2), RandomRange(-2, 2));
+      Wait(50 + Random(100));
+      ClickMouse2(1);
+      AddToSRLLog('Succesfully clicked on Molly');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure MollyTalk;
+by: J J
+Description: Handles the conversations with Molly
+*******************************************************************************}
+procedure MollyTalk;
+begin
+  if AreTalking then
+  begin
+    AddToSRLLog('We are talking, finishing conversation');
+    repeat
+      if not(ClickContinue(True, True)) then
+        TypeSendEx('1', False);
+      Wait(750 + Random(750));
+    until not(AreTalking);
+  end;
+end;
+
+{*******************************************************************************
+procedure GrabMollyHairColor;
+by: J J
+Description: Returns molly's hair color by using the hair color while in chat
+*******************************************************************************}
+procedure GrabMollyHairColor;
+var
+  HairColor, Tol, i: Integer;
+  HairColorExtended, Lowest: Extended;
+  HairColors: TIntegerArray;
+  Speed2Modifiers, HairDefinedColors: TExtendedArray;
+
+begin
+  HairColors := GetColors(TPAFromBox(IntToBox(48, 375, 67, 396)));
+  HairColor := GetBestColor(HairColors, 2, Tol, Speed2Modifiers);
+
+  // Dark brown, dark blond, light brown, red, lightblond \\
+  HairDefinedColors := [2178123, 3103606, 3954284, 2441835, 2843007];
+  HairColorExtended := HairColor;
+  Lowest := HairDefinedColors[0]+1;
+  for i:=0 to 4 do
+  begin
+    if Abs(HairColor-HairDefinedColors[i]) < Lowest then
+    begin
+      Lowest := Abs(HairColor-HairDefinedColors[i]);
+      case i of
+        0: MollyHair := 'DarkBrown';
+        1: MollyHair := 'DarkBlond';
+        2: MollyHair := 'LightBrown';
+        3: MollyHair := 'Red';
+        4: MollyHair := 'LightBlond';
+      end;
+    end;
+  end;
+  AddToSRLLog('Molly''s hair color: '+MollyHair+'');
+end;
+
+{*******************************************************************************
+procedure OpenMollyDoor(Where: String);
+by: J J
+Description: Opens the door in the Molly random event
+             Uses the brown colors of the door
+*******************************************************************************}
+procedure OpenMollyDoor(Where: String);
+var
+  N: Integer;
+  P: TPoint;
+  Door: TPointArray;
+  DoorSplit: T2DPointArray;
+  Searchbox: Array of TBox;
+  Hue, Sat: Array of Extended;
+  Col, Tol: Array of Integer;
+
+begin
+  AddToSRLLog('Attempting to open the door');
+
+  case Where of
+    'begin': N := 0;
+    'end':   N := 1;
+  end;
+
+  SearchBox := [IntToBox(380, 80, 480, 180), IntToBox(10, 70, 90, 180)];
+  Col := [7115939, 6063508];
+  Tol := [5, 11];
+  Hue := [0.35, 0.17];
+  Sat := [0.77, 0.34];
+
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue[N], Sat[N]);
+  if FindColorsSpiralTolerance(MSCX, MSCY, Door, Col[N], SearchBox[N].X1, SearchBox[N].Y1, SearchBox[N].X2, SearchBox[N].Y2, Tol[N]) then
+  begin
+    SplitTPAExWrap(Door, 3, 3, DoorSplit);
+    SortATPASize(DoorSplit, True);
+    if Length(DoorSplit[0]) > 10 then
+    begin
+      P := MiddleTPA(DoorSplit[0]);
+      MMouse(P.x, P.y, RandomRange(-5, 5), RandomRange(-5, 5));
+      Wait(RandomRange(50, 150));
+      case Random(7) of
+        0..4: ClickMouse2(1);
+        5..6: begin
+                ClickMouse2(0);
+                WaitOptionMulti(['pen', 'Open'], 1000);
+              end;
+      end;
+      AddToSRLLog('Clicked on the door');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure UseControls;
+by: J J
+Description: Opens the control panel in the Molly random event
+             Uses the wooden parts of the control panel
+*******************************************************************************}
+procedure UseControls;
+var
+  P: TPoint;
+  Controls: TPointArray;
+  ControlsSplit: T2DPointArray;
+
+begin
+  AddToSRLLog('Attempting to use the control panels');
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.32, 1.67);
+  if FindColorsSpiralTolerance(MSCX, MSCY, Controls, 3366960, MSX1, 80, MSX2, 280, 4) then
+  begin
+    SplitTPAExWrap(Controls, 2, 2, ControlsSplit);
+    SortATPASize(ControlsSplit, True);
+    if Length(ControlsSplit[0]) > 2 then
+    begin
+      P := MiddleTPA(ControlsSplit[0]);
+      MMouse(P.x, P.y, RandomRange(-5, 5), RandomRange(-5, 5));
+      Wait(RandomRange(50, 150));
+      case Random(7) of
+        0..4: ClickMouse2(1);
+        5..6: begin
+                ClickMouse2(0);
+                WaitOptionMulti(['ontrol', 'Use', 'panel'], 1000);
+              end;
+      end;
+      AddToSRLLog('Clicked on the control panels');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function HookPosition: String;
+by: J J
+Description: Returns the angle of the hook by using the fence to calculate
+             the perspective.
+*******************************************************************************}
+function HookPosition: String;
+var
+  X, Y, i, NormalDTM, TwoLeftDTM, OneLeftDTM, OneRightDTM, TwoRightDTM: Integer;
+  DTMArray: Array of Integer;
+
+begin
+  NormalDTM := DTMFromString('mlwAAAHicY2dgYGBiZGBQBtKaQHwXyH4IxCuA7AQgfQFInwfiR1B8EYld4qzC0OytyZBoIQfGWbaKDHn2SmA2P1AeF2bCg6EAAOTUDx0=');
+  TwoLeftDTM := DTMFromString('mlwAAAHicY2dgYMhlZWA4zMLAcBSIfwKxCRsDgz4QvwGK/wbK3wTiV1DMz8jAIA/EPECcaiXPkGWryJBoIceQbCnPkG6jAGaDxPlBanFgJjwYCgC16Q3z');
+  OneLeftDTM := DTMFromString('mlwAAAHicY2dgYKhkZWA4xMLAcASI/wGxPRsDgzUQ/wSK/wHKPwfib0D8EYgZGBkYhIGYFYiTLeUZ0m0UGBIt5FDYqVbyDPxApbgwEx4MBQDPBg4e');
+  OneRightDTM := DTMFromString('mlwAAAHicY2dgYOhnZWBwZmNgsAXibhYGhglAzA8UYwXyfwDl7wHxJyBmZmRgEAdiJiB+B+QnWsgxtPtpMcSbyzKkWsmDaZBYsqU8Az9QHhdmwoOhAACpYAwC');
+  TwoRightDTM := DTMFromString('mlwAAAHicY2dgYIhhZWBgZ2NgYAHi80D2NBYGhplAfA+IfwPlbwHxSyB+AcS8jAwMCkDMA8SpVvIM6TYKDIkWcmB2lq0inM0PVIsLM+HBUAAAI+IM+Q==');
+
+  DTMArray := [NormalDTM, TwoLeftDTM, OneLeftDTM, OneRightDTM, TwoRightDTM];
+
+  for i:=0 to 4 do
+  begin
+    if FindDTM(DTMArray[i], X, Y, MSX1, MSY1, MSX2, MSY2) then
+    begin
+      case i of
+        0: Result := 'Normal';
+        1: Result := 'TwoLeft';
+        2: Result := 'OneLeft';
+        3: Result := 'OneRight';
+        4: Result := 'TwoRight';
+      end;
+      Break;
+    end;
+  end;
+
+  FreeDTMs([NormalDTM, TwoLeftDTM, OneLeftDTM, OneRightDTM, TwoRightDTM]);
+end;
+
+{*******************************************************************************
+function NormalHook: Integer;
+by: J J
+Description: Finds the position of the hook if it is positioned in a normal
+             perspective. It returns an integer which resembles a position
+             on this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function NormalHook: Integer;
+var
+  i, x, CountedColors, Highest: Integer;
+  Row: Array[0..6] of Array[0..9] of TBox;
+  X1, Y1, X2, Y2, Multiplier: Array of Integer;
+
+begin
+  X1 := [66, 83, 97, 109, 120, 129, 137, 144, 150, 156];
+  Y1 := [210, 178, 152, 130, 112, 95, 81, 68, 57, 47];
+  X2 := [100, 121, 132, 141, 148, 156, 162, 167, 173, 177];
+  Y2 := [234, 199, 171, 145, 124, 106, 90, 77, 64, 53];
+  Multiplier := [58, 52, 48, 45, 41, 39, 36, 34, 32, 31];
+
+  for i:=0 to 6 do
+  begin
+    for x:=0 to 9 do
+    begin
+      Row[i][x] := IntToBox(X1[x] + (i * Multiplier[x]), Y1[x], X2[x] + (i * Multiplier[x]), Y2[x]);
+      CountedColors := CountColorTolerance(2373117, Row[i][x].X1, Row[i][x].Y1, Row[i][x].X2, Row[i][x].Y2, 5);
+      if CountedColors > Highest then
+      begin
+        Highest := CountedColors;
+        Result := (20 + (10 * i) + x);
+        AddToSRLLog('The hook is in box '+ToStr(Result)+'');
+      end;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function TwoLeftHook: Integer;
+by: J J
+Description: Finds the position of the hook if it is positioned in the two left
+             perspective. It returns an integer which resembles a position
+             on this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function TwoLeftHook: Integer;
+var
+  i, CountedColors, Highest: Integer;
+  Box: Array[0..9] of TBox;
+  X1, Y1, X2, Y2: Array of Integer;
+
+begin
+  X1 := [76, 105, 128, 147, 164, 178, 191, 203, 213, 222];
+  Y1 := [184, 158, 137, 119, 103, 89, 77, 65, 55, 46];
+  X2 := [112, 138, 157, 174, 189, 202, 214, 224, 233, 242];
+  Y2 := [208, 177, 153, 133, 115, 99, 86, 74, 63, 53];
+
+  for i:=0 to 9 do
+  begin
+    Box[i] := IntToBox(X1[i], Y1[i], X2[i], Y2[i]);
+    CountedColors := CountColorTolerance(2373117, Box[i].X1, Box[i].Y1, Box[i].X2, Box[i].Y2, 5);
+    if CountedColors > Highest then
+    begin
+      Highest := CountedColors;
+      Result := i;
+      AddToSRLLog('The hook is in box '+ToStr(Result)+'');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function OneLeftHook: Integer;
+by: J J
+Description: Finds the position of the hook if it is positioned in the one left
+             perspective. It returns an integer which resembles a position
+             on this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function OneLeftHook: Integer;
+var
+  i, CountedColors, Highest: Integer;
+  Box: Array[0..9] of TBox;
+  X1, Y1, X2, Y2: Array of Integer;
+
+begin
+  X1 := [71, 94, 112, 128, 142, 154, 164, 174, 182, 190];
+  Y1 := [196, 167, 143, 123, 106, 90, 77, 65, 54, 45];
+  X2 := [108, 128, 144, 157, 168, 180, 188, 197, 203, 210];
+  Y2 := [222, 187, 160, 138, 118, 101, 86, 73, 62, 51];
+
+  for i:=0 to 9 do
+  begin
+    Box[i] := IntToBox(X1[i], Y1[i], X2[i], Y2[i]);
+    CountedColors := CountColorTolerance(2373117, Box[i].X1, Box[i].Y1, Box[i].X2, Box[i].Y2, 5);
+    if CountedColors > Highest then
+    begin
+      Highest := CountedColors;
+      Result := (10 + i);
+      AddToSRLLog('The hook is in box '+ToStr(Result)+'');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function TwoRightHook: Integer;
+by: J J
+Description: Finds the position of the hook if it is positioned in the two right
+             perspective. It returns an integer which resembles a position
+             on this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function TwoRightHook: Integer;
+var
+  i, CountedColors, Highest: Integer;
+  Box: Array[0..7] of TBox;
+  X1, Y1, X2, Y2: Array of Integer;
+
+begin
+  X1 := [420, 380, 360, 343, 328, 316, 304, 294];
+  Y1 := [182, 158, 137, 119, 103, 89, 77, 66];
+  X2 := [445, 413, 390, 371, 354, 339, 327, 315];
+  Y2 := [210, 177, 153, 133, 115, 99, 86, 74];
+
+  for i:=0 to 7 do
+  begin
+    Box[i] := IntToBox(X1[i], Y1[i], X2[i], Y2[i]);
+    CountedColors := CountColorTolerance(2373117, Box[i].X1, Box[i].Y1, Box[i].X2, Box[i].Y2, 5);
+    if CountedColors > Highest then
+    begin
+      Highest := CountedColors;
+      Result := (100 + i);
+      AddToSRLLog('The hook is in box '+ToStr(Result)+'');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function OneRightHook: Integer;
+by: J J
+Description: Finds the position of the hook if it is positioned in the one right
+             perspective. It returns an integer which resembles a position
+             on this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function OneRightHook: Integer;
+var
+  i, CountedColors, Highest: Integer;
+  Box: Array[0..7] of TBox;
+  X1, Y1, X2, Y2: Array of Integer;
+
+begin
+  X1 := [422, 389, 373, 360, 349, 338, 329, 321];
+  Y1 := [196, 167, 144, 123, 106, 91, 77, 65];
+  X2 := [448, 424, 405, 390, 376, 364, 353, 344];
+  Y2 := [222, 187, 160, 138, 118, 101, 86, 73];
+
+  for i:=0 to 7 do
+  begin
+    Box[i] := IntToBox(X1[i], Y1[i], X2[i], Y2[i]);
+    CountedColors := CountColorTolerance(2373117, Box[i].X1, Box[i].Y1, Box[i].X2, Box[i].Y2, 5);
+    if CountedColors > Highest then
+    begin
+      Highest := CountedColors;
+      Result := (90 + i);
+      AddToSRLLog('The hook is in box '+ToStr(Result)+'');
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function MoveHook(Box: Integer): Boolean;
+by: J J
+Description: Moves the hook to a box number you input. The box number resembles
+             a position this map: http://img841.imageshack.us/img841/4879/tilesystem.png
+*******************************************************************************}
+function MoveHook(Box: Integer): Boolean;
+var
+  H, V, X, Y, BoxRow, HookBoxRow, Horizontal, Vertical, BoxSpot, HookBoxSpot: Integer;
+
+begin
+  if Box = -1 then
+  begin
+    Wait(2000 + Random(2000));
+    AddToSRLLog('Not moving the hook because the box is false!');
+    Exit;
+  end;
+
+  if not(Box = HookBox) then
+  begin
+    // Horizontal movement
+    BoxRow := (Box div 10);
+    HookBoxRow := (HookBox div 10);
+    AddToSRLLog('BoxRow : '+IntToStr(BoxRow)+', HookBoxRow: '+IntToStr(HookBoxRow)+'');
+
+    if not(BoxRow = HookBoxRow) then
+    begin
+      if (BoxRow > HookBoxRow) then
+      begin
+        Horizontal := (BoxRow - HookBoxRow);
+        AddToSRLLog('Move Right '+IntToStr(Horizontal)+' times');
+        repeat
+          Inc(H);
+          if (H > 1) then
+          begin
+            GetMousePos(X, Y);
+            MMouse(X, Y, RandomRange(-2, 2), RandomRange(-2, 2));
+            ClickMouse2(1);
+          end else
+          begin
+            MouseBox(700, 325, 720, 340, 1);
+          end;
+          Wait(75 + Random(25));
+        until(H >= Horizontal);
+      end else
+      begin
+        Horizontal := (HookBoxRow - BoxRow);
+        AddToSRLLog('Move left '+IntToStr(Horizontal)+' times');
+        repeat
+          Inc(H);
+          if (H > 1) then
+          begin
+            GetMousePos(X, Y);
+            MMouse(X, Y, RandomRange(-2, 2), RandomRange(-2, 2));
+            ClickMouse2(1);
+          end else
+          begin
+            MouseBox(570, 325, 590, 340, 1);
+          end;
+          Wait(75 + Random(25));
+        until(H >= Horizontal);
+      end;
+    end else
+    begin
+      AddToSRLLog('We are at the correct row already!');
+    end;
+
+    // Vertical movement
+    HookBoxSpot := (HookBox - (HookBoxRow * 10));
+    BoxSpot := (Box - (BoxRow * 10));
+    AddToSRLLog('HookBoxspot: '+IntToStr(HookBoxSpot)+'');
+    AddToSRLLog('Boxspot: '+IntToStr(BoxSpot)+'');
+
+    if not(BoxSpot = HookBoxSpot) then
+    begin
+      if (BoxSpot > HookBoxSpot) then
+      begin
+        Vertical := (BoxSpot - HookBoxSpot);
+        AddToSRLLog('Move up '+IntToStr(Vertical)+' times');
+        repeat
+          Inc(V);
+          if (V > 1) then
+          begin
+            GetMousePos(X, Y);
+            MMouse(X, Y, RandomRange(-2, 2), RandomRange(-2, 2));
+            ClickMouse2(1);
+          end else
+          begin
+            MouseBox(635, 265, 650, 280, 1);
+          end;
+          Wait(75 + Random(25));
+        until(V >= Vertical);
+      end else
+      begin
+        Vertical := (HookBoxSpot - BoxSpot);
+        AddToSRLLog('Move down '+IntToStr(Vertical)+' times');
+        repeat
+          Inc(V);
+          if (V > 1) then
+          begin
+            GetMousePos(X, Y);
+            MMouse(X, Y, RandomRange(-2, 2), RandomRange(-2, 2));
+            ClickMouse2(1);
+          end else
+          begin
+            MouseBox(635, 385, 650, 405, 1);
+          end;
+          Wait(75 + Random(25));
+        until(V >= Vertical);
+      end;
+    end else
+    begin
+      AddToSRLLog('We are at the correct spot already!');
+    end;
+  end else
+  begin
+    AddToSRLLog('We are at the correct spot and row!');
+    Result := True;
+  end;
+  Wait(600 + Random(200));
+end;
+
+{*******************************************************************************
+function MollyLocation: TPoint;
+by: J J
+Description: Returns a TPoint of the location of the correct Molly's boots
+             This TPoint can be used in the Mollybox function to convert it
+             to a box number
+*******************************************************************************}
+function MollyLocation: TPoint;
+var
+  X, Y, Q, i: Integer;
+  P, T: TPoint;
+  Hair, Boots: TPointArray;
+  HairSplit, BootsSplit: T2DPointArray;
+  SearchBox: TBox;
+  Col, Tol: Array of Integer;
+  Hue, Sat: Array of Extended;
+
+begin
+  case MollyHair of
+    'LightBrown': Q := 0;
+    'DarkBrown':  Q := 1;
+    'LightBlond': Q := 2;
+    'DarkBlond':  Q := 3;
+    'Red':        Q := 4;
+  end;
+
+  Col := [3161416, 1517614, 3658722, 3573399, 2710186];
+  Tol := [14, 10, 10, 20, 17];
+  Hue := [0.13, 0.21, 0.15, 0.08, 0.11];
+  Sat := [0.08, 0.64, 2.31, 0.49, 0.59];
+
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue[Q], Sat[Q]);
+  if FindColorsSpiralTolerance(X, Y, Hair, Col[Q], MSX1, MSY1, MSX2, 200, Tol[Q]) then
+  begin
+    if (Length(Hair) > 10)then
+    begin
+      SplitTPAExWrap(Hair, 1, 1, HairSplit);
+      SortATPASize(HairSplit, True);
+      for i:=0 to high(HairSplit) do
+      begin
+        if (Length(HairSplit[i]) > 10) and (Length(HairSplit[i]) < 100) then
+        begin
+          P := MiddleTPA(HairSplit[i]);
+          SearchBox := IntToBox(P.X-6, P.Y+2, P.X+6, P.Y+8);
+          SetColorSpeed2Modifiers(0.09, 0.85);
+          if FindColorSpiralTolerance(X, Y, 4555446, SearchBox.X1, SearchBox.Y1, SearchBox.X2, SearchBox.Y2, 21) then
+          begin
+            AddToSRLLog('Potential Molly has been found at: '+IntToStr(P.X)+', '+IntToStr(P.Y)+'');
+            SetColorSpeed2Modifiers(0.40, 0.68);
+            if FindColorsSpiralTolerance(X, Y, Boots, 2176834, SearchBox.X1-5, SearchBox.Y1+40, SearchBox.X2+5, SearchBox.Y2+70, 11) then
+            begin
+              SplitTPAExWrap(Boots, 2, 2, BootsSplit);
+              SortATPASize(BootsSplit, True);
+              T := Point(MiddleTPA(Boots).X, GetTPABounds(BootsSplit[0]).Y2);
+              AddToSRLLog('Detected boots, correct Molly has been found at '+IntToStr(T.X)+', '+IntToStr(T.Y)+'');
+              Result := T;
+              Break;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function MollyBox(MollyTPoint: TPoint): Integer;
+by: J J
+Description: Returns an integer which resembles the position of Molly on this
+             grid: http://img841.imageshack.us/img841/4879/tilesystem.png
+             It uses the FindHair function to get the position of Molly.
+*******************************************************************************}
+function MollyBox(MollyPosition: TPoint): Integer;
+var
+  X, i, k: Integer;
+  YI, YII, Col, Tol, XSplit, YSplit, X1, Y1, X2, Y2, Multiplier, Height: Array of Integer;
+  Hue, Sat: Array of Extended;
+  Row: Array[0..10] of Array[0..9] of TBox;
+
+begin
+  YI := [47, 45, 46, 51, 54];
+  YII := [237, 241, 250, 241, 250];
+  Hue := [0.12, 0.58];
+  Sat := [2.77, 0.99];
+  Col := [2240266, 3702093];
+  Tol := [5, 10];
+  XSplit := [6, 8];
+  YSplit := [6, 8];
+
+  case HookPosition of
+    'Normal':   begin
+                  X := 0;
+                  X1 := [61, 78, 92, 104, 114, 124, 132, 139, 146, 151];
+                  Y1 := [210, 178, 152, 130, 112, 95, 81, 68, 57, 47];
+                  X2 := [110, 126, 137, 146, 153, 160, 166, 171, 177, 180];
+                  Y2 := [234, 199, 171, 145, 124, 106, 90, 77, 64, 53];
+                  Multiplier := [58, 52, 48, 45, 41, 39, 36, 34, 32, 31];
+                  for i:=0 to 10 do
+                  begin
+                    for k:=0 to 9 do
+                    begin
+                      case i of
+                        0: Row[i][k] := IntToBox(X1[k] + (-2 * Multiplier[k]), Y1[k], X2[k] + (-2 * Multiplier[k]), Y2[k]);
+                        1: Row[i][k] := IntToBox(X1[k] + (-1 * Multiplier[k]), Y1[k], X2[k] + (-1 * Multiplier[k]), Y2[k]);
+                        2..10: Row[i][k] := IntToBox(X1[k] + ((i-2) * Multiplier[k]), Y1[k], X2[k] + ((i-2) * Multiplier[k]), Y2[k]);
+                      end;
+                      if PointInBox(MollyPosition, IntToBox(Row[i][k].X1, Row[i][k].Y1, Row[i][k].X2, Row[i][k].Y2)) then
+                      begin
+                        Result := ((10 * i) + k);
+                        PreviousBox := Result;
+                        AddToSRLLog('Molly is in box: '+IntToStr(Result)+'');
+                        Exit;
+                      end;
+                    end;
+                  end;
+                end;
+    'OneLeft':  begin
+                  X := 1;
+                  X1 := [69, 89, 105, 118, 140, 151, 162, 172, 180, 186];
+                  Y1 := [194, 167, 143, 123, 104, 90, 77, 66, 54, 43];
+                  X2 := [118, 133, 144, 156, 169, 180, 188, 197, 204, 211];
+                  Y2 := [224, 187, 160, 140, 117, 101, 86, 75, 64, 52];
+                  Multiplier := [62, 56, 52, 48, 38, 36, 34, 33, 32, 31];
+                  Height := [4, 3, 3, 3, 2, 2, 2, 1, 1, 1];
+                  for i:=0 to 10 do
+                  begin
+                    for k:=0 to 9 do
+                    begin
+                      case i of
+                        0: Row[i][k] := IntToBox(X1[k] + (-1 * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (-1 * Multiplier[k]), Y2[k] + (Height[k]*i));
+                        1: Row[i][k] := IntToBox(X1[k] + (0 * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (0 * Multiplier[k]), Y2[k] + (Height[k]*i));
+                        2..10: Row[i][k] := IntToBox(X1[k] + ((i-1) * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + ((i-1) * Multiplier[k]), Y2[k] + (Height[k]*i));
+                      end;
+                      if PointInBox(MollyPosition, IntToBox(Row[i][k].X1, Row[i][k].Y1, Row[i][k].X2, Row[i][k].Y2)) then
+                      begin
+                        Result := ((10 * i) + k);
+                        PreviousBox := Result;
+                        AddToSRLLog('Molly is in box: '+IntToStr(Result)+'');
+                        Exit;
+                      end;
+                    end;
+                  end;
+                end;
+    'TwoLeft':  begin
+                  X := 2;
+                  X1 := [66, 96, 116, 135, 152, 170, 183, 195, 206, 215];
+                  Y1 := [184, 158, 135, 118, 101, 90, 77, 66, 55, 46];
+                  X2 := [122, 146, 162, 178, 192, 205, 217, 225, 235, 245];
+                  Y2 := [210, 181, 153, 135, 116, 102, 87, 75, 63, 53];
+                  Multiplier := [62, 56, 52, 48, 44, 41, 38, 35, 33, 31];
+                  Height := [8, 7, 7, 6, 6, 5, 5, 5, 4, 3];
+                  for i:=0 to 10 do
+                  begin
+                    for k:=0 to 9 do
+                    begin
+                      Row[i][k] := IntToBox(X1[k] + (i * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (i * Multiplier[k]), Y2[k] + (Height[k]*i));
+                      if PointInBox(MollyPosition, IntToBox(Row[i][k].X1, Row[i][k].Y1, Row[i][k].X2, Row[i][k].Y2)) then
+                      begin
+                        Result := ((10 * i) + k);
+                        PreviousBox := Result;
+                        AddToSRLLog('Molly is in box: '+IntToStr(Result)+'');
+                        Exit;
+                      end;
+                    end;
+                  end;
+                end;
+    'OneRight': begin
+                  X := 3;
+                  X1 := [420, 386, 371, 360, 349, 338, 329, 321, 318, 310];
+                  Y1 := [196, 167, 144, 123, 106, 89, 78, 64, 52, 40];
+                  X2 := [470, 431, 412, 396, 378, 366, 355, 345, 339, 331];
+                  Y2 := [222, 187, 160, 138, 118, 102, 88, 75, 60, 49];
+                  Multiplier := [62, 56, 52, 48, 44, 41, 38, 35, 34, 32];
+                  Height := [4, 4, 3, 3, 3, 3, 2, 2, 2, 2];
+                  for i:=0 to 10 do
+                  begin
+                    for k:=0 to 9 do
+                    begin
+                      case i of
+                        0: Row[i][k] := IntToBox(X1[k] + (1 * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (1 * Multiplier[k]), Y2[k] + (Height[k]*i));
+                        1: Row[i][k] := IntToBox(X1[k] + (0 * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (0 * Multiplier[k]), Y2[k] + (Height[k]*i));
+                        2..10: Row[i][k] := IntToBox(X1[k] + ((-i+1) * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + ((-i+1) * Multiplier[k]), Y2[k] + (Height[k]*i));
+                      end;
+                      if PointInBox(MollyPosition, IntToBox(Row[i][k].X1, Row[i][k].Y1, Row[i][k].X2, Row[i][k].Y2)) then
+                      begin
+                        Result := 100 - ((10 * i) - k);
+                        PreviousBox := Result;
+                        AddToSRLLog('Molly is in box: '+IntToStr(Result)+'');
+                        Exit;
+                      end;
+                    end;
+                  end;
+                end;
+    'TwoRight': begin
+                  X := 4;
+                  X1 := [395, 373, 358, 341, 323, 311, 299, 290, 284, 277];
+                  Y1 := [182, 158, 137, 119, 103, 89, 79, 66, 52, 41];
+                  X2 := [447, 415, 394, 373, 359, 342, 331, 321, 311, 301];
+                  Y2 := [210, 177, 153, 132, 115, 99, 86, 74, 63, 54];
+                  Multiplier := [54, 45, 36, 34, 40, 38, 36, 33, 33, 33];
+                  Height := [8, 6, 4, 4, 4, 4, 4, 4, 4, 3];
+                  for i:=0 to 10 do
+                  begin
+                    for k:=0 to 9 do
+                    begin
+                      Row[i][k] := IntToBox(X1[k] + (-i * Multiplier[k]), Y1[k] + (Height[k]*i), X2[k] + (-i * Multiplier[k]), Y2[k] + (Height[k]*i));
+                      if PointInBox(MollyPosition, IntToBox(Row[i][k].X1, Row[i][k].Y1, Row[i][k].X2, Row[i][k].Y2)) then
+                      begin
+                        Result := 100 - ((10 * i) - k);
+                        PreviousBox := Result;
+                        AddToSRLLog('Molly is in box: '+IntToStr(Result)+'');
+                        Exit;
+                      end;
+                    end;
+                  end;
+                end;
+  end;
+  // It only reaches this far if Molly isn't in a box.. If the box is -1 then it won't move the hook!
+  AddToSRLLog('Not able to detect Molly''s position, waiting a while..');
+  Result := -1;
+end;
+
+{*******************************************************************************
+function CatchedMolly: Boolean;
+by: J J
+Description: Checks if the correct Molly has been catched
+*******************************************************************************}
+function CatchedMolly: Boolean;
+var
+  PossibleTexts: Array of String;
+  i, j: Integer;
+
+begin
+  if FindChatBoxText('innoc', 8, clBlack) then
+  begin
+    Wait(12000 + Random(6000));
+    Inc(FalseMolly);
+    Result := False;
+  end;
+
+  PossibleTexts := ['ongratulations', 'ongrat', 'tions', 'evil', 'twin'];
+  for i:=0 to high(PossibleTexts) do
+  begin
+    for j:=1 to 8 do
+    begin
+      if FindChatBoxText(PossibleTexts[i], j, clBlack) then
+      begin
+        CorrectMolly := True;
+        Result := True;
+        Break;
+      end;
+    end;
+  end;
+
+  ClickContinue(True, True);
+end;
+
+{*******************************************************************************
+function Molly_Solve(): Boolean;
+by: J J
+Description: Handles the Molly random event
+*******************************************************************************}
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function Molly_Solve(): Boolean;
+begin
+  ClickNorth(SRL_Angle_High);
+  MarkTime(MaxMollyTime); // Max 10 mins
+  MarkTime(MollyTime);
+
+  repeat
+    // Gets from the starting room to the control panel
+    OpenMollyDoor('begin');
+    Wait(4000 + Random(1500));
+    GrabMollyHairColor;
+    MollyTalk;
+    Wait(3000 + Random(1000));
+    UseControls;
+    Wait(5000 + Random(2000));
+
+    // Handles the grabbing of Molly
+    repeat
+      repeat
+        MouseSpeed := 30;
+        case HookPosition of
+          'Normal': Hookbox := NormalHook;
+          'TwoLeft': Hookbox := TwoLeftHook;
+          'OneLeft': Hookbox := OneLeftHook;
+          'TwoRight': Hookbox := TwoRightHook;
+          'OneRight': Hookbox := OneRightHook;
+        end;
+      until(MoveHook(MollyBox(MollyLocation)));
+      MouseSpeed := 100;
+      Mousebox(694, 420, 707, 434, 1);
+      Wait(3000 + Random(1000));
+    until(CatchedMolly);
+    Wait(16000 + Random(4000));
+    MouseSpeed := 15;
+
+    // Handles the talking to Molly to finish
+    MollyTalk;
+    OpenMollyDoor('end');
+    Wait(6000 + Random(2000));
+    TalkToMolly;
+    Wait(3000 + Random(1000));
+    MollyTalk;
+
+    AddToSRLLog('Molly completed in: '+MsToTime(TimeFromMark(MollyTime), Time_Formal)+'');
+    AddToSRLLog('Molly had the following hair color: '+MollyHair+'');
+    AddToSRLLog('Innocent civilians caught: '+IntToStr(FalseMolly)+'');
+
+    if CorrectMolly then
+      Result := True;
+  until (Result) or (TimeFromMark(MaxMollyTime) > 600000);
+  if (TimeFromMark(MaxMollyTime) < 600000) then
+  begin
+    Result := True;
+  end else
+  begin
+    AddToSRLLog('Molly solve took longer than 10 minutes, logging out');
+    LogOut;
+  end;
+end;

@@ -1,0 +1,344 @@
+(*
+Freaky Forester
+===============
+
+Stores all the routines to solve the Forester random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+This solver uses very specific TPA calculations to determine how many tails
+each pheasant has.  It finds the color if the tip of the tail and uses how many
+colors are found to determine how many tails there are.
+
+*)
+
+// colors gathered using ACA
+const
+  _PHEASANT_TAIL_COLOR = 9412006; // white tail tip
+  _PHEASANT_TAIL_TOL   = 5;
+
+  _PHEASANT_COLOR = 2705758; // brown of pheasant body
+  _PHEASANT_TOL   = 7;
+
+  _NPC_FORESTER = '8!85ly8o!8gt8!';
+
+(**
+ * Author: Coh3n
+ * Description: Detects if a player is in the random.
+ * Updated on 02/06/2012 - [J]ustin (Thanks J J for the report)
+ *)
+function FF_Detect(): boolean;
+begin
+  if (not (tabExists(TAB_MAGIC))) then
+    if (tabExists(TAB_FRIENDS)) then  // Removed false detection when shop window open
+      if (length(getMinimapDots('npc')) >= 12) then //Possible 10 NPCS at Yanille (14+ NPCS at random event)
+      // forest color
+        result := (countColorTolerance(2513745, MMX1, MMY1, MMX2, MMY2, 20) > 5000);
+end;
+
+(**
+ * Author: Sumilion & Coh3n
+ * Description: Finds and attacks the pheasant with number of 'numOfTails'.
+ *)
+function FF_WalkToCenter(): boolean;
+var
+  arP: TPointArray;
+  tmpCTS: integer;
+  p: TPoint;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  tmpCTS := getColorToleranceSpeed();
+  setColorToleranceSpeed(0);
+
+  addToSRLLog('FF_WalkToCenter: Walking to the center area');
+
+  // the yellow of the NPC dots
+  if (findColorsTolerance(arP, 195836, MMX1, MMY1, MMX2, MMY2, 25)) then
+  begin
+    p := middleTPA(arP);
+    mouse(p.x, p.y, 5, 5, mouse_Left);
+    flag();
+    wait(1500 + random(500));
+    result := true;
+  end;
+
+  setColorToleranceSpeed(tmpCTS);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if player talks to Freaky Forester.
+ *)
+function FF_TalkTo(): boolean;
+var
+  dtmForester: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  dtmForester := DTMFromString('mWAAAAHicY2FgYHABYlcg9oLiNiDugtL9QHzt/FmGSb3dDF/fvmI4uGsHAz9QDBkzAjETEgYBAH3DDKU=');
+
+  if (clickDTMRotatedIn(dtmForester, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['orester'], mouse_Left)) then
+    result := waitNPCTalking(_NPC_FORESTER, 5000)
+  else
+    addToSRLLog('FF_TalkTo: Failed to click Forester');
+
+  freeDTM(dtmForester);
+
+  if (result) then
+    addToSRLLog('FF_TalkTo: Talking to Forester')
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Gets the pheasant required to kill. Returns the number of tails;
+ * 0 if we need to exit through portal, and -1 if nothing was found.
+ *)
+function FF_GetPheasant(): integer;
+var
+  t, i: integer;
+  options: TStringArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + 15000);
+  options := ['portal', 'one', 'two', 'three', 'four'];
+  result := -1;
+
+  // goes through the conversation, looking for the pheasant we have to kill
+  while ((areTalking) and (result = -1) and (getSystemTime < t)) do
+  begin
+    for i := 0 to high(options) do
+      if (findNPCChatText(' '+options[i], nothing)) then
+      begin
+        wait(1500 + random(500));
+        result := i;
+        break;
+      end;
+
+    wait(500 + random(300));
+    clickContinue(true, true);
+  end;
+
+  // simply for debugging purposes
+  case result of
+    1..4: addToSRLLog('FF_GetPheasant: Need to kill the '+toStr(result)+' tailed pheasant');
+    0: addToSRLLog('FF_GetPheasant: Need to exit through portal');
+    -1: addToSRLLog('FF_GetPheasant: Failed to get pheasant');
+  end;
+end;
+
+(**
+ * Author: TRiLeZ & Coh3n
+ * Description: Finds and attacks the pheasant with number of 'numOfTails'.
+ *)
+function FF_KillPheasant(numOfTails: integer): boolean;
+var
+  tpaTail: TPointArray;
+  atpaPheasant, atpaTails: T2DPointArray;
+  areaCheck, countCheck: boolean;
+  b: TBox;
+  i, x, y, t, area, tmpMouseSpeed, tmpCTS, tmpCount, dtmPheasant: Integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  tmpMouseSpeed := mouseSpeed;
+  tmpCTS := getColorToleranceSpeed();
+
+  mouseSpeed := 35; // since the pheasants move so much
+  setColorToleranceSpeed(3);
+
+  // move closer to all the pheasants
+  mouse(450, 175, 50, 50, mouse_Right);
+    waitOption('alk', 300);
+
+  // need to make room for a raw pheasant
+  if (invFull()) then
+    dropItem(randomRange(12, 16));
+
+  t := (getSystemTime + (2 * 60000));
+
+  repeat
+    // find the pheasants numOfTails
+    if (findColorsTolerance(tpaTail, _PHEASANT_TAIL_COLOR, MSX1+20, MSY1+20, MSX2-20, MSY2-20, _PHEASANT_TAIL_TOL)) then
+    begin
+      atpaPheasant := TPAtoATPA(tpaTail, 25);
+      sortATPASize(atpaPheasant, (numOfTails = 3) or (numOfTails = 4)); // sort largest first if looking for 3 or 4 tails
+
+      // loop through each pheasant found, searching for the right one
+      for i := 0 to high(atpaPheasant) do
+      begin
+        b := getTPABounds(atpaPheasant[i]);
+        area := (b.x2 - b.x1) * (b.y2 - b.y1);
+
+        // tpa area is larger depending on the tail being looked for
+        case numOfTails of
+          1: areaCheck := inRange(area, 0, 4);
+          2: areaCheck := inRange(area, 2, 12);
+          3: areaCheck := inRange(area, 36, 62);
+          4: areaCheck := inRange(area, 80, 160);
+        end;
+
+        // continue if area isn't correct
+        if (not areaCheck) then
+          continue;
+
+        tpaTail := atpaPheasant[i];
+        atpaTails := TPAtoATPA(tpaTail, 3); // each tail is a separate tpa
+
+        if (numOfTails = length(atpaTails)) then
+        begin
+          // counts the colors
+          tmpCount := countColorTolerance(_PHEASANT_COLOR, b.x1 - 5, b.y1 - 5, b.x2 + 5, b.y2 + 5, _PHEASANT_TOL);
+
+          // checks to make sure there are the right amount of pheasant colors
+          case numOfTails of
+            1: countCheck := inRange(tmpCount, 4, 9);
+            2: countCheck := inRange(tmpCount, 10, 18);
+            3: countCheck := inRange(tmpCount, 30, 56);
+            4: countCheck := inRange(tmpCount, 70, 200);
+          end;
+
+          if (not countCheck) then
+            continue;
+
+          middleTPAEx(atpaPheasant[i], x, y);
+          mouse(x, y, 5, 5, mouse_Right);
+
+          if (waitOption('ttack', 500)) then
+          begin
+            addToSRLLog('FF_KillPheasant: Attacking pheasant');
+            result := true;
+            break;
+          end;
+        end;
+      end;
+
+    end else begin
+      addToSRLLog('FF_KillPheasant: Failed to find tail color');
+      wait(200 + random(300));
+    end;
+
+  until(result or (getSystemTime > t) or (not loggedIn()));
+
+  mouseSpeed := tmpMouseSpeed;
+  setColorToleranceSpeed(tmpCTS);
+
+  // wait for the raw pheasant to appear in inventory
+  if (result) then
+  begin
+    result := false;
+    dtmPheasant := DTMFromString('mlwAAAHicY2dgYDjMzMBwEogvAfEpID4OxLuAeC8Q9zMyMLQCcTcQTwHiBiCeBsTtQFzpIwXUzYQV8wNJXJgRD4YCAOxXCrU=');
+
+    if (waitFindDTM(x, y, dtmPheasant, 8000)) then
+    begin
+      addToSRLLog('FF_KillPheasant: Pheasant found in inventory');
+      result := true;
+    end;
+
+    freeDTM(dtmPheasant);
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the raw pheasant to the Freaky Forester.
+ *)
+function FF_ReturnPheasant(): boolean;
+var
+  tries: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  repeat
+    inc(tries);
+
+    if (FF_TalkTo()) then
+      result := (FF_GetPheasant() = 0) // if portal text is found
+    else
+      FF_WalkToCenter();
+
+    wait(200 + random(300));
+  until(result or (tries >= 10));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Exits the random.
+ *)
+function FF_Exit(): boolean;
+var
+  tries, dtmPortal: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  dtmPortal := DTMFromString('mQwAAAHicY2ZgYOhkZGCoB+IpQFwN5JcCcTMQx+YbMtTPcwNjfiAfhoHKGJigGAgAJ7gHCw==');
+
+  repeat
+    inc(tries);
+
+    addToSRLLog('FF_Exit: Walking to portal');
+    TPAWalk(2115909, 15, 0, 0, point(665, 85)); // color of the grass
+    flag();
+
+    if (clickPortal(dtmPortal)) then
+    begin
+      result := true;
+      break;
+    end;
+
+    wait(200 + random(300));
+  until(tries >= 10);
+
+  if (not result) then
+    addToSRLLog('FF_Exit: Couldn''t exit Forester');
+
+  freeDTM(dtmPortal);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the random.
+ *)
+function FF_Solve(): boolean;
+var
+  t, pheasant: integer;
+  done: boolean;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+  clickNorth(SRL_ANGLE_HIGH);
+
+  repeat
+    if (FF_TalkTo()) then
+    begin
+      pheasant := FF_GetPheasant();
+
+      // see if we need to kill a pheasant or exit through portal
+      if (pheasant > 0) then
+      begin
+        if (FF_KillPheasant(pheasant)) then
+          done := FF_ReturnPheasant();
+      end else
+        done := (pheasant = 0); // if we're free to leave
+    end else
+      FF_WalkToCenter();
+
+    if (done) then
+      if (FF_Exit()) then
+        result := waitTabExists(TAB_MAGIC, 10000);
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    addToSRLLog('FF_Solve: Forester solver timed out');
+end;
+

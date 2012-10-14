@@ -1,0 +1,333 @@
+(*
+Common
+======
+
+The common randoms file stores any functions or procedures that are used
+several random event solvers.
+
+*)
+
+const
+  SRL_NPC_OLDMAN = 'Dygt8!loqgGlgD50'; // chat name for Mysterious Old Man
+
+(**
+ * Author: Wizzup? & Coh3n
+ * Description: Type used to identify rotating items.  Example, Quiz & Mordaut.
+ *)
+type
+  TRotateObject = record
+    name, use: string;
+    count, width, height, totalCount: integer;
+    coverPercent: extended;
+  end;
+  TRotateObjectArray = array of TRotateObject;
+
+(*
+ScanRotateObject
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ScanRotateObject(cols, tols: TIntegerArray; area: TBox; splitDist, tries: integer): TRotateObject;
+
+Returns a TRotateObject type depending on parameters given:
+    * cols: The colors you DO NOT want to find (calls InverseColors)
+    * tols: The tolerance on the colors in 'cols'
+    * area: The area to gather data (i.e. area of the rotating item)
+    * splitDist: The splitTPA distance (larger for larger items)
+    * tries: How many times to call returnTPAExceptColors before declaring result fields
+
+.. note::
+
+    Author: Wizzup? & Coh3n
+    Last Modified: Feb. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    // MD_SmallBox is in mordaut.simba
+    item := getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30);
+*)
+//{$i srl/srl/misc/debug.simba}
+function ScanRotateObject(cols, tols: TIntegerArray; area: TBox; splitDist, tries: integer): TRotateObject;
+var
+  i: integer;
+  bounds: TBox;
+  tmpTPA: TPointArray;
+  tmpATPA: T2DPointArray;
+  tmpObj: TRotateObject;
+begin
+  for i := 1 to tries do
+  begin
+    tmpTPA := returnTPAExceptColors(cols, tols, area);
+    //debugTPA(tmpTPA, '');
+    bounds := getTPABounds(tmpTPA);
+
+    tmpATPA := splitTPA(tmpTPA, splitDist);
+    sortATPASize(tmpATPA, true);
+
+    if (length(tmpATPA) <> 0) then
+      tmpTPA := tmpATPA[0]
+    else
+      setLength(tmpTPA, 0);
+
+    // keep increasing the properties so we can find the average later
+    tmpObj.count := (tmpObj.count + length(tmpTPA));
+    tmpObj.width := (tmpObj.width + (bounds.x2 - bounds.x1));
+    tmpObj.height := (tmpObj.height + (bounds.y2 - bounds.y1));
+    tmpObj.totalCount := (tmpObj.totalCount + ((bounds.x2 - bounds.x1) * (bounds.y2 - bounds.y1)));
+  end;
+
+  // get the average and set the result
+  result.count := (tmpObj.count div tries);
+  result.width := (tmpObj.width div tries);
+  result.height := (tmpObj.height div tries);
+  result.totalCount := (tmpObj.totalCount div tries);
+
+  if (result.totalCount > 0) then // to prevent math runtime errors
+    result.coverPercent := ((result.count / extended(result.totalCount)) * 100.0);
+end;
+
+(*
+DebugRotateObject
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DebugRotateObject(obj: TRotateObject; name, use: string);
+
+Prints 'obj' to the debug box in a format so it can be easily inserted into a
+case statement.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Feb. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    // MD_SmallBox is in mordaut.simba
+    debugRotateObject(getRotateObject([4410947, 5003083], [10, 10], MD_SmallBox(i), 25, 30), 'Test', 'Nothing');
+*)
+procedure DebugRotateObject(obj: TRotateObject; name, use: string);
+begin
+  addToSRLLog('with result do');
+  addToSRLLog('begin');
+  addToSRLLog('  name := '''+capitalize(name)+''';');
+  addToSRLLog('  use := '''+capitalize(use)+''';');
+  addToSRLLog('  count := '+toStr(obj.count)+';');
+  addToSRLLog('  width := '+toStr(obj.width)+';');
+  addToSRLLog('  height := '+toStr(obj.height)+';');
+  addToSRLLog('  totalCount := '+toStr(obj.totalCount)+';');
+  addToSRLLog('  coverPercent := '+toStr(obj.coverPercent)+';');
+  addToSRLLog('end;');
+end;
+
+(*
+GetTROAUse
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetTROAUse(objs: TRotateObjectArray): string;
+
+Returns the most common use in a TRotateObjectArray.  Used to more accurately
+identify puzzles like Quiz and Mordaut.
+
+.. note::
+
+    Author: Coh3n & Wizzup?
+    Last Modified: Mar. 13th, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    commonUse := GetTROAUse(objs);
+*)
+function GetTROAUse(objs: TRotateObjectArray): string;
+var
+  i, j, count: integer;
+  found: boolean;
+  useCounts: TIntegerArray;
+  useNames: TStringArray;
+begin
+  // loops through each object and records and counts their 'uses'
+  for i := 0 to high(objs) do
+  begin
+    for j := 0 to high(useNames) do
+      if (lowercase(objs[i].use) = lowercase(useNames[j])) then
+      begin
+        found := true;
+        break;
+      end;
+
+    if (found) then
+      useCounts[j] := useCounts[j] + 1
+    else begin
+      setLength(useNames, length(useNames) + 1);
+      setLength(useCounts, length(useCounts) + 1);
+
+      useNames[high(useNames)] := objs[i].use;
+      useCounts[high(useCounts)] := 1;
+    end;
+
+    found := false;
+  end;
+
+  j := -1;
+  count := -1;
+
+  // gets the highest use count
+  for i := 0 to high(useCounts) do
+    if (useCounts[i] > count) then
+    begin
+      count := useCounts[i];
+      j := i;
+    end;
+
+  if (j <> -1) then
+    result := useNames[j]
+  else
+    addToSRLLog('GetTROAUse: Couldn''t find a use');
+
+  addToSRLLog('GetTROAUse: UseNames  - '+toStr(useNames));
+  addToSRLLog('GetTROAUse: UseCounts - '+toStr(useCounts));
+  addToSRLLog('GetTROAUse: Result    - '+result);
+end;
+
+(*
+ClickDTMRotatedIn
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickDTMRotatedIn(DTM, x1, y1, x2, y2: integer; sAngle, eAngle, aStep: extended; uptext: TStringArray; action: integer): boolean;
+
+Returns true if 'DTM' is found and clicked.
+    * DTM: The DTM identifier
+    * x1, y1, x2, y2: The area to search for the DTM
+    * sAngle: The starting angle to search
+    * eAngle: The ending angle to search
+    * aStep: Rotate 'aStep' degrees each search
+    * uptext: Will click no matter what if uptext is set to []
+    * action: The mouse action
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    ClickDTMRotatedIn(DTM, MSBox, -Pi, Pi, Pi/30, [], mouse_Left);
+*)
+function ClickDTMRotatedIn(DTM, x1, y1, x2, y2: integer; sAngle, eAngle, aStep: extended; uptext: TStringArray; action: integer): boolean;
+var
+  x, y: integer;
+  aFound: extended;
+begin
+  if (findDTMRotatedAlternating(DTM, x, y, x1, y1, x2, y2, sAngle, eAngle, aStep, aFound)) then
+  begin
+    mmouse(x, y, 3, 3);
+    if ((length(uptext) = 0) or waitUptextMulti(uptext, 300)) then
+    begin
+      getmousePos(x, y);
+      mouse(x, y, 0, 0, action);
+      result := true;
+    end;
+  end;
+end;
+
+var
+  _Callback_ClickPortal_DTM: Integer;
+function _Callback_ClickPortal: Boolean;
+begin
+  Result := ClickDTMRotatedIn(_Callback_ClickPortal_DTM, MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ortal'], mouse_Left);
+end;
+
+(*
+ClickPortal
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ClickPortal(dtmPortal: integer): boolean;
+
+Calls ClickDTMRotatedIn on 'dtmPortal'.  Debugs portal information depending on
+whether the function is successful or not.  Function also checks for the
+"dropped items" warning.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Jan. 22nd, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    result := exitPortal(dtmCerterPortal);
+*)
+function ClickPortal(dtmPortal: integer): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  _Callback_ClickPortal_DTM := dtmPortal;
+  addToSRLLog('ClickPortal: Exiting random');
+
+  if (waitFunc(@_Callback_ClickPortal, 50, 5000)) then
+  begin
+    t := (getSystemTime + 5000);
+    while (getSystemTime < t) do
+    begin
+      // in case we had to drop items
+      if (clickText('valuables', smallChars, MSX1, MSY1, MSX2, MSY2, mouse_Left)) then
+        break;
+
+      wait(50 + random(50));
+    end;
+
+    result := true;
+    addToSRLLog('ClickPortal: Clicked portal');
+  end else
+    addToSRLLog('ClickPortal: Didn''t find portal DTM');
+end;
+
+(*
+FreeDTMs
+~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure FreeDTMs(DTMs: TIntegerArray);
+
+Frees the dtms 'DTMs'.  Used to avoid repeating code.
+
+.. note::
+
+    Author: Coh3n
+    Last Modified: Feb. 08, 2012 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    FreeDTMs(DTMs);
+*)
+procedure FreeDTMs(DTMs: TIntegerArray);
+var
+  i: integer;
+begin
+  for i := 0 to high(DTMs) do
+    freeDTM(DTMs[i]);
+end;
+

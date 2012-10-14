@@ -1,0 +1,413 @@
+//-----------------------------------------------------------------//
+//--               SRL Resource Library                          --//
+//--                      Trade Routines                         --//
+//-----------------------------------------------------------------//
+// * function SomeoneTrades: Boolean;      // by ZephyrsFury
+// * function GetTradersName: string       // by ZephyrsFury
+// * function TradeScreenName: string;     // bY masquerader modified by ZephyrsFury
+// * function AcceptTrade: Boolean;        // by ZephyrsFury
+// * procedure Accept                      // by Masquerader modified by ZephyrsFury
+// * procedure Decline                     // by Masquerader modified by ZephyrsFury
+// * function Waiting: Boolean;            // by Masquerader modified by ZephyrsFury
+// * function PlayerAccepted: Boolean;     // by Masquerader modified by ZephyrsFury
+// * function CheckItem:boolean;           // by Masquerader
+// * Function HandleTrade: Boolean;        // by ZephyrsFury
+
+{ type TTrader;
+  Description: Stores information on players who have traded with us during runtime. }
+type
+  TTrader = record
+    Name: string;
+    Time, Attempts: Integer;
+  end;
+
+{ var Traders: array of TTrader;
+  Description: Used by Handle trade to keep track of players who have traded with us. }
+var
+  Traders: array of TTrader;
+
+{ var TradeMark: Integer;
+  Description: Marks the time since the last trade. }
+var
+  TradeMark: Integer;
+
+{ const TalkAfterTrade;
+  Description: True for random text after successful and unsuccessful trades. }
+var
+  TalkAfterTrade: Boolean;
+
+{*******************************************************************************
+function SomeoneTrades: Boolean;
+by: ZephyrsFury
+Description: Returns true if someone trades.
+*******************************************************************************}
+function SomeoneTrades: Boolean;
+var
+  xx, yy, II: Integer;
+  TP: TPoint;
+begin
+  Result := True;
+  for II := 8 downto 4 do
+  begin
+    TP := TextCoords(II);
+    if (FindColor(xx, yy, clTrade, TP.x, TP.y, MCX2, TP.y + 13)) then
+      Exit;
+  end;
+  Result := False;
+end;
+
+{*******************************************************************************
+function GetTradersName: string;
+By: ZephyrsFury
+Description: Returns the name of the trade as displayed in the chatbox.
+*******************************************************************************}
+function GetTradersName: string;
+var
+  ii, x, y, TPos: Integer;
+  TP: TPoint;
+  TS: string;
+begin
+  for ii := 8 downto 4 do
+  begin
+    TP := TextCoords(ii);
+    if (FindColor(x, y, clTrade, TP.x, TP.y, MCX2, TP.y + 13)) then Break;
+  end;
+  TS := GetChatBoxText(II, clTrade);
+  TPos := Pos('wishes', TS) - 1;
+  Result := Trim(Copy(TS, 1, TPos));
+end;
+
+{*******************************************************************************
+function TradeScreenName: string;
+By: masquerader modified and renamed by ZephyrsFury
+Description: Returns the name of trader from the trade screen.
+*******************************************************************************}
+function TradeScreenName: string;
+var
+  colonx, colony: Integer;
+begin
+  case TradeScreen of
+    1: if (IsTextInAreaEx(174, 32, 345, 49, colonx, colony, ':', 0, UpCharsEx, False, True, 0, 0, 2070783)) then
+         Result := (Trim(GetTextAtEx(colonx + 8, colony, 0, UpCharsEx, False, True, 0, 2, 2070783, 12, False, tr_AllChars)));
+    2: if (IsTextInAreaEx(373, 287, 458, 319, colonx, colony, 'Trad', 0, UpCharsEx, False, True, 0, 0, 16776960)) then
+         Result := (Trim(GetTextAtEx(colonx + 3, colony + 14, 0, UpCharsEx, False, True, 0, 2, 16776960, 12, False, tr_AllChars)));
+  end;
+  if (Result = '') then Writeln('Could not get Trader''s Name');
+end;
+
+
+{*******************************************************************************
+function AcceptTrade: Boolean;
+By: ZephyrsFury
+Description: Accepts the trade by clicking the chatbox.
+*******************************************************************************}
+function AcceptTrade: Boolean;
+var
+  Timeout, ii: Integer;
+  TP: TPoint;
+  TPA: TPointArray;
+  TB: TBox;
+begin
+  for ii := 8 downto 4 do    //Checks last 4 lines of chat text.
+  begin
+    TP := TextCoords(ii);
+    if (FindColorsTolerance(TPA, clTrade, TP.x, TP.y, MCX2, TP.y + 13, 0)) then
+    begin
+      TB := GetTPABounds(TPA);
+      MouseBox(TB.x1, TB.y1, TB.x2, TB.y2, 1);
+      MarkTime(TimeOut);
+      repeat
+        Wait(1000 + Random(500));
+        if (TimeFromMark(TimeOut) > 10000) then
+          Exit;
+      until(TradeScreen > 0);
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+{*******************************************************************************
+procedure Accept;
+By: masquerader modified by ZephyrsFury
+Description: Accepts the opened trade.
+*******************************************************************************}
+procedure Accept;
+begin
+  case (TradeScreen) of
+    1: MouseBox(238, 136, 281, 153, 1);
+    2: MouseBox(199, 303, 250, 316, 1);
+  end;
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+procedure Decline;
+By: masquerader modified by ZephyrsFury
+Description: Declines the opened trade.
+*******************************************************************************}
+procedure Decline;
+begin
+  case (TradeScreen) of
+    1: MouseBox(235, 176, 282, 192, 1);
+    2: MouseBox(268, 301, 319, 318, 1);
+  end;
+  Wait(1000 + Random(500));
+end;
+
+{*******************************************************************************
+function Waiting: Boolean;
+By: masquerader modified by ZephyrsFury
+Description: Returns true if you are waiting for the other player to accept the trade.
+*******************************************************************************}
+function Waiting: Boolean;
+begin
+  case (TradeScreen) of
+    1: Result := (GetColor(190, 287) = 16777215);
+    2: Result := (GetColor(178, 35) = 16776960);
+  end;
+end;
+
+{*******************************************************************************
+function PlayerAccepted: Boolean;
+By: masquerader modified by ZephyrsFury/Rich
+Description: Returns true if the other player accepted the trade.
+*******************************************************************************}
+function PlayerAccepted: Boolean;
+begin
+  case (TradeScreen) of
+    1: Result := (GetColor(187, 287) = 16777215);
+    2: Result := (GetColor(186, 34) = 16776960);
+  end;
+end;
+
+{*******************************************************************************
+function CheckItem(them: Boolean; name: string): Integer;
+By: masquerader modified by Pyro and Cheesehunk
+Description: returns number item at second screen
+it might mess up because it goes out of the box/off the screen,
+but thats not my fault
+make the first letter capital, and the rest lowercase
+*******************************************************************************}
+function CheckItem(them: Boolean; name: string): Integer;
+var
+  number: string;
+  itemx, itemy, i: Integer;
+  Add: Integer;
+  x, y: Integer;
+  x1, y1, x2, y2: Integer;
+begin
+  Result := 0;
+  if (TradeScreen <> 2) then Exit;
+  if (them) then
+  begin
+    x1 := 262;
+    y1 := 85;
+    x2 := 514;
+    y2 := 337
+  end else
+  begin
+    x1 := 0;
+    y1 := 83;
+    x2 := 258;
+    y2 := 335
+  end;
+
+  while (IsTextInAreaEx(x1, y1, x2, y2, itemx, itemy, name, 0, UpCharsEx, True,
+    True, 0, 2, 16777215)) do
+  begin
+    if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, '(', 0, UpCharsEx, True,
+      True, 0, 2, 16777215)) then
+    begin
+      number := Trim(GetTextAtEx(x + 3, y, 0, UpCharsEx, True, True, 0, 2,
+        16777215, 12, False, tr_digits));
+      for i := 1 to Length(number) do
+      begin
+        if (Copy(number, i, 1) = ' ') then Delete(number, i, 1)
+      end;
+      Add := StrToInt(number);
+      Result := Result + Add;
+    end else
+      if (IsTextInAreaEx(itemx, itemy, x2, itemy, x, y, 'x', 0, UpCharsEx, True,
+        True, 0, 2, 16777215)) then
+      begin
+        number := Trim(GetTextAtEx(x + 10, y, 0, UpCharsEx, True, True, 0, 2,
+          16777215, 12, False, tr_digits));
+        for i := 1 to Length(number) do
+          if (Copy(number, i, 1) = ' ') then Delete(number, i, 1);
+        Add := StrToInt(number);
+        Result := Result + Add;
+      end else
+        Result := Result + 1;
+    y1 := itemy + 12;
+  end;
+end;
+
+{*******************************************************************************
+function InTradersArray(TraderName: string; var Position: Integer): Boolean;
+By: ZephyrsFury
+Description: Checks for the occurence of Name in the Trader array and returns
+the position. Used in HandleTrade.
+*******************************************************************************}
+function InTradersArray(TraderName: string; var Position: Integer): Boolean;
+begin
+  for Position := 0 to High(Traders) do
+    if (TraderName = Traders[Position].Name) then
+      Break;
+  Result := (Position < Length(Traders));
+end;
+
+{*******************************************************************************
+procedure UpdateTradersArray(Name: string; Remove: Boolean);
+By: ZephyrsFury
+Description: Updates the Trader array by setting TimeMark if player exists or
+by adding the player to the Trader array. If Remove is true it will remove the
+player from the array. Used in HandleTrade.
+*******************************************************************************}
+procedure UpdateTradersArray(TraderName: string; Remove: Boolean);
+var
+  ii, jj: Integer;
+  STraders: array of TTrader;
+begin
+  if (InTradersArray(TraderName, ii)) then
+  begin
+    if (Remove) then
+    begin
+      STraders := Traders;
+      SetLength(Traders, 0);
+      for jj := 0 to High(STraders) do
+      begin
+        if (jj = ii) then Continue;
+        SetLength(Traders, Length(Traders) + 1);
+        Traders[High(Traders)] := STraders[jj];
+      end;
+    end else
+    begin
+      MarkTime(Traders[ii].Time);
+      Inc(Traders[ii].Attempts);
+    end;
+  end else
+  if (not(Remove)) then
+  begin
+    SetLength(Traders, Length(Traders) + 1);
+    Traders[High(Traders)].Name := TraderName;
+    MarkTime(Traders[High(Traders)].Time);
+    Inc(Traders[High(Traders)].Attempts);
+  end;
+end;
+
+{*******************************************************************************
+function HandleTrade: Boolean;
+by: ZephyrsFury
+Description: Handles a trade.
+*******************************************************************************}
+function HandleTrade: Boolean;
+var
+  TheTrader: string;
+  Success: Boolean;
+  TradeTime, Tx, Ty, ii, c: Integer;
+begin
+  if (SomeoneTrades) then
+  begin
+    if (TimeFromMark(TradeMark) < 30000) then Exit;
+
+    TheTrader := GetTradersName;
+    WriteLn(TheTrader + ' wishes to trade.');
+
+    if (InTradersArray(TheTrader, ii)) then
+      if (TimeFromMark(Traders[ii].Time) < 5 * 60 * 1000) and (Traders[ii].Attempts >= 2) then
+      begin
+        WriteLn('We have had unsuccessful trades with ' + TheTrader + ' in the last 5 minutes, Exiting...');
+        MarkTime(TradeMark);
+        Exit;
+      end;
+
+    c := 0;
+    while (TradeScreen <> 1) and (c < 3) do
+    begin
+      if (AcceptTrade) then Break;
+      Inc(c);
+      Wait(1000 + Random(1000));
+    end;
+    if (c >= 3) then
+    begin
+      Writeln('Could not open trade screen.');
+      Exit;
+    end;
+    
+    if (TradeScreen = 1) then
+    begin
+      MarkTime(TradeTime);
+      WriteLn('Trading with ' + TheTrader);
+      while (TimeFromMark(TradeTime) < 30000) do
+      begin
+        if (TradeScreen = 1) then
+        begin
+          if (PlayerAccepted) then
+          begin
+            WriteLn('Player has accepted, checking for items...');
+            if (FindColor(Tx, Ty, srl_outline_black, 311, 76, 504, 292)) then
+            begin
+              Accept;
+              WriteLn('Found items, accepted first tradescreen.');
+            end else
+            begin
+              WriteLn('Trader did not offer any items, Declining');
+              Break;
+            end;
+          end;
+        end else
+        if (TradeScreen = 2) then
+        begin
+          if (PlayerAccepted) then
+          begin
+            WriteLn('Player has accepted second tradescreen.');
+            Accept;
+            WriteLn('Accepted second tradescreen');
+            Success := True;
+          end;
+        end else Break;
+        Wait(1000 + Random(1000));
+      end;
+    end;
+
+    if (not(Success)) then
+    begin
+      if (TimeFromMark(TradeTime) > 30000) then
+        WriteLn('Trade time limit passed, declining.');
+      while (TradeScreen <> 0) do
+        Decline;
+      WriteLn('Trade Failed');
+      UpdateTradersArray(TheTrader, False);
+      if (TalkAfterTrade) then
+        if (InTradersArray(TheTrader, ii)) then
+          if (Traders[ii].Attempts >= 2) then
+            case Random(6) of
+              0: TypeSend(AddMistakes('don''t trade if you''ve got nothing to give me', 20));
+              1: TypeSend(AddMistakes('stop bothering me', 20));
+              2: TypeSend(AddMistakes('please stop trading with me', 20));
+              3: TypeSend(AddMistakes('stop trading with me', 20));
+              4: TypeSend(AddMistakes('stop trading if your not giving me any thing', 20));
+              5: TypeSend(AddMistakes('lol you can stop trading now', 20));
+            end;
+    end else
+    begin
+      if (TalkAfterTrade) then
+        case Random(6) of
+          0: TypeSend(AddMistakes('thanks', 20));
+          1: TypeSend(AddMistakes('ty', 20));
+          2: TypeSend(AddMistakes('wow thanks...', 20));
+          3: TypeSend(AddMistakes('thanks a lot...', 20));
+          4: TypeSend(AddMistakes('cool thanks', 20));
+          5: TypeSend(AddMistakes('thanks very much', 20));
+        end;
+      WriteLn('Trade Successful!');
+      UpdateTradersArray(TheTrader, True);
+      Result := True;
+    end;
+
+    MarkTime(TradeMark);
+    if SRL_HasProc(srl_OnFindTrade) then
+      SRL_Procs[srl_OnFindTrade]();
+  end;
+end;

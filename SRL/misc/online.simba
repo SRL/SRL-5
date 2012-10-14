@@ -1,0 +1,217 @@
+(*
+
+Online
+======
+
+Includes all functions which depend on external sources. 
+
+*)
+
+(*
+
+Grand Exchange Database Fetching
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Relies on the `RuneScript`_ GE lookup scripts hosted at: `http://rscript.org/lookup.php?type=ge`. 
+
+*)
+
+
+type
+  TGEItem = record
+    price: Integer;   // Current Price
+    id: Integer;  // ID Tag
+    dailyChange: Integer;  // Daily Change
+    name: String;    // Human Readable name
+  end;
+
+  TGEItemArray = array of TGEItem;
+
+
+function __GetRegexIndex(s: TStringArray; r: String; l, h: Integer): Integer;
+var
+  i: Integer;
+begin
+  for i := l to h do
+  begin
+    if (ExecRegExpr(r, s[i])) then
+    begin
+      Result := i;
+      exit;
+    end;
+  end;
+  Result := 0;
+end;
+
+(*
+
+GetGEItems
+~~~~~~~~~~
+
+.. code-block:: pascal
+    function GetGEItems(v: Variant): TGEItemArray;
+
+Collects all results from the passed argument. If it is a string, it will 
+search and return all the options found. If it an integer, it will attempt the
+same tactic, but usually only returns one. 
+
+.. note::
+    by: Nava2
+
+Example:
+
+.. code-block:: pascal
+    WriteLn(GetGEItems('rune plate')); // by name!
+    WriteLn(GetGEItems(379)); //lobster, by ID! 
+
+*)
+function GetGEItems(v: Variant): TGEItemArray;
+var
+  vString, query : string;
+  rsr: record
+    e: string;
+    rc: Integer;
+  end;
+  i, c: Integer;
+  pStrs, xStrs: TStringArray;
+  pStrsH: Integer;
+begin
+  { fix var to a string }
+  if (not VariantIsString(v)) then
+    vString := ToStr(v)
+  else
+    vString := v;
+
+  { get the actual GE page information, split by lines }
+  query := ReplaceWrap(vString, ' ', '%20', [rfReplaceAll]);
+  query := GetPage('http://rscript.org/lookup.php?type=ge&search=' + query);
+  ExplodeWrap(#10, query, pStrs);
+
+
+  pStrsH := High(pStrs);
+  rsr.rc := 0;
+  { Count the results and store any errors found. "RESULTS" field is inaccurate }
+  for i := 0 to pStrsH do
+  begin
+    if (ExecRegExpr('ERROR:.*', pStrs[i])) then
+    begin
+      { ERROR Message: }
+      rsr.e := Copy(pStrs[i], 8, Length(pStrs[i]));
+      WriteLn('ERRRRROR: ' + rsr.e);
+    end else if (ExecRegExpr('^ITEM:\s', pStrs[i])) then
+    begin
+      Inc(rsr.rc);
+    end;
+  end;
+
+  { We didn't find any items, OH NOES }
+  if (rsr.rc = -1) then
+  begin
+    WriteLn('No item found.');
+    if (rsr.e <> '') then
+      WriteLn('GE Database encountered: ' + rsr.e);
+    Exit;
+  end;
+
+  setLength(Result, rsr.rc);
+  c := 0; i := -1;
+  { start the item building at the first occurence of 'ITEM:\s'. }
+  while (c <> rsr.rc) do
+  begin
+    i := __GetRegexIndex(pStrs, '^ITEM:\s', i+1, pStrsH);
+    { explode the string with the item index in here }
+    xStrs := Explode(' ', pStrs[i]);
+    with Result[c] do
+    begin
+      price := CashStrToInt(xStrs[3]);
+      dailyChange := CashStrToInt(xStrs[4]);
+      name := ReplaceWrap(Lowercase(xStrs[2]), '_', ' ', [rfReplaceAll]);
+
+      { ID is on another line in the body of the fetched results }
+      xStrs := Explode(' ', pStrs[i+1]);
+      id := StrToIntDef(xStrs[1], -1);
+    end;
+
+    Inc(c);
+  end;
+end;
+
+(*
+
+DebugGEItem
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DebugGEItem(v: variant);
+
+Debugs the item 'v' to the debug box.  Will debug multiple items if multiple
+items are found in the database.
+
+.. note::
+
+    by: Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+    DebugGEItem('rune hatchet');
+
+*)
+procedure DebugGEItem(v: variant);
+var
+  i: integer;
+  ge_items: TGEItemArray;
+begin
+  ge_items := GetGEItems(v);
+
+  for i := 0 to high(ge_items) do
+    with ge_items[i] do
+    begin
+      writeln('GE Debug Item');
+      writeln('  Name: '+name);
+      writeln('  Price: '+toStr(price));
+      writeln('  ID: '+toStr(id));
+      writeln('  Daily Change: '+toStr(dailyChange));
+      writeln('');
+    end;
+end;
+
+(*
+
+GetGEPrice
+~~~~~~~~~~
+
+.. code-block:: pascal
+    function GetGEPrice(v: variant): Integer;
+
+Collects first results from the passed argument using `GetGEItems`. It is 
+suggested to use IDs for this function due to it only returning one option.
+
+.. note::
+    by: Nava2
+
+Example:
+
+.. code-block:: pascal
+    WriteLn(GetGEPrice('rune plate')); // by name!
+    WriteLn(GetGEPrice(379)); //lobster, by ID! 
+
+*)
+function GetGEPrice(v: variant): Integer;
+var
+  Items: TGEItemArray;
+  l: Integer;
+begin
+  Items := GetGEItems(v);
+  l := Length(Items);
+  if (l = 0) then
+    Result := -1
+  else if (l = 1) then
+    Result := Items[0].price
+  else begin
+    Result := Items[0].price;
+    WriteLn('GetGEPrice: Found multiple items for ' + ToStr(v) + ' returned first.');
+  end;
+end;

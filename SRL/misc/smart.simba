@@ -1,0 +1,167 @@
+{$DEFINE SRL_SMART}
+{$DEFINE SMART}
+{$loadlib libsmart}
+
+function IsKeyDown(C: Word): Boolean; {$IFDEF Lape}override;{$ENDIF}
+begin
+  Result := SmartIsKeyDown(C);
+end;
+
+procedure MoveMouse(x, y: Integer); {$IFDEF Lape}override;{$ENDIF}
+begin
+  SmartMoveMouse(x, y);
+end;
+
+procedure HoldMouse(x, y: Integer; button : integer); {$IFDEF Lape}override;{$ENDIF}
+begin
+  if button = mouse_left then
+    SmartHoldMousePlus(x,y,1)
+  else if button = mouse_middle then
+    SmartHoldMousePlus(x,y,2)
+  else if button = mouse_right then
+    SmartHoldMousePlus(x,y,3)
+  else
+    raiseexception(ercustomerror,'Unknown mouse button in SmartHoldMousePlus');
+end;
+
+procedure ReleaseMouse(x, y: Integer; button : integer); {$IFDEF Lape}override;{$ENDIF}
+begin
+  if button = mouse_left then
+    SmartReleaseMousePlus(x,y,1)
+  else if button = mouse_middle then
+    SmartReleaseMousePlus(x,y,2)
+  else if button = mouse_right then
+    SmartReleaseMousePlus(x,y,3)
+  else
+    raiseexception(ercustomerror,'Unknown mouse button in SmartReleaseMousePlus');
+end;
+
+procedure KeyUp(key: Word); {$IFDEF Lape}override;{$ENDIF}
+begin
+  If Key = 13 Then
+    Key := 10;
+  SmartReleaseKey(key);
+end;
+
+procedure KeyDown(key: Word); {$IFDEF Lape}override;{$ENDIF}
+begin
+  If Key = 13 Then
+    Key := 10;
+  SmartHoldKey(key);
+end;
+
+procedure SendKeys(const S: String; keywait{$IFNDEF SIMBAMAJOR980}, keymodwait{$ENDIF}: integer); {$IFDEF Lape}override;{$ENDIF}
+begin
+  SmartSendKeys(S);
+end;
+
+function FindAndSetTarget(TitlePrefix: String; SetAsTarget: Boolean): Boolean;
+var
+  T : TSysProcArr;
+  I : Integer;
+begin
+  T := GetProcesses;
+  for I := High(T) downto 0 do
+    if Pos(TitlePrefix, T[I].Title) <> 0 then
+    begin
+      Result := True;
+      if SetAsTarget then SetTarget(T[I]);
+      Exit;
+    end;
+end;
+
+procedure GetRealMousePos(var X, Y : Integer);
+var
+  KMTarget, ITarget : Integer;
+begin
+  {$IFDEF Lape}
+  WriteLn('GetRealMousePos is not supported in Lape');
+  X := -1;
+  Y := -1;
+  {$ELSE}
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  FindAndSetTarget('Public SMART', True);
+  GetTClient.IOManager.GetMousePos(X, Y);
+  FreeTarget(GetImageTarget);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+
+  // These are not universial offsets, but works somewhat for some Windows themes.
+  X := X - 8;
+  Y := Y - 25;
+  {$ENDIF}
+end;
+
+procedure GetMousePos(var x, y: Integer); {$IFDEF Lape}override;{$ENDIF}
+begin
+  SmartGetMousePos(x, y);
+end;
+
+function IsRealMouseInBox(B : TBox): Boolean;
+var
+  P : TPoint;
+begin
+  GetRealMousePos(P.X, P.Y);
+  Result := PointInBox(P, B);
+end;
+
+function GetColor(x, y: Integer): Integer; {$IFDEF Lape}override;{$ENDIF}
+begin
+  result:= SmartGetColor(x, y);
+end;
+
+procedure SmartSetTarget;
+begin
+  SetTargetArray(SmartImageArray, 765,503);
+end;
+
+function FindWindow(Title: String): Boolean;
+begin
+  result:= true;
+end;
+
+procedure ActivateClient; {$IFDEF Lape}override;{$ENDIF}
+begin
+end;
+
+function FindWindowBySize(Width, Height: Integer): Boolean;
+begin
+  result:= true;
+end;
+
+{procedure SmartSaveSettings(v: TVariantArray);
+var
+  i: Integer;
+  ts: TStringArray;
+begin
+  ts := ['server', 'members', 'signed', 'sd', 'DC', IncludePath + 'SRL/SRL/misc/smartINI.ini'];
+  for i := 0 to 4 do
+    WriteINI('SMART', ts[i], v[i], ts[5]);
+end;   }
+
+procedure SmartSetupEx(Server: integer; members, signed, superdetail: boolean);
+var
+  prefix: string;
+begin
+  prefix := ReadINI('World' + IntToStr(Server), 'Prefix', IncludePath + 'SRL/SRL/misc/worlds.ini');
+  if(prefix = '')then
+  begin
+    writeln('Invalid world number or corrupted world list. Please review your settings');
+    TerminateScript;
+  end;
+  SmartSetup('http://'+prefix+'.runescape.com/', 'plugin.js?param=o0,a' + IntToStr((Byte(not(Signed)) + 1) * Byte(not((SuperDetail and Signed)))) + ',m' + IntToStr(Byte(Members)), 765, 553, 's');
+  //SmartSaveSettings([Server, Members, Signed, SuperDetail, SmartGetDC]);
+end;
+
+{function SmartLastSettings: TStringArray;
+var
+  i: Integer;
+  ts: TStringArray;
+begin
+  ts := ['server', 'members', 'signed', 'sd', 'DC', IncludePath + 'SRL/SRL/Misc/smartINI.ini'];
+  SetLength(Result, 5);
+  for i := 0 to 4 do
+    Result[i] := ReadINI('SMART', ts[i], ts[5]);
+end; }
+

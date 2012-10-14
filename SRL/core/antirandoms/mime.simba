@@ -1,0 +1,435 @@
+(*
+Mime
+====
+
+The Mime file stores the routines to solve the mime random event.
+
+This solver uses pixel shifting to determine which emote the mime is performing.
+To compensate for the spotlight, it will get the total pixel shift in a large
+box around the mime, and the pixel shift in a small box around the mime.  It
+then calculates the percentage of the small shift in the big shift.  Lastly,
+it compares the stored emotes (Mime_GetEmotes) with the scanned emote, resulting
+a certain score.  If the score is high enough, it's found the right emote.
+
+*)
+
+const
+  MIME_EMOTE_COUNT = 8;
+    MIME_EMOTE_THINK = 0;
+    MIME_EMOTE_BOX   = 1;
+    MIME_EMOTE_WALL  = 2;
+    MIME_EMOTE_DANCE = 3;
+    MIME_EMOTE_CRY   = 4;
+    MIME_EMOTE_CLIMB = 5;
+    MIME_EMOTE_LEAN  = 6;
+    MIME_EMOTE_LAUGH = 7;
+
+(**
+ * Stores a Mime emote's properties.  See Mime_ScanMime for more details.
+ *)
+type
+  TMimeEmote = record
+    name: string;
+    shiftSmall: integer;    // total pixel shift in a small box around Mime
+    shiftBig: integer;      // total pixel shift in a big box around Mime
+    shiftPercent: extended; // percent of small shift in large
+    textTPACount: integer;
+  end;
+  TMimeEmoteArray = array of TMimeEmote;
+
+(**
+ * Author: Coh3n & NCDS
+ * Description: Returns true if player is in the random.
+ *)
+function Mime_Detect(): boolean;
+var
+  i: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  for i := TAB_COMBAT to TAB_OBJECTIVES do
+    if (tabExists(i)) then
+      exit;
+
+  // the ligher red on the minimap
+  result := (countColorTolerance(592960, MMX1, MMY1, MMX2, MMY2, 20) > 500) and
+            (not tabExists(TAB_EMOTES));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TMimeEmoteArray of all the Mime's emotes.
+ *)
+function Mime_GetEmotes(): TMimeEmoteArray;
+begin
+  setLength(result, MIME_EMOTE_COUNT);
+
+  with result[MIME_EMOTE_THINK] do
+  begin
+    name := 'Think';
+    shiftSmall := 10000;
+    shiftBig := 13000;
+    shiftPercent := 84.0;
+    textTPACount := 87;
+  end;
+
+  with result[MIME_EMOTE_BOX] do
+  begin
+    name := 'Glass Box';
+    shiftSmall := 14800;
+    shiftBig := 20500;
+    shiftPercent := 70.0;
+    textTPACount := 139;
+  end;
+
+  with result[MIME_EMOTE_WALL] do
+  begin
+    name := 'Glass Wall';
+    shiftSmall := 5500;
+    shiftBig := 6500;
+    shiftPercent := 95.0;
+    textTPACount := 155;
+  end;
+
+  with result[MIME_EMOTE_DANCE] do
+  begin
+    name := 'Dance';
+    shiftSmall := 19000;
+    shiftBig := 35000;
+    shiftPercent := 55.0;
+    textTPACount := 96;
+  end;
+
+  with result[MIME_EMOTE_CRY] do
+  begin
+    name := 'Cry';
+    shiftSmall := 10000;
+    shiftBig := 11500;
+    shiftPercent := 85.0;
+    textTPACount := 54;
+  end;
+
+  with result[MIME_EMOTE_CLIMB] do
+  begin
+    name := 'Climb Rope';
+    shiftSmall := 17000;
+    shiftBig := 28000;
+    shiftPercent := 60.0;
+    textTPACount := 168;
+  end;
+
+  with result[MIME_EMOTE_LEAN] do
+  begin
+    name := 'Lean on Air';
+    shiftSmall := 10000;
+    shiftBig := 15000;
+    shiftPercent := 84.0;
+    textTPACount := 148;
+  end;
+
+  with result[MIME_EMOTE_LAUGH] do
+  begin
+    name := 'Laugh';
+    shiftSmall := 9500;
+    shiftBig := 12600;
+    shiftPercent := 76.0;
+    textTPACount := 101;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Prints the 'emote' to the debug box.
+ *)
+procedure Mime_DebugEmote(emote: TMimeEmote);
+begin
+  addToSRLLog('Name: '+emote.name);
+  addToSRLLog('ShiftSmall: '+toStr(emote.shiftSmall));
+  addToSRLLog('ShiftBig: '+toStr(emote.shiftBig));
+  addToSRLLog('ShiftPercent: '+toStr(emote.shiftPercent));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Sets up the screen to solve the random.
+ *)
+procedure Mime_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_LOW); // REQUIRED. Data was gathered at this angle
+  doConversation('', false); // get past GE messages
+
+  // click front of stage & move the mouse away from chat box so text can be recognized
+  mouse(250, 300, 10, 10, mouse_Left);
+  mouse(MCX2 + 30 + random(100), 170, 100, 100, mouse_Move);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the Mime is performing an Emote.  While the
+ * Mime is performing, there's always the same black text in the chat box.
+ *)
+function Mime_IsPerforming(): boolean;
+begin
+  result := (countColorTolerance(clBlack, MCX1, MCY1, MCX2, MCY2, 0) = 683);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the total pixel shifting over the specified scanning
+ * time.  The results from this are in Mime_GetEmotes, so if scanning constants
+ * change, the records may need to change as well.
+ *)
+const
+  _MIME_SCAN_TIME  = 3000; // time to scan for pixel shifting
+  _MIME_SCAN_AFTER = 1500; // wait time AFTER perfomance starts (i.e. Mime_IsPerforming returns true); lessens the affect of the spotlight
+  _MIME_SCAN_DIV   = 15;   // determines pixel shift interval
+
+function Mime_ScanMime(): TMimeEmote;
+var
+  t: integer;
+  shiftBoxes: TBoxArray;
+  tmpShifts: TIntegerArray;
+begin
+  wait(_MIME_SCAN_AFTER); // wait until after the spotlight appears
+
+  t := (getSystemTime + _MIME_SCAN_TIME);
+
+  shiftBoxes := [ intToBox(400, 20, 510, 210),   // box around the entire Mime
+                  intToBox(440, 82, 510, 145) ]; // box around the upper body of the mime
+
+  // get the total pixel shift over the total scanning time
+  while (getSystemTime < t) do
+  begin
+    tmpShifts := pixelShiftMulti(shiftBoxes, _MIME_SCAN_TIME div _MIME_SCAN_DIV);
+    result.shiftBig := result.shiftBig + tmpShifts[0];
+    result.shiftSmall := result.shiftSmall + tmpShifts[1];
+  end;
+
+  result.shiftPercent := (result.shiftSmall / extended(result.shiftBig)) * 100;
+
+  // waits for performance to be over
+  t := (getSystemTime + 5000);
+  while (Mime_IsPerforming() and (getSystemTime < t)) do
+    wait(50 + random(25));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the corresponding Mime's emote constant (see top). Uses
+ * Wizzup?'s scoring system to decide which emote was found.
+ *)
+function Mime_IdentifyEmote(emotes: TMimeEmoteArray): integer;
+var
+  i, maxScore, maxIndex: integer;
+  tmpEmote: TMimeEmote;
+  scores: TIntegerArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  result := -1;
+  setLength(scores, length(emotes));
+
+  // wait for the performance to start before scanning
+  if (waitFunc(@Mime_IsPerforming, 50, 10000)) then
+  begin
+    addToSRLLog('Mime_IdentifyEmote: Identifying emote');
+    tmpEmote := Mime_ScanMime();
+
+    {$IFDEF DEBUG_MIME}
+    tmpEmote.name := 'Scanned Emote';
+    Mime_DebugEmote(tmpEmote);
+    {$ENDIF}
+  end;
+
+  // loop through emotes to see which fits
+  for i := 0 to high(emotes) do
+  begin
+    // checks if big/small shifts are in range of emotes[i]
+    if (inRange(tmpEmote.shiftSmall, emotes[i].shiftSmall - 1500, emotes[i].shiftSmall + 1500)) then
+      scores[i] := scores[i] + 6;
+
+    if (inRange(tmpEmote.shiftBig, emotes[i].shiftBig - 1500, emotes[i].shiftBig + 1500)) then
+      scores[i] := scores[i] + 6;
+
+    // check if pixel shifting is in range of min/max
+    if (inRange(tmpEmote.shiftBig + tmpEmote.shiftSmall div 2, emotes[i].shiftSmall, emotes[i].shiftBig)) then
+      scores[i] := scores[i] + 4;
+
+    // in range of emote's shiftPercet +/- 3%
+    if (scores[i] <> 0) then
+      if (tmpEmote.shiftPercent = emotes[i].shiftPercent) then
+        scores[i] := scores[i] + 15
+      else
+        if ((tmpEmote.shiftPercent > (emotes[i].shiftPercent - 3)) and (tmpEmote.shiftPercent < (emotes[i].shiftPercent + 3))) then
+          scores[i] := scores[i] + 9;
+  end;
+
+  // get the highest score, set result
+  maxScore := -1;
+  maxIndex := -1;
+  for i := 0 to high(scores) do
+    if (scores[i] > maxScore) then
+    begin
+      maxScore := scores[i];
+      maxIndex := i;
+    end;
+
+  // didn't ID if score is too low
+  if (maxScore > 0) then
+    result := maxIndex;
+
+  if (result <> -1) then
+    addToSRLLog('Mime_IdentifyEmote: Found emote '+emotes[result].name+' with a score of '+toStr(maxScore))
+  else
+    addToSRLLog('Mime_IdentifyEmote: Didn''t identify emote');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the 'Text' slot.  Starts at 1 and goes across
+ * the chat box.
+ *)
+function Mime_TextBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 4, 2, 90, 20, 90, 40, point(100, 397));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the tpa length of the text color for 'text'. See
+ * Mime_TextBox.
+ *)
+function Mime_GetTextTPA(text: integer): integer;
+var
+  tpa: TPointArray;
+  b: TBox;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  b := Mime_TextBox(text);
+
+  // the colour of the main text (not shadow)
+  if (findColorsTolerance(tpa, 11174789, b.x1, b.y1, b.x2, b.y2, 10)) then
+    result := length(tpa);
+
+  //addToSRLLog('slot: '+toStr(text)+' length: '+toStr(result));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Clicks the text in the chat box for the 'Emote'.
+ *)
+function Mime_ClickText(emote: TMimeEmote): boolean;
+var
+  i, len: integer;
+  p: TPoint;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  // loop through each "text box" in the chat box to find the correct text
+  for i := 1 to 8 do
+  begin
+    len := Mime_GetTextTPA(i);
+
+    // +/- tolerance on TPA count just in case
+    if (inRange(len, emote.textTPACount - 3, emote.textTPACount + 3)) then
+    begin
+      addToSRLLog('Mime_ClickText: Clicked text '+emote.name);
+      p := middleBox(Mime_TextBox(i));
+      mouse(p.x, p.y, 10, 3, mouse_Left);
+      wait(1500 + random(500));
+
+      // move the mouse away from text so text color can be found later
+      mmouse(MCX2 + 30 + random(30), 170, 50, 50);
+      result := true;
+      break;
+    end;
+  end;
+
+  if (not result) then
+    addToSRLLog('Mime_ClickText: Unable to click text - '+emote.name);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Identifies and performs the Mime's emote.
+ *)
+function Mime_DoEmote(emotes: TMimeEmoteArray): boolean;
+var
+  i, t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  i := Mime_IdentifyEmote(emotes);
+  if (i <> -1) then
+  begin
+    t := (getSystemTime + 5000);
+    while (getSystemTime < t) do
+      if (Mime_ClickText(emotes[i])) then
+      begin
+        result := true;
+        break;
+      end;
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the random.
+ *)
+function Mime_Solve(): boolean;
+var
+  t: integer;
+  emotes: TMimeEmoteArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  Mime_Setup();
+  emotes := Mime_GetEmotes();
+
+  // perform emotes until finished or tries is exceeded
+  repeat
+    Inc(t);
+    Mime_DoEmote(emotes);
+    result := (not Mime_Detect() and (loggedIn()));
+  until(result or (t > 30));
+
+  if (not result) then
+    addToSRLLog('Mime_Solve: Mime solver exceeded maximum tries');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Used to gather data for the emote records.
+ *)
+procedure Mime_GatherData(times: integer);
+var
+  i: integer;
+  tmpEmote: TMimeEmote;
+begin
+  for i := 1 to times do
+  begin
+    // need to reset so properties are accurate
+    tmpEmote.shiftSmall := 0;
+    tmpEmote.shiftBig := 0;
+    tmpEmote.shiftPercent := 0;
+
+    if (waitFunc(@Mime_IsPerforming, 50, 10000)) then
+    begin
+      tmpEmote.name := toStr(i);
+      tmpEmote := Mime_ScanMime();
+
+      Mime_DebugEmote(tmpEmote);
+    end;
+  end;
+end;
+

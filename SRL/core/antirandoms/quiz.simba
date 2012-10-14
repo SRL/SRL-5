@@ -1,0 +1,394 @@
+(*
+Quiz
+====
+
+Stores all the routines to solve the Quiz random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+This solver uses a "score" system to determine which item is the odd one out.
+A rotating object is determined using the TRotateObject type and
+DebugRotateObject method both found in common.simba.  Each quiz item is declared
+in Quiz_LoadItems and is compared to a scanned object in each of the item slots.
+It then compares the scanned item with the stored item to determine which item
+is the odd one out.
+
+*)
+
+const
+  _QUIZ_ACCURACY = 250; // number of tries to scan object - Updated 5/06/2012 - [J]ustin
+  _QUIZ_NPC = 'GqlzD5gt8!'; // Quiz Master's name
+
+var
+  Quiz_Items: TRotateObjectArray;
+
+(**
+ * Author: DemiseScythe
+ * Description: Detects if a player is in the Quiz random.
+ *)
+function Quiz_Detect(): boolean;
+begin
+  result := (getNPCChatName = _QUIZ_NPC) and (not tabExists(TAB_MAGIC));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the "Pick the odd one out." screen is in the
+ * chat box.
+ *)
+function Quiz_QuestionScreen(): boolean;
+begin
+  // the yellow color of the text
+  result := (getColor(302, 384) = 65535);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a box around the item slot, 'slot'.
+ *)
+function Quiz_ItemBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 3, 1, 80, 37, 176, 0, point(84, 433));
+end;
+
+(**
+ * Author: Wizzup?
+ * Description: Loads all the quiz items into the Quiz_Items array.
+ *)
+procedure Quiz_LoadItems();
+begin
+  setLength(Quiz_Items, 20);
+
+  with Quiz_Items[0] do
+  begin
+    name := 'Trout Fish Big';
+    use := 'Edible';
+    count := 191;
+    width := 25;
+    height := 16;
+    totalCount := 370;
+    coverPercent := 50.0;
+  end;
+
+  with Quiz_Items[1] do
+  begin
+    name := 'Trout Fish Small';
+    use := 'Edible';
+    count := 123;
+    width := 19;
+    height := 13;
+    totalCount := 228;
+    coverPercent := 52.0;
+  end;
+
+  with Quiz_Items[2] do
+  begin
+    name := 'Tuna Fish Big';
+    use := 'Edible';
+    count := 255;
+    width := 24;
+    height := 16;
+    totalCount := 401;
+    coverPercent := 61.0;
+  end;
+
+  with Quiz_Items[3] do
+  begin
+    name := 'Tuna Fish Small';
+    use := 'Edible';
+    count := 166;
+    width := 19;
+    height := 13;
+    totalCount := 254;
+    coverPercent := 63.0;
+  end;
+
+  with Quiz_Items[4] do
+  begin
+    name := 'Necklace Small';
+    use := 'Jewelry';
+    count := 91;
+    width := 18;
+    height := 11;
+    totalCount := 170;
+    coverPercent := 47.0;
+  end;
+
+  with Quiz_Items[5] do
+  begin
+    name := 'Necklace Big';
+    use := 'Jewelry';
+    count := 137;
+    width := 22;
+    height := 14;
+    totalCount := 308;
+    coverPercent := 46.0;
+  end;
+
+  with Quiz_Items[6] do
+  begin
+    name := 'Ring Small';
+    use := 'Jewelry';
+    count := 112;
+    width := 14;
+    height := 11;
+    totalCount := 154;
+    coverPercent := 72.0;
+  end;
+
+  with Quiz_Items[7] do
+  begin
+    name := 'Ring Big';
+    use := 'Jewelry';
+    count := 172;
+    width := 17;
+    height := 14;
+    totalCount := 243;
+    coverPercent := 70;
+  end;
+
+  with Quiz_Items[8] do
+  begin
+    name := 'Shield Small';
+    use := 'Armour';
+    count := 95;
+    width := 14;
+    height := 8;
+    totalCount := 122;
+    coverPercent := 76.0;
+  end;
+
+  with Quiz_Items[9] do
+  begin
+    name := 'Shield Big';
+    use := 'Armour';
+    count := 147;
+    width := 17;
+    height := 11;
+    totalCount := 201;
+    coverPercent := 71.0;
+  end;
+
+  with Quiz_Items[10] do
+  begin
+    name := 'Spade';
+    use := 'Tool';
+    count := 75;
+    width := 21;
+    height := 15;
+    totalCount := 253;
+    coverPercent := 29.5;
+  end;
+
+  with Quiz_Items[11] do
+  begin
+    name := 'Sword Small';
+    use := 'Weapon';
+    count := 42;
+    width := 18;
+    height := 11;
+    totalCount := 176;
+    coverPercent := 25.0;
+  end;
+
+  with Quiz_Items[12] do
+  begin
+    name := 'Sword Big';
+    use := 'Weapon';
+    count := 65;
+    width := 23;
+    height := 14;
+    totalCount := 278;
+    coverPercent := 23.0;
+  end;
+
+  with Quiz_Items[13] do
+  begin
+    name := 'Shears Small';
+    use := 'Tool';
+    count := 142;
+    width := 21;
+    height := 13;
+    totalCount := 270;
+    coverPercent := 50.0;
+  end;
+
+  with Quiz_Items[14] do
+  begin
+    name := 'Shears Big';
+    use := 'Tool';
+    count := 219;
+    width := 27;
+    height := 14;
+    totalCount := 408;
+    coverPercent := 53.0;
+  end;
+
+  with Quiz_Items[16] do
+  begin
+    name := 'BattleAxe Big';
+    use := 'Weapon';
+    count := 119;
+    width := 23;
+    height := 14;
+    totalCount := 317;
+    coverPercent := 38.0;
+  end;
+
+  with Quiz_Items[17] do
+  begin
+    name := 'BattleAxe Small';
+    use := 'Weapon';
+    count := 78;
+    width := 18;
+    height := 11;
+    totalCount := 200;
+    coverPercent := 40.0;
+  end;
+
+  with Quiz_Items[18] do
+  begin
+    name := 'Helmet Small';
+    use := 'Weapon';
+    count := 279;
+    width := 17;
+    height := 18;
+    totalCount := 322;
+    coverPercent := 85.5;
+  end;
+
+  with Quiz_Items[19] do
+  begin
+    name := 'Helmet Big';
+    use := 'Weapon';
+    count := 428;
+    width := 22;
+    height := 22;
+    totalCount := 508;
+    coverPercent := 83.5;
+  end;
+end;
+
+(**
+ * Author: Wizzup?
+ * Description: Scans and returns the item in 'slot'.
+ *)
+function Quiz_ScanItem(slot: integer): TRotateObject;
+var
+  i, maxScore, maxIndex: integer;
+  obj: TRotateObject;
+  scores: TintegerArray;
+begin
+  // the colors of the blue background and border of the items
+  obj := scanRotateObject([7807248, 11040367], [35, 35], Quiz_ItemBox(slot), 5, _QUIZ_ACCURACY);
+
+  setLength(scores, length(Quiz_Items));
+
+  // loop through fields, scoring each item
+  for i := 0 to high(Quiz_Items) do
+  begin
+    if (Quiz_Items[i].width = obj.width) and (Quiz_Items[i].height = obj.height) then
+      scores[i] := scores[i] + 5
+    else
+      if inRange(obj.width, Quiz_Items[i].width - 3, Quiz_Items[i].width + 3) and inRange(obj.height, Quiz_Items[i].height - 3, Quiz_Items[i].height + 3) then
+        scores[i] := scores[i] + 3;
+
+    if inRange(obj.count, Quiz_Items[i].count - 10, Quiz_Items[i].count + 10) then
+      scores[i] := scores[i] + 2;
+
+    if inRange(obj.totalCount, Quiz_Items[i].totalCount - 15, Quiz_Items[i].totalCount + 15) then
+      scores[i] := scores[i] + 2;
+
+    if (obj.coverPercent > Quiz_Items[i].coverPercent - 3) and (obj.coverPercent < Quiz_Items[i].coverPercent + 3) then
+      scores[i] := scores[i] + 2;
+  end;
+
+  // get the item with the highest score
+  maxScore := -1;
+  maxIndex := -1;
+  for i := 0 to high(scores) do
+    if (scores[i] > maxScore) then
+    begin
+      maxScore := scores[i];
+      maxIndex := i;
+    end;
+
+  addToSRLLog('Quiz_ScanItem: '+Quiz_Items[maxIndex].name + ', with a score of ' + intToStr(scores[maxIndex]));
+
+  result.name := Quiz_Items[maxIndex].name;
+  result.use := Quiz_Items[maxIndex].use;
+end;
+
+(**
+ * Author: Wizzup?
+ * Description: Solves a quiz question.
+ *)
+function Quiz_SolveQuestion(): boolean;
+var
+  i: integer;
+  tmpObjs: array[0..2] of TRotateObject;
+  commonUse: string;
+  p: TPoint;
+begin
+  // scan each item slots for the rotating objects
+  for i := 0 to 2 do
+    tmpObjs[i] := Quiz_ScanItem(i + 1);
+
+  commonUse := GetTROAUse(tmpObjs);
+
+  // sets i to the correct item slot so it can be clicked
+  if (commonUse <> '') then
+  begin
+    for i := 0 to 2 do
+      if (tmpObjs[i].use <> commonUse) then
+      begin
+        addToSRLLog('Quiz_SolveQuestion: We need to pick ' + tmpObjs[i].name + ' at slot ' + toStr(i + 1));
+        break;
+      end;
+
+    // for some reason i gets increased to 3 if the loop's condition isn't met; means failed to ID items properly, so we're going to guess
+    if (i >= 3) then
+      i := random(3);
+
+    p := middleBox(Quiz_ItemBox(i + 1));
+    mouse(p.x, p.y, 20, 10, mouse_Left);
+
+    wait(500 + random(500));
+    mouse(MIX1, MIY1, 50, 50, mouse_Move); // move away from chat box to get accurate scan
+    result := true;
+  end else
+    addToSRLLog('Quiz_SolveQuestion: Didn''t properly ID items');
+end;
+
+(**
+ * Author:
+ * Description: Solves the random.
+ *)
+function Quiz_Solve(): boolean;
+var
+  t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (10 * 60000)); // maximum 10 minutes
+  Quiz_LoadItems();
+
+  repeat
+    if (Quiz_QuestionScreen()) then
+      if (Quiz_SolveQuestion()) then
+        if (waitNPCTalking(_QUIZ_NPC, 4000)) then
+          if (findNPCChatText('RIGHT', nothing)) then
+            addToSRLLog('Quiz_Solve: Answered question right')
+          else
+            addToSRLLog('Quiz_Solve: Answered question wrong');
+
+    clickContinue(true, true); // to go through all the dialogue
+    result := tabExists(TAB_MAGIC);
+
+  until(result or (getSystemTime > t));
+
+  if (not result) then
+    addToSRLLog('Quiz_Solve: Quiz solver timed out');
+end;
+

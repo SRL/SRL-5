@@ -1,0 +1,1526 @@
+(*
+Mordaut
+=======
+
+Stores all the routines to solve the Mordaut random.  None of these routines
+should be used throughout scripts.  They only need to be called in SRL's random
+detection methods.
+
+This solver uses a "score" system to determine which item is the odd one out.
+A rotating object is determined using the TRotateObject type and
+DebugRotateObject method both found in common.simba.  Each object is declared
+in MD_GetObject and is compared to a scanned object in each of the slots
+depending on the puzzle that needs to be solved.
+
+The puzzles are stored in separate arrays (big and small).  The big puzzles are
+the ones where you have to match 3 items to the wording on the right.  The small
+puzzles are the ones you have to click the item that comes next in the sequence.
+
+*)
+
+type
+  TMDBigPuzzle = record
+    name: string;
+    idText: TStringArray;
+    objs: TRotateObjectArray;
+  end;
+  TMDBigPuzzleArray = array of TMDBigPuzzle;
+
+const
+  MD_NPC_MORDAUT = 'D!!Do!g5qt';
+
+  // new data for MD_GetObject will need to be gathered if these are to change
+  MD_ACCURACY  = 50; // gets the average of MD_ACCURACY times to ID objects
+  MD_OBJ_SIZE  = 25; // split TPA into this size of box
+  MD_MIN_SCORE = 25; // minimum score for an object to be ID'd
+
+const
+  MD_OBJECT_COUNT = 62;
+    MD_OBJ_SCIMITAR   = 0;
+    MD_OBJ_LONGSWORD  = 1;
+    MD_OBJ_BATTLEAXE  = 2;
+    MD_OBJ_MACE       = 3;
+    MD_OBJ_TEA        = 4;
+    MD_OBJ_BEER       = 5;
+    MD_OBJ_MARTINI    = 6;
+    MD_OBJ_VODKA      = 7;
+    MD_OBJ_PICKAXE    = 8;
+    MD_OBJ_ORE        = 9;
+    MD_OBJ_HAMMER     = 10;
+    MD_OBJ_BAR        = 11;
+    MD_OBJ_PLATEBODY  = 12;
+    MD_OBJ_SHORTBOW   = 13;
+    MD_OBJ_ARROWS     = 14;
+    MD_OBJ_CROSSBOW   = 15;
+    MD_OBJ_LONGBOW    = 16;
+    MD_OBJ_FROG       = 17;
+    MD_OBJ_THIEF      = 18;
+    MD_OBJ_MIME       = 19;
+    MD_OBJ_NECKLACE   = 20;
+    MD_OBJ_TIARA      = 21;
+    MD_OBJ_SYMBOL     = 22;
+    MD_OBJ_RING       = 23;
+    MD_OBJ_LONG       = 24;
+    MD_OBJ_FULLHELM   = 25;
+    MD_OBJ_KITE       = 26;
+    MD_OBJ_PLATE      = 27;
+    MD_OBJ_CAVALIER   = 28;
+    MD_OBJ_PIRATE     = 29;
+    MD_OBJ_JESTER     = 30;
+    MD_OBJ_LOGS       = 31;
+    MD_OBJ_TINDERBOX  = 32;
+    MD_OBJ_LAMP       = 33;
+    MD_OBJ_CANDLE     = 34;
+    MD_OBJ_RAKE       = 35;
+    MD_OBJ_WATERCAN   = 36;
+    MD_OBJ_SPADE      = 37;
+    MD_OBJ_TROWEL     = 38;
+    MD_OBJ_SQUARE     = 39;
+    MD_OBJ_WOODEN     = 40;
+    MD_OBJ_KITESHIELD = 41;
+    MD_OBJ_SHRIMP     = 42;
+    MD_OBJ_SARDINE    = 43;
+    MD_OBJ_MACKEREL   = 44;
+    MD_OBJ_SWORDFISH  = 45;
+    MD_OBJ_TROUT      = 46;
+    MD_OBJ_BOOTS      = 47;
+    MD_OBJ_BOOTS_2    = 48;
+    MD_OBJ_HOOK       = 49;
+    MD_OBJ_EYEPATCH   = 50;
+    MD_OBJ_RUNE       = 51;
+    MD_OBJ_STAFF      = 52;
+    MD_OBJ_HARPOON    = 53;
+    MD_OBJ_CHEFHAT    = 54;
+    MD_OBJ_APRON      = 55;
+    MD_OBJ_BREAD      = 56;
+    MD_OBJ_CAKE       = 57;
+    MD_OBJ_BANANA     = 58;
+    MD_OBJ_STRAWBERRY = 59;
+    MD_OBJ_PINEAPPLE  = 60;
+    MD_OBJ_GRAPES     = 61;
+
+const
+  MD_PUZZLE_BIG_COUNT = 10;
+    MD_PUZZLE_BIG_DRINK    = 0;
+    MD_PUZZLE_BIG_PIRATE   = 1;
+    MD_PUZZLE_BIG_JEWEL    = 2;
+    MD_PUZZLE_BIG_RANGE    = 3;
+    MD_PUZZLE_BIG_FIRE     = 4;
+    MD_PUZZLE_BIG_MELEE    = 5;
+    MD_PUZZLE_BIG_MAGIC    = 6;
+    MD_PUZZLE_BIG_DISGUISE = 7;
+    MD_PUZZLE_BIG_HAT      = 8;
+    MD_PUZZLE_BIG_FISH     = 9;
+
+var
+  // stores the background colors and tolerances of the small and big puzzles
+  MD_ExColSmall, MD_ExColBig, MD_ExTolSmall, MD_ExTolBig: TIntegerArray;
+
+(**
+ * Author: Coh3n
+ * Description: Declares global variables.  Used so it can be easily updated.
+ *)
+procedure MD_DeclareGlobals();
+begin
+  // background colors of the small puzzle
+  MD_ExColSmall := [4674119, 5265999];
+  MD_ExTolSmall := [17, 17];
+
+  // background colors of the big puzzle
+  MD_ExColBig := [13423575, 12897741];
+  MD_ExTolBig := [25, 25];
+end;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns true if player is in the random.
+ *)
+function MD_Detect(): boolean;
+begin
+  result := (getNPCChatName() = MD_NPC_MORDAUT) and (not tabExists(TAB_MAGIC));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Stores all the Mordaut object properties.  Data gathered using
+ * MD_DebugSmall/BigPuzzle.
+ *)
+function MD_GetObject(obj: integer): TRotateObject;
+begin
+  case obj of
+    MD_OBJ_SCIMITAR:
+      with result do
+      begin
+        name := 'Scimitar';
+        use := 'Weapon';
+        count := 280;
+        width := 41;
+        height := 25;
+        totalCount := 951;
+        coverPercent := 29.0;
+      end;
+
+    MD_OBJ_LONGSWORD:
+      with result do
+      begin
+        name := 'Longsword';
+        use := 'Weapon';
+        count := 107;
+        width := 34;
+        height := 23;
+        totalCount := 670;
+        coverPercent := 16.0;
+      end;
+
+    MD_OBJ_BATTLEAXE:
+      with result do
+      begin
+        name := 'Battleaxe';
+        use := 'Weapon';
+        count := 218;
+        width := 31;
+        height := 19;
+        totalCount := 591;
+        coverPercent := 37.0;
+      end;
+
+    MD_OBJ_MACE:
+      with result do
+      begin
+        name := 'Mace';
+        use := 'Weapon';
+        count := 205;
+        width := 31;
+        height := 23;
+        totalCount := 700;
+        coverPercent := 28.0;
+      end;
+
+    MD_OBJ_TEA:
+      with result do
+      begin
+        name := 'Tea';
+        use := 'Drink';
+        count := 885;
+        width := 33;
+        height := 33;
+        totalCount := 1134;
+        coverPercent := 75.0;
+      end;
+
+    MD_OBJ_BEER:
+      with result do
+      begin
+        name := 'Beer';
+        use := 'Drink';
+        count := 588;
+        width := 26;
+        height := 28;
+        totalCount := 751;
+        coverPercent := 75.0;
+      end;
+
+    MD_OBJ_MARTINI:
+      with result do
+      begin
+        name := 'Martini';
+        use := 'Drink';
+        count := 435;
+        width := 20;
+        height := 32;
+        totalCount := 680;
+        coverPercent := 63.0;
+      end;
+
+    MD_OBJ_VODKA:
+      with result do
+      begin
+        name := 'Vodka';
+        use := 'Drink';
+        count := 350;
+        width := 14;
+        height := 28;
+        totalCount := 424;
+        coverPercent := 83.0;
+      end;
+
+    MD_OBJ_PICKAXE:
+      with result do
+      begin
+        name := 'Pickaxe';
+        use := 'Smithing';
+        count := 230;
+        width := 45;
+        height := 30;
+        totalCount := 1380;
+        coverPercent := 16.0;
+      end;
+
+    MD_OBJ_ORE:
+      with result do
+      begin
+        name := 'Ore';
+        use := 'Smithing';
+        count := 591;
+        width := 38;
+        height := 26;
+        totalCount := 1053;
+        coverPercent := 56.0;
+      end;
+
+    MD_OBJ_HAMMER:
+      with result do
+      begin
+        name := 'Hammer';
+        use := 'Smithing';
+        count := 269;
+        width := 30;
+        height := 21;
+        totalCount := 600;
+        coverPercent := 44.0;
+      end;
+
+    MD_OBJ_BAR:
+      with result do
+      begin
+        name := 'Bar';
+        use := 'Smithing';
+        count := 627;
+        width := 33;
+        height := 25;
+        totalCount := 867;
+        coverPercent := 72.0;
+      end;
+
+    MD_OBJ_PLATEBODY:
+      with result do
+      begin
+        name := 'Platebody';
+        use := 'Smithing';
+        count := 750;
+        width := 36;
+        height := 28;
+        totalCount := 1039;
+        coverPercent := 70.0;
+      end;
+
+    MD_OBJ_SHORTBOW:
+      with result do
+      begin
+        name := 'Shortbow';
+        use := 'Range';
+        count := 288;
+        width := 40;
+        height := 25;
+        totalCount := 870;
+        coverPercent := 33.0;
+      end;
+
+    MD_OBJ_ARROWS:
+      with result do
+      begin
+        name := 'Arrows';
+        use := 'Range';
+        count := 232;
+        width := 42;
+        height := 27;
+        totalCount := 975;
+        coverPercent := 24.0;
+      end;
+
+    MD_OBJ_CROSSBOW:
+      with result do
+      begin
+        name := 'Crossbow';
+        use := 'Range';
+        count := 247;
+        width := 34;
+        height := 24;
+        totalCount := 847;
+        coverPercent := 29.0;
+      end;
+
+    MD_OBJ_LONGBOW:
+      with result do
+      begin
+        name := 'Longbow';
+        use := 'Range';
+        count := 161;
+        width := 34;
+        height := 21;
+        totalCount := 664;
+        coverPercent := 24.0;
+      end;
+
+    MD_OBJ_FROG:
+      with result do
+      begin
+        name := 'Frog Mask';
+        use := 'Disguise';
+        count := 850;
+        width := 34;
+        height := 30;
+        totalCount := 1055;
+        coverPercent := 81.0;
+      end;
+
+    MD_OBJ_MIME:
+      with result do
+      begin
+        name := 'Mime Mask';
+        use := 'Disguise';
+        count := 728;
+        width := 33;
+        height := 27;
+        totalCount := 919;
+        coverPercent := 79.0;
+      end;
+
+    MD_OBJ_NECKLACE:
+      with result do
+      begin
+        name := 'Necklace';
+        use := 'Jewelery';
+        count := 219;
+        width := 29;
+        height := 19;
+        totalCount := 567;
+        coverPercent := 38.0;
+      end;
+
+    MD_OBJ_TIARA:
+      with result do
+      begin
+        name := 'Tiara';
+        use := 'Jewelery';
+        count := 202;
+        width := 32;
+        height := 23;
+        totalCount := 758;
+        coverPercent := 26.0;
+      end;
+
+    MD_OBJ_SYMBOL:
+      with result do
+      begin
+        name := 'Holy Symbol';
+        use := 'Jewelery';
+        count := 306;
+        width := 40;
+        height := 25;
+        totalCount := 970;
+        coverPercent := 32.0;
+      end;
+
+    MD_OBJ_RING:
+      with result do
+      begin
+        name := 'Ring';
+        use := 'Jewelery';
+        count := 245;
+        width := 24;
+        height := 18;
+        totalCount := 452;
+        coverPercent := 55.0;
+      end;
+
+    MD_OBJ_LONG: // same item is used for more than one puzzle (different use)
+      begin
+        result := MD_GetObject(MD_OBJ_LONGSWORD);
+        result.name := 'Long';
+        result.use := 'Combat';
+      end;
+
+    MD_OBJ_FULLHELM:
+      with result do
+      begin
+        name := 'Full Helm';
+        use := 'Combat';
+        count := 468;
+        width := 27;
+        height := 28;
+        totalCount := 760;
+        coverPercent := 61.0;
+      end;
+
+    MD_OBJ_KITE:
+      with result do
+      begin
+        name := 'Kite';
+        use := 'Combat';
+        count := 640;
+        width := 37;
+        height := 24;
+        totalCount := 953;
+        coverPercent := 68.0;
+      end;
+
+    MD_OBJ_PLATE:
+      begin
+        result := MD_GetObject(MD_OBJ_PLATEBODY);
+        result.name := 'Platebody';
+        result.use := 'Combat';
+      end;
+
+    MD_OBJ_THIEF:
+      with result do
+      begin
+        name := 'Thief Mask';
+        use := 'Hat';
+        count := 560;
+        width := 34;
+        height := 28;
+        totalCount := 944;
+        coverPercent := 59.0;
+      end;
+
+    MD_OBJ_JESTER:
+      with result do
+      begin
+        name := 'Jester Hat';
+        use := 'Hat';
+        count := 416;
+        width := 31;
+        height := 24;
+        totalCount := 747;
+        coverPercent := 56.0;
+      end;
+
+    MD_OBJ_PIRATE:
+      with result do
+      begin
+        name := 'Pirate Hat';
+        use := 'Hat';
+        count := 696;
+        width := 35;
+        height := 27;
+        totalCount := 970;
+        coverPercent := 72.0;
+      end;
+
+    MD_OBJ_CAVALIER:
+      with result do
+      begin
+        name := 'Cavalier Hat';
+        use := 'Hat';
+        count := 584;
+        width := 35;
+        height := 23;
+        totalCount := 817;
+        coverPercent := 71.0;
+      end;
+
+    MD_OBJ_LOGS:
+      with result do
+      begin
+        name := 'Logs';
+        use := 'Fire';
+        count := 820;
+        width := 37;
+        height := 32;
+        totalCount := 1242;
+        coverPercent := 65.0;
+      end;
+
+    MD_OBJ_TINDERBOX:
+      with result do
+      begin
+        name := 'Tinderbox';
+        use := 'Fire';
+        count := 1485;
+        width := 42;
+        height := 44;
+        totalCount := 1878;
+        coverPercent := 79.0;
+      end;
+
+    MD_OBJ_LAMP:
+      with result do
+      begin
+        name := 'Lamp';
+        use := 'Fire';
+        count := 425;
+        width := 23;
+        height := 27;
+        totalCount := 640;
+        coverPercent := 66.0;
+      end;
+
+    MD_OBJ_CANDLE:
+      with result do
+      begin
+        name := 'Candle';
+        use := 'Fire';
+        count := 0;
+        width := 0;
+        height := 0;
+        totalCount := 0;
+        coverPercent := 0.0;
+      end;
+
+    MD_OBJ_RAKE:
+      with result do
+      begin
+        name := 'Rake';
+        use := 'Farming';
+        count := 222;
+        width := 50;
+        height := 32;
+        totalCount := 1459;
+        coverPercent := 15.0;
+      end;
+
+    MD_OBJ_WATERCAN:
+      with result do
+      begin
+        name := 'Watering Can';
+        use := 'Farming';
+        count := 625;
+        width := 30;
+        height := 35;
+        totalCount := 1072;
+        coverPercent := 58.0;
+      end;
+
+    MD_OBJ_SPADE:
+      with result do
+      begin
+        name := 'Spade';
+        use := 'Farming';
+        count := 338;
+        width := 44;
+        height := 30;
+        totalCount := 1203;
+        coverPercent := 28.0;
+      end;
+
+    MD_OBJ_TROWEL:
+      with result do
+      begin
+        name := 'Trowel';
+        use := 'Farming';
+        count := 275;
+        width := 31;
+        height := 21;
+        totalCount := 650;
+        coverPercent := 44.0;
+      end;
+
+    MD_OBJ_SQUARE:
+      with result do
+      begin
+        name := 'Square Shield';
+        use := 'Shield';
+        count := 600;
+        width := 37;
+        height := 25;
+        totalCount := 900;
+        coverPercent := 65.0;
+      end;
+
+    MD_OBJ_WOODEN:
+      with result do
+      begin
+        name := 'Wooden Shield';
+        use := 'Shield';
+        count := 498;
+        width := 32;
+        height := 23;
+        totalCount := 750;
+        coverPercent := 66.0;
+      end;
+
+    MD_OBJ_KITESHIELD:
+      begin
+        result := MD_GetObject(MD_OBJ_KITE);
+        result.name := 'Kiteshield';
+        result.use := 'Shield';
+      end;
+
+    MD_OBJ_SHRIMP:
+      with result do
+      begin
+        name := 'Shrimp';
+        use := 'Fish';
+        count := 262;
+        width := 37;
+        height := 24;
+        totalCount := 914;
+        coverPercent := 29.0;
+      end;
+
+    MD_OBJ_SARDINE:
+      with result do
+      begin
+        name := 'Sardine';
+        use := 'Fish';
+        count := 121;
+        width := 22;
+        height := 15;
+        totalCount := 320;
+        coverPercent := 38.0;
+      end;
+
+    MD_OBJ_MACKEREL:
+      with result do
+      begin
+        name := 'Mackerel';
+        use := 'Fish';
+        count := 238;
+        width := 31;
+        height := 18;
+        totalCount := 599;
+        coverPercent := 40.0;
+      end;
+
+    MD_OBJ_SWORDFISH:
+      with result do
+      begin
+        name := 'Swordfish';
+        use := 'Fish';
+        count := 218;
+        width := 37;
+        height := 23;
+        totalCount := 836;
+        coverPercent := 26.0;
+      end;
+
+    MD_OBJ_BOOTS:
+      with result do
+      begin
+        name := 'Boots';
+        use := 'Boots';
+        count := 587;
+        width := 30;
+        height := 28;
+        totalCount := 900;
+        coverPercent := 67.0;
+      end;
+
+    MD_OBJ_BOOTS_2:
+      with result do
+      begin
+        name := 'Boots 2';
+        use := 'Boots';
+        count := 520;
+        width := 31;
+        height := 29;
+        totalCount := 930;
+        coverPercent := 55.0;
+      end;
+
+    MD_OBJ_EYEPATCH:
+      with result do
+      begin
+        name := 'Eye Patch';
+        use := 'Pirate';
+        count := 255;
+        width := 32;
+        height := 20;
+        totalCount := 630;
+        coverPercent := 40.0;
+      end;
+
+    MD_OBJ_HOOK:
+      with result do
+      begin
+        name := 'Pirate Hook';
+        use := 'Pirate';
+        count := 224;
+        width := 32;
+        height := 23;
+        totalCount := 706;
+        coverPercent := 32.0;
+      end;
+
+    MD_OBJ_RUNE:
+      with result do
+      begin
+        name := 'Rune';
+        use := 'Magic';
+        count := 800;
+        width := 35;
+        height := 29;
+        totalCount := 1040;
+        coverPercent := 75.0;
+      end;
+
+    MD_OBJ_STAFF:
+      with result do
+      begin
+        name := 'Staff';
+        use := 'Magic';
+        count := 96;
+        width := 39;
+        height := 26;
+        totalCount := 878;
+        coverPercent := 11.0;
+      end;
+
+    MD_OBJ_HARPOON:
+      with result do
+      begin
+        name := 'Harpoon';
+        use := 'Fish';
+        count := 194;
+        width := 35;
+        height := 23;
+        totalCount := 738;
+        coverPercent := 24.0;
+      end;
+
+    MD_OBJ_TROUT:
+      with result do
+      begin
+        name := 'Trout';
+        use := 'Fish';
+        count := 320;
+        width := 32;
+        height := 23;
+        totalCount := 700;
+        coverPercent := 45.0;
+      end;
+
+    MD_OBJ_CHEFHAT:
+      with result do
+      begin
+        name := 'Chef''s Hat';
+        use := 'Cook';
+        count := 645;
+        width := 36;
+        height := 25;
+        totalCount := 942;
+        coverPercent := 68.0;
+      end;
+
+    MD_OBJ_APRON:
+      with result do
+      begin
+        name := 'Apron';
+        use := 'Cook';
+        count := 340;
+        width := 31;
+        height := 20;
+        totalCount := 637;
+        coverPercent := 53.0;
+      end;
+
+    MD_OBJ_BREAD:
+      with result do
+      begin
+        name := 'Bread';
+        use := 'Cook';
+        count := 535;
+        width := 30;
+        height := 22;
+        totalCount := 676;
+        coverPercent := 78.0;
+      end;
+
+    MD_OBJ_CAKE:
+      with result do
+      begin
+        name := 'Cake';
+        use := 'Cook';
+        count := 975;
+        width := 35;
+        height := 31;
+        totalCount := 1110;
+        coverPercent := 88.0;
+      end;
+
+    MD_OBJ_BANANA:
+      with result do
+      begin
+        name := 'Banana';
+        use := 'Fruit';
+        count := 399;
+        width := 34;
+        height := 24;
+        totalCount := 799;
+        coverPercent := 50.0;
+      end;
+
+    MD_OBJ_STRAWBERRY:
+      with result do
+      begin
+        name := 'Strawberry';
+        use := 'Fruit';
+        count := 379;
+        width := 20;
+        height := 24;
+        totalCount := 510;
+        coverPercent := 74.0;
+      end;
+
+    MD_OBJ_PINEAPPLE:
+      with result do
+      begin
+        name := 'Pineapple';
+        use := 'Fruit';
+        count := 600;
+        width := 33;
+        height := 33;
+        totalCount := 1098;
+        coverPercent := 55.0;
+      end;
+
+    MD_OBJ_GRAPES:
+      with result do
+      begin
+        name := 'Grapes';
+        use := 'Shield';
+        count := 190;
+        width := 23;
+        height := 15;
+        totalCount := 351;
+        coverPercent := 54.0;
+      end;
+
+    else
+      addToSRLLog('MD_GetObject: Invalid object '+toStr(obj));
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: results the DTMs to detect which "big" puzzle to solve.
+ *)
+function MD_GetBigPuzzles(): TMDBigPuzzleArray;
+begin
+  setLength(result, MD_PUZZLE_BIG_COUNT);
+
+  with result[MD_PUZZLE_BIG_DRINK] do
+  begin
+    name := 'Big Puzzle: Drinks';
+    idText := ['thirst', 'dehydrate'];
+    objs := [MD_GetObject(MD_OBJ_TEA), MD_GetObject(MD_OBJ_BEER),
+             MD_GetObject(MD_OBJ_MARTINI)];
+  end;
+
+  with result[MD_PUZZLE_BIG_MAGIC] do
+  begin
+    name := 'Big Puzzle: Magic';
+    idText := ['stic', 'wizard'];
+    objs := [MD_GetObject(MD_OBJ_STAFF), MD_GetObject(MD_OBJ_RUNE),
+             MD_GetObject(MD_OBJ_RUNE)];
+  end;
+
+  with result[MD_PUZZLE_BIG_DISGUISE] do
+  begin
+    name := 'Big Puzzle: Disguise';
+    idText := ['face', 'mask', 'disg', 'hidden'];
+    objs := [MD_GetObject(MD_OBJ_FROG), MD_GetObject(MD_OBJ_THIEF),
+             MD_GetObject(MD_OBJ_MIME)];
+  end;
+
+  with result[MD_PUZZLE_BIG_MELEE] do
+  begin
+    name := 'Big Puzzle: Melee';
+    idText := ['sword', 'weapon', 'melee'];
+    objs := [MD_GetObject(MD_OBJ_LONGSWORD), MD_GetObject(MD_OBJ_SCIMITAR),
+             MD_GetObject(MD_OBJ_BATTLEAXE)];
+  end;
+
+  with result[MD_PUZZLE_BIG_HAT] do
+  begin
+    name := 'Big Puzzle: Hat';
+    idText := ['hat', 'cap', 'head', 'tip', 'hink'];
+    objs := [MD_GetObject(MD_OBJ_CAVALIER), MD_GetObject(MD_OBJ_JESTER),
+             MD_GetObject(MD_OBJ_PIRATE)];
+  end;
+
+  with result[MD_PUZZLE_BIG_FIRE] do
+  begin
+    name := 'Big Puzzle: Fire';
+    idText := ['arks', 'fire', 'nitin', 'brain', 'star'];
+    objs := [MD_GetObject(MD_OBJ_LOGS), MD_GetObject(MD_OBJ_TINDERBOX),
+             MD_GetObject(MD_OBJ_LAMP)];
+  end;
+
+  with result[MD_PUZZLE_BIG_PIRATE] do
+  begin
+    name := 'Big Puzzle: Pirate';
+    idText := ['pirate', 'tis', 'Yarr'];
+    objs := [MD_GetObject(MD_OBJ_HOOK), MD_GetObject(MD_OBJ_PIRATE),
+             MD_GetObject(MD_OBJ_EYEPATCH)];
+  end;
+
+  with result[MD_PUZZLE_BIG_RANGE] do
+  begin
+    name := 'Big Puzzle: Range';
+    idText := ['archery', 'arrow'];
+    objs := [MD_GetObject(MD_OBJ_LONGBOW), MD_GetObject(MD_OBJ_ARROWS),
+             MD_GetObject(MD_OBJ_CROSSBOW)];
+  end;
+
+  with result[MD_PUZZLE_BIG_FISH] do
+  begin
+    name := 'Big Puzzle: Fish';
+    idText := ['ishy', 'water', 'ish', 'eel like a'];
+    objs := [MD_GetObject(MD_OBJ_TROUT), MD_GetObject(MD_OBJ_HARPOON),
+             MD_GetObject(MD_OBJ_TROUT)];
+  end;
+
+  with result[MD_PUZZLE_BIG_JEWEL] do
+  begin
+    name := 'Big Puzzle: Jewelery';
+    idText := ['ineries', 'ecio', 'ewell'];
+    objs := [MD_GetObject(MD_OBJ_SYMBOL), MD_GetObject(MD_OBJ_RING),
+             MD_GetObject(MD_OBJ_NECKLACE)];
+  end;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns all the possible small puzzles to solve. The string
+ * value MUST be the same as the 'use' field for the corresponding objects.
+ *)
+function MD_GetSmallPuzzles(): TStringArray;
+begin
+  setLength(result, 15);
+
+  result[0]  := 'Weapon';
+  result[1]  := 'Smithing';
+  result[2]  := 'Range';
+  result[3]  := 'Jewelery';
+  result[4]  := 'Combat';
+  result[5]  := 'Drink';
+  result[6]  := 'Hat';
+  result[7]  := 'Farming';
+  result[8]  := 'Shield';
+  result[9]  := 'Fish';
+  result[10] := 'Boots';
+  result[11] := 'Magic';
+  result[12] := 'Cook';
+  result[13] := 'Fruit';
+  result[14] := 'Fire';
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the score of obj1 compared to obj2.  The higher the
+ * score the more likely the objects are the same.
+ *)
+function MD_CompareObjects(obj1, obj2: TRotateObject): integer;
+begin
+  // best score is currently 40
+  result := 0;
+
+  if (inRange(obj1.count, obj2.count - 10, obj2.count + 10)) then
+    result := result + 3;
+
+  if (obj1.width = obj2.width) then
+    result := result + 12
+  else
+    if (inRange(obj1.width, obj2.width - 2, obj2.width + 2)) then
+      result := result + 6;
+
+  if (obj1.height = obj2.height) then
+    result := result + 12
+  else
+    if (inRange(obj1.height, obj2.height - 2, obj2.height + 2)) then
+      result := result + 6;
+
+  if (inRange(obj1.totalCount, obj2.totalCount - 75, obj2.totalCount + 75)) then
+    result := result + 5;
+
+  if ((obj1.coverPercent > obj2.coverPercent - 3) and (obj1.coverPercent < obj2.coverPercent + 3)) then
+    result := result + 8;
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the Mordaut object that best (has the highest score)
+ * matches 'scanObj'.
+ *)
+function MD_IDObject(scanObj: TRotateObject): TRotateObjectArray;
+var
+  i, c, tmpScore: integer;
+  tmpObj: TRotateObject;
+begin
+  setLength(result, MD_OBJECT_COUNT);
+
+  // loop through all the objects to find which one best matches the scanned object
+  for i := 0 to (MD_OBJECT_COUNT - 1) do
+  begin
+    tmpObj := MD_GetObject(i);
+    tmpScore := MD_CompareObjects(tmpObj, scanObj);
+
+    //writeln('tmpObj('+tmpObj.name+') vs. scanObj(): score - '+toStr(tmpScore));
+
+    // set the highest score as result
+    if (tmpScore > MD_MIN_SCORE) then
+    begin
+      //addToSRLLog('MD_IDObject: One match is '+tmpObj.name+' with a score of '+toStr(tmpScore));
+      result[c] := tmpObj;
+      inc(c);
+    end;
+  end;
+
+  setLength(result, c);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the big puzzle item slot 'Slot'. Top left
+ * is slot 1, botton right is slot 15.
+ *)
+function MD_BigBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 5, 3, 60, 80, 67, 91, point(71, 73));
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns a TBox of the small puzzle item slot 'Slot'. Top left
+ * is slot 1, botton right is slot 8.
+ *)
+function MD_SmallBox(slot: integer): TBox;
+begin
+  result := gridBox(slot, 4, 2, 95, 80, 95, 150, point(110, 100));
+end;
+
+(**
+ * Author: Nava2
+ * Description: Returns true if the big puzzle screen is open.
+ *)
+function MD_BigScreen(): boolean;
+var
+  dtmThumb, x, y: integer;
+begin
+  dtmThumb := DTMFromString('78DA63E4646060E063400187BBD3184480342310FF0702466E208309558D083333030B540D08300A619A83A146002488AA86879911550D1B901025A006E4161E5435E2DC2C286A00ACBB06F0');
+  result := findDTM(dtmThumb, x, y, MSX1, MSY1, MSX2, MSY2);
+  freeDTM(dtmThumb);
+end;
+
+(**
+ * Author: Nava2
+ * Description: Returns true if the small puzzle screen is open.
+ *)
+function MD_SmallScreen(): boolean;
+begin
+  // counts black pixels of the text shadow in the middle of the MS
+  result := (countColor(clBlack, 165, 142, 357, 183) = 322);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the object scanned in 'slot' for the big puzzle.
+ *)
+function MD_ScanBigObject(slot: integer): TRotateObject;
+begin
+  result := scanRotateObject(
+    MD_ExColBig, MD_ExTolBig, MD_BigBox(slot), MD_OBJ_SIZE, MD_ACCURACY);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns the object scanned in 'slot' for the small puzzle.
+ *)
+function MD_ScanSmallObject(slot: integer): TRotateObject;
+begin
+  result := scanRotateObject(
+    MD_ExColSmall, MD_ExTolSmall, MD_SmallBox(slot), MD_OBJ_SIZE, MD_ACCURACY);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Returns which small puzzle we have to solve.
+ *)
+function MD_IDSmallPuzzle(puzzles: TStringArray): integer;
+var
+  i, j: integer;
+  tmpObjs, posObjs: TRotateObjectArray;
+  commonUse: string;
+begin
+  if (not loggedIn()) or (not MD_SmallScreen()) then
+    exit;
+
+  addToSRLLog('MD_IDSmallPuzzle: Identifying puzzle');
+  result := -1;
+
+  addToSRLLog('MD_IDSmallPuzzle: Scanning objects...');
+
+  // get the possible objects that could be one the top part of the puzzle
+  for i := 1 to 3 do // item slots 1-3
+  begin
+    tmpObjs := MD_IDObject(MD_ScanSmallObject(i));
+
+    for j := 0 to high(tmpObjs) do
+    begin
+      setLength(posObjs, length(posObjs) + 1);
+      posObjs[high(posObjs)] := tmpObjs[j];
+    end;
+  end;
+
+  addToSRLLog('MD_IDSmallPuzzle: Objects scanned');
+
+  // get's the most common use found in the possible objects
+  commonUse := getTROAUse(posObjs);
+  addToSRLLog('MD_IDSmallPuzzle: Most common use - '+commonUse);
+
+  // loop through the puzzles, checking which has the proper use
+  for i := 0 to high(puzzles) do
+    if (commonUse = puzzles[i]) then
+    begin
+      result := i;
+      break;
+    end;
+
+  if (result <> -1) then
+    addToSRLLog('MD_IDSmallPuzzle: Found Small Puzzle '+puzzles[result])
+  else
+    addToSRLLog('MD_IDSmallPuzzle: Didn''t ID puzzle');
+
+  // to make sure the player doesn't log out
+  if (getCurrentTab() = TAB_FRIENDS) then
+    gameTab(TAB_CLAN)
+  else
+    gameTab(TAB_FRIENDS);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the small puzzle (calls MD_GetSmallPuzzle).
+ *)
+function MD_SolveSmallPuzzle(puzzle: string): boolean;
+var
+  i, j, t: integer;
+  posObjs: TRotateObjectArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('MD_SolveSmallPuzzle: Solving...');
+
+  repeat
+    inc(t);
+
+    for i := 5 to 8 do // object slots 5-8 (bottom half)
+    begin
+      posObjs := MD_IdObject(MD_ScanSmallObject(i));
+
+      for j := 0 to high(posObjs) do
+        if (lowercase(posObjs[j].use) = lowercase(puzzle)) then
+        begin
+          addToSRLLog('MD_SolveSmallPuzzle: Found bottom object in slot '+toStr(i));
+
+          // needs specific coords because you can't click anywhere on the item
+          mouse(108 + (100 * (i - 5)), 235, 3, 3, mouse_Left);
+          result := waitNPCTalking(MD_NPC_MORDAUT, 4000);
+          break;
+        end;
+
+      if (result) then
+        break;
+    end;
+
+    if (not result) then
+      addToSRLLog('MD_SolveSmallPuzzle: Didn''t find bottom objects, try '+toStr(t));
+
+  until(result or (t >= 3)); // maximum tries
+
+  if (result) then
+    addToSRLLog('MD_SolveSmallPuzzle: Solved Small Puzzle '+puzzle)
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Identifies which of the big puzzles we have to solve.
+ *)
+function MD_IDBigPuzzle(puzzles: TMDBigPuzzleArray): integer;
+var
+  i, j, h: integer;
+  tpa, m: TPointArray;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  result := -1;
+  findColorsTolerance(tpa, 13290961, 373, 60, 473, 160, 25);
+
+  // loops through the possible texts in each puzzle in the 'puzzles' array
+  for i := 0 to high(puzzles) do
+    for j := 0 to high(puzzles[i].idText) do
+      // the text on the right size of the puzzle
+      if (findTPAInTPA(loadTextTPA(puzzles[i].idText[j], smallCharsNS, h), tpa, m)) then
+      begin
+        addToSRLLog('MD_GetBigPuzzle: Found '+puzzles[i].name);
+        result := i;
+        exit;
+      end;
+
+  addToSRLLog('MD_GetBigPuzzle: Failed to identify big puzzle');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Returns true if the swords appear in 'slot'.  Checks to see if
+ * that slot has already been clicked.
+ *)
+function MD_FindSwords(slot: integer): boolean;
+var
+  x, y, dtmSwords: integer;
+  b: TBox;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  dtmSwords := DTMFromString('mbQAAAHicY2VgYPgLxD+AmImRgeELkGYF0i1AuguIO4G4BoonTJzI8O+sJxjLKciDMT9QHB0zYsFgAAB8JQxr');
+  b := MD_BigBox(slot);
+
+  if (findDTM(dtmSwords, x, y, b.x1, b.y1, b.x1 + 50, b.y1 + 50)) then
+  begin
+    addToSRLLog('MD_FindSwords: Slot has already been clicked');
+    result := true;
+  end;
+
+  freeDTM(dtmSwords);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Solves the big 'puzzle'. Constants at the top of the file.  Will
+ * randomly choose slots to scan, then remove that slot from an array. Will
+ * check every slot before starting over. Starts over a set number of tries.
+ *)
+function MD_SolveBigPuzzle(puzzle: TMDBigPuzzle): boolean;
+var
+  i, clicks, slotsLen, time, index, t: integer;
+  objFound: TBooleanArray;
+  slots: TIntegerArray;
+  tmpObj: TRotateObject;
+  p: TPoint;
+begin
+  markTime(time);
+
+  if ((not loggedIn()) or (not MD_BigScreen())) then
+    exit;
+
+  addToSRLLog('MD_SolveBigPuzzle: Solving...');
+  setLength(objFound, length(puzzle.objs));
+
+  // scan the entire puzzle a maximum of 5 times
+  for t := 1 to 5 do
+  begin
+    slots := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    slotsLen := length(slots);
+
+    addToSRLLog('MD_SolveBigPuzzle: Scanning for objects (try '+toStr(t)+')...');
+
+    // randomly chooses a slot to look for the objects
+    repeat
+      index := random(length(slots));
+
+      if (not MD_FindSwords(slots[index])) then // if that slot has already been clicked
+      begin
+        p := middleBox(MD_BigBox(slots[index]));
+
+        tmpObj := MD_ScanBigObject(slots[index]);
+        for i := 0 to high(puzzle.objs) do
+        begin
+          if (objFound[i]) then // don't want to look for the same object twice
+            continue;
+
+          if (MD_CompareObjects(tmpObj, puzzle.objs[i]) >= MD_MIN_SCORE) then
+          begin
+            addToSRLLog('MD_SolveBigPuzzle: Found '+puzzle.objs[i].name+' in slot '+toStr(slots[index]));
+            mouse(p.x, p.y, 20, 30, mouse_Left);
+            objFound[i] := true;
+            inc(clicks);
+            break;
+          end;
+        end;
+
+      end else
+        if (t = 1) then // in case it's retrying
+          inc(clicks);
+
+      // remove the index so we don't search the same box twice
+      deleteValueInIntArray(slots, index);
+
+      result := (clicks >= 3); // only need to click 3 times
+
+    until((length(slots) <= 0) or result);
+
+    if (result) then
+      break;
+  end;
+
+  if (result) then
+  begin
+    addToSRLLog('MD_SolveBigPuzzle: Solved in '+toStr(timeFromMark(time))+'ms');
+    wait(500 + random(500));
+    mouse(429, 270, 7, 7, mouse_Left); // click the thumb
+    wait(800 + random(500));
+  end else
+    addToSRLLog('MD_SolveBigPuzzle: Didn''t solve '+puzzle.name);
+end;
+
+(**
+ * Author: Coh3n & Nava2
+ * Description: Exits the classroom.
+ *)
+function MD_Exit(): boolean;
+var
+  doorColor, x, y: integer;
+  txt, doorDirection, doorType: string;
+  p: TPoint;
+  a: extended;
+begin
+  txt := getTextAtExWrap(142, 395, 500, 419, 1, 6, 2, clBlack, 50, upChars);
+
+  // get the door's direction
+  doorDirection := lowercase(trim(between('in the ', ' of', txt)));
+  case doorDirection of
+    'south-west' : begin p := point(MMX1, MMY2); a := 270; end;
+    'north'      : begin p := point(MMCX, MMY1); a := 0; end;
+    'north-west' : begin p := point(MMX1, MMY1); a := 270; end;
+    'south-east' : begin p := point(MMX2, MMY2); a := 90; end;
+
+    else begin
+      addtoSRLLog('MD_Exit: Failed to get door direction');
+      exit;
+    end;
+  end;
+
+  // get the door's color
+  doorType := lowercase(trim(between(' the ', ' door', txt)));
+  case doorType of
+    'purple circle' : doorColor := 14754001;
+    'red cross'     : doorColor := 1318539;
+    'green square'  : doorColor := 3927642;
+    'blue star'     : doorColor := 6115385;
+
+    else begin
+      addtoSRLLog('MD_Exit: Failed to get door color');
+      exit;
+    end;
+  end;
+
+  addToSRLLog('MD_Exit: Need to exit through '+doorDirection+', '+doorType+' door');
+  makeCompass('n');
+
+  // walk to the proper door
+  if (TPAWalk(clRed, 50, 0, 0, p)) then
+  begin
+    makeCompass(a);
+    wait(1500 + random(500));
+
+    // find and click the door
+    if (findColorTolerance(x, y, doorColor, MSX1, MSY1, MSX2, MSY2, 15)) then
+    begin
+      mouse(x, y, 5, 5, mouse_Move);
+
+      if (waitUptext('oor', 300)) then
+      begin
+        addToSRLLog('MD_Exit: Clicking door');
+        getMousePos(x, y);
+        mouse(x, y, 0, 0, mouse_Left);
+
+        if (didRedClick()) then
+          result := waitTabExists(TAB_MAGIC, 8000);
+      end;
+    end;
+  end;
+end;
+
+// debugs each rotating item in the Mordaut small puzzle
+procedure MD_DebugPuzzle(slots: TIntegerArray; names: TStringArray; use: string; big: boolean);
+var
+  i: integer;
+begin
+  MD_DeclareGlobals();
+
+  for i := 0 to high(slots) do
+    if (big) then
+      debugRotateObject(MD_ScanBigObject(slots[i]), names[i], use)
+    else
+      debugRotateObject(MD_ScanSmallObject(slots[i]), names[i], use);
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the random.
+ *)
+const
+  _MD_MAX = 6; // maximum puzzle tries
+
+function MD_Solve(): boolean;
+var
+  t, puz, incorrect, correct: integer;
+  bigPuzzles: TMDBigPuzzleArray;
+  smallPuzzles: TStringArray;
+  solved: boolean;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  t := (getSystemTime + (15 * 60000));
+
+  MD_DeclareGlobals();
+  clickNorth(SRL_ANGLE_HIGH);
+
+  bigPuzzles := MD_GetBigPuzzles();
+  smallPuzzles := MD_GetSmallPuzzles();
+
+  repeat
+    // solve the big puzzle
+    if (MD_BigScreen()) then
+    begin
+      puz := MD_IDBigPuzzle(bigPuzzles);
+
+      if (puz <> -1) then
+        solved := MD_SolveBigPuzzle(bigPuzzles[puz])
+      else
+        break;
+    end;
+
+    // solve the small puzzle
+    if (MD_SmallScreen()) then
+    begin
+      puz := MD_IDSmallPuzzle(smallPuzzles);
+
+      if (puz <> -1) then
+        solved := MD_SolveSmallPuzzle(smallPuzzles[puz]);
+    end;
+
+    // wait for Mordaut to start talking, otherwise puzzle wasn't solved
+    if (solved) then
+    begin
+      solved := false;
+      mouseBox(MIX1, MIY1, MIX2, MIY2, mouse_Move); // move away from MS to get a more accurate scan
+
+      if (waitNPCTalking(MD_NPC_MORDAUT, 3000)) then
+        if (findNPCChatTextMulti(['No', 'WRONG'], nothing)) then
+        begin
+          addToSRLLog('MD_Solve: Incorrectly solved puzzle');
+          inc(incorrect);
+        end else
+          inc(correct);
+    end;
+
+    // to bring up the next puzzle or show the solver is done
+    if (doConversation('exit', false)) then
+      if (MD_Exit()) then
+      begin
+        if (incorrect > 3) then
+          addToSRLLog('MD_Solve: Exited Mordaut, but too many incorrect puzzles')
+        else
+          result := true;
+      end else begin
+        addToSRLLog('MD_Solve: Failed to exit classroom');
+        break;
+      end;
+
+    // checks if we've been trying to solve for too long
+    if ((getSystemTime > t) and (not result)) then
+    begin
+      addToSRLLog('MD_Solve: Mordaut solver timed out');
+      break;
+    end;
+
+  until(result);
+end;
+

@@ -1,0 +1,441 @@
+(*
+Evil Bob
+========
+
+Stores all the routines to solve the Evil Bob random.
+
+This solver uses DTMs to determine which fishing spot to fish at.
+
+*)
+
+const
+  DTM_EB_COUNT = 14;
+    DTM_EB_NET_GROUND   = 0;
+    DTM_EB_NET_INV      = 1;
+    DTM_EB_POT          = 2;
+    DTM_EB_FISH_COOKED  = 3;
+    DTM_EB_FISH_RAW     = 4;
+    DTM_EB_BOB          = 5;
+    DTM_EB_SLAVE        = 6;
+    DTM_EB_STATUE_NORTH = 7;
+    DTM_EB_STATUE_SOUTH = 8;
+    DTM_EB_STATUE_EAST  = 9;
+    DTM_EB_STATUE_WEST  = 10;
+    DTM_EB_FISHSPOT     = 11;
+    DTM_EB_CENTER       = 12;
+    DTM_EB_PORTAL       = 13;
+
+var
+  EB_DTMs: array[0..(DTM_EB_COUNT - 1)] of integer;
+
+(**
+ * Author: DemiseScythe & Coh3n
+ * Description: Returns true if player is in the random.
+ *)
+function EB_Detect(): boolean;
+begin
+  if (countColorTolerance(9931907, MMX1, MMY1, MMX2, MMY2, 15) > 6000) then // the water color
+    if (countColorTolerance(10995923, MMX1, MMY1, MMX2, MMY2, 15) > 3000) then // the sand color
+      if (inRange(countDots('red'), 3, 7)) then
+        if (inRange(countDots('yellow'), 1, 2)) then
+          result := tabExists(TAB_PRAYER);
+end;
+
+(**
+ * Author: Coh3n, DTMs by DemiseScythe
+ * Description: Sets the EB_DTMs array.
+ *)
+procedure EB_SetDTMs();
+var
+  i: integer;
+begin
+  EB_DTMs[DTM_EB_NET_GROUND]   := DTMFromString('mggAAAHicY2NgYOAAYgEGCACxOYGYF4i5gJgdKsYAFeMBYgM1GYZzR+dhYH6gHDbMiANDAAApXgw2');
+  EB_DTMs[DTM_EB_NET_INV]      := DTMFromString('mwQAAAHic42RgYHBgYmCwBGJzILYDYjcg9gdiPyB2AWIfIN7OyMBwEIh3AvEGIN4IZR8C4uNAfBKIvay0gaYx4cX8DIQBIxEYDgCVcgn6');
+  EB_DTMs[DTM_EB_POT]          := DTMFromString('mwQAAAHic42RgYBBjZGCQBGJ+IOYCYnYgFgFiRSBmAGJtIE4GMrOBOAuIE4E4A4jzoPwcKN1aX8ewVEqFYZk0BEtISjCIS0gwSElLMyQkpjLER0cx8APVEcKMRGA4AACDdQxK');
+  EB_DTMs[DTM_EB_FISH_COOKED]  := DTMFromString('mwQAAAHic42RgYLBnYmBwBGJbILYBYjsgdgViDyD2AWJfIH4OVPcEiB8yQNivofRjIH4ApbO99RhkLE4zBFkqg9kNcbYMuT76DFH26gy+ZooMsQ4aDPxAdYQwIxEYDgAsOBLV');
+  EB_DTMs[DTM_EB_FISH_RAW]     := DTMFromString('mrAAAAHic42BgYHBgYmBwBGI7ILYHYlcg9gRiHyD2A+LnQDVPgPgxEL9igPAfAfF9qJhs2Q0GGcsLDBKJmxjkqx8yyJXfZhCPW8sgGjqHQTJlBwM/UA0+zEgAwwAAVtET5Q==');
+  EB_DTMs[DTM_EB_BOB]          := DTMFromString('mlwAAAHicY2dgYLgHxPeB+A6UfgDEd6HiE4C4F4i7gbgDiCcD8RQgng7EJkZGYGxjZcmgo6XFICMtzWBlbs5gb2PDwA+Ux4UZ8WAoAAAu4Q6J');
+  EB_DTMs[DTM_EB_SLAVE]        := DTMFromString('mQwAAAHicY2aAAGYkmhHKrs5RZWgp0WCozFJh4AfyYRgkzwTFQAAAdKQDcA==');
+  EB_DTMs[DTM_EB_STATUE_NORTH] := DTMFromString('mAAEAAHic42FgYHBgZGCwB2IbIHaFskHYCYgtgNgKKu4JxAFAvAWoZycDhN4OxBuAeDUQL4bi9UC8GYpBcpsnmzHsnW3J8PqgO8PcRn2GQ/OtGE4vtwWLb5pkxnBzkyPD/rmWDBdW2zMcX2zDwA/UQwpmJBEjAwD7vB91');
+  EB_DTMs[DTM_EB_STATUE_SOUTH] := DTMFromString('mPwEAAHic42dgYBBkZGDgBmIBKM0FxMJALMIIkROFioOwNBBLQcXFgHg9UP8uIN4DxIeB+DQUHwLiFUC8HIhnAvEiIJ4NxEuAeD4QLwDipmwNhqUdxgwdBVoM6SHyDMu7jBkWtRoxtORqMKzrNwXj7mJthopkVYaZdfoM5UkqYPaqHhMGfqB+cjEjBRgNAACAhx5Y');
+  EB_DTMs[DTM_EB_STATUE_EAST]  := DTMFromString('mVAEAAHicpcw7CsJgEIXR6wp0LaKdGIyFbsxO3IAoGHwGAz4Lm6BgI0iKiCREFDvBVfgl/JVtBg4zMHemJClBjJeZH7jjhhBPRAjMLvU2N2luhT0OxhE+POzgYooZxhhhiAH6cDplLXtVRWs7c3ZqcrsVBQtL8cbWdW4p2Tb18VsKvUaWuUzq+p7aWS/yI49CTv/1A6QHNIs=');
+  EB_DTMs[DTM_EB_STATUE_WEST]  := DTMFromString('m6wAAAHic42ZgYLgPxI+A+B4Q3wXi50D8DEnsKRA/BOInQHwViG9B8WMgvgLE54H4LBCfAeKTQHwMiPeC6MW2DOkh8gwz6/QZZjcYMJQnqTDUZagzLGgxZNg5w5JheZcxw5FFNgzzmw0Z+IHqicWMJGAkAADn6CG2');
+  EB_DTMs[DTM_EB_FISHSPOT]     := DTMFromString('mWAAAAHicY2FgYFAFYhUg1gRieSDmZ2Rg4ARiASAWBOLazkUMC5euhGN+kBokzIiGQQAAkaEIiA==');
+  EB_DTMs[DTM_EB_CENTER]       := DTMFromString('mbQAAAHicY2VgYChhYmDIAuJuIO4H4nQgtgGKawKxOhC7A7EPEB/b08bglCTLoBQhDMYgNj9QHB0zYsFgAABcVgiC');
+  EB_DTMs[DTM_EB_PORTAL]       := DTMFromString('mKgEAAHic42NgYNgJxLuAeBMQrwfiDVCxg0C8FoiPAfEOIF4NxBuhckeAeCUQLwTiJUC8HKp3I1R8B5K564B4PhDPhapdsNQfJ27q0ILj/YfKUDA/UC85mJFMjAoAKusqzA==');
+
+  for i := 0 to high(EB_DTMs) do
+    setDTMName(EB_DTMs[i], 'Evil Bob '+toStr(i));
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Initial setup to solve the random.
+ *)
+procedure EB_Setup();
+begin
+  if (not loggedIn()) then
+    exit;
+
+  clickNorth(SRL_ANGLE_HIGH);
+  EB_SetDTMs();
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Walks to the fishing nets and picks one up.
+ *)
+function EB_GetNet(): boolean;
+var
+  x, y, r, t: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_GetNet: Getting fishing net');
+
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 200); // may already have a net
+
+  if (not result) then
+  begin
+    // walk to the red dots on the SE part of the island
+    TPAWalk(721128, 30, 5, -5, point(MMX2, MMY2));
+    wait(2000 + random(500));
+
+    // drop items if needed
+    if (InvCount > 26) then
+    begin
+      addToSRLLog('Dropping items');
+
+      t := (getSystemTime + 5000);
+      repeat
+        r := randomRange(10, 16); // random slots, probably not important items
+        if (ExistsItem(r)) then
+        begin
+          DropItem(r);
+          wait(1000 + random(500));
+        end;
+      until((InvCount <= 26) or (getSystemTime > t));
+    end;
+
+    // pick up net off the ground
+    if (clickDTMRotatedIn(EB_DTMs[DTM_EB_NET_GROUND], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['ake', 'net'], mouse_Left)) then
+    begin
+      if (didRedClick) then
+      begin
+        result := waitFindDTM(x, y, EB_DTMs[DTM_EB_NET_INV], 5000); // look for net in inventory
+
+        if (not result) then
+          addToSRLLog('DB_GetNet: Didn''t find DTM_EB_NET_INV');
+      end;
+    end else
+      addToSRLLog('EB_GetNet: Didn''t click DTM_EB_NET_GROUND');
+  end;
+
+  if (result) then
+    addToSRLLog('EB_GetNet: Got fishing net');
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Returns true if player relocated to the center of the island.
+ *)
+function EB_WalkToCenter(): boolean;
+var
+  x, y: integer;
+  aFound: extended;
+begin
+  addToSRLLog('EB_WalkToCenter: Walking to the center of the island');
+
+  if (findDTMRotatedAlternating(EB_DTMs[DTM_EB_CENTER], x, y, MMX1, MMY1, MMX2, MMY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+  begin
+    if (Distance(x, y, MMCX, MMCY) > 10) then // may already be at center
+    begin
+      mouse(x, y, 3, 3, true);
+      wait(1500 + random(300));
+      Flag;
+    end else
+      addToSRLLog('EB_WalkToCenter: Already at center');
+
+    result := true;
+  end else begin
+    addToSRLLog('EB_WalkToCenter: Didn''t find DTM_EB_CENTER');
+    result := TPAWalk(63717, 50, randomRange(-5, 5), randomRange(-5, 5), point(MMCX, MMCY));
+  end;
+
+  if (result) then
+    addToSRLLog('EB_WalkToCenter: At center');
+end;
+
+function _Callback_EB_TalkToSlave: Boolean;
+begin
+  Result := clickDTMRotatedIn(EB_DTMs[DTM_EB_SLAVE], MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, ['ervant'], mouse_Left);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Talks to slave to start cut scene.
+ *)
+function EB_TalkToSlave(): boolean;
+var
+  i: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_TalkToSlave: Talking to the Slave');
+
+  if (waitFunc(@_Callback_EB_TalkToSlave, 50, 5000)) then
+  begin
+    if (findNPCChatTextMulti(['fallen', 'quick'], nothing)) then
+    begin
+      result := true;
+      exit;
+    end;
+
+    if (waitFunc(@areTalking, 50, 4000)) then
+      for i := 1 to 4 do // click through 4 dialogs
+      begin
+        clickContinue(true, true);
+        wait(300 + random(200));
+        result := true;
+      end;
+  end else
+    addToSRLLog('Didn''t find DTM_EB_SLAVE');
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Returns the statue we need to fish at.
+ *)
+function EB_GetStatue(): string;
+var
+  i, x, y, t: integer;
+  DTMs: TIntegerArray;
+  results: TStringArray;
+  aFound: extended;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_GetStatue: Identifying statue');
+
+  result := '';
+  t := (getSystemTime + 20000);
+
+  results := [ 'north', 'east', 'south', 'west' ];
+  DTMs    := [ DTM_EB_STATUE_NORTH, DTM_EB_STATUE_EAST,
+               DTM_EB_STATUE_SOUTH, DTM_EB_STATUE_WEST ];
+
+  // loop through statue DTMs trying to find the correct one
+  repeat
+    for i := 0 to high(DTMs) do
+      if (findDTMRotatedAlternating(EB_DTMs[DTMs[i]], x, y, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/30, aFound)) then
+      begin
+        result := results[i];
+        break;
+      end;
+  until((result <> '') or (getSystemTime > t));
+
+  if (result <> '') then
+    addToSRLLog('DB_GetStatue: Found statue '''+result+'''')
+  else
+    addToSRLLog('DB_GetStatue: Didn''t identify statue');
+
+  wait(1500 + random(500));
+  clickContinue(true, true); // need to do this whether or not it fails
+end;
+
+function _Callback_EB_GetFish: Boolean;
+begin
+  Result := clickDTMRotatedIn(EB_DTMs[DTM_EB_FISHSPOT], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ishing'], mouse_Left);
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Relocates to center, walks to fishing spots and returns true
+ * when cooked fish is found.
+ *)
+function EB_GetFish(Direction: string): boolean;
+var
+  x, y: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_GetFish: Getting fish');
+
+  // may already have fish
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 200) or
+            waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200);
+
+  EB_WalkToCenter(); // make sure we're at the center of the island
+
+  if (not result) then
+  begin
+    case Direction of  // sand color
+      'north': TPAWalk(10864595, 15, 10, 10, point(MMCX, MMY1));
+      'east':  TPAWalk(10864595, 15, 0, 0, point(MMX2, MMCY));
+      'south': TPAWalk(10864595, 15, 0, -5, point(MMCX, MMY2));
+      'west':  TPAWalk(10864595, 15, 5, 0, point(MMX1, MMCY));
+    end;
+
+    wait(1500 + random(500));
+
+    if (waitFunc(@_Callback_EB_GetFish, 50, 5000)) then
+    begin
+      if (didRedClick) then
+        if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_COOKED], 10000)) then // wait to find cooked fish
+          result := true
+        else
+          addToSRLLog('EB_GetFish: Didn''t find DTM_EB_FISH_COOKED');
+    end else
+      addToSRLLog('EB_GetFish: Didn''t click DTM_EB_FISHSPOT');
+  end;
+
+  if (result) then
+    addToSRLLog('EB_GetFish: Got fish')
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Uses the cooked fish on the uncooking pot.
+ *)
+function EB_Uncook(): boolean;
+var
+  x, y: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_Uncook: Uncooking the fish');
+  result := waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 200); // may already have uncooked the fish
+
+  EB_WalkToCenter();
+
+  if (not result) then
+  begin
+    // click the cooked fish
+    if (findDTM(EB_DTMs[DTM_EB_FISH_COOKED], x, y, MIX1, MIY1, MIX2, MIY2)) then
+    begin
+      mouse(x, y, 5, 5, mouse_Left);
+
+      // use the fish on the uncooking pot
+      if (clickDTMRotatedIn(EB_DTMs[DTM_EB_POT], MSX1, MSY1, MSX2, MSY2, -Pi, Pi, Pi/30, ['ncook'], mouse_Left)) then
+      begin
+        // wait for the fish to be uncooked
+        if (waitFindDTM(x, y, EB_DTMs[DTM_EB_FISH_RAW], 5000)) then
+          result := true
+        else
+          addToSRLLog('EB_Uncook: Didn''t find DTM_EB_FISH_RAW')
+      end else
+        addToSRLLog('EB_Uncook: Didn''t click DTM_EB_POT');
+    end else
+      addToSRLLog('EB_Uncook: Didn''t find DTM_EB_FISH_COOKED');
+  end;
+
+  if (result) then
+    addToSRLLog('EB_Uncook: Uncooked the fish');
+end;
+
+(**
+ * Author: Coh3n & DemiseScythe
+ * Description: Feeds Bob the raw fish.
+ *)
+function EB_FeedBob(): boolean;
+var
+  x, y: integer;
+begin
+  if (not loggedIn()) then
+    exit;
+
+  addToSRLLog('EB_FeedBob: Feeding Bob');
+
+  if (findDTM(EB_DTMs[DTM_EB_FISH_RAW], x, y, MIX1, MIY1, MIX2, MIY2)) then
+  begin
+    mouse(x, y, 5, 5, mouse_Left);
+
+    if (clickDTMRotatedIn(EB_DTMs[DTM_EB_BOB], MSX1, MSY1, MSX2 - 200, MSY2, -Pi, Pi, Pi/30, ['vil', 'ob'], mouse_Left)) then
+    begin
+      wait(1500 + random(500));
+
+      if (DoConversation('nap', false)) then
+      begin
+        result := true;
+        addToSRLLog('EB_FeedBob: Fed Bob');
+      end;
+
+    end else
+      addToSRLLog('EB_FeedBob: Didn''t find DTM_EB_BOB');
+  end else
+    addToSRLLog('EB_FeedBob: Didn''t find DTM_EB_FISH_RAW');
+end;
+
+(**
+ * Author: Coh3n
+ * Description: Solves the Evil Bob random event.
+ *)
+function EB_Solve(): boolean;
+var
+  t: integer;
+  statue: string;
+begin
+  t := (getSystemTime + (5 * 60000)); // maximum 5 minutes
+
+  EB_Setup();
+
+  repeat
+    if (EB_GetNet()) then
+    begin
+      EB_WalkToCenter();
+      wait(1000 + random(500));
+
+      if ((statue <> '') or (EB_TalkToSlave())) then // don't talk to the slave if the statue is already ID'd
+      begin
+        // in case we've already finished
+        if (findNPCChatTextMulti(['fallen', 'quick'], nothing)) then
+        begin
+          addToSRLLog('Already finished feeding Bob');
+
+          if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
+            if (waitTabExists(TAB_MAGIC, 25000)) then
+            begin
+              result := true;
+              break;
+            end;
+        end;
+
+        if (statue = '') then // may have already ID'd the statue
+          statue := EB_GetStatue();
+
+        if (statue <> '') then
+          repeat // since statue was found, keep trying to do the rest
+            if (EB_GetFish(statue)) then
+            begin
+              EB_WalkToCenter();
+
+              if (EB_Uncook()) then
+                if (EB_FeedBob()) then
+                begin
+                  if (clickPortal(EB_DTMs[DTM_EB_PORTAL])) then
+                    result := WaitTabExists(TAB_MAGIC, 25000)
+                  else begin
+                    freeDTMs(EB_DTMs);
+                    exit;
+                  end;
+                end else begin
+                  statue := '';
+                  break; // wrong fish (or need another), starting over
+                end;
+            end;
+          until(result or (getSystemTime > t));
+      end;
+    end;
+  until(result or (getSystemTime > t));
+
+  freeDTMs(EB_DTMs);
+
+  if (not result) then
+    addToSRLLog('EB_Solve: Evil Bob solver has failed or timed out');
+end;
+

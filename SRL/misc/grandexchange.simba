@@ -1,0 +1,647 @@
+//------------------------------------------------------------------------//
+//--               SRL Resource Library                                 --//
+//--               � Grand Exchange Routines                            --//
+//------------------------------------------------------------------------//
+// * function InGE: boolean;                                              // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEIsMember: boolean;                                        // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GESellMenu: boolean;                                        // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEBuyMenu: boolean;                                         // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GEMenuExit;                                                // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GESpotToTBox(spot: integer): TBox;                          // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEIsSpotFree(spot: integer):boolean;                        // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEFinishedAt(spot: integer): boolean;                       // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GERecoverAtEx(spot: integer; abort:boolean);               // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GERecoverAt(spot: integer);                                // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GERecoverFinishedAt(spot: integer);                        // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GEAbortAll;                                                // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GERecoverAll;                                              // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GERecoverFinished;                                         // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEFindFreeSpot(var spot:integer): boolean;                  // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GESellAt(spot: integer): boolean;                           // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEBuyAt(spot: integer): boolean;                            // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GECanType: boolean                                          // * by ProphesyOfWolf
+// * function GESetPrice(value: string): boolean;                         // * by Rasta Magician, fixed by ProphesyOfWolf
+// * procedure GESetQuantity(Q: string);                                  // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEConfirmOffer: boolean;                                    // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GEBuy(What, Price, Quantity: string): boolean;              // * by Rasta Magician, fixed by ProphesyOfWolf
+// * function GESell(Price, Quantity: string; InvSpot: integer): boolean; // * by Rasta Magician, fixed by ProphesyOfWolf
+
+{*******************************************************************************
+function InGE: boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if we are in GE
+*******************************************************************************}
+function InGE: boolean;
+var
+  x, y, GEIN: integer;
+begin
+  GEIN := DTMFromString('mggAAAHicY2NgYMhnZGDIAeICIK4E4jQgzgPiYqBc'+
+                        'JhSXAXEFEFcC8bejcxi2FDEwPFvDwLAlyYLh6OQshqpACwYOoBw2zIgDQwAAomsOqQ==');
+  Result := FindDTM(GEIN, x, y, 28, 77-55, 58, 105-55);
+  FreeDTM(GEIN);
+end;
+
+{*******************************************************************************
+function GEIsMember: boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if it is a member account using GE
+*******************************************************************************}
+function GEIsMember: boolean;
+begin
+  if not InGE then exit;
+  if GetColor(411, 167) <> srl_outline_black then
+    if GetColor(410, 155) <> 5199452 then
+    begin
+      Result := true;
+      exit;
+    end;
+
+  if GetColor(411, 167) <> 5199452 then //to avoid jagex moving 1px
+     if GetColor(410, 155) <> srl_outline_black then
+      begin
+        Result := true;
+        exit;
+      end;
+
+  Result := false;
+end;
+
+{*******************************************************************************
+function GESellMenu: boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if we are in the sell menu
+*******************************************************************************}
+function GESellMenu: boolean;
+var
+  x, y, GESell: integer;
+begin
+  GESell := DTMFromString('mlwAAAHicY2dgYGBkYmD4xwihQZgVSv8Fis0Ayk8E4n4gn'+
+                          'grEs4B4NgNEvNFXjuHfOgY47g0XYih2lGDQV+Fi4ADK48KMeDAUAABjFA6A');
+  Result := FindDTM(GESell, x, y, 177, 114-55, 198, 141-55);
+  FreeDTM(GESell);
+end;
+
+{*******************************************************************************
+function GEBuyMenu: boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if we are in the buy menu
+*******************************************************************************}
+function GEBuyMenu: boolean;
+var
+  x, y, GEBuy: integer;
+begin
+  GEBuy := DTMFromString('mggAAAHicY2NgYHjAxMBwH4ifQOk7ULweKLcKiLcA8VYg3s'+
+                         'QAETvxDoJ7w4UYih0lGPRVuBg21BkwcADlsGFGHBgCAMrDEI8=');
+  Result := FindDTM(GEBuy, x, y, 177, 114-55, 198, 141-55);
+  FreeDTM(GEBuy);
+end;
+
+{*******************************************************************************
+procedure GEMenuExit;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Exits the Buy or Sell menu
+*******************************************************************************}
+procedure GEMenuExit;
+var i, x:integer;
+begin
+  if not InGE then exit;
+  if not GESellMenu and not GEBuyMenu then
+    exit;
+  MMouse(40, 291, 18, 9);
+
+  for i:= 0 to 5 do
+  begin
+    wait(100);
+    if IsUpText('ack') then break;
+  end;
+
+  if IsUpText('ack') then
+  begin
+    GetMousePos(x, i);
+    Mouse(x, i, 0, 0, true);
+    while GEBuyMenu or GESellMenu do wait(150);
+  end;
+
+end;
+
+{*******************************************************************************
+function GESpotToTBox(spot: integer): TBox;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Returns the coords of a box in GE
+*******************************************************************************}
+function GESpotToTBox(spot: integer): TBox;
+var
+  i, x1, x2, y1, y2: integer;
+begin
+{
+box width: 140
+box height: 112
+gap hor: 16
+gap ver: 8
+}
+  if spot > 3 then
+    i := spot - 3 - 1
+  else
+    i := spot - 1 ;
+
+  x1 := 32 + (16 + 140)*i;
+  x2 := 172 + (16 + 140)*i;
+
+  if spot > 3 then
+    i := 1
+  else
+    i := 0;
+
+  y1 := 82 + (112 + 8)*i;
+  y2 := 194 + (112 + 8)*i;
+
+  Result := IntToBox(x1, y1, x2, y2);
+end;
+
+{*******************************************************************************
+function GEIsSpotFree(spot: integer):boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if a spot is available for buying/selling
+*******************************************************************************}
+function GEIsSpotFree(spot: integer):boolean;
+var TB: TBox;
+begin
+  if not InGE then exit;
+  if spot > 2 then
+    if not GEIsMember then
+      exit;
+
+  TB := GESpotToTBox(spot);
+  Result := (GetColor(TB.x1 + 9, TB.y2 - 30) <> 0);
+end;
+
+{*******************************************************************************
+function GEFinishedAt(spot: integer): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Checks if a trade has been concluded at spot: spot
+*******************************************************************************}
+function GEFinishedAt(spot: integer): boolean;
+var TB: TBox;
+begin
+  if not InGE then exit;
+  if spot > 2 then
+    if not GEIsMember then exit;
+
+  if not GEIsSpotFree(spot) then
+  begin
+    TB := GESpotToTBox(spot);
+    Result := ( GetColor(TB.x1 + 103, TB.y2 - 20) = 1999423 );
+  end;
+end;
+
+{*******************************************************************************
+procedure GERecoverAtEx(spot: integer; abort:boolean);
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Collects the items traded received at a certain spot
+             Aborts the trade is boolean abort is set to true
+*******************************************************************************}
+procedure GERecoverAtEx(spot: integer; abort:boolean);
+var
+  TB: TBox;
+  i, x, y: integer;
+begin
+  if not InGE then exit;
+  if GEIsSpotFree(spot) then exit;
+  if spot > 2 then
+    if not GEIsMember then
+      exit;
+
+  TB := GESpotToTBox(spot);
+  MouseBox(TB.x1, TB.y1, TB.x2, TB.y2, 1);
+  wait(200);
+
+  for i:= 0 to 10 do
+  begin
+    if (GESellMenu)or(GEBuyMenu) then
+      break;
+    wait(150);
+  end;
+
+  if abort then
+    if (GetColor(359, 312) <> 1999423) then
+    begin
+
+      MMouse(364, 285, 5, 5);   //moving to button
+      wait(100);
+
+      for i:= 0 to 5 do                  // waiting text
+      begin
+        if IsUpText('bort') then break;
+        wait(100);
+      end;
+
+      if IsUpText('bort') then
+      begin
+        GetMousePos(x, y);
+        Mouse(x, y, 0, 0, true);
+      end;
+
+      for i:= 0 to 10 do        //waiting until aborted
+      begin
+        wait(100);
+        if (GetColor(202, 309) = 1048714) then break;
+      end;
+      wait(300+Random(300));
+    end;
+
+  //collecting spot 1 //
+  MMouse(416, 299, 5, 5);
+
+  for i:= 0 to 5 do                  // waiting text
+  begin
+    if IsUpText('ollect') then break;
+    wait(100);
+  end;
+
+  if IsUpText('ollect') then
+  begin
+    GetMousePos(x, y);
+    Mouse(x, y, 0, 0, true);
+  end;
+
+  wait(300+Random(300));
+
+  //collecting spot 1 //
+
+  if (GetColor(467, 298) <> 2176579) then // spot 2
+  begin
+    MMouse(467, 298, 5, 5);
+
+    for i:= 0 to 5 do                  // waiting text
+    begin
+      if IsUpText('ollect') then break;
+      wait(100);
+    end;
+
+    if IsUpText('ollect') then
+    begin
+      GetMousePos(x, y);
+      Mouse(x, y, 0, 0, true);
+    end;
+
+    wait(300+Random(300));
+
+  end;
+
+  while GESellMenu or GEBuyMenu do wait(150);
+
+  GEMenuExit; //just if something went wrong
+end;
+
+{*******************************************************************************
+function procedure GERecoverAt(spot: integer);
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Recovers items at spot: spot, does not abort the trade
+*******************************************************************************}
+procedure GERecoverAt(spot: integer);
+begin
+  GERecoverAtEx(spot, false);
+end;
+
+{*******************************************************************************
+procedure GERecoverFinishedAt(spot: integer);
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Recovers items at spot: spot if the trade is concluded
+*******************************************************************************}
+procedure GERecoverFinishedAt(spot: integer);
+begin
+  if not InGE then exit;
+  if GEFinishedAt(spot) then
+    GERecoverAtEx(spot, false);
+end;
+
+{*******************************************************************************
+procedure GEAbortAll;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Aborts and recovers all current trades
+*******************************************************************************}
+procedure GEAbortAll;
+var
+  i:integer;
+begin
+  for i:= 1 to 6 do
+    GERecoverAtEx(i, true);
+end;
+
+{*******************************************************************************
+procedure GERecoverAll;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Recovers all current trades, does not abort
+*******************************************************************************}
+procedure GERecoverAll;
+var
+  i:integer;
+begin
+  for i:= 1 to 6 do
+    GERecoverAt(i);
+end;
+
+{*******************************************************************************
+procedure GERecoverFinished;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Recovers all finished trades
+*******************************************************************************}
+procedure GERecoverFinished;
+var
+  i:integer;
+begin
+  for i:= 1 to 6 do
+    GERecoverFinishedAt(i);
+end;
+
+{*******************************************************************************
+function GEFindFreeSpot(var spot:integer): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Finds a free spot to trade in
+*******************************************************************************}
+function GEFindFreeSpot(var spot:integer): boolean;
+var
+  i:integer;
+begin
+  if not InGE then exit;
+
+  Result := false;
+  spot := 0;
+
+  for i:= 1 to 6 do
+    if GEIsSpotFree(i) then
+    begin
+      spot := i;
+      Result := true;
+      break;
+    end;
+end;
+
+{*******************************************************************************
+function GESellAt(spot: integer): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Presses the sell button at spot: spot
+*******************************************************************************}
+function GESellAt(spot: integer): boolean;
+var
+  TB: TBox;
+  x, y: integer;
+begin
+  if not InGE then exit;
+  if not GEIsSpotFree(spot) then
+  begin
+    writeln('space is not free!');
+    exit;
+  end;
+
+  TB := GESpotToTBox(spot);
+  MMouse(TB.x1 + 100, TB.y1 + 65, 5, 5);
+  wait(150+Random(75));
+
+  if IsUpText('ell') then
+  begin
+    GetMousePos(x, y);
+    Mouse(x, y, 0, 0, true);
+  end;
+
+  while not GESellMenu do wait(150);
+
+  Result := GESellMenu;
+end;
+
+{*******************************************************************************
+function GEBuyAt(spot: integer): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Presses the buy button at spot: spot
+*******************************************************************************}
+function GEBuyAt(spot: integer): boolean;
+var
+  TB: TBox;
+  x, y: integer;
+begin
+  if not InGE then exit;
+  if not GEIsSpotFree(spot) then
+  begin
+    writeln('space is not free!');
+    exit;
+  end;
+
+  TB := GESpotToTBox(spot);
+  MouseBox(TB.x1 + 35, TB.y1 + 50, TB.x1 + 65, TB.y1 + 80, 3);
+  wait(150+Random(75));
+
+  if IsUpText('Buy') then
+  begin
+    GetMousePos(x, y);
+    Mouse(x, y, 0, 0, true);
+  end;
+
+  while not GEBuyMenu do wait(150);
+
+  Result := GEBuyMenu;
+end;
+
+{*******************************************************************************
+function GECanType: boolean;
+By: ProphesyOfWolf
+Description: Returns true if you can type in the chatbox (for GESetPrice and GESetQuantity)
+*******************************************************************************}
+
+function GECanType: boolean;
+var
+  x, y, DTM: Integer;
+begin
+  DTM := DTMFromString('mggAAAHicY2NgYMhlZGDIBOICKM4G4nQgDmBiYPCF4iAgDobSH2/eB+'+
+                       'OVk6aD8ZGlK8GYGWgWNsyIA0MAAFiFEbQ=');
+  result := not(FindDTM(DTM, x, y, 3, 499-55, 176, 532-55));
+  FreeDTM(DTM);
+end;
+
+{*******************************************************************************
+function GESetPrice(value: string): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Sets the price of an item.
+             '-5'           : -5% of current price
+             'guide', 'med' : Market Value
+             '+5'           : +5% of current price
+             Other          : Exact value
+*******************************************************************************}
+function GESetPrice(Value: Variant): boolean;
+begin
+
+  if not InGE then exit;
+  if not GESellMenu then
+    if not GEBuyMenu then
+      exit;
+
+  wait(100+Random(50));
+
+  case value of
+    '-5': MouseBox(276, 261-55, 304, 279-55, 1);      // -5%
+    'guide','med': begin end;                         // market/guide price
+    '+5': MouseBox(430, 262-55, 458, 280-55, 1);      // +5%
+    else begin
+      Mouse(389, 271-55, 5, 5, True);
+      repeat wait(50) until GECanType;
+      Wait(700);
+      TypeSend(IntToStr(value));
+      Wait(200+randomrange(450, 650));
+      if IsChatBoxTextAnyLine('price range', clblack) then
+      begin
+        writeln('wrong price! Out of Price Range!');
+        GEMenuExit;
+      end;
+    end;
+  end;
+
+  Result := true;
+end;
+
+{*******************************************************************************
+procedure GESetQuantity(Q: string);
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Sets the price of an item.
+             Options: '1', '10', '100', '1000'(buy), 'all'(sell),
+                      Other - Exact Value
+*******************************************************************************}
+procedure GESetQuantity(Q: string);
+begin
+  if not InGe then exit;
+  if not GESellMenu then
+    if not GEBuyMenu then
+      exit;
+
+  case lowercase(Q) of
+    '1': Mouse(72, 220, 5, 5, true);
+    '10': Mouse(115, 219, 5, 5, true);
+    '100': Mouse(155, 220, 5, 5, true);
+    'all', '1000': Mouse(196, 222, 5, 5, true);
+    else begin
+      Mouse(238, 272-55, 5, 5, true);
+      repeat wait(50) until GECanType;
+      TypeSend(Q);
+      Wait(300+randomrange(450, 650));
+    end;
+  end;
+end;
+
+{*******************************************************************************
+function GEConfirmOffer: boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Confirms an offer
+             Returns false if it wasn't able to do so
+*******************************************************************************}
+function GEConfirmOffer: boolean;
+var x, y : integer;
+begin
+  if not InGE then exit;
+  if not GESellMenu then
+    if not GEBuyMenu then
+      exit;
+
+  Result := true;
+
+  MMouse(215, 284, 96, 21);
+  wait(250+Random(100));
+  if IsUpText('ffer') then
+  begin
+    GetMousePos(x, y);
+    Mouse(x, y, 0, 0, true);
+    wait(1000+Random(200));
+  end;
+
+  if GESellMenu or GEBuyMenu then
+  begin
+    writeln('could not confirm offer');
+    GEMenuExit;
+    Result := false;
+  end;
+
+end;
+
+{*******************************************************************************
+function GEBuy(What, Price, Quantity: string): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Buys an item from the GE
+             What (item name) has to be exact
+             Price: 'min', 'med', 'max', exact value
+             Quantity: '1', '10', '100', '1000', exact value
+*******************************************************************************}
+function GEBuy(What, Price, Quantity: string): boolean;
+var
+  free, searchbox, x, y:integer;
+begin
+  if not InGE then exit;
+  if not GEFindFreeSpot(free) then exit;
+
+  if GEBuyAt(free) then
+  begin
+    while(not(GEBuyMenu)) do wait(150);
+
+    searchbox := DTMFromString('mlwAAAHicY2dgYLjKyMBwCYhvAPEtIL7NCBG7CMRngPIngf'+
+                               'gEA4R9CYgvAvF5IC5O9WfYvWkRmEbHHEB5XJgRD4YCAEXxFLw=');
+
+    repeat
+      if (DTMRotated(searchbox, x, y, 102, 145-55, 129, 171-55)) then //checking for Item Search
+      begin
+        break;
+      end else
+      begin
+        GEMenuExit;
+        while(GEBuyMenu) do wait(50);
+        GEBuyAt(free);
+        while(not(GEBuyMenu)) do Wait(50);
+      end;
+    until(false)
+
+    FreeDTM(searchbox);
+
+    Wait(randomrange(1000, 1400));
+    TypeSend(lowercase(What));
+    wait(450+Random(200));
+
+    if FindColor(x, y, 23200, 66, 348, 120, 354) then  //if it finds our thing
+    begin
+      Mouse(x, y, 5, 3, true);
+      wait(200+random(300));
+    end else begin
+      writeln('Wrong object name');
+      exit;
+    end;
+    wait(200+Random(100));
+    if not GESetPrice(Price) then exit;
+    wait(300+Random(100));
+    GESetQuantity(Quantity);
+    wait(100+Random(100));
+    Result := GEConfirmOffer;
+    while GEBuyMenu do Wait(50);
+  end;
+end;
+
+{*******************************************************************************
+function GESell(Price, Quantity: string; InvSpot: integer): boolean;
+By: Rasta Magician, fixed by ProphesyOfWolf
+Description: Sells an item at GE
+             Price: 'min', 'med', 'max', exact value
+             Quantity: '1', '10', '100', 'all', exact value
+             InvSpot: the Invspot where you have your item
+*******************************************************************************}
+function GESell(Price, Quantity: string; InvSpot: integer): boolean;
+var
+  free :integer;
+begin
+  if not InGE then exit;
+  if not GEFindFreeSpot(free) then exit;
+
+  if GESellAt(free) then
+  begin
+    while not GESellMenu do wait(150);
+    MouseItem(InvSpot, mouse_Left);
+    wait(400+Random(100));
+    GESetPrice(Price);
+    wait(300+Random(100));
+    GESetQuantity(Quantity);
+    wait(300+Random(100));
+    Result := GEConfirmOffer;
+  end;
+end;

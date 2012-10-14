@@ -26,9 +26,17 @@
 
 {$DEFINE SRL5}
 
+{$IFDEF Lape}
+{$include SRLLape.simba}
+{$ENDIF}
+
 {$IFDEF SMART}
 {$IFNDEF SRL_SMART}
-{$include SRL/SRL/misc/smart.simba}
+  {$IFDEF SIMBAMAJOR980}
+    {$I SRL/SRL/Misc/Smart.Simba}
+  {$ELSE}
+    Procedure ActivateClient; {$IFDEF LAPE}override;{$ENDIF} begin end;
+  {$ENDIF}
 {$ENDIF}
 {$ENDIF}
 
@@ -81,6 +89,14 @@
 
 {$IFDEF LoadExtraFonts}
 {$include SRL/SRL/misc/fontupdater.simba}
+{$ENDIF}
+
+{$IFNDEF SIMBAMAJOR980}
+{$IFDEF SMART}
+  {$IFNDEF SRL_SMART}
+    {$include SRL/SRL/misc/SmartParams.Simba}
+  {$ENDIF}
+{$ENDIF}
 {$ENDIF}
 
 {$DEFINE SRL_OPENDEV}
@@ -159,29 +175,38 @@ begin
   Writeln ('SRL Compiled in '+  IntToStr(GetTimeRunning - t) + ' msec');
 
   {$IFDEF SRL_SMART}
-  if (Smart_Server = 0) then
-  begin
-    Smart_Server := RandomWorld(Smart_Members, False);
-    Smart_Signed := True;
-    Smart_SuperDetail := False;
-  end;
-  Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
-                 + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
-  SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
-  SetTargetArray(SmartImageArray, 765,503);
+    {$IFDEF SIMBAMAJOR980}
+      if (Smart_Server = 0) then
+      begin
+        Smart_Server := RandomWorld(Smart_Members, False);
+        Smart_Signed := True;
+        Smart_SuperDetail := False;
+      end;
+      Writeln('SMART Initialized.' + #10 + 'Loaded: Server ' + IntToStr(Smart_Server) + ', Members: ' + BoolToStr(Smart_Members)
+                     + ', Signed: ' + BoolToStr(Smart_Signed) + ', Super Detail: ' + BoolToStr(Smart_SuperDetail) + '.');
+      SmartSetupEx(Smart_Server, Smart_Members, Smart_Signed, Smart_SuperDetail);
+      SetTargetArray(SmartImageArray, 765, 553);
+    {$ELSE}
+      SetupSmart(Smart_ForceNew);
+      if (SRL_SixHourFix) then
+        SRL_Procs[srl_OnRSUpdate] := @SixHourFix;
+    {$ENDIF}
+
   repeat
+    {$IFNDEF SIMBAMAJOR980}
+      {$IFDEF SMART}
+      If Smart_FixSpeed then
+        FixSmartSpeed;
+      {$ENDIF}
+    {$ENDIF}
     Wait(100);
     if (GetTimeRunning - t) > 120000 then
       Break;
   until(RSReady);
-  {$ELSE}
-  Smart_Server := 0;
-  Smart_Members := false;
-  Smart_Signed := True;
-  Smart_SuperDetail := false;
   {$ENDIF}
 
-  SetupGauss();
+  SetupGauss;
+  SRL_ResetNavBar;
 end;
 
 {$ifdef CompileSRL}
