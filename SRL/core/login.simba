@@ -588,7 +588,7 @@ begin
 end;
 
 (*
-LoginPLayerToLob
+LoginPlayerToLob
 ~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
@@ -761,7 +761,7 @@ begin
       TypeSend(Players[CurrentPlayer].Name);
     end else
       TypeSend(Players[CurrentPlayer].Pass);
-    Wait(100 + Random(50));
+    Wait(800 + Random(50));	//Should fix the Login -> Spam Recoveries bug
   end;
 
                         {Check responses}
@@ -870,7 +870,7 @@ begin
 end;
 
 (*
-LoginPLayer
+LoginPlayer
 ~~~~~~~~~~~
 
 .. code-block:: pascal
