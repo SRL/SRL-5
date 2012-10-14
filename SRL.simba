@@ -214,3 +214,9 @@ begin
   SetupSRL;
 end.
 {$endif}
+
+{$ifdef LAPE}
+begin
+  SetupSRL;
+end.
+{$endif}
