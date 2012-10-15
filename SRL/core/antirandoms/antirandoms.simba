@@ -411,11 +411,11 @@ var
   manually: boolean;
 begin
   // no tabs exists if bank is open; could throw false positives
-  if (not loggedIn) or (bankScreen) then
+  if (not loggedIn()) or (bankScreen()) then
     exit;
 
   if (not SRL_RandomsSet) then
-    _SetRandoms;
+    _SetRandoms();
 
   // handle the GE update message
   if (findNPCChatText('exchan', nothing)) then
@@ -436,11 +436,11 @@ begin
       end;
 
       // solve reward box if a non inventory random was just solved
-      if (loggedIn) then // if solver failed, player would be logged out
+      if (loggedIn()) then // if solver failed, player would be logged out
         if (not SRL_Randoms[i].isInvRandom) then
         begin
           // reward box doesn't exist if inventory is full/some randoms don't have reward box
-          result := (InvFull or (not SRL_Randoms[i].hasRewardBox));
+          result := (invFull() or (not SRL_Randoms[i].hasRewardBox));
 
           if (not result) then
           begin
@@ -453,18 +453,17 @@ begin
     end;
 
     // don't want to keep looking for randoms if one was already detected, but failed
-    if ((result) or (not loggedIn)) then
+    if ((result) or (not loggedIn())) then
       break;
   end;
 
-  findDead;
-  findMod;
-  findDwarvenPopup;
-  exitSquealOfFortune;
-  closeAdWindow;
-
+  findDead();
+  findMod();
+  findDwarvenPopup();
+  exitSquealOfFortune();
+  closeAdWindow();
   if checkInv then
-    findSpinTicket;
+    findSpinTicket();
 
   if SRL_HasProc(SRL_OnRandomCall) then
     SRL_Procs[SRL_OnRandomCall]();
