@@ -2771,7 +2771,7 @@ Opens the Tool Belt
 
 .. note::
 
-    by Kyle Undefined
+    by Kyle Undefined, edited by riwu.
 
 Example:
 
@@ -2781,7 +2781,7 @@ Example:
 procedure OpenToolBelt();
 begin
   GameTab(tab_Equip);
-  MouseBox(670, 416, 704, 450, mouse_Left);
+  MouseBox(644, 416, 682, 450, mouse_Left);
   Wait(RandomRange(250, 750));
 end;
 
