@@ -324,6 +324,7 @@ end;
  * Author: Coh3n
  * Description: Loops through the rewards DTMs. If one is found, calls the
  * corresponding solve function. Returns true if solved.
+ * Now checks uptext before dropping the item and points the user to report false positives.
  *)
 function RD_Solve(): boolean;
 var
@@ -347,8 +348,18 @@ begin
 
       if (not result) then
       begin
-        addToSRLLog('RD_Solve: Didn''t solve reward, dropping as a failsafe');
-        dropItem(coordsToItem(x, y));
+        addToSRLLog('RD_Solve: Didn''t solve reward');
+        MouseItem(coordsToItem(x, y), mouse_Move);
+        if (WaitUpTextMulti(['andom', 'event', 'ift', 'pen', 'amp', 'ook'], 618 + Random(200))) then
+        begin
+          addToSRLLog('RD_Solve: Dropping item as a failsafe');
+          ClickMouse2(mouse_Right);
+          WaitOption('rop', 200+Random(800));
+        end else
+        begin
+          addToSRLLog('RD_Solve: Falsely identified item: ' + GetUpText);
+          addToSRLLog('RD_Solve: Please report this at: http://villavu.com/forum/showthread.php?t=72956');
+        end;           
         result := true;
       end;
 
@@ -357,4 +368,3 @@ begin
 
   freeDTMs(DTMs);
 end;
-
