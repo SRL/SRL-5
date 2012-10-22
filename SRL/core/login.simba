@@ -896,10 +896,9 @@ Example:
 *)
 function LoginPlayer: Boolean;
 var
-  RetryLogin, B, BB: Boolean;
+  RetryLogin: Boolean;
   Actions: TVariantArray;
   T, Attempts: LongInt;
-  BBB: Integer;
 label
   ProcStart;
 begin
@@ -925,34 +924,15 @@ begin
 
   Wait(500 + Random(500));
                            {World switching}
-  if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
-    if (Players[CurrentPlayer].WorldInfo[0]) then
-      Players[CurrentPlayer].Member := True
-    else
-      Players[CurrentPlayer].Member := False;
-
-  if (WorldSwitcherEnabled) then
-    if (Length(Players[CurrentPlayer].WorldInfo) < 1) then
-      Players[CurrentPlayer].WorldInfo := [Players[CurrentPlayer].Member, 0, AllowPVP];
-
-  if (Players[CurrentPlayer].WorldInfo[0]) then
-    B := True
-  else
-    B := False;
-  if (Players[CurrentPlayer].WorldInfo[2]) then
-    BB := True
-  else
-    BB := False;
-  BBB := Players[CurrentPlayer].WorldInfo[1];
-
   case Length(Players[CurrentPlayer].WorldInfo) of
-    2: SelectWorld(BBB);
-    3: begin
-         if (WorldArray[BBB].PVP = BB) and (WorldArray[BBB].Members = B) then
-           SelectWorld(BBB)
-         else
-           SelectWorld(RandomWorld(B, BB));
-       end;
+    1:
+      if VariantIsInteger(Players[CurrentPlayer].WorldInfo[0]) then
+        SelectWorld(Players[CurrentPlayer].WorldInfo[0])
+      else
+        Players[CurrentPlayer].Member:= Players[CurrentPlayer].WorldInfo[0];
+
+    2, 3:
+      SelectWorld(Players[CurrentPlayer].WorldInfo[1]);
   end;
                           {Click Here to Play}
 
