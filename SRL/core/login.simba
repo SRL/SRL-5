@@ -899,6 +899,7 @@ var
   RetryLogin, B, BB: Boolean;
   Actions: TVariantArray;
   T, Attempts: LongInt;
+  BBB: Integer;
 label
   ProcStart;
 begin
@@ -934,18 +935,23 @@ begin
     if (Length(Players[CurrentPlayer].WorldInfo) < 1) then
       Players[CurrentPlayer].WorldInfo := [Players[CurrentPlayer].Member, 0, AllowPVP];
 
+  if (Players[CurrentPlayer].WorldInfo[0]) then
+    B := True
+  else
+    B := False;
+  if (Players[CurrentPlayer].WorldInfo[2]) then
+    BB := True
+  else
+    BB := False;
+  BBB := Players[CurrentPlayer].WorldInfo[1];
+
   case Length(Players[CurrentPlayer].WorldInfo) of
-    2: SelectWorld(Players[CurrentPlayer].WorldInfo[1]);
+    2: SelectWorld(BBB);
     3: begin
-         if (Players[CurrentPlayer].WorldInfo[0]) then
-           B := True
+         if (WorldArray[BBB].PVP = BB) and (WorldArray[BBB].Members = B) then
+           SelectWorld(BBB)
          else
-           B := False;
-         if (Players[CurrentPlayer].WorldInfo[2]) then
-           BB := True
-         else
-           BB := False;
-         SelectWorld(RandomWorld(B, BB));
+           SelectWorld(RandomWorld(B, BB));
        end;
   end;
                           {Click Here to Play}
