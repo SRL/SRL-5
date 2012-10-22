@@ -899,7 +899,6 @@ var
   RetryLogin: Boolean;
   Actions: TVariantArray;
   T, Attempts: LongInt;
-  BBB: Integer;
 label
   ProcStart;
 begin
