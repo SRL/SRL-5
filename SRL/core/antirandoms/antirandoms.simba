@@ -460,9 +460,10 @@ begin
   findDead();
   findMod();
   findDwarvenPopup();
-  findSpinTicket();
   exitSquealOfFortune();
   closeAdWindow();
+  if checkInv then
+    findSpinTicket();
 
   if SRL_HasProc(SRL_OnRandomCall) then
     SRL_Procs[SRL_OnRandomCall]();
