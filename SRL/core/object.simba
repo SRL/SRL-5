@@ -11,7 +11,7 @@ Object Finding
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
-//--               » ObjectFinding Routines                      --//
+//--               ï¿½ ObjectFinding Routines                      --//
 //-----------------------------------------------------------------//
 // * function FindAllObjsRecord(var Objects: TPointArray; AutoInfo: TAutoColorInfo; x1, y1, x2, y2: Integer; QuickSorting, RGBXYZCheck: Boolean): Boolean; // By Sumilion
 // * function FindObjRecordEx(var fx, fy: Integer; AutoInfo: TAutoColorInfo; QuickSorting, RGBXYZCheck: Boolean): Boolean; // By Sumilion
@@ -246,61 +246,73 @@ Example:
 function FindObjEx(var cx, cy: Integer; Text: TStringArray; Color: TIntegerArray;
     Tol, Step, xs, ys, xe, ye: Integer): Boolean;
 var
-  CurX, CurY, a, b, c, i: Integer;
-  Start: Boolean;
+  MidX, MidY, i, j, k, x, y, width, height, HalfWidth, HalfHeight: Integer;
+  ColorFound: Boolean;
+  SearchBoxes: Array of Array of TBox;
+  p: TPointArray;
 begin
-  for b := 0 to (GetArrayLength(Color)-1) do
-  begin
-    if (FindColorSpiralTolerance(cx, cy, color[b], xs, ys, xe, ye, Tol)) then
+  Result := False;
+
+  //check for all the colors
+  for i := 0 to (GetArrayLength(Color)-1) do
+    if (FindColorSpiralTolerance(cx, cy, Color[i], xs, ys, xe, ye, Tol)) then
     begin
-      Start := True;
+      ColorFound := True;
       Break;
     end;
-  end;
-  if (Start) then
+
+  if not(ColorFound) then
+    Exit; //None of the colors could be found on screen
+
+  //Start coordinates
+  MidX := Round((xe - xs) / 2);
+  MidY := Round((ye - ys) / 2);
+
+  //width and height in boxes
+  Width := Ceil(abs(xe - xs) / 2 / Step - 0.5) * 2 + 1;
+  Height := Ceil(abs(ye - ys) / 2 / Step - 0.5) * 2 + 1;
+
+  SetLength(SearchBoxes, Width);
+
+  //Getting mid of screen in boxes, not pixels
+  HalfWidth := Floor(Width / 2);
+  HalfHeight := Floor(Height / 2)
+
+  //Create the search boxes, starting in mid because of backwards compatibility
+  for x := -1 * HalfWidth to HalfWidth do
   begin
-    CurX := Round((xs + xe) div 2);
-    CurY := Round((ys + ye) div 2) - Step;
-    i := 1;
-    repeat
-      for c := 1 to i do
+    SetLength(SearchBoxes[x + HalfWidth], Height);
+    for y := -1 * HalfHeight to HalfHeight do
+      SearchBoxes[x + HalfWidth][y + HalfHeight] := IntToBox(
+         Max(xs, xs + Round(MidX + ((x - 0.5) * Step))),
+         Max(ys, ys + Round(MidY + ((y - 0.5) * Step))),
+         Min(xe, xs + Round(MidX + ((x + 0.5) * Step))),
+         Min(ye, ys + Round(MidY + ((y + 0.5) * Step))));
+  end;
+
+  //Create a TPA, where points are representing the boxes
+  p := TPAFromBox(IntToBox(0, 0, Width-1, Height-1));
+
+  //Sort thid TPA from the middle to get a spiral like effect
+  SortTPAFrom(p, Point(floor(Width / 2), floor(Height / 2)));
+
+  //Loop through the boxes, searching for the object (the k and j loop might be better to switch though)
+  for k := 0 to High(Color) do
+    for j := 0 to High(p) do
+    begin
+      if (FindColorTolerance(cx, cy, Color[k], SearchBoxes[p[j].x][p[j].y].x1,
+        SearchBoxes[p[j].x][p[j].y].y1, SearchBoxes[p[j].x][p[j].y].x2,
+        SearchBoxes[p[j].x][p[j].y].y2, Tol)) then
       begin
-        case a of
-          0: begin  //To allow for beginning offset and loop
-               a := a + 1;
-               i := 0;
-               CurY := CurY + Step;
-             end;
-          1: CurX := CurX + Step;
-          2: CurY := CurY - Step;
-          3: CurX := CurX - Step;
-          4: CurY := CurY + Step;
-        end;
-        if (CurX >= xs) and (CurX <= xe) and (CurY >= ys) and (CurY <= ye) then
+        MMouse(cx, cy, 3, 3);
+        If (WaitUptextMulti(Text, 300)) then
         begin
-          try
-            for b := 0 to (GetArrayLength(Color)-1) do
-            begin
-              if (FindColorTolerance(cx, cy, Color[b], CurX-(Step div 2), CurY-(Step div 2), CurX+(Step div 2), CurY+(Step div 2), Tol)) then
-              begin
-                MMouse(cx, cy, 3, 3);
-                If (WaitUptextMulti(Text, 300)) then
-                begin
-                  GetMousePos(cx, cy);
-                  Result := True;
-                  Exit;
-                end;
-              end;
-            end;
-          except
-          end;
+          GetMousePos(cx, cy);
+          Result := True;
+          Exit;
         end;
       end;
-      a := a + 1;
-      if a mod 5 = 0 then a := 1;
-      if (a = 1) or (a = 3) then i := i + 1;
-    until (Result) or ((CurX > xe) and (CurY > ye))
-  end;
+    end;
 end;
 
 (*
