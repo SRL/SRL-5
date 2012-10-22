@@ -932,7 +932,7 @@ begin
       else
         Players[CurrentPlayer].Member:= Players[CurrentPlayer].WorldInfo[0];
 
-    2..3:
+    2, 3:
       SelectWorld(Players[CurrentPlayer].WorldInfo[1]);
   end;
                           {Click Here to Play}
