@@ -89,7 +89,7 @@ Example:
 *)
 function rs_OnMinimap(x, y: Integer): Boolean;
 begin
-  Result := InCircle(x, y, MMCX, MMCY, 73);
+  Result := InCircle(x, y, MMCX, MMCY, 75);
 end;
 
 (*
