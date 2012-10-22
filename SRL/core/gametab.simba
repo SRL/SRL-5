@@ -1006,43 +1006,8 @@ GetAllLevels
 
     procedure GetAllLevels;
 
-Sets all 25 skilllevels to Players.Level[1..25]:
-
-    *  1   8   15
-    *  2   9   16
-    *  3  10   17
-    *  4  11   18
-    *  5  12   19
-    *  6  13   20
-    *  7  14   21
-    *  22 23   24
-   
-    * 1   = attack
-    * 2   = strength
-    * 3   = defence
-    * 4   = range
-    * 5   = prayer
-    * 6   = magic
-    * 7   = runecrafting
-    * 8   = hitpoints
-    * 9   = agility
-    * 10  = herblore
-    * 11  = thieving
-    * 12  = crafting
-    * 13  = fletching
-    * 14  = slayer
-    * 15  = mining
-    * 16  = smithing
-    * 17  = fishing
-    * 18  = cooking
-    * 19  = firemaking
-    * 20  = woodcutting
-    * 21  = farming
-    * 22  = construction
-    * 23  = hunting
-    * 24  = summoning
-    * 25 =  dungeoning
-
+Sets all 25 skilllevels to Players.Level[0..24]:
+Refer to the 'GameTab 2 Related Functions' above for the order.
 
 .. note::
 
@@ -1060,7 +1025,7 @@ begin
     for II := 0 to High(Players[CurrentPlayer].Level) do
       Players[CurrentPlayer].Level[II] := GetSkillLevel(II);
   except
-    srl_Warn('GetAllLevels', 'Could not get all skill levels!', warn_AllVersions);
+    srl_Warn('GetAllLevels', 'CurrentPlayer not declared!', warn_AllVersions);
   end;
 end;
 
