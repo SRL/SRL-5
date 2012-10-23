@@ -158,13 +158,10 @@ begin
 
   if (PB_ScanPost(x, y)) then
   begin
-    mmouse(x, y, 5, 5);
+    Mouse(x, y, 5, 5, mouse_Right);
 
-    if (waitUptextMulti(['ag', 'ost'], 300)) then
+    if (WaitOptionMulti(['ag', 'g P'], 618)) then
     begin
-      getMousePos(x, y);
-      mouse(x, y, 0, 0, mouse_Left);
-
       t := (getSystemTime + 6000);
       while (getSystemTime < t) do
       begin
@@ -177,7 +174,8 @@ begin
 
         wait(300 + random(200));
       end;
-    end;
+    end else
+      MMouse(x, y - 25, 8, 8);
   end;
 end;
 
@@ -295,4 +293,3 @@ begin
     wait(500 + random(200));
   until(result or (getSystemTime > t));
 end;
-
