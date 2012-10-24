@@ -58,7 +58,7 @@ begin
   begin
     tP.X := 535 + Result mod 8 * 30;
     tP.Y := 169 + Result div 8 * 298;
-    if (GetColor(tP.X, tP.Y) = 3775974) then
+    if (GetColor(tP.X, tP.Y) = 3775717) then
       Break;
   end;
   Result := Result + tab_Combat;
