@@ -2274,7 +2274,7 @@ begin
   result := GetLobbyTab = Tab;
   if result then
    Exit;
-  if GetColor(63 + (Tab-1)*102, 32) = 8029324 then
+  if GetColor(63 + (Tab-1)*102, 32) = 8095117 then
   begin
     Mouse(63 + (Tab-1)*102, 32, 10, 6, mouse_left);
     result := true;
