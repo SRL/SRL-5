@@ -1651,7 +1651,7 @@ Example:
 function SetRun(Run: Boolean): Boolean;
 begin
   Result := false;                                                                  //Color near center of Run icon
-  if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6608616, 10)))  xor (Run)) then
+  if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6740459, 10)))  xor (Run)) then
   begin
     Mouse(715, 95, 10, 10, mouse_left);
     Result := True;
