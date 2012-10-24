@@ -58,7 +58,7 @@ begin
   begin
     tP.X := 535 + Result mod 8 * 30;
     tP.Y := 169 + Result div 8 * 298;
-    if (GetColor(tP.X, tP.Y) = 3775974) then
+    if (GetColor(tP.X, tP.Y) = 3775717) then //Midpoint of the top boundary of the tab
       Break;
   end;
   Result := Result + tab_Combat;
@@ -2237,7 +2237,7 @@ Example:
 function GetLobbyTab: Integer;
 begin
   for result := 1 to 6 do
-    if GetColor(63 + (result-1)*102, 32) = 11516354 then
+    if GetColor(63 + (result-1)*102, 32) = 11582147 then //Midpoint of the left boundary of the tab
       Exit;
   Result := -1;
 end;
