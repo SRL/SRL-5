@@ -626,7 +626,7 @@ begin
   if not BankScreen then
     Exit;
   for Result := 1 to 9 do
-    if GetColor(40 + 48 * (Result - 1), 83) = 2896954 then
+    if GetColor(40 + 48 * (Result - 1), 83) = 2831161 then //Left of the bottom boundary of the tab
       Exit;
   Result := 0;
 end;
