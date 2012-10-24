@@ -2237,7 +2237,7 @@ Example:
 function GetLobbyTab: Integer;
 begin
   for result := 1 to 6 do
-    if GetColor(63 + (result-1)*102, 32) = 11516354 then
+    if GetColor(63 + (result-1)*102, 32) = 11582147 then
       Exit;
   Result := -1;
 end;
