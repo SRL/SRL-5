@@ -118,7 +118,7 @@ begin
 
   if (tab = TAB_LOGOUT) then
   begin
-    result := (getColor(746, 0) = 65536);
+    result := (getColor(746, 0) = 0); //Top left of tab_LogOut
     colorToleranceSpeed(tmpCTS);
     exit;
   end;
@@ -1650,8 +1650,8 @@ Example:
 
 function SetRun(Run: Boolean): Boolean;
 begin
-  Result := false;
-  if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6608616, 10)))  xor (Run)) then
+  Result := false;                                                                  //Color near center of Run icon
+  if (((CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1) or (SimilarColors(GetColor(725, 111), 6740459, 10)))  xor (Run)) then
   begin
     Mouse(715, 95, 10, 10, mouse_left);
     Result := True;
@@ -2274,7 +2274,7 @@ begin
   result := GetLobbyTab = Tab;
   if result then
    Exit;
-  if GetColor(63 + (Tab-1)*102, 32) = 8029324 then
+  if GetColor(63 + (Tab-1)*102, 32) = 8095117 then //Midpoint of the left boundary of the tab; this is the resultant color when the tab is active
   begin
     Mouse(63 + (Tab-1)*102, 32, 10, 6, mouse_left);
     result := true;
