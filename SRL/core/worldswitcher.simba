@@ -396,11 +396,6 @@ begin
     WriteLn('Already on world ' + IntToStr(W));
     Exit;
   end;
-  if (W = 0) then
-  begin
-    srl_Warn('FindWorld', 'World Number cannot be 0', warn_AllVersions);
-    Exit;
-  end;
 
   if not WorldsOrdered then
   begin
