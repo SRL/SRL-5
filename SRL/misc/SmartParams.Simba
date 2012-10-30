@@ -170,12 +170,6 @@ begin
   Refresh := SmartGetRefresh;
   SmartKillClient(SmartCurrentClient);
   SetupSRL;
-  try
-    CallProc('DeclarePlayers', Trash);
-  except
-    Writeln('Could Not DeclarePlayers');
-    TerminateScript;
-  end;
 
   try
     CallProc('SMART_FreeDebug', Trash);
@@ -185,10 +179,11 @@ begin
 
   SmartSetRefresh(Refresh);
 
-  If (Not LoginPlayer) then
-  begin
-    Writeln('~SixHourFix~ Could Not Login Player');
-    TerminateScript;
+  try
+    if (not LoginPlayer) then
+      srl_Warn('SixHourFix', 'Could not log in player', warn_Terminate);
+  except
+    srl_Warn('SixHourFix', 'Players not declared', warn_Terminate);
   end;
 end;
 
