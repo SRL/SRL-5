@@ -541,6 +541,12 @@ var
   x, y, xx, yy, T, CurW: integer;
   WRec: TWorld;
 begin
+  if not InRange(W, 1, 200) then
+  begin
+    srl_Warn('SelectWorld', 'Invalid World', warn_AllVersions);
+    Exit;
+  end;
+     
   if OpenWorldScreen then
   begin
     T := GetSystemTime + 60000;
