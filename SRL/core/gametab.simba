@@ -46,6 +46,10 @@ Example:
 
 .. code-block:: pascal
 
+    if (not tabExists(TAB_MAGIC)) then
+      writeln('We may be in a random event!');
+
+
 *)
 function GetCurrentTab: Integer;
 var
@@ -843,6 +847,12 @@ Returns -1 if failed.
 Example:
 
 .. code-block:: pascal
+
+    Value := GetMMLevels( 'hp' ) ;       // Will retrieve your Hit Points
+    Value := GetMMLevels( 'pray' ) ;     // Will retrieve your Prayer Points
+    Value := GetMMLevels( 'run' ) ;      // Will retrieve your Run energy
+    Value := GetMMLevels( 'summon' ) ;   // Will retrieve your HitPoints
+
 *)
 function GetMMLevels(LevelType: string; var ColorSign: string): Integer;
 var
