@@ -612,7 +612,7 @@ Example:
 *)
 function LoginPlayerToLob: Boolean;
 var
-  Members, RetryLogin: Boolean;
+  RetryLogin: Boolean;
   typtmp, t, w: integer;
   Actions: TVariantArray;
   Attempts: LongInt;
@@ -682,9 +682,9 @@ begin
   }
                       {Click Members/free.}
 
-  Members := Players[CurrentPlayer].Member;
+  {Members := Players[CurrentPlayer].Member;
   if (Length(Players[CurrentPlayer].WorldInfo) > 0) then
-    Members := Players[CurrentPlayer].WorldInfo[0];
+    Members := Players[CurrentPlayer].WorldInfo[0];  }
 
   ProcStart:
 
@@ -924,15 +924,24 @@ begin
 
   Wait(500 + Random(500));
                            {World switching}
+
+  if Length(Players[CurrentPlayer].WorldInfo) > 0 then
+    if VariantIsBoolean(Players[CurrentPlayer].WorldInfo[0]) then
+      Players[CurrentPlayer].Member:= Players[CurrentPlayer].WorldInfo[0];
+
   case Length(Players[CurrentPlayer].WorldInfo) of
     1:
       if VariantIsInteger(Players[CurrentPlayer].WorldInfo[0]) then
-        SelectWorld(Players[CurrentPlayer].WorldInfo[0])
-      else
-        Players[CurrentPlayer].Member:= Players[CurrentPlayer].WorldInfo[0];
+        SelectWorld(Players[CurrentPlayer].WorldInfo[0]);
 
-    2, 3:
+    2:
       SelectWorld(Players[CurrentPlayer].WorldInfo[1]);
+
+    3:
+      if (Players[CurrentPlayer].WorldInfo[1] = 0) then
+        SelectWorld(RandomWorld(Players[CurrentPlayer].WorldInfo[0], Players[CurrentPlayer].WorldInfo[2]))
+      else
+        SelectWorld(Players[CurrentPlayer].WorldInfo[1]);
   end;
                           {Click Here to Play}
 
@@ -996,6 +1005,7 @@ begin
         begin
           case Actions[0] of
             'You are standing in a members-only area.': begin
+
                                                           Players[CurrentPlayer].Member := True;
                                                           Players[CurrentPlayer].WorldInfo := [True, 0, AllowPVP];
                                                         end;
