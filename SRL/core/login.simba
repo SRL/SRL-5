@@ -1005,7 +1005,6 @@ begin
         begin
           case Actions[0] of
             'You are standing in a members-only area.': begin
-
                                                           Players[CurrentPlayer].Member := True;
                                                           Players[CurrentPlayer].WorldInfo := [True, 0, AllowPVP];
                                                         end;
