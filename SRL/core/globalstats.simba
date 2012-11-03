@@ -416,7 +416,7 @@ begin
       if (Value <= 0) then
         Continue;
 
-      AddPostVariable(SRLClient, Name, IntToStr(Value));
+      AddPostVariable(SRLClient, Name, ToStr(Min(Value, 20000))); //Commit Value capped at 20000
       Value := 0;//Clear for next commit
     end;
 
