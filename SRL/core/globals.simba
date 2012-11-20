@@ -53,6 +53,12 @@ const
 var
   TalkAfterRandoms: Boolean;
 
+-{ var WorldSwitcherEnabled: Boolean;
+-  Description: Enables world switching. }
+-
+-var
+-  WorldSwitcherEnabled: Boolean;
+-
 { var FriendChars, LoginChars: Integer;
   Description: Fonts used internally and for use in scripts. }
 {$IFDEF LoadExtraFonts}
