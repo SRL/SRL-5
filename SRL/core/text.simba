@@ -141,8 +141,6 @@ begin
   if not PlayerChatActive then
     TypeByte(VK_ENTER);
 
-  wait(1000);
-
   for i := 1 to Length(Text) do
   begin
     {$IFDEF SIMBAMAJOR980}
