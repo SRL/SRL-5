@@ -35,6 +35,7 @@ Type
   end;
 
 function CloseBank: Boolean; Forward;
+function PlayerChatActive: Boolean; Forward;
 
 (*
 srl_Explode
@@ -137,6 +138,11 @@ procedure TypeSendEx(Text: string; PressEnter: Boolean);
 var
   I: Integer;
 begin
+  if not PlayerChatActive then
+    TypeByte(VK_ENTER);
+
+  wait(1000);
+
   for i := 1 to Length(Text) do
   begin
     {$IFDEF SIMBAMAJOR980}
