@@ -52,15 +52,10 @@ var
   BmpIcons: TIntegerArray;
   i, l, x, y: Integer;
 begin
-  BmpIcons := [BitmapFromString(9, 11, 'meJwTUzESltYBISW98OU7gSSUK60' +  //unhighlited trash icon
+  BmpIcons := [BitmapFromString(9, 11, 'meJwTUzESltYBISW98OU7gSSUK60' +  //trash icon
               'jKqcvBpQFiwtIqUBkxVSMgVJA8bDlO4EoHBUBZYFSQMWYCCIVBjYq' +
               'DGYghCQo5TcXxIWQ/jASIuUyAcSFkK4wElkKGUGkIJ617tgJRDYwB' +
               'BThFpIGSvGKKQL1ApGoshHYHGOgOBABAAu4TYk='),
-
-               BitmapFromString(9, 12, 'meJzTtE7QhCFRFSNNJC6yeNnTf2i' +  //highlighted trash icon
-              'yospGcHEgKQbkKhtBxIFcTCQKVgDRBWeLwUTElBFGiaKyRfFIqRjl' +
-              '3gQxMEkgij/xDyuJzIAjiIiKSTDQJcG7/yEjsAJLBX1fIBKDuxmKL' +
-              'IEkADtIb+A='),
 
                BitmapFromString(12, 10, 'meJyTkZaWIQJJSkiIi4mJiogICw' +  //down arrow
               'nBkYiwsJioqIS4OEQNUJZPQIiLl5+Dh4+VgxeC2NnYeLi5gSohaoA' +
