@@ -111,6 +111,7 @@ begin
       Result:= not (ToggleOn xor ActionBarActive);
       if Result then
         Break;
+      wait(RandomRange(5, 20));        
     end;
   end else
     Result:= True;
