@@ -873,3 +873,27 @@ begin
     inc(t);
   end;
 end;
+
+(*
+PlayerChatActive
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function PlayerChatActive: Boolean;
+
+Return true if player chat is active.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function PlayerChatActive: Boolean;
+begin
+  Result:= FindChatBoxText('Press Enter to Chat', 9, clBlack);
+end;
