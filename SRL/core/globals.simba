@@ -53,12 +53,6 @@ const
 var
   TalkAfterRandoms: Boolean;
 
-{ var WorldSwitcherEnabled: Boolean;
-  Description: Enables world switching. }
-
-var
-  WorldSwitcherEnabled: Boolean;
-
 { var FriendChars, LoginChars: Integer;
   Description: Fonts used internally and for use in scripts. }
 {$IFDEF LoadExtraFonts}
@@ -652,9 +646,14 @@ Example:
 
 Function FoundBar: Boolean;
 var
-  X, Y: Integer;
+  tempCTS, X, Y: Integer;
 begin
+  tempCTS:= GetColorToleranceSpeed;
+  SetColorToleranceSpeed(1);
+
   Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 482, 20, 489, 29, 10);
+
+  SetColorToleranceSpeed(tempCTS);
 end;
 
 (*
