@@ -876,7 +876,7 @@ end;
 
 (*
 PlayerChatActive
-~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
