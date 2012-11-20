@@ -895,5 +895,5 @@ Example:
 *)
 function PlayerChatActive: Boolean;
 begin
-  Result:= FindChatBoxText('Press Enter to Chat', 9, clBlack);
+  Result:= not FindChatBoxText('Press Enter to Chat', 9, clBlack);
 end;
