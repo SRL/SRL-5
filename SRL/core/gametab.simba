@@ -30,7 +30,7 @@ Action Bar Functions
 
 (*
 ActionBarActive
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -82,7 +82,7 @@ end;
 
 (*
 ToggleActionbar
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
