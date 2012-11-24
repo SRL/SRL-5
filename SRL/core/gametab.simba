@@ -76,48 +76,6 @@ begin
 end;
 
 (*
-ToggleActionbar
-~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function ToggleActionbar(ToggleOn: Boolean): Boolean;
-
-Toggles action bar, returns true on success.
-
-.. note::
-
-    by riwu
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function ToggleActionbar(ToggleOn: Boolean): Boolean;
-var
-  tWait: Integer;
-begin
-  if (ToggleOn xor ActionBarActive) then
-  begin
-    if ToggleOn then
-      MouseBox(499, 326, 516, 338, mouse_Left)
-    else
-      MouseBox(499, 264, 516, 277, mouse_Left);
-
-    tWait:= GetSystemTime + RandomRange(2444, 2777);
-    while tWait > GetSystemTime do
-    begin
-      Result:= not (ToggleOn xor ActionBarActive);
-      if Result then
-        Break;
-      wait(RandomRange(5, 20));        
-    end;
-  end else
-    Result:= True;
-end;
-
-(*
 Gametab Functions
 -----------------
 
@@ -2445,7 +2403,6 @@ Opens or closes the Action Bar, true if had to toggle.
 function ToggleActionBar(Open: Boolean): Boolean;
 var
   T: Integer;
-  MBox: TBox;
 begin
   if (Open xor IsActionBarOpen()) then
   begin

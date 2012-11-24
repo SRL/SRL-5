@@ -53,12 +53,12 @@ const
 var
   TalkAfterRandoms: Boolean;
 
--{ var WorldSwitcherEnabled: Boolean;
--  Description: Enables world switching. }
--
--var
--  WorldSwitcherEnabled: Boolean;
--
+{ var WorldSwitcherEnabled: Boolean;
+  Description: Enables world switching. }
+
+var
+  WorldSwitcherEnabled: Boolean;
+
 { var FriendChars, LoginChars: Integer;
   Description: Fonts used internally and for use in scripts. }
 {$IFDEF LoadExtraFonts}
@@ -750,4 +750,9 @@ Procedure SRL_ResetNavBar;
 begin
   SRL_EnableNavBar;
   SRL_DisableNavBar;
+end;
+
+procedure Proc_WorldSwitcherEnabled;
+begin
+  WorldSwitcherEnabled := WorldSwitcherEnabled;
 end;

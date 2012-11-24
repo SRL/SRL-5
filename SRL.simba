@@ -213,6 +213,7 @@ begin
 
   SetupGauss;
   SRL_ResetNavBar;
+  Proc_WorldSwitcherEnabled
 end;
 
 {$ifdef CompileSRL}
