@@ -2397,6 +2397,70 @@ begin
   end;
 end;
 
+(*
+
+Action Bar
+----------
+
+Action Bar related functions
+
+*)
+
+(*
+IsActionBarOpen
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function IsActionBarOpen(): Boolean;
+
+Results True if the Action Bar is showing.
+
+.. note::
+
+    by euphemism
+
+*)
+
+function IsActionBarOpen(): Boolean;
+begin
+  Result := ((GetColor(45, 283) = 2697663) or (GetColor(473, 283) = 2697663));
+end;
+
+(*
+ToggleActionBar
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ToggleActionBar(Open: Boolean): Boolean;
+
+Opens or closes the Action Bar, true if had to toggle.
+
+.. note::
+    by euphemism, modelled after ToggleXPBarEx by Narcle & IceFire908
+
+*)
+
+function ToggleActionBar(Open: Boolean): Boolean;
+var
+  T: Integer;
+  MBox: TBox;
+begin
+  if (Open xor IsActionBarOpen()) then
+  begin
+    if Open then
+      MouseBox(500, 327, 515, 337, MOUSE_LEFT)
+    else
+      MouseBox(500, 265, 515, 275, MOUSE_LEFT);
+    T := GetSystemTime + 300;
+    repeat
+      wait(1);
+      Result := (Open = IsActionBarOpen());
+    until Result or (GetSystemTime > t);
+  end else
+    Result := true;
+end;
 
 (*
 
