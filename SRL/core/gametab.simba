@@ -23,6 +23,101 @@ const
   L_Options = 6;
 
 (*
+Action Bar Functions
+--------------------
+
+*)
+
+(*
+ActionBarActive
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ActionBarActive: Boolean;
+
+Returns true if Action Bar is active.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function ActionBarActive: Boolean;
+var
+  BmpIcons: TIntegerArray;
+  i, l, x, y: Integer;
+begin
+  BmpIcons := [BitmapFromString(9, 11, 'meJwTUzESltYBISW98OU7gSSUK60' +  //trash icon
+              'jKqcvBpQFiwtIqUBkxVSMgVJA8bDlO4EoHBUBZYFSQMWYCCIVBjYq' +
+              'DGYghCQo5TcXxIWQ/jASIuUyAcSFkK4wElkKGUGkIJ617tgJRDYwB' +
+              'BThFpIGSvGKKQL1ApGoshHYHGOgOBABAAu4TYk='),
+
+               BitmapFromString(12, 10, 'meJyTkZaWIQJJSkiIi4mJiogICw' +  //down arrow
+              'nBkYiwsJioqIS4OEQNUJZPQIiLl5+Dh4+VgxeC2NnYeLi5gSohaoA' +
+              'MPhlVt7m7LHr2KCQs4LFs4TGu4tbJZOWVEhIUhKgBmgnUopPR5rXm' +
+              'hkHzUUGfxQJOU7i14jk5OODmAC0VFBBg5xV2XXzBduZVsbCNwl6zW' +
+              'XikBPj5ge6EqJGSlAQaxc3FJese57rslljERm6tOKAhQHcCpSBqpK' +
+              'WkgF4D+gXoZvPWTeJB84BmAk0Gmg+UglgEMQpoLD8fn5CmObe6Jy8' +
+              'PD9BkoCBEjTDYVRCjgOJA7UBnAG0BciEKgAgAILwyWQ==')]
+
+  l:= High(BmpIcons);
+
+  for i:=0 to l do
+  begin
+    if not Result then
+      Result:= FindBitmapToleranceIn(BmpIcons[i], x, y, MSX1, 264, MSX2, MSY2, 20);
+    FreeBitmap(BmpIcons[i]);
+  end;
+end;
+
+(*
+ToggleActionbar
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ToggleActionbar(ToggleOn: Boolean): Boolean;
+
+Toggles action bar, returns true on success.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function ToggleActionbar(ToggleOn: Boolean): Boolean;
+var
+  tWait: Integer;
+begin
+  if (ToggleOn xor ActionBarActive) then
+  begin
+    if ToggleOn then
+      MouseBox(499, 326, 516, 338, mouse_Left)
+    else
+      MouseBox(499, 264, 516, 277, mouse_Left);
+
+    tWait:= GetSystemTime + RandomRange(2444, 2777);
+    while tWait > GetSystemTime do
+    begin
+      Result:= not (ToggleOn xor ActionBarActive);
+      if Result then
+        Break;
+      wait(RandomRange(5, 20));        
+    end;
+  end else
+    Result:= True;
+end;
+
+(*
 Gametab Functions
 -----------------
 
@@ -245,6 +340,7 @@ Returns True if the Tab exists.
 .. note::
 
     by Narcle
+    Last Modified: November 20th, 2012 by riwu
 
 .. code-block:: pascal
 
@@ -273,6 +369,13 @@ begin
     result := true;
     Exit;
   end;
+
+  if not ActionBarActive then  //F keys disabled when not ActionBarActive
+  begin
+    Result:= GameTab(Tab);
+    Exit;
+  end;
+
   Case Tab of
     tab_Inv: F := 1;
     tab_Equip: F := 2;
@@ -282,12 +385,15 @@ begin
     else
       writeln('Tab '+inttostr(tab)+' isn''t a valid option.');
   end;
-  T := GetSystemTime + 2000;
+  T := GetSystemTime + 618;
   Repeat
     TypeByte(111+F);
     Wait(150+random(100));
     Result := GetCurrentTab = Tab;
   until Result or (GetSystemTime > T);
+
+  if not Result then      //F keys sometimes doesn't work properly in EOC, may be a bug on Jagex's part though
+    Result:= GameTab(Tab);   //nevertheless this is a good failsafe
 end;
 
 (*
