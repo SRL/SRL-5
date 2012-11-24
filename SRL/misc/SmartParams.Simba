@@ -272,9 +272,10 @@ begin
   end;
 
   Params := GetSmartParams;
-  If (Length(Params) > 2) then
+  If (Length(Params) <> 2) then
   begin
     Writeln('** Failed To Grab Smart Parameters **');
+    Writeln('** Please check your internet connection/firewall **');
     TerminateScript;
     Exit;
   end;
