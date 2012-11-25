@@ -23,56 +23,65 @@ const
   L_Options = 6;
 
 (*
-Action Bar Functions
---------------------
+
+Action Bar
+----------
+
+Action Bar related functions
 
 *)
 
 (*
-ActionBarActive
+IsActionBarOpen
 ~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function ActionBarActive: Boolean;
+      function IsActionBarOpen(): Boolean;
 
-Returns true if Action Bar is active.
+Results True if the Action Bar is showing.
 
 .. note::
 
-    by riwu
+    by euphemism
 
-Example:
+*)
+function IsActionBarOpen(): Boolean;
+begin
+  Result := ((GetColor(45, 283) = 2697663) or (GetColor(473, 283) = 2697663));
+end;
+
+(*
+ToggleActionBar
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
+    function ToggleActionBar(Open: Boolean): Boolean;
+
+Opens or closes the Action Bar, true if had to toggle.
+
+.. note::
+    by euphemism, modelled after ToggleXPBarEx by Narcle & IceFire908
+
 *)
-function ActionBarActive: Boolean;
+function ToggleActionBar(Open: Boolean): Boolean;
 var
-  BmpIcons: TIntegerArray;
-  i, l, x, y: Integer;
+  T: Integer;
 begin
-  BmpIcons := [BitmapFromString(9, 11, 'meJwTUzESltYBISW98OU7gSSUK60' +  //trash icon
-              'jKqcvBpQFiwtIqUBkxVSMgVJA8bDlO4EoHBUBZYFSQMWYCCIVBjYq' +
-              'DGYghCQo5TcXxIWQ/jASIuUyAcSFkK4wElkKGUGkIJ617tgJRDYwB' +
-              'BThFpIGSvGKKQL1ApGoshHYHGOgOBABAAu4TYk='),
-
-               BitmapFromString(12, 10, 'meJyTkZaWIQJJSkiIi4mJiogICw' +  //down arrow
-              'nBkYiwsJioqIS4OEQNUJZPQIiLl5+Dh4+VgxeC2NnYeLi5gSohaoA' +
-              'MPhlVt7m7LHr2KCQs4LFs4TGu4tbJZOWVEhIUhKgBmgnUopPR5rXm' +
-              'hkHzUUGfxQJOU7i14jk5OODmAC0VFBBg5xV2XXzBduZVsbCNwl6zW' +
-              'XikBPj5ge6EqJGSlAQaxc3FJese57rslljERm6tOKAhQHcCpSBqpK' +
-              'WkgF4D+gXoZvPWTeJB84BmAk0Gmg+UglgEMQpoLD8fn5CmObe6Jy8' +
-              'PD9BkoCBEjTDYVRCjgOJA7UBnAG0BciEKgAgAILwyWQ==')]
-
-  l:= High(BmpIcons);
-
-  for i:=0 to l do
+  if (Open xor IsActionBarOpen()) then
   begin
-    if not Result then
-      Result:= FindBitmapToleranceIn(BmpIcons[i], x, y, MSX1, 264, MSX2, MSY2, 20);
-    FreeBitmap(BmpIcons[i]);
-  end;
+    if Open then
+      MouseBox(500, 327, 515, 337, MOUSE_LEFT)
+    else
+      MouseBox(500, 265, 515, 275, MOUSE_LEFT);
+    T := GetSystemTime + 300;
+    repeat
+      wait(1);
+      Result := (Open = IsActionBarOpen());
+    until Result or (GetSystemTime > t);
+  end else
+    Result := true;
 end;
 
 (*
@@ -97,24 +106,23 @@ Example:
     GetAdrenalinePercent;
 
 *)
-function GetAdrenalinePercent : Integer;
-var BarX1,BarX2,BarY1,BarY2 : Integer;
-tpa : TPointArray;
-box : TBox;
+function GetAdrenalinePercent(): Integer;
+var
+  BarX1,BarX2,BarY1,BarY2 : Integer;
+  tpa : TPointArray;
+  box : TBox;
 begin
   Result := -1;
-
-  if isActionBarActive then
+  if isActionBarOpen then
   begin
-  Result := 100;
-   BarY1 := 334 - SRL_NAVBAR_INGAME_Y;
-   BarY2 := 337- SRL_NAVBAR_INGAME_Y;
-   BarX1 := 49;
-   BarX2 := 469;
+    Result := 100;
+    BarY1 := 334 - SRL_NAVBAR_INGAME_Y;
+    BarY2 := 337- SRL_NAVBAR_INGAME_Y;
+    BarX1 := 49;
+    BarX2 := 469;
     if FindColorsTolerance(tpa,1776411,BarX1,BarY1,BarX2,BarY2,15) then
     begin
       box := GetTPABounds(tpa);
-
       Result := Floor(100 - ((BarX2 - box.X1)*1.0 / (BarX2-BarX1) * 1.0) * 100);
     end;
    end;
@@ -373,7 +381,7 @@ begin
     Exit;
   end;
 
-  if not ActionBarActive then  //F keys disabled when not ActionBarActive
+  if not IsActionBarOpen then  //F keys disabled when Action Bar not open
   begin
     Result:= GameTab(Tab);
     Exit;
@@ -2398,70 +2406,6 @@ begin
     Mouse(63 + (Tab-1)*102, 32, 10, 6, mouse_left);
     result := true;
   end;
-end;
-
-(*
-
-Action Bar
-----------
-
-Action Bar related functions
-
-*)
-
-(*
-IsActionBarOpen
-~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-      function IsActionBarOpen(): Boolean;
-
-Results True if the Action Bar is showing.
-
-.. note::
-
-    by euphemism
-
-*)
-
-function IsActionBarOpen(): Boolean;
-begin
-  Result := ((GetColor(45, 283) = 2697663) or (GetColor(473, 283) = 2697663));
-end;
-
-(*
-ToggleActionBar
-~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function ToggleActionBar(Open: Boolean): Boolean;
-
-Opens or closes the Action Bar, true if had to toggle.
-
-.. note::
-    by euphemism, modelled after ToggleXPBarEx by Narcle & IceFire908
-
-*)
-
-function ToggleActionBar(Open: Boolean): Boolean;
-var
-  T: Integer;
-begin
-  if (Open xor IsActionBarOpen()) then
-  begin
-    if Open then
-      MouseBox(500, 327, 515, 337, MOUSE_LEFT)
-    else
-      MouseBox(500, 265, 515, 275, MOUSE_LEFT);
-    T := GetSystemTime + 300;
-    repeat
-      wait(1);
-      Result := (Open = IsActionBarOpen());
-    until Result or (GetSystemTime > t);
-  end else
-    Result := true;
 end;
 
 (*
