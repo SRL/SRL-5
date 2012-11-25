@@ -76,6 +76,51 @@ begin
 end;
 
 (*
+GetAdrenalinePercent
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetAdrenalinePercent : Integer;
+
+Gets percent(0-100) of adrenaline in the action bar. Function returns -1 if actionbar is not active
+
+
+.. note::
+
+    by Slushpuppy
+
+Example:
+
+.. code-block:: pascal
+
+    GetAdrenalinePercent;
+
+*)
+function GetAdrenalinePercent : Integer;
+var BarX1,BarX2,BarY1,BarY2 : Integer;
+tpa : TPointArray;
+box : TBox;
+begin
+  Result := -1;
+
+  if isActionBarActive then
+  begin
+  Result := 100;
+   BarY1 := 334 - SRL_NAVBAR_INGAME_Y;
+   BarY2 := 337- SRL_NAVBAR_INGAME_Y;
+   BarX1 := 49;
+   BarX2 := 469;
+    if FindColorsTolerance(tpa,1776411,BarX1,BarY1,BarX2,BarY2,15) then
+    begin
+      box := GetTPABounds(tpa);
+
+      Result := Floor(100 - ((BarX2 - box.X1)*1.0 / (BarX2-BarX1) * 1.0) * 100);
+    end;
+   end;
+end;
+
+(*
 Gametab Functions
 -----------------
 
