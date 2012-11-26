@@ -657,6 +657,68 @@ end;
 
 (*
 
+HasTarget
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function HasTarget: Boolean;
+
+Returns true if the player has a combat target currently.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function HasTarget: Boolean;
+begin
+  Result := False;
+  if not FTab(tab_Combat) then
+    Exit;
+
+  Result := not FindTextTPA(3111603, 0, 615, 220, 654, 229, 'Target', UpChars, nothing);
+end;
+
+(*
+
+GetTargetCombatLevel
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetTargetCombatLevel: Integer;
+
+Returns the target combat level.
+
+.. note::
+
+    by riwu, modelled after GetCombatLevel by Nielsie95 & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetTargetCombatLevel: Integer;
+begin
+  Result := -1;
+  if not (FTab(tab_Combat) and HasTarget) then
+  begin
+    srl_Warn('GetTargetCombatLevel', 'Could not get target level', warn_AllVersions);
+    Exit;
+  end;
+
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(695, 208, 728, 223, 0,
+                                    3, 4, 3111603, 0, UpChars), Numbers), -1);
+end;
+
+(*
+
 Retaliate
 ~~~~~~~~~
 
