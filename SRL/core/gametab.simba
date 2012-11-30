@@ -118,14 +118,53 @@ begin
     Result := 100;
     BarY1 := 334 - SRL_NAVBAR_INGAME_Y;
     BarY2 := 337- SRL_NAVBAR_INGAME_Y;
-    BarX1 := 49;
-    BarX2 := 469;
+    BarX1 := 49 - SRL_NAVBAR_INGAME_X;
+    BarX2 := 469 - SRL_NAVBAR_INGAME_X;
     if FindColorsTolerance(tpa,1776411,BarX1,BarY1,BarX2,BarY2,15) then
     begin
       box := GetTPABounds(tpa);
       Result := Floor(100 - ((BarX2 - box.X1)*1.0 / (BarX2-BarX1) * 1.0) * 100);
     end;
    end;
+end;
+
+(*
+AbilitySlotToBox
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AbilitySlotToBox(Index : Integer) : TBox;
+
+    Returns a Box coordinate of ability slot as specified by Index(1-12).
+    Returns negative TBox value if wrong index specified.
+
+
+.. note::
+
+    by Slushpuppy
+
+Example:
+
+.. code-block:: pascal
+
+    AbilitySlotToBox(1);
+
+*)
+function AbilitySlotToBox(Index : Integer) : TBox;
+begin
+  if InRange(Index,1,12) then
+  begin
+    Dec(Index);
+    with Result do
+    begin
+      X1 := 47 + Index * 7 + Index * 29 - SRL_NAVBAR_INGAME_X;
+      X2 := Result.X1 + 29 - SRL_NAVBAR_INGAME_X;
+      Y1 := 348 - SRL_NAVBAR_INGAME_Y;
+      Y2 := 375 - SRL_NAVBAR_INGAME_Y;
+    end;
+  end else
+    Result := IntToBox(-1,-1,-1,-1);
 end;
 
 (*
