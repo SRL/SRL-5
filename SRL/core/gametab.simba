@@ -47,8 +47,11 @@ Results True if the Action Bar is showing.
 
 *)
 function IsActionBarOpen(): Boolean;
+var
+  Color: Integer;
 begin
-  Result := ((GetColor(45, 283) = 2697663) or (GetColor(473, 283) = 2697663));
+  Color := GetColor(45, 283);
+  Result := ((Color = 2697663) or (Color = 15790330));
 end;
 
 (*
