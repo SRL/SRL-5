@@ -138,7 +138,7 @@ procedure TypeSendEx(Text: string; PressEnter: Boolean);
 var
   I: Integer;
 begin
-  if not PlayerChatActive then
+  if (PressEnter and (not PlayerChatActive)) then
     TypeByte(VK_ENTER);
 
   for i := 1 to Length(Text) do

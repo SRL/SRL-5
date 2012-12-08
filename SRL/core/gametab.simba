@@ -640,8 +640,8 @@ Returns the players combat level.
 
 .. note::
 
-    by Nielsie95
-    Updated 1/18/2012 by Narcle
+    by Nielsie95 & Narcle
+    Updated 26/11/2012 by riwu
 
 Example:
 
@@ -651,11 +651,73 @@ Example:
 function GetCombatLevel: Integer;
 begin
   Result := -1;
-  if not Gametab(tab_Combat) then
+  if not FTab(tab_Combat) then
     exit;
-  Wait(100 + Random(100));
-  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(680, 229, 718, 245, 0,
-                                   3, 4, 3907053, 20, UpChars), Numbers), -1);
+
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(556, 316, 584, 333, 0,
+                                    3, 4, 3111603, 0, UpChars), Numbers), -1);
+end;
+
+(*
+
+HasTarget
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function HasTarget: Boolean;
+
+Returns true if the player has a combat target currently.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function HasTarget: Boolean;
+begin
+  Result := False;
+  if not FTab(tab_Combat) then
+    Exit;
+
+  Result := not FindTextTPA(3111603, 0, 615, 220, 654, 229, 'Target', UpChars, nothing);
+end;
+
+(*
+
+GetTargetCombatLevel
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetTargetCombatLevel: Integer;
+
+Returns the target combat level.
+
+.. note::
+
+    by riwu, modelled after GetCombatLevel by Nielsie95 & Narcle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetTargetCombatLevel: Integer;
+begin
+  Result := -1;
+  if not (FTab(tab_Combat) and HasTarget) then
+  begin
+    srl_Warn('GetTargetCombatLevel', 'Could not get target level', warn_AllVersions);
+    Exit;
+  end;
+
+  Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(695, 208, 728, 223, 0,
+                                    3, 4, 3111603, 0, UpChars), Numbers), -1);
 end;
 
 (*
@@ -672,6 +734,7 @@ Set's Auto Retaliate ON of OFF.
 .. note::
 
     by WT-Fakawi & n3ss3s, slight mod by EvilChicken!
+    Updated 26/11/2012 by riwu
 
 Example:
 
@@ -679,17 +742,13 @@ Example:
 
 *)
 procedure Retaliate(RetTrue: Boolean);
-Var
-  X, Y: Integer;
-Begin
-  if (GetCurrentTab <> tab_Combat) then
-  begin
-    GameTab(tab_Combat);
-    Wait(500 + Random(500));
-  end;
-  if (RetTrue) xor FindColorTolerance(X, Y, 1125209, 624, 385, 719, 396, 2) then
-    MouseBox(624, 385, 719, 396, mouse_left);
-End;
+begin
+  if not FTab(tab_Combat) then
+    Exit;
+
+  if (RetTrue) xor FindTextTPA(3111603, 0, 558, 437, 682, 455, 'On', UpChars, nothing) then
+    MouseBox(558, 437, 682, 455, mouse_left);
+end;
 
 (* 
 
