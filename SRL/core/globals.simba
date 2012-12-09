@@ -188,83 +188,97 @@ var
   SRL_OnFindRandomCall : function(var Cont : boolean) : boolean; // no longer used
 
 { const Ability Constants;
-  Description: Constants representing abilities, sort by ability book order }
+  Description: Constants representing sub-tabs and abilities in the ability book,
+  sorted by order of appearance.}
 const
+
+  //Sub-tabs
+  AB_ATTACK                = 0;
+  AB_STRENGTH              = 1;
+  AB_RANGED                = 2;
+  AB_ABILITIES             = 3;
+  AB_COMBAT_SPELLS         = 4;
+  AB_TELEPORT_SPELLS       = 5;
+  AB_SKILLING_SPELLS       = 6;
+  AB_DEFENCE               = 7;
+  AB_DEFENSE               = 7;
+  AB_CONSTITUTION          = 8;
+
   //Attack
-  AB_SLICE                 = 1;
-  AB_SLAUGHTER             = 2;
-  AB_OVERPOWER             = 3;
-  AB_HAVOC                 = 4;
-  AB_BACKHAND              = 5;
-  AB_SMASH                 = 6;
-  AB_BARGE                 = 7;
-  AB_FLURRY                = 8;
-  AB_SEVER                 = 9;
-  AB_HURRICANE             = 10;
-  AB_MASSACRE              = 11;
-  AB_METEOR_STRIKE         = 12;
+  AB_SLICE                 = 0;
+  AB_SLAUGHTER             = 1;
+  AB_OVERPOWER             = 2;
+  AB_HAVOC                 = 3;
+  AB_BACKHAND              = 4;
+  AB_SMASH                 = 5;
+  AB_BARGE                 = 6;
+  AB_FLURRY                = 7;
+  AB_SEVER                 = 8;
+  AB_HURRICANE             = 9;
+  AB_MASSACRE              = 10;
+  AB_METEOR_STRIKE         = 11;
 
   //Strength
-  AB_KICK                  = 13;
-  AB_PUNISH                = 14;
-  AB_DISMEMBER             = 15;
-  AB_FURY                  = 16;
-  AB_DESTROY               = 17;
-  AB_QUAKE                 = 18;
-  AB_BERSERK               = 19;
-  AB_CLEAVE                = 20;
-  AB_ASSAULT               = 21;
-  AB_DECIMATE              = 22;
-  AB_PULVERISE             = 23;
-  AB_FRENZY                = 24;
+  AB_KICK                  = 12;
+  AB_PUNISH                = 13;
+  AB_DISMEMBER             = 14;
+  AB_FURY                  = 15;
+  AB_DESTROY               = 16;
+  AB_QUAKE                 = 17;
+  AB_BERSERK               = 18;
+  AB_CLEAVE                = 19;
+  AB_ASSAULT               = 20;
+  AB_DECIMATE              = 21;
+  AB_PULVERISE             = 22;
+  AB_FRENZY                = 23;
 
   //Ranged
-  AB_PIERCING_SHOT         = 25;
-  AB_SNAP_SHOT             = 26;
-  AB_DEADSHOT              = 27;
-  AB_SNIPE                 = 28;
-  AB_BINDING_SHOT          = 29;
-  AB_FRAGMENTATION_SHOT    = 30;
-  AB_ESCAPE                = 31;
-  AB_RAPID_FIRE            = 32;
-  AB_RICOCHET              = 33;
-  AB_BOMBARDMENT           = 34;
-  AB_INCENDIARY_SHOT       = 35;
-  AB_UNLOAD                = 36;
+  AB_PIERCING_SHOT         = 24;
+  AB_SNAP_SHOT             = 25;
+  AB_DEADSHOT              = 26;
+  AB_SNIPE                 = 27;
+  AB_BINDING_SHOT          = 28;
+  AB_FRAGMENTATION_SHOT    = 29;
+  AB_ESCAPE                = 30;
+  AB_RAPID_FIRE            = 31;
+  AB_RICOCHET              = 32;
+  AB_BOMBARDMENT           = 33;
+  AB_INCENDIARY_SHOT       = 34;
+  AB_UNLOAD                = 35;
 
   //Magic
-  AB_WRACK                 = 37;
-  AB_ASPHYXIATE            = 38;
-  AB_OMNIPOWER             = 39;
-  AB_DRAGON_BREATH         = 40;
-  AB_IMPACT                = 41;
-  AB_COMBUST               = 42;
-  AB_SURGE                 = 43;
-  AB_DETONATE              = 44;
-  AB_CHAIN                 = 45;
-  AB_WILD_MAGIC            = 46;
-  AB_METAMORPHOSIS         = 47;
-  AB_TSUNAMI               = 48;
+  AB_WRACK                 = 36;
+  AB_ASPHYXIATE            = 37;
+  AB_OMNIPOWER             = 38;
+  AB_DRAGON_BREATH         = 39;
+  AB_IMPACT                = 40;
+  AB_COMBUST               = 41;
+  AB_SURGE                 = 42;
+  AB_DETONATE              = 43;
+  AB_CHAIN                 = 44;
+  AB_WILD_MAGIC            = 45;
+  AB_METAMORPHOSIS         = 46;
+  AB_TSUNAMI               = 47;
 
   //Defence
-  AB_ANTICIPATION          = 49;
-  AB_BASH                  = 50;
-  AB_REVENGE               = 51;
-  AB_PROVOKE               = 52;
-  AB_IMMORTALITY           = 53;
-  AB_FREEDOM               = 54;
-  AB_REFLECT               = 55;
-  AB_RESONANCE             = 56;
-  AB_REJUVENATE            = 57;
-  AB_DEBILITATE            = 58;
-  AB_PREPARATION           = 59;
-  AB_BARRICADE             = 60;
+  AB_ANTICIPATION          = 48;
+  AB_BASH                  = 49;
+  AB_REVENGE               = 50;
+  AB_PROVOKE               = 51;
+  AB_IMMORTALITY           = 52;
+  AB_FREEDOM               = 53;
+  AB_REFLECT               = 54;
+  AB_RESONANCE             = 55;
+  AB_REJUVENATE            = 56;
+  AB_DEBILITATE            = 57;
+  AB_PREPARATION           = 58;
+  AB_BARRICADE             = 59;
 
   //Constitution
-  AB_REGENERATE            = 61;
-  AB_MOMENTUM              = 62;
-  AB_INCITE                = 63;
-  AB_SINGLE_WAY_WILDERNESS = 64;
+  AB_REGENERATE            = 60;
+  AB_MOMENTUM              = 61;
+  AB_INCITE                = 62;
+  AB_SINGLE_WAY_WILDERNESS = 63;
 
 { const GameTab Constants;
   Description: Constants representing gametab numbers. }

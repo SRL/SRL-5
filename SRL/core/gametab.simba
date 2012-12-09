@@ -1524,6 +1524,158 @@ begin
 end;
 
 (*
+
+Ability Book
+------------
+
+Ability Book related functions
+
+*)
+
+(*
+ActiveMainAbilityTab
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function ActiveMainAbilityTab(): Integer;
+
+Returns which of the four main Ability Book tabs is currently active.
+
+.. note::
+
+    by euphemism
+
+*)
+function ActiveMainAbilityTab(): Integer;
+var
+  TabColor: Integer;
+  TabColorArray: TIntegerArray;
+begin
+  SetLength(TabColorArray, 4);
+  TabColorArray := [1996449, 2315049, 7225628, 2370692];
+  TabColor := GetColor(551, 282);
+  for Result := 0 to 3 do
+    if (TabColor = TabColorArray[Result]) then
+      Exit;
+end;
+
+(*
+ActiveSubAbilityTab
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function ActiveSubAbilityTab(): Integer;
+
+Returns which of the sub-tabs beneath the active main tab is currently active.
+
+.. note::
+
+    by euphemism
+
+*)
+function ActiveSubAbilityTab(): Integer;
+var
+  H, S, L: Extended;
+  XVals: TIntegerArray;
+begin
+  SetLength(XVals, 4);
+  XVals := [555, 601, 648, 695];
+  if (ActiveMainAbilityTab = 0) then
+    XVals[1] := 602;
+  for Result := 0 to 3 do
+  begin
+    ColorToHSL(GetColor(XVals[Result], 262), H, S, L);
+    if (L > 10) then
+      Exit;
+  end;
+end;
+
+(*
+SetAbilityBook
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function SetAbilityBook(Tab: Integer): Boolean;
+
+Takes a sub-tab constant (see globals.simba), and changes the main tab and
+sub-tabs of the Ability Book as necessary to make the target sub-tab
+the active sub-tab. Returns true if successful.
+
+.. note::
+
+    by euphemism
+
+*)
+function SetAbilityBook(Tab: Integer): Boolean;
+var
+  ActiveMain, I, TabCompare, TimeOut, X, Y: Integer;
+  CompareFunc: Function(): Integer;
+  BoxCoords, TabLocations, TabLoop: T2DIntegerArray;
+begin
+  if (not GameTab(TAB_MAGIC)) then
+    Exit;
+  SetLength(TabLocations, 4);
+  TabLocations[0] := [AB_ATTACK, AB_STRENGTH]; //First dimension is main tab, second dimension is sub tab position.
+  TabLocations[1] := [AB_RANGED];
+  TabLocations[2] := [AB_ABILITIES, AB_COMBAT_SPELLS, AB_TELEPORT_SPELLS, AB_SKILLING_SPELLS];
+  TabLocations[3] := [AB_DEFENSE, AB_CONSTITUTION];
+  SetLength(BoxCoords, 2);
+  BoxCoords[0] := [548, 205, 594, 237, 47]; //Main tab size and spacing
+  BoxCoords[1] := [557, 248, 586, 277, 46]; //Sub tab size and spacing
+  for X := 0 to 3 do //Converts tab constant into X Y pair, where X is the main tab, and Y is the sub tab.
+  begin
+    for Y := 0 to High(TabLocations[X]) do
+    begin
+      if (TabLocations[X][Y] = Tab) then
+      begin
+        Result := True;
+        Break;
+      end;
+    end;
+    if (Result) then
+      Break;
+  end;
+  ActiveMain := ActiveMainAbilityTab; //Stores the current active main tab to reduce redundancy.
+  SetLength(TabLoop, 2);
+  TabLoop[0] := [ActiveMain, X]; //Holds the active main tab, and the target main tab.
+  TabLoop[1] := [ActiveSubAbilityTab, Y]; //Holds the active sub tab to 0, and the target sub tab.
+  Result := ((TabLoop[0][0] = TabLoop[0][1]) and (TabLoop[1][0] = TabLoop[1][1]));
+  if (Result) then
+    Exit;
+  Wait(Random(300));
+  for I := 0 to 1 do //This loop sets the main tab and sub tab to to the target tab.
+  begin
+    if (I = 1) then
+      TabLoop[i][0] := ActiveSubAbilityTab; //Updates the stored active sub tab to account for switching the main tab.
+    if (TabLoop[i][0] <> TabLoop[i][1]) then
+    begin
+      MouseBox((BoxCoords[i][0] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][1], (BoxCoords[i][2] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][3], MOUSE_LEFT); //Clicks the target tab.
+      TimeOut := (GetSystemTime + RandomRange(800, 1200)); //Sets timeout fail-safe.
+      if (I = 0) then //Points the CompareFunc function to check either the active main tab or sub tab based on the value of the looping variable.
+        CompareFunc := @ActiveMainAbilityTab
+      else
+        CompareFunc := @ActiveSubAbilityTab;
+      while ((GetSystemTime < TimeOut) and (CompareFunc() <> TabLoop[i][1])) do //Fail-safe and state check for the tab.
+        Wait(16);
+    end;
+    if (I = 0) then //Sets the TabCompare variable to either the active main tab or active sub tab based on the value of the looping variable.
+      TabCompare := ActiveMainAbilityTab
+    else
+      TabCompare := ActiveSubAbilityTab;
+    Result := (TabCompare <> TabLoop[i][1]); //If the tab failed to change to the target tab, function returns false and exit.
+    if (Result) then
+      Exit;
+    if (I = 0) then //Determines whether to wait between setting the main tab and sub tab, or to check the final result.
+      Wait(400 + Random(300))
+    else
+      Result := ((ActiveMainAbilityTab = TabLoop[0][1]) and (ActiveSubAbilityTab = TabLoop[1][1]));
+  end;
+end;
+
+(*
 Gametab 6
 ---------
 
