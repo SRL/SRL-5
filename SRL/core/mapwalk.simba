@@ -1375,7 +1375,7 @@ LodestoneScreen
 
 .. code-block:: pascal
 
-    function BankScreen: Boolean;
+    function LodestoneScreen(): Boolean;
 
 Finds LodestoneScreen. Returns true if Found.
 
@@ -1390,11 +1390,51 @@ Example:
     If LodestoneScreen then
       WriteLn('Lodestone Network screen is open!');
 *)
-function LodestoneScreen: Boolean;
+function LodestoneScreen(): Boolean;
 begin
   Result := CountColor(12378347, 172, 26, 345, 42) > 500;
 end;
 
+(*
+OpenLodestoneScreen
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenLodestoneScreen(): Boolean;
+
+Opens Lodestone Screen. Returns true if screen appears.
+
+.. note::
+
+    Author: euphemism
+
+Example:
+
+.. code-block:: pascal
+
+    If OpenLodestoneScreen then
+      WriteLn('Opened Lodestone Network screen!');
+*)
+function OpenLodestoneScreen(): Boolean;
+var
+  TimeMarker: Integer;
+begin
+  Result := LodestoneScreen;
+  if (Result) then
+    Exit;
+  if (not SetAbilityBook(AB_TELEPORT_SPELLS)) then
+    Exit;
+  MouseBox(561, 290, 590, 319, mouse_left);
+  MarkTime(TimeMarker);
+  while ((TimeFromMark(TimeMarker) < 3000) and (not LodestoneScreen)) do
+    Wait(50);
+  Result := LodestoneScreen;
+  if (Result) then
+    Wait(RandomRange(800, 1500))
+  else
+    Exit;
+end;
 
 (*
 LodestoneTeleport
@@ -1423,9 +1463,11 @@ var
   TSA: TStringArray;
   CTS, I: Integer;
 begin
-  If not LoggedIn then Exit;
-  If not LodestoneScreen then Exit;
-
+  if not LoggedIn then Exit;
+    if not LodestoneScreen then
+      if not OpenLodestoneScreen then
+        Exit;
+  Wait(RandomRange(400, 1000));
   CTS := GetColorToleranceSpeed;
   ColorToleranceSpeed(1);
 
@@ -1440,13 +1482,8 @@ begin
   for I := 0 to 14 do
     if Capitalize(Where) = TSA[I] then
     begin
-      MMouse(TPA[I].X, TPA[I].Y, 2, 2);
-
-      if (WaitUptextMulti(['Teleport', 'ele', 'ort', 'lepo', 'epor'], 400)) then
-      begin
-        ClickMouse2(Mouse_Left);
-        Result := true;
-      end;
+      Mouse(TPA[I].X, TPA[I].Y, 2, 2, mouse_left);
+      Result := True;
     end;
 
   ColorToleranceSpeed(CTS);
