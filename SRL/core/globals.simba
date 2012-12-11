@@ -750,7 +750,7 @@ begin
   tempCTS:= GetColorToleranceSpeed;
   SetColorToleranceSpeed(1);
 
-  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 0, 0,764, 50, 10);
+  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 0, 0, 764, 50, 10);
 
   SetColorToleranceSpeed(tempCTS);
 end;
