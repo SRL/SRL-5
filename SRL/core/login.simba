@@ -136,7 +136,7 @@ Useful for waiting until RS has fully loaded.
 
 .. note::
 
-    by ZephyrsFury
+    by ZephyrsFury - Edited by [J]ustin
 
 Example:
 
@@ -147,21 +147,40 @@ Example:
 
 *)
 function RSReady: Boolean;
+var
+  x, y: Integer;
 begin
   Result := (LoggedIn) or (LobbyScreen);
-
   if (not Result) then
   begin
     ImageResetClientArea;
     Result := (GetColor(745, 17) = 16645629) or FoundBar; // X button in top right && Navigation Bar.
     SRL_ResetNavBar;
   end;
-
-  if (GetColor(748,66) = 657930) then // X button on resizeable client
+  if (GetColor(755, 43) = 16645629) then  // X button on resizeable client
   begin
     WriteLn('You are using the "Resizeable" screen option in RS.');
-    WriteLn('Please set it to "Fixed" to have SRL function properly.');
-    TerminateScript;
+    WriteLn('Changing to "Fixed" screen option.');
+    Mouse(735, 44, 2, 2, mouse_Left);
+    Wait(600 + Random(800));
+    if FindBitMapToleranceIn(SRL_OPTIONS_BITMAP, x, y, 130, 40, 640, 265, 5) then
+    begin
+      Mouse(200, 270, 5, 5, mouse_Left);  //Fixed button
+      Wait(1200 + Random(1200));  //Wait while the screen changes
+      Mouse(621, 71, 3, 3, mouse_Left); //Close the Options interface
+      Wait(600 + Random(240));
+    end
+    else
+    begin
+      WriteLn('Unable to find Options Screen.');
+      WriteLn('Please manually change to "Fixed" screeb size');
+      TerminateScript;
+    end;
+  end;
+  if (FindBitMapToleranceIn(SRL_OPTIONS_BITMAP, x, y, 130, 40, 640, 265, 5)) then
+  begin
+    Writeln('Failed to close Options Interface. Please report on Villavu Forum');
+    TerminateScript;  //Failsafe if we fail to close the Interface for some reason
   end;
 end;
 
