@@ -69,7 +69,7 @@ var
 { var bmpAdmin, bmpMod, Lamp, BoxMask: Integer;
   Description: Global Bitmaps. Need to be Global because of SCAR Memory leaks. }
 var
-  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge, SRL_NAVBAR_BITMAP: Integer;     //NavBar Added: Brandon.
+  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge, SRL_NAVBAR_BITMAP, SRL_OPTIONS_BITMAP : Integer;     //NavBar Added: Brandon.
 
 { var RoadColor, WaterColor, BankColor: Integer;
   Description: Three variables you will almost always use. :) }
