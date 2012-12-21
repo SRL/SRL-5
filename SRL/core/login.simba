@@ -843,6 +843,13 @@ begin
           begin
             if SRL_HasProc(srl_OnRSUpdate) then
             begin
+              case actions[0] of
+                'Runescape has been updated.':
+                  begin
+                    Writeln('Runescape has been updated! Waiting 5 minutes to restart SMART!');
+                    Wait(300000);
+                  end;
+              end;
               SRL_Procs[srl_OnRSUpdate]();
               Exit;
             end;
