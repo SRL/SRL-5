@@ -36,6 +36,7 @@ type
     Loc: string;                    // * User Location
     Status: string;                 // * User Status
     Skill: string;                  // * User Action to Perform
+    ActionBarSet: Boolean;          // * Used in SwitchActionBar
     LampSkill: Integer;
     Worked: Integer;                // * Time User has worked
     Banked: Integer;                // * Number of Banks User has done
