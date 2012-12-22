@@ -86,6 +86,101 @@ begin
 end;
 
 (*
+InStrArrEx
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InStrArrEx(S: string; StrArr: TStringArray; var Where: Integer): Boolean;
+
+Returns true if the string S was found in the StrArr, and if so stores the index into Where.
+
+.. note::
+
+    by n3ss3s
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function InStrArrEx(S: string; StrArr: TStringArray; var Where: Integer): Boolean;
+var
+   I, H: Integer;
+begin
+  H := High(StrArr);
+  for I := 0 to H do
+    if LowerCase(StrArr[i]) = LowerCase(S) then
+    begin
+      Where := i;
+      Result := True;
+      Break;
+    end;
+end;
+
+(*
+StrInArr
+~~~~~~~~
+
+
+
+    function StrInArr(str: string; arrS: TStringArray): Boolean;
+
+Returns True if str is found in the Array. Case sensitive.
+
+.. note::
+
+    by Narcle & Nava2
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function StrInArr(str: string; arrS: TStringArray): Boolean;
+var
+  I, L, H: Integer;
+begin
+  Result := True;
+  L := Low(arrS);    H := High(arrS);
+  for I := L to H do
+    if Pos(Str, arrS[I]) > 0 then
+      Exit;
+  Result := False;
+end;
+
+(*
+ArrInStr
+~~~~~~~~
+
+.. code-block:: pascal
+
+    function ArrInStr(arrS: TStringArray; str: string): Boolean;
+
+Returns True if the Array is found in the str. Case sensitive.
+
+.. note::
+
+    by Narcle & Nava2
+
+Example:
+
+.. code-block::pascal
+
+*)
+function ArrInStr(arrS: TStringArray; str: string): Boolean;
+var
+  I, L, H: Integer;
+begin
+  Result := True;
+  L := Low(arrS);    H := High(arrS);
+  for I := L to H do
+    if Pos(arrS[I], Str) > 0 then
+      Exit;
+  Result := False;
+end;
+
+(*
 TypeByte
 ~~~~~~~~
 
@@ -978,6 +1073,7 @@ Will default to 'all'.
 .. note::
 
     by Wizzup? & Nava2 & N1ke!
+    Last Modified: 22/12/12 by riwu
 
 Example:
 
@@ -987,7 +1083,7 @@ Example:
 function ChooseOptionMultiEx(Texts: TStringArray; TextType: String; Action: fnct_ActionOptions): Boolean;
 var
    B: TBox;
-   i, H, ii, L, x: Integer;
+   i, H, x, R: Integer;
    T: TPoint;
    Options: array of TOptions;
 begin
@@ -996,28 +1092,35 @@ begin
   if (Length(Options) < 1) then
     Exit;
   H := High(Options);
-  L := High(Texts);
-  for i := 0 To L do
+  for i := 0 To H do
   begin
-    for ii := 0 to H do
-      If Pos(Texts[i], Options[ii].Str) > 0 Then
-      begin
-        Result := True;
-        B := Options[ii].Bounds;
-        GetMousePos(T.x, T.y);
-        case Action of
-          ClickLeft: if PointInBox(T, B) then
-                         ClickMouse2(true)
-                       else
-                         MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 1);
-          Move: if not PointInBox(T, B) then
-                  MouseBoxEx(B.x1 + 5, B.Y1, B.x2 - 5, B.Y1 + 5,5, 3);
-          Nothing:   begin end;
+    if ArrInStr(Texts, Options[i].Str) then
+    begin
+      Result := True;
+      B := Options[i].Bounds;
+      GetMousePos(T.x, T.y);
+
+      R:= Min(((B.X2 - B.X1) shr 1), 5); //Prevents x2 passed to MouseBoxEx being smaller than x1
+      case Action of
+        ClickLeft:
+          if PointInBox(T, B) then
+            ClickMouse2(true)
           else
-            srl_warn('ChooseOptionMultiEx', 'ClickRight not a valid click for RS menus!', warn_AllVersions);
-        end;
-        Exit;
+            MouseBoxEx(B.x1 + R, B.Y1, B.x2 - R, B.Y1 + 5, R, mouse_Left);
+
+        Move:
+          if not PointInBox(T, B) then
+            MouseBoxEx(B.x1 + R, B.Y1, B.x2 - R, B.Y1 + 5, R, mouse_move);
+
+        Nothing:
+          begin
+          end;
+
+        else
+          srl_warn('ChooseOptionMultiEx', 'ClickRight not a valid click for RS menus!', warn_AllVersions);
       end;
+      Exit;
+    end;
   end;
   B := Options[0].BigBox;//to mmouse away
   if Action <> Nothing then
@@ -1214,101 +1317,6 @@ begin
       end;
     end;
   end;
-end;
-
-(*
-InStrArrEx
-~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function InStrArrEx(S: string; StrArr: TStringArray; var Where: Integer): Boolean;
-
-Returns true if the string S was found in the StrArr, and if so stores the index into Where.
-
-.. note::
-
-    by n3ss3s
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function InStrArrEx(S: string; StrArr: TStringArray; var Where: Integer): Boolean;
-var
-   I, H: Integer;
-begin
-  H := High(StrArr);
-  for I := 0 to H do
-    if LowerCase(StrArr[i]) = LowerCase(S) then
-    begin
-      Where := i;
-      Result := True;
-      Break;
-    end;
-end;
-
-(*
-StrInArr
-~~~~~~~~
-
-
-
-    function StrInArr(str: string; arrS: TStringArray): Boolean;
-
-Returns True if str is found in the Array. Case sensitive.
-
-.. note::
-
-    by Narcle & Nava2
-
-Example:
-
-.. code-block:: pascal
-
-*)
-function StrInArr(str: string; arrS: TStringArray): Boolean;
-var
-  I, L, H: Integer;
-begin
-  Result := True;
-  L := Low(arrS);    H := High(arrS);
-  for I := L to H do
-    if Pos(Str, arrS[I]) > 0 then
-      Exit;
-  Result := False;
-end;
-
-(*
-ArrInStr
-~~~~~~~~
-
-.. code-block:: pascal
-
-    function ArrInStr(arrS: TStringArray; str: string): Boolean;
-
-Returns True if the Array is found in the str. Case sensitive.
-
-.. note::
-
-    by Narcle & Nava2
-
-Example:
-
-.. code-block::pascal
-
-*)
-function ArrInStr(arrS: TStringArray; str: string): Boolean;
-var
-  I, L, H: Integer;
-begin
-  Result := True;
-  L := Low(arrS);    H := High(arrS);
-  for I := L to H do
-    if Pos(arrS[I], Str) > 0 then
-      Exit;
-  Result := False;
 end;
 
 {*******************************************************************************
