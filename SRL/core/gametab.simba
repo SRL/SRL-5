@@ -137,7 +137,7 @@ ActionBarSlotToBox
 
 .. code-block:: pascal
 
-    function ActionBarSlotToBox(Index: Integer) : TBox;
+    function ActionBarSlotToBox(Slot: Integer): TBox;
 
     Returns a Box coordinate of ability slot as specified by Index(1-12).
     Returns negative TBox value if wrong index specified.
