@@ -1024,6 +1024,29 @@ begin
 end;
 
 (*
+IsRunOn
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function IsRunning: Boolean;
+
+Returns True if run button is on.
+
+.. note::
+
+    by Slushpuppy
+
+Example:
+
+.. code-block:: pascal
+*)
+function IsRunOn: Boolean;
+begin
+  result := CountColorTolerance(3467501, 720, 117, 723, 119, 80) > 1;
+end;
+
+(*
 IsResting
 ~~~~~~~~~
 
