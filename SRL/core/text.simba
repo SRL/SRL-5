@@ -5,6 +5,8 @@ Text
 The Text include contains all sorts of functions used for finding, analysing and
 using text in RS. It also contains a few useful input routines
 
+.. contents::
+
 *)
 
 { const VK_ENTER
@@ -454,7 +456,7 @@ end;
 
 (*
 FindTextEx
-~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
