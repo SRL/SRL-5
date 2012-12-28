@@ -10,7 +10,7 @@ Globals
 
 (*
 SRL_NAVBAR_CONSTANTS
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -413,7 +413,7 @@ var
 
 (*
 SRL_HasProc
-~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -654,7 +654,7 @@ const
 
 (*
 GetFightBarTPA
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -725,7 +725,7 @@ end;
 
 (*
 FoundBar
-~~~~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -757,7 +757,7 @@ end;
 
 (*
 SRL_DisableNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -793,7 +793,7 @@ end;
 
 (*
 SRL_EnableNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -820,7 +820,7 @@ end;
 
 (*
 SRL_ResetNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
