@@ -5,6 +5,8 @@ SRL Debug Log
 
 Routines that write to the SRL log file.
 
+.. contents::
+
 *)
 
 var
