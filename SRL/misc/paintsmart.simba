@@ -6,6 +6,8 @@ The Paint Smart include contains functions that will paint graphics on to the
 SMART screen.  Used to make scripts look nicer and sometimes to display
 progress reports.  Also used as a useful debugging tool.
 
+.. contents::
+
 *)
 
 {$IFDEF Lape}
@@ -129,7 +131,7 @@ end;
 
 (*
 SMART_ClearMS
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -307,7 +309,7 @@ end;
 
 (*
 SMART_DebugTPA
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -570,7 +572,7 @@ end;
 
 (*
 SMART_DrawEllipse
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
