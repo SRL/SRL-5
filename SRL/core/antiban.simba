@@ -1084,7 +1084,7 @@ begin
 end;
 (*
 CloseAdWindow
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
