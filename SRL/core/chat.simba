@@ -720,7 +720,7 @@ SaveToChatLog
 
     procedure SaveToChatLog;
 
-Scrolls ChatText scrollbar down.
+Saves chat to log file.
 
 .. note::
 
