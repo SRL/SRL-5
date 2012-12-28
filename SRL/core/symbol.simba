@@ -4,6 +4,8 @@ Symbol
 
 The Symbol include contains minimap symbol related functions.
 
+.. contents::
+
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
