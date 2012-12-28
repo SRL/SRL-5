@@ -406,12 +406,12 @@ begin
 end;
 
 (*
-validEmail
-~~~~~~~~~~~~~~~~
+ValidEmail
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function validEmail: Boolean;
+    function ValidEmail: Boolean;
 
 Recognizes and handles the "Validate Email" screen in RS.
 
@@ -423,11 +423,11 @@ Example:
 
 .. code-block:: pascal
 
-    if not validEmial then
+    if not ValidEmial then
       writeLn('Failed to get past verification screen');
 
 *)
-function validEmail: Boolean;
+function ValidEmail: Boolean;
 begin
   while (getColor(473, 418) = 1001495) do
   begin
