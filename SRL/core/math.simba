@@ -119,11 +119,11 @@ type
   end;
 
 (*
-fixRad
+FixRad
 ~~~~~~
 
 .. code-block:: pascal
-    function fixRad(rad: Extended): Extended;
+    function FixRad(rad: Extended): Extended;
 
 Returns the periodic rad in the range (0,2PI].
 
@@ -131,7 +131,7 @@ Returns the periodic rad in the range (0,2PI].
   By Nava2
 
 *)
-function fixRad(rad: Extended): Extended;  // by Nava2
+function FixRad(rad: Extended): Extended;  // by Nava2
 begin
   result := rad;
 
@@ -364,7 +364,7 @@ end;
 (*
 
 SetupGauss
-~~~~~~~~~~~~
+~~~~~~~~~~
 
 Sets up the necessary constants for the gaussian functions used in the Gaussian
 math functions internally to SRL.
@@ -526,7 +526,7 @@ end;
 (*
 
 GaussBox
-~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
     procedure GaussBox(out px, py: Integer; x1, y1, x2, y2: Integer);
@@ -774,7 +774,7 @@ end;
 
 (*
 GridCoords16Ex
-~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -813,7 +813,7 @@ end;
 
 (*
 GetGridAbstractBox
-~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -849,7 +849,7 @@ end;
 
 (*
 GetGridPos
-~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -891,7 +891,7 @@ end;
 
 (*
 GridCoords
-~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -922,7 +922,7 @@ end;
 
 (*
 MMToMSEx
-~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
