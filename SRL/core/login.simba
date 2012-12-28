@@ -5,7 +5,7 @@ Login
 The Login include contains all the functions to succesfully log you in and out
 of the game and/or the lobby.
 
-.. contents:
+.. contents::
 
 *)
 
