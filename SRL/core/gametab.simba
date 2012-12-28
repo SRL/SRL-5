@@ -133,7 +133,7 @@ end;
 
 (*
 AbilitySlotToBox
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -380,7 +380,7 @@ end;
 (*
 
 FTab
-~~~~~~~
+~~~~
 
 .. code-block:: pascal
 
@@ -509,7 +509,7 @@ end;
 (*
 
 GetWeaponName
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -792,7 +792,7 @@ end;
 (* 
 
 Gametab 2
-----------
+---------
 
 Gametab 2 related functions.
 
@@ -1025,7 +1025,7 @@ end;
 
 (*
 IsRunOn
-~~~~~~~~~
+~~~~~~~
 
 .. code-block:: pascal
 
@@ -2695,7 +2695,7 @@ XP Counter related functions
 
  (*
 ToggleXPPopUp
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -2741,7 +2741,7 @@ end;
 
 (*
 ISXPBarOpenEx
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -2785,7 +2785,7 @@ end;
 
 (*
 ToggleXPBarEx
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -2841,7 +2841,7 @@ end;
 
 (*
 GetXPBar
-~~~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
