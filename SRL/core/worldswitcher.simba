@@ -4,6 +4,8 @@ Worldswitcher
 
 The Worldswitcher include contains all kinds of functions to control the built-in RS world switcher.
 
+.. contents::
+
 *)
 
 type
@@ -24,7 +26,7 @@ function LogInPlayer: Boolean; forward;
 
 (*
 WorldScreen
-~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -249,7 +251,7 @@ end;
 
 (*
 WS_CurrentWorldEx
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -310,7 +312,7 @@ end;
 
 (*
 OrderWorlds
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -362,7 +364,7 @@ end;
 
 (*
 FindWorld
-~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -465,7 +467,7 @@ end;
 
 (*
 GetWorldInfo
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -514,7 +516,7 @@ end;
 
 (*
 SelectWorld
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -596,7 +598,7 @@ end;
 
 (*
 RandomWorld
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -638,7 +640,7 @@ end;
 
 (*
 ChangeWorld
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -665,7 +667,7 @@ end;
 
 (*
 ChooseWorldBy
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
