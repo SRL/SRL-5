@@ -139,8 +139,7 @@ ActionBarSlotToBox
 
     function ActionBarSlotToBox(Slot: Integer): TBox;
 
-    Returns a Box coordinate of ability slot as specified by Index(1-12).
-    Returns negative TBox value if wrong index specified.
+    Returns the TBox of the action bar at position Slot.
     Width of the box is 30.
 
 .. note::
