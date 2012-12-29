@@ -505,12 +505,12 @@ begin
 end;
 
 (*
-AbilityBookSlotToBox
-~~~~~~~~~~~~~~~~~~~~
+AbilitySlotToBox
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function AbilityBookSlotToBox(Slot: Integer): TBox;
+    function AbilitySlotToBox(Slot: Integer): TBox;
 
 Returns a TBox around the specified Ability Book slot.  Currently does not work
 with the standard combat spells tab, as they are aligned to a different grid
@@ -525,14 +525,14 @@ Example:
 
 .. code-block:: pascal
 
-    SlotBox := AbilityBookSlotToBox(AB_SURGE);
+    SlotBox := AbilitySlotToBox(AB_SURGE);
     MouseBox(SlotBox.x1, SlotBox.y1, SlotBox.x2, SlotBox.y2, mouse_Left);
 *)
-function AbilityBookSlotToBox(Slot: Integer): TBox;
+function AbilitySlotToBox(Slot: Integer): TBox;
 begin
   if not InRange(Slot, 1, 20) then
   begin
-    srl_Warn('AbilityBookSlotToBox', 'Slot must be within 1-20!', warn_AllVersions);
+    srl_Warn('AbilitySlotToBox', 'Slot must be within 1-20!', warn_AllVersions);
     Exit;
   end;
 
