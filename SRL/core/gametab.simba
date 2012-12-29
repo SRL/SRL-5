@@ -458,7 +458,7 @@ begin
       MouseBox(492, 300, 507, 314, mouse_Right);
       if WaitOptionMulti(['Custo', 'mise', 'Modi', 'Key'], 618) then
       begin
-        Arg:= ['press']
+        Arg:= ['press'];
         WaitFuncEx('FindBlackChatMessage', Arg, RandomRange(10, 50), RandomRange(618, 777));
         TypeByte(VK_CONTROL);
         wait(RandomRange(122, 244));

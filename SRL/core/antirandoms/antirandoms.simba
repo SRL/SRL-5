@@ -64,7 +64,7 @@ type
   end;
 
 var
-  SRL_Randoms: array[0..(SRL_RANDOMS_COUNT - 1)] of TRandom;
+  SRL_Randoms: array[0..SRL_RANDOMS_COUNT] of TRandom;
   SRL_RandomsSet, SRL_DisableRandoms, SRL_RandomScreenShot: boolean;
 
 // needs to be included after variables are declared
@@ -101,7 +101,7 @@ begin
   writeln('|────────────────────────────────────|');
   writeln('|                                    |');
 
-  for i := 0 to high(SRL_Randoms) do
+  for i := 0 to SRL_RANDOMS_COUNT - 1 do
   begin
     if (SRL_Randoms[i].name = '') then
       continue;
@@ -313,7 +313,7 @@ begin
   begin
     addToSRLLog('**** WARNING: Disabling random event solvers');
 
-    for i := 0 to high(SRL_Randoms) do
+    for i := 0 to SRL_RANDOMS_COUNT - 1 do
       SRL_Randoms[i].disabled := true;
   end;
 
@@ -424,7 +424,7 @@ begin
   if (findNPCChatText('exchan', nothing)) then
     clickContinue(true, true);
 
-  for i := 0 to high(SRL_Randoms) do
+  for i := 0 to SRL_RANDOMS_COUNT - 1 do
   begin
     if ((SRL_Randoms[i].isInvRandom) and (not checkInv)) then
       continue;
