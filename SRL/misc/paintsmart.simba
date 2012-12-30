@@ -4,7 +4,7 @@ Paint Smart
 
 The Paint Smart include contains functions that will paint graphics on to the
 SMART screen.  Used to make scripts look nicer and sometimes to display
-progress reports.  Also used as a useful debugging tool.
+progress reports.  Also used as a useful debugging tool. This is for Simba 0.98 and earlier.
 
 .. contents::
 
