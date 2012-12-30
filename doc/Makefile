@@ -1,13 +1,13 @@
 .PHONY:    default clean tarball
 
 core =	amount animation antiban autocolor bank bitmaps chat \
-		color flag gametab inventory login mapwalk math mouse \
-		object players timing symbol \
+		color flag gametab globals globalstats inventory \
+		login mapwalk math mouse object players timing symbol \
 		text worldswitcher
 
 skill =	 magic
 
-misc =  paintsmart
+misc =  paintsmart SmartParams online
 
 all:
 	@python docgen.py `echo $(core) | sed -r \
