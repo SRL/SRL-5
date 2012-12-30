@@ -82,12 +82,19 @@ RBoolEx
 ~~~~~~~
 
 .. code-block:: pascal
+
     function RBoolEx(chance: integer): boolean;
 
-Description: Returns a boolean, with a chance of 1 / chance
+Returns a boolean, with a chance of 1 / chance
 
-..note::
+.. note::
+
     by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
 *)
 
 function RBoolEx(chance: Integer): Boolean;
@@ -100,12 +107,19 @@ RBool
 ~~~~~
 
 .. code-block:: pascal
+
     function RBool: boolean;
 
-Description: Returns a boolean, with a 50% chance
+Returns a boolean, with a 50% chance
 
 .. note::
+
     by Rasta Magician
+
+Example:
+
+.. code-block:: pascal
+
 *)
 function RBool: boolean;
 begin
@@ -123,12 +137,18 @@ FixRad
 ~~~~~~
 
 .. code-block:: pascal
+
     function FixRad(rad: Extended): Extended;
 
 Returns the periodic rad in the range (0,2PI].
 
 .. note::
+
   By Nava2
+
+Example:
+
+.. code-block:: pascal
 
 *)
 function FixRad(rad: Extended): Extended;  // by Nava2
@@ -179,6 +199,7 @@ Normalize
 ~~~~~~~~~
 
 .. code-block:: pascal
+
     procedure Normalize(var vect: TVector);
 
 Converts a TVector to normal TVector (|v| = 1). 
@@ -204,6 +225,7 @@ CreateVector
 ~~~~~~~~~~~~
 
 .. code-block:: pascal
+
     function CreateVector(Origin, vPoint: TPoint; NormalizeV: Boolean): TVector;
 
 Creates a `TVector` object. If NormalzseV is true, will set |v| = 1.
@@ -274,7 +296,8 @@ normally distributed with a mean of 0 and a standard deviation of 1.
 If you need more flexibility in this (ex. mean of 2), please use GaussRandom
 which converts between the Standard Normal and a custom version.
 
-.. note:
+.. note::
+
     by: SRL Development Team
 
 Example:
@@ -317,11 +340,16 @@ end;
 n2_gauss
 ~~~~~~~~
 
+.. code-block:: pascal
+
+    function n2_gauss(): Extended;
+
 Calculates a standard normal value (N(0, 1)).
 
 By definition, 68.2% of points will lie within +/- 1*sigma, 95.4% within +/- 2.
 
 .. note::
+
     by: Nava2
 
 *)
@@ -342,6 +370,10 @@ end;
 
 GaussMarsPolar
 ~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GaussMarsPolar(): Extended;
 
 Calculates a standard normal value (N(0, 1]).
 
@@ -366,8 +398,16 @@ end;
 SetupGauss
 ~~~~~~~~~~
 
+.. code-block:: pascal
+
+    procedure setupGauss();
+
 Sets up the necessary constants for the gaussian functions used in the Gaussian
 math functions internally to SRL.
+
+.. note::
+
+   by: SRL Development Team
 
 *)
 procedure setupGauss();
@@ -383,15 +423,21 @@ end;
 GaussRand
 ~~~~~~~~~
 
+..code-block:: pascal
+
+    function GaussRand(mean, dev: Extended): Extended;
+
 Calculates a normally distributed point around mean (u) with a standard 
 deviation of dev (o).
 
 ..note::
-    by: Nava2
+
+   by: Nava2
 
 Example:
 
 ..code-block:: pascal
+
     // shooting arrows simulation:
     pt := Point(GaussRand(center.x, 0.5), GaussRand(center.y, 0.5));
     WriteLn(Format('Hit the target at (%d, %d).', [pt.x, pt.y]));
@@ -409,13 +455,19 @@ end;
 Gauss_Point
 ~~~~~~~~~~~
 
+.. code-block:: pascal
+
+    procedure Gauss_Point(cX, cY: Integer; sAngle, eAngle: Extended; maxRad: Integer; out oX, oY: Integer);
+
 Calculates a point about cX, cY with radius maxRad. The sangle and eangle are 
 in radians. The point is returned in the reference parameters oX, oY.
 
 .. note::
-    by Nava2
+
+    by: Nava2
 
 Example:
+
 .. code-block:: pascal
 
     var
@@ -455,14 +507,20 @@ end;
 GaussRange
 ~~~~~~~~~~
 
+.. code-block:: pascal
+
+    function GaussRange(minI, maxI: Extended): Extended;
+
 Returns a number between minI and maxI that is normally distributed in the range.
 
 .. note::
-  by Nava2
+
+  by: Nava2
 
 Example:
 
 .. code-block:: pascal
+
     randMean := GaussRange(0, 20);
 
 *)
@@ -493,10 +551,15 @@ end;
 iGaussRange
 ~~~~~~~~~~~
 
+.. code-block:: pascal
+
+    function iGaussRange(minI, maxI: Integer): Integer;
+
 See `GaussRange` for more detail. Same function, but with integers.
 
-.. note: 
-    by Nava2
+.. note::
+
+    by: Nava2
 
 *)
 function iGaussRange(minI, maxI: Integer): Integer;
@@ -509,13 +572,22 @@ end;
 GaussRandom
 ~~~~~~~~~~~
 
+.. code-block:: pascal
+
+    function GaussRandom(maxExt: Integer): Integer;
+
 Computes a normally distributed number in [0, maxExt). Thus, it behaves like 
 Random() would be expected to. But normally distributed about maxExt/2. 
 
 It is a wrapper for `iGaussRange`. 
 
-.. note: 
+.. note::
+
     by Nava2
+
+Example:
+
+.. code-block:: pascal
 
 *)
 function GaussRandom(maxExt: Integer): Integer;
@@ -529,15 +601,18 @@ GaussBox
 ~~~~~~~~
 
 .. code-block:: pascal
+
     procedure GaussBox(out px, py: Integer; x1, y1, x2, y2: Integer);
 
 Calculates a point normally distributed from the center of the passed box. It
 checks for outlying points and will regenerate points if necessary.
 
 .. note::
-    by Nava2
+
+    by: Nava2
 
 Example:
+
 .. code-block:: pascal
 
     var
@@ -665,12 +740,14 @@ InAbstractBox
 Returns true if point x, y is in an abstract box defined by
 *x1, y1, x2, y2, x3, y3, x4, y4*.
 
-| x1, y1     x2, y2
-|    +--------+
-|     \       /
-|      \     /
-|       +--+
-| x4, y4    x3, y3
+.. code-block:: pascal
+
+    x1, y1     x2, y2
+      +--------+
+      \       /
+       \     /
+         +--+
+   x4, y4   x3, y3
 
 .. note::
 
@@ -853,7 +930,7 @@ GetGridPos
 
 .. code-block:: pascal
 
-    Function GetGridPos(MS: TPoint): TPoint;
+    function GetGridPos(MS: TPoint): TPoint;
 
 Given a MainScreen point it'll return the GridTile position the point is in.
 If it fails result is Point(-100, -100), because it can return negative grid
@@ -869,7 +946,7 @@ Example:
 
 
 *)
-Function GetGridPos(MS: TPoint): TPoint;
+function GetGridPos(MS: TPoint): TPoint;
 var
   x, y: integer;
   TPA: TPointArray;
@@ -895,7 +972,7 @@ GridCoords
 
 .. code-block:: pascal
 
-    Function GridCoords(GridPoint: TPoint): TPoint;
+    function GridCoords(GridPoint: TPoint): TPoint;
 
 Returns grid point Main Screen position. (middle of tile)
 
@@ -909,7 +986,7 @@ Example:
 
 
 *)
-Function GridCoords(GridPoint: TPoint): TPoint;
+function GridCoords(GridPoint: TPoint): TPoint;
 var
   Yh: Extended;
 begin
@@ -1346,6 +1423,7 @@ CashStrToInt
 ~~~~~~~~~~~~
 
 .. code-block:: pascal
+
     function CondensedStrToInt(Number: string): Integer;
 
 Converts between '100k' representation to 1000000. 
@@ -1409,8 +1487,8 @@ Slots start with 1 being the top left of the grid, and counting accross.
 
 .. note::
 
-    Author: Coh3n
-    Last Modified: Jan. 25th, 2012 by Coh3n
+    | Author: Coh3n
+    | Last Modified: Jan. 25th, 2012 by Coh3n
 
 Example:
 
@@ -1444,8 +1522,8 @@ Returns a grid of TBoxes (see GridBox for parameters).
 
 .. note::
 
-    Author: Coh3n
-    Last Modified: Jan. 25th, 2012 by Coh3n
+    | Author: Coh3n
+    | Last Modified: Jan. 25th, 2012 by Coh3n
 
 Example:
 
@@ -1477,8 +1555,8 @@ player's position and the ending position.
 
 .. note::
 
-    Author: Nava2
-    Last Modified: Apr. 4thth, 2012 by Coh3n
+    | Author: Nava2
+    | Last Modified: Apr. 4thth, 2012 by Coh3n
 
 Example:
 
