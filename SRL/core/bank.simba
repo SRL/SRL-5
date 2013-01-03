@@ -983,7 +983,8 @@ begin
     end else if VariantIsInteger(vType) then
       WaitOptionMulti(['Deposit-' + IntToStr(Integer(vType)), 'Deposit'], 200)
     else
-      WaitOptionMulti(['Deposit-All', 'All', 'osit'], 200);
+      if not WaitOptionMulti(['Deposit-All', 'All'], 200) then
+        ChooseOptionMulti(['Deposit' , 'osit']);
     T := GetSystemTime;
     Wait(RandomRange(200, 300));
     repeat
