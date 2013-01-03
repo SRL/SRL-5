@@ -749,7 +749,7 @@ begin
        SymbolBitmap := BitmapFromString(15, 5, 'beNptjUENwDAMAw2lU' +
          'AylUAyljwEZtFryukVd7xHpYisBzF2wjnEdFfjKWCTdtJY9exfJpJ' +
          'u6kKVhAxeNyj76f/ReM5IceVZ9yhPESE1p');
-        result:= 84113280;
+        Result := 65536;
       end;
     Symbol_Runecrafting, 'rc', 'rcing':
       begin
