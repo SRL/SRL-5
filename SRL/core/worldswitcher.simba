@@ -515,6 +515,46 @@ begin
 end;
 
 (*
+QuickSelect
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    Function QuickSelect(World: Integer): Boolean;
+
+Checks to see if desired world is in the favorites shortcut. Returns 1 if left spot successful, 2 if right spot successful.
+
+..note::
+
+    by Ashaman88 & Le Jingle
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function QuickSelect(World: Integer): Integer;
+var
+  txt : array [0..1] of String;
+  i : integer;
+begin
+  Result := -1;
+  for i := 0 to 1 do
+  begin
+    if inRange(world, 1, 99) then
+      txt[i] := GetTextAtExWrap(569+(i*43), 448, 597+(i*47), 472, 0, 5, 2, 12378347, 2, 'LoginChars')
+    else
+      txt[i] := GetTextAtExWrap(569+(i*43), 448, 597+(i*47), 472, 0, 5, 2, 12378347, 2, 'SmallCharsNS');
+    txt[i] := Copy(txt[i], 0, High(txt[i]));
+    if strToIntDef(txt[0], 0) = world then
+      result := 1
+    else if strToIntDef(txt[1], 0) = world then
+      result := 2;
+    if inrange(result, 1, 2) then exit;
+  end;
+end;
+
+(*
 SelectWorld
 ~~~~~~~~~~~
 
@@ -526,7 +566,7 @@ Switches to the specified world. Returns true if successful.
 
 ..note::
 
-    by Narcle & ZephyrsFury
+    by Narcle & ZephyrsFury - edited by Ashaman88
 
 Example:
 
@@ -543,58 +583,72 @@ begin
     srl_Warn('SelectWorld', 'Invalid World', warn_AllVersions);
     Exit;
   end;
-     
-  if OpenWorldScreen then
-  begin
-    T := GetSystemTime + 60000;
-    Repeat
-      Wait(100+random(100));
-    until InRange(CountColorTolerance(SRL_WS_ARROWCOLOR, 0, 0, 716, 240, 1), 550, 650) or (GetSystemTime > T);
-    if (GetSystemTime > T) then
-    begin
-      Writeln('World screen did not load after a minute, please refreash.');
-      Exit;
-    end;
-    WS_CurrentWorld(CurW);
-    if (W = CurW) then
-    begin
-      Result := True;
-      WriteLn('Already on world ' + IntToStr(W));
-      Exit;
-    end;
 
-    if FindWorld(W) then
-    begin
-      wait(100+random(100));
-      if GetWorldInfo(W, WRec) then
+  case QuickSelect(W) of
+    -1:
+      if OpenWorldScreen then
       begin
-        Writeln('World: '+inttostr(WRec.Number)+', Players: '+inttostr(WRec.PlayerNo)+', Members: '+Booltostr(WRec.Members)+', PvP: '+Booltostr(WRec.PVP));
-        if FindText(x, y, ' '+inttostr(W)+' ', StatChars, 84, 134, 140, 440) then
+        T := GetSystemTime + 60000;
+        Repeat
+          Wait(100+random(100));
+        until InRange(CountColorTolerance(SRL_WS_ARROWCOLOR, 0, 0, 716, 240, 1), 550, 650) or (GetSystemTime > T);
+        if (GetSystemTime > T) then
         begin
-          MMouse(x, y, 500, 4);
-          GetMousePos(x, y);
-          wait(400+random(100));
-          if FindColor(xx, yy, 6316128, x-20, y-2, x+20, y+2) then
-          begin
-            GetMousePos(x, y);
-            Mouse(x, y, 0, 0, mouse_left);
-            if FindColor(xx, yy, 19890, x-20, y-2, x+20, y+2) then
-            begin
-              Writeln('World '+inttostr(W)+' selected.');
-              Result := true;
-            end;
-          end;
+          Writeln('World screen did not load after a minute, please refreash.');
+          Exit;
         end;
-      end else
-        if WRec.PlayerNo = -2 then
-          WriteLn('World ' + IntToStr(W) + ' is FULL.')
-        else
-          WriteLn('World ' + IntToStr(W) + ' is OFFLINE.')
-    end else
-      WriteLn('Failed to find World ' + IntToStr(W) + '!');
-    if (not(Result)) then TypeByte(vk_Escape);
+        WS_CurrentWorld(CurW);
+        if (W = CurW) then
+        begin
+          Result := True;
+          WriteLn('Already on world ' + IntToStr(W));
+          Exit;
+        end;
+
+        if FindWorld(W) then
+        begin
+          wait(100+random(100));
+          if GetWorldInfo(W, WRec) then
+          begin
+            Writeln('World: '+inttostr(WRec.Number)+', Players: '+inttostr(WRec.PlayerNo)+', Members: '+Booltostr(WRec.Members)+', PvP: '+Booltostr(WRec.PVP));
+            if FindText(x, y, ' '+inttostr(W)+' ', StatChars, 84, 134, 140, 440) then
+            begin
+              MMouse(x, y, 500, 4);
+              GetMousePos(x, y);
+              wait(400+random(100));
+              if FindColor(xx, yy, 6316128, x-20, y-2, x+20, y+2) then
+              begin
+                GetMousePos(x, y);
+                Mouse(x, y, 0, 0, mouse_left);
+                if FindColor(xx, yy, 19890, x-20, y-2, x+20, y+2) then
+                begin
+                  Writeln('World '+inttostr(W)+' selected.');
+                  Result := true;
+                end;
+              end;
+            end;
+          end else
+            if WRec.PlayerNo = -2 then
+              WriteLn('World ' + IntToStr(W) + ' is FULL.')
+            else
+              WriteLn('World ' + IntToStr(W) + ' is OFFLINE.')
+        end else
+          WriteLn('Failed to find World ' + IntToStr(W) + '!');
+        if (not(Result)) then TypeByte(vk_Escape);
+      end;
+  1:
+    begin
+      MouseBox(569, 498-50, 597, 522-50, Mouse_Left);
+      Result:=True;
+    end;
+  2:
+    begin
+      MouseBox(614, 498-50, 643, 522-50, Mouse_Left);
+      Result:=True;
+    end;
   end;
 end;
+
 
 (*
 RandomWorld
