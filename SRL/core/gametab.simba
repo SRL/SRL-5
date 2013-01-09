@@ -546,6 +546,33 @@ begin
 end;
 
 (*
+GetKeyBind
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function GetKeyBind(Slot: Integer): String;
+
+Gets the key binded to the action bar at Slot.
+
+.. note::
+
+    by riwu
+    Last modified: 1 Jan 2012 by riwu
+
+*)
+function GetKeyBind(Slot: Integer): String;
+begin
+  if not InRange(Slot, 1, 12) then
+  begin
+    srl_Warn('GetKeyBind', 'Slot must be within 1-12!', warn_AllVersions);
+    Exit;
+  end;
+
+  Result:= GetTextAt(13 + 36 * Slot, 316, 0, 0, 0, 3111603, 0, 1, UpChars);
+end;
+
+(*
 Gametab Functions
 -----------------
 
@@ -1126,6 +1153,48 @@ begin
 
   Result := StrToIntDef(ExtractFromStr(GetTextAtExWrap(695, 208, 728, 223, 0,
                                     3, 4, 3111603, 0, UpChars), Numbers), -1);
+end;
+
+(*
+TargetHpPercent
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function TargetHpPercent: Integer;
+
+    Returns the Hp Percent of the target.
+
+.. note::
+
+    by riwu
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function TargetHpPercent: Integer;
+var
+  hpBar: TPointArray;
+  box: TBox;
+begin
+  Result:= 0;
+
+  if not FTab(tab_Combat) then
+  begin
+    srl_Warn('TargetHpPercent', 'Could not open combat tab', warn_AllVersions);
+    Exit;
+  end;
+
+  if not HasTarget then
+    Exit;
+
+  if FindColorsTolerance(hpBar, 2329176, 600, 237, 685, 242, 50) then
+  begin
+    box:= GetTPABounds(hpBar);
+    Result:= Round((box.X2 - box.X1 + 1) / 0.86);
+  end;
 end;
 
 (*
