@@ -1010,7 +1010,7 @@ Withdraws Amount at Column/Row.
 .. note::
 
     Author: Starblaster100, Town, Wizzup? and Narcle, small fixes by r!ch!e & EvilChicken!
-    Last Modified: Unknown
+    Last Modified: riwu (19 Jan 2013)
 
 Example:
 
@@ -1056,8 +1056,8 @@ begin
       if (WaitOptionMultiEx(['Withdraw-All', 'w-A'], 'All', Nothing, 300)) then
         Result := ChooseOptionMulti(['Withdraw-All', 'w-A']);
     end else
-      if (WaitOptionMultiEx(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)], 'All', Nothing, 300)) then
-        Result := ChooseOptionMulti(['Withdraw-' + IntToStr(Amount), 'w-' + IntToStr(Amount)]);
+      if (WaitOptionMultiEx(['Withdraw-' + IntToStr(Amount) + ' ', 'w-' + IntToStr(Amount) + ' '], 'All', Nothing, 300)) then
+        Result := ChooseOptionMulti(['Withdraw-' + IntToStr(Amount) + ' ', 'w-' + IntToStr(Amount) + ' ']);
 
   if (not (Result)) and (Amount > 0) then
   begin
