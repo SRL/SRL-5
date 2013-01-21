@@ -773,3 +773,39 @@ begin
   GetMousePos(EndX, EndY);
   ReleaseMouse(EndX, EndY, mouse_left);
 end;
+
+(*
+DragMouseTBox
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DragMouseTBox(StartBox, EndBox: TBox);
+
+Left clicks a point within StartBox and drags mouse to a point within EndBox,
+of which the points selected follows a normal distribution from the centre of the box.
+
+
+.. note::
+
+    by riwu, modelled after DragMouse by NaumanAkhlaQ
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure DragMouseTBox(StartBox, EndBox: TBox);
+var
+  StartX, StartY, EndX, EndY: Integer;
+begin
+  MouseTBox(StartBox, mouse_move);
+  Wait(150 + Random(20));
+  GetMousePos(StartX, StartY);
+  HoldMouse(StartX, StartY, mouse_left);
+  Wait(250 + Random(320));
+  MouseTBox(EndBox, mouse_move);
+  Wait(250 + Random(120));
+  GetMousePos(EndX, EndY);
+  ReleaseMouse(EndX, EndY, mouse_left);
+end;

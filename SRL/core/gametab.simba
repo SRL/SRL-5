@@ -139,8 +139,7 @@ ActionBarSlotToBox
 
     function ActionBarSlotToBox(Slot: Integer): TBox;
 
-    Returns the TBox of the action bar at position Slot.
-    Width of the box is 30.
+    Returns the TBox (30 x 30) of the action bar at position Slot.
 
 .. note::
 
@@ -160,9 +159,9 @@ begin
     with Result do
     begin
       X1 := 47 + (Slot - 1) * 36;
-      Y1 := 348 - SRL_NAVBAR_INGAME_Y;
+      Y1 := 347 - SRL_NAVBAR_INGAME_Y;
       X2 := X1 + 29;
-      Y2 := 375 - SRL_NAVBAR_INGAME_Y;
+      Y2 := 376 - SRL_NAVBAR_INGAME_Y;
     end;
   end else
     srl_Warn('ActionBarSlotToBox', 'Slot must be within 1-12!', warn_AllVersions);
@@ -568,6 +567,15 @@ begin
     srl_Warn('GetKeyBind', 'Slot must be within 1-12!', warn_AllVersions);
     Exit;
   end;
+
+  if not IsActionBarOpen then
+    if ToggleActionBar(True) then
+      srl_Warn('GetKeyBind', 'Action bar opened to grab text', warn_AllVersions)
+    else
+    begin
+      srl_Warn('GetKeyBind', 'Unable to open action bar', warn_AllVersions);
+      Exit;
+    end;
 
   Result:= GetTextAt(13 + 36 * Slot, 316, 0, 0, 0, 3111603, 0, 1, UpChars);
 end;
@@ -3728,7 +3736,8 @@ CloseAllScreens
 
     function CloseAllScreens: boolean;
 
-Gets the music that's currently playing.
+Close BankScreen, DepositScreen, ShopScreen, ToolBeltScreen and the PinScreen.
+Returns true if any of them is closed.
 
 .. note::
 
