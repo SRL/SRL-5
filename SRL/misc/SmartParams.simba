@@ -1,0 +1,425 @@
+(*
+Smart Params
+============
+
+.. contents::
+
+*)
+
+{$DEFINE SRL_SMART}
+{$DEFINE SMART}
+{$loadlib libsmartremote}
+
+(*
+GetSmartParams
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function GetSmartParams: TStringArray;
+
+Grabs The Correct Parameters For passing to the SmartClient.
+
+.. note::
+
+  By: Brandon.
+  Modified By: Mormanman, Benland100.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function GetSmartParams: TStringArray;
+var
+  Params: TStringArray;
+  Page: String;
+begin
+  Page := Between('<iframe id="game" src="', '"', GetPage('http://www.runescape.com/game.ws?j=1'));
+  Params := Explode(',', Page);
+  Result := Params;
+end;
+
+(*
+FixSmartSpeed
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  procedure FixSmartSpeed;
+
+Fixes Smart's Loading Speed.
+Moves the Mouse & Adjusting the Canvas Refresh rate.
+
+.. note::
+
+  By: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure FixSmartSpeed;
+var
+  T: Integer;
+begin
+  T:= GetSystemTime + 2000;
+  While (Not SmartEnabled) Do
+  begin
+    if (GetSystemTime >= T) Then
+      Break;
+    Wait(500);
+  end;
+
+  While (GetColor(382, 252) = 0) Do
+  begin
+    If RSReady then
+      Break;
+    SmartSetRefresh(SmartGetRefresh + 1);
+    MMouse(4, 4, 0, 0);
+    SmartSetRefresh(SmartGetRefresh - 1);
+    if (GetSystemTime >= T) Then
+      Break;
+    Wait(500);
+  end;
+end;
+
+(*
+SmartGetClientIDs
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function SmartGetClientIDs: TIntegerArray;
+
+Grabs All Client ID's of the current remote.
+
+.. note::
+
+  By: Mormanman.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function SmartGetClientIDs: TIntegerArray;
+var
+  I, Count: Integer;
+begin
+  Count := SmartGetClients(True);
+  SetLength(Result, Count);
+  If (Count > 0) then
+    For I:= 0 to (Count - 1) do
+      Result[I] := SmartClientID(I);
+end;
+
+(*
+SmartKillClients
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SmartKillClients;
+
+Kills all Smart clients.
+
+.. note::
+
+  By: Mormanman.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SmartKillClients;
+var
+  IDs: TIntegerArray;
+  I: Integer;
+begin
+  IDs := SmartGetClientIDs;
+  For I := High(IDs) DownTo 0 Do
+    If SmartKillClient(IDs[I]) Then
+      Writeln('Killed Client: ' + ToStr(IDs[I]))
+    else
+      Writeln('Failed To Kill Client: ' + ToStr(IDs[I]));
+end;
+
+(*
+SixHourFix
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SixHourFix;
+
+Kills The Current Smart Client and Restarts it.
+Fixes the 6 hour login.
+
+.. note::
+
+  By: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure FreeSRL; Forward;
+procedure SetupSRL; Forward;
+procedure SixHourFix;
+var
+  Trash: TVariantArray;
+  Refresh: Integer;
+begin
+  FreeSRL;
+  Refresh := SmartGetRefresh;
+  SmartKillClient(SmartCurrentClient);
+  SetupSRL;
+
+  try
+    CallProc('SMART_FreeDebug', Trash);
+    CallProc('SMART_SetupDebug', Trash);
+  except
+  end;
+
+  SmartSetRefresh(Refresh);
+
+  try
+    if (not LoginPlayer) then
+      srl_Warn('SixHourFix', 'Could not log in player', warn_Terminate);
+  except
+    srl_Warn('SixHourFix', 'Players not declared', warn_Terminate);
+  end;
+end;
+
+
+(*
+PairSmart
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function PairSmart(ID: Integer): Boolean;
+
+Pairs A Client To The Current Controller.
+
+.. note::
+
+  By: Benland100, Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function PairSmart(ID: Integer): Boolean;
+var
+  I, Count: Integer;
+  IDs: TIntegerArray;
+begin
+  IDs := SmartGetClientIDs;
+  Count := Length(IDs);
+  If (Count > 0) then
+    For I:= 0 To (Count - 1) Do
+      If (IDs[I] = ID) and SmartPairClient(ID) then
+      begin
+        SetEIOSTarget('libsmartremote', ToStr(ID));
+        Writeln('Paired with SMART[' + ToStr(ID) + ']');
+        Result := True;
+        Exit;
+      end;
+  Writeln('** Failed To Pair Client: ' + ToStr(ID) + '; Client Does Not exist **');
+end;
+
+(*
+InitSmart
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    function InitSmart(ForceNew: Boolean): Integer;
+
+Initializes A Smart Remote Client.
+Terminates the current script upon failure.
+Terminates all clients of the current remote upon failure.
+ForceNew Creates a new client.
+
+.. note::
+
+  By: Benland100, Mormanman, Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+function InitSmart(ForceNew: Boolean): Integer;
+var
+  I, Count: Integer;
+  IDs: TIntegerArray;
+  Params: TStringArray;
+begin
+  If (Not ForceNew) then
+  begin
+    Ids := SmartGetClientIDs;
+    Count := Length(IDs);
+    If (Count > 0) then
+      For I:= 0 To (Count - 1) Do
+      begin
+        If SmartPairClient(IDs[I]) then
+        begin
+          Result := IDs[I];
+          SetEIOSTarget('libsmartremote', ToStr(Result));
+          Writeln('Paired with SMART[' + ToStr(Result) + ']');
+          Exit;
+        end;
+      end;
+  end;
+
+  Params := GetSmartParams;
+  If (Length(Params) <> 2) then
+  begin
+    Writeln('** Failed To Grab Smart Parameters **');
+    Writeln('** Please check your internet connection/firewall **');
+    TerminateScript;
+    Exit;
+  end;
+  
+  {$IFDEF SMART8}
+  Result := SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '');
+  {$ELSE}
+  Result := SmartSpawnClient(ReplaceWrap(PluginPath, '\', '/', [rfReplaceAll]), Params[0], ',' + Params[1], 765, 553, 's', '', '', -1);
+  {$ENDIF}
+  
+  If (Result > 0) Then
+  begin
+    try
+      SetEIOSTarget('libsmartremote', ToStr(Result));
+      Writeln('Loading SMART: ' + Params[0] + Params[1]);
+    except
+      WriteLn('** Fatal Error: Pairing Clients; Terminating Script **');
+      TerminateScript;
+    end;
+  end else
+    begin
+      Writeln('** Smart Cannot Spawn Clients **');
+      TerminateScript;
+    end;
+end;
+
+(*
+SetupSmart
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SetupSmart(ForceNewClient: Boolean);
+
+Sets Up a new Smart Client and waits until it's on screen.
+Terminates The current script upon failure.
+
+.. note::
+
+  By: Mormanman.
+  Modified By: Brandon.
+
+Example:
+
+.. code-block:: pascal
+
+*)
+procedure SetupSmart(ForceNewClient: Boolean);
+var
+  T: Integer;
+begin
+  T:= GetSystemTime + 120000;
+  Smart_CurrentClient:= InitSmart(ForceNewClient);
+  if (Smart_CurrentClient <= 0) then
+  begin
+    writeln('*** Smart Failed To Load ***');
+    TerminateScript;
+  end;
+
+  if (SRL_SixHourFix) then
+    SRL_Procs[SRL_OnRSUpdate]:= @SixHourFix;
+
+  While (GetColor(382, 252) <> 0) Do
+  begin
+    if RSReady then
+      break;
+
+    Wait(100);
+    if (GetTimeRunning >= 120000) then
+    begin
+      Writeln('*** Failed To Detect Clients ***');
+      TerminateScript;
+    end;
+  end;
+end;
+
+
+
+
+
+{*           Functions Below Here are From the Original Smart.Simba           *}
+
+
+{*
+  By: Unknown Author.
+  Finds a Windows by partial title and Sets it as the target.
+*}
+function FindAndSetTarget(TitlePrefix: String; SetAsTarget: Boolean): Boolean;
+var
+  T : TSysProcArr;
+  I : Integer;
+begin
+  T := GetProcesses;
+  for I := High(T) downto 0 do
+    if Pos(TitlePrefix, T[I].Title) <> 0 then
+    begin
+      Result := True;
+      if SetAsTarget then SetTarget(T[I]);
+      Exit;
+    end;
+end;
+
+{*
+  By: Unknown Author.
+  Gets the position of the actual mouse (Not Smart's Mouse).
+*}
+procedure GetRealMousePos(var X, Y : Integer);
+var
+  KMTarget, ITarget: Integer;
+begin
+  {$IFDEF LAPE}
+  writeln('GetRealMousePos not implemented yet in SRL-5 Lape!');
+  TerminateScript;
+  {$ELSE}
+  KMTarget := GetKeyMouseTarget;
+  ITarget := GetImageTarget;
+  FindAndSetTarget('SMART', True);
+  GetTClient.IOManager.GetMousePos(X, Y);
+  FreeTarget(GetImageTarget);
+  SetKeyMouseTarget(KMTarget);
+  SetImageTarget(ITarget);
+
+  // These are not universial offsets, but works somewhat for some Windows themes.
+  X := X - 8;
+  Y := Y - 25;
+  {$ENDIF}
+end;
+
+{*
+  By: Unknown Author.
+  Returns if the "Real Mouse" (Not Smart's Mouse) Is Within a given Box.
+*}
+function IsRealMouseInBox(B : TBox): Boolean;
+var
+  P : TPoint;
+begin
+  GetRealMousePos(P.X, P.Y);
+  Result := PointInBox(P, B);
+end;
