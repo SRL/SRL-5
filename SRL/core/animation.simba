@@ -155,7 +155,7 @@ ValidatePixels
 
 .. code-block:: pascal
 
-    procedure ReturnGridColorsInBox(Box : TBox);
+    procedure ValidatePixels(Box : TBox; OrigCols : T2DIntegerArray; BoolArr : array of TBoolArray; Tolerance : Integer);
 
 Checks for which pixels, in OrigCols, have changed
 beyond the specified tolerance, since the last check
