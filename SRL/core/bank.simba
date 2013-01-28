@@ -28,6 +28,7 @@ SRL_BANK_SW = Soul Wars chest
 SRL_BANK_CW = Castle Wars chest
 SRL_BANK_B  = Burthrope chest (outside warriors guild)
 SRL_BANK_GG = Gamer's Grotto (north of Falador)
+SRL_BANK_SP = Shantay Pass chest
 
 .. contents::
 
@@ -56,6 +57,7 @@ const
   SRL_BANK_CW = 21;   // Castle Wars chest
   SRL_BANK_B  = 22;   // Burthrope chest (outside warriors guild)
   SRL_BANK_GG = 23;   // Gamer's Grotto (north of Falador)
+  SRL_BANK_SP = 24;   // Shantay Pass chest
 
 (*
 BankScreen
@@ -1780,11 +1782,13 @@ Opens the bank.  Valid arguments are:
     * SRL_BANK_SW (Soul Wars Bank)
     * SRL_BANK_CW (Castle Wars Bank)
     * SRL_BANK_B (Burthrope)
+    * SRL_BANK_GG (Gamer's Grotto)
+    * SRL_BANK_SP (Shantay Pass)
 
 .. note::
 
-    Author: -daazndagger-  (kept WT-Fakawi's structure)
-    Last Modified: 18/01/2012
+    Author: -daazndagger-
+    Last Modified: Jan 27th, 2013
 
 Example:
 
@@ -1817,6 +1821,7 @@ begin
     SRL_BANK_CW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
     SRL_BANK_B  :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
     SRL_BANK_GG :      Info := [MSCX     , MSCY,      5921630,  9 ,   0.47, 0.08,  50,   True ,   10, 10,   'n'];
+    SRL_BANK_SP :      Info := [MSCX     , MSCY,      6715270,  4 ,   0.19, 0.29,  50,   True ,   10, 10,   'n'];
 
     else
     begin
