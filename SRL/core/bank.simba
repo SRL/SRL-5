@@ -1308,6 +1308,80 @@ begin
 end;
 
 (*
+OpenDepositBox
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenDepositBox : Boolean;
+
+Opens the light deposit box (such as the boxes in edgeville).
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  if (OpenDepositBox) then
+    DepositAll;
+*)
+function OpenDepositBox: Boolean;
+var
+  i, CTS, c, Timeout: Integer;
+  TPA, TPA1, TPA2: TPointArray;
+  ATPA: T2DPointArray;
+  P: TPoint;
+begin
+  Result := (DepositScreen);
+  if not (LoggedIn) or (Result) then
+    Exit;
+
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  Timeout := 5000 + Random(1000);
+
+  // getting the dark edge
+  SetColorSpeed2Modifiers(0.22, 0.17);
+  FindColorsTolerance(TPA1, 4278092, MSX1, MSY1, MSX2, MSY2, 7);
+  // getting the light middle
+  SetColorSpeed2Modifiers(0.06, 0.76);
+  FindColorsTolerance(TPA2, 10006456, MSX1, MSY1, MSX2, MSY2, 14);
+
+  SetColorSpeed2Modifiers(0.2, 0.2);
+  ColorToleranceSpeed(CTS);
+
+  // combining and sorting
+  CombineTPAWrap(TPA1, TPA2, TPA);
+  SplitTPAWrap(TPA, 5, ATPA);
+  SortATPASize(ATPA, True);
+
+  if Length(TPA) < 1 then
+    Exit;
+
+  for i := 0 to High(ATPA) do
+    if Length(ATPA[i]) > 30 then
+    begin
+      P := MiddleTPA(ATPA[i]);
+      MMouse(P.X, P.Y, RandomRange( -5, 5), RandomRange( -5, 5));
+      if WaitUpTextMulti(['Deposit Bank', 'deposit box', 'osit bo', 'eposit '], 400 + Random(100)) then
+      begin
+        ClickMouse2(True);
+        Flag;
+        MarkTime(c);
+        repeat
+          Wait(RandomRange(50, 100));
+        until (DepositScreen) or (PinScreen) or (TimeFromMark(C) > Timeout);
+        Result := (DepositScreen) or (PinScreen);
+        if (Result) then
+          Exit;
+      end;
+    end;
+end;                  
+
+(*
 OpenBankQuiet
 ~~~~~~~~~~~~~
 
@@ -1692,42 +1766,65 @@ begin
 end;
 
 (*
-OpenBankNPC
-~~~~~~~~~~~
+OpenBankNPCEx
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function OpenBankNPC: Boolean;
+    function OpenBankNPCEx(Color: String): Boolean;
 
-Opens the bank by using Banker.
+Opens the bank by using the NPC banker.
+
+Vaild colors are:
+'blue' - most bankers.. edgeville, varrock etc.
+'green' - al-kharid.
+'gray', 'grey' - ardougne.
 
 .. note::
 
-    Author: Home
-    Last Modified: May 29 by Kyle Undefined
+    Author: Ollybest (Heavily copyied home's function)
 
 Example:
 
 .. code-block:: pascal
 
-  if OpenBankNPC then
+  if (OpenBankNPCEx('green') then
     Withdraw(...);
+
 *)
-function OpenBankNPC: Boolean;
+function OpenBankNPCEx(Color: String): Boolean;
 var
-  NPCBox :TBox;
-  Colors, NPCArray :TPointArray;
+  NPCBox: TBox;
+  Colors, NPCArray: TPointArray;
   ATPA: T2DPointArray;
-  MSNPC, NPCPoint :TPoint;
-  CTS, C, II, I :Integer;
+  MSNPC, NPCPoint: TPoint;
+  CTS, C, II, I, TimeOut: Integer;
+  Info: TVariantArray;
 begin
   Result := False;
-  Result := (BankScreen) or (PinScreen);
-  If Result then
+  if not (LoggedIn) then
     Exit;
+  Result := (BankScreen) or (PinScreen);
+  if (Result) then
+    Exit;
+
+    case Lowercase(Color) of { Color  Tol   Hue   Sat  }
+      'blue': Info := [4336177,  15,   0.16, 0.66];
+      'green': Info := [1988959, 17,   0.11, 1.52];
+      'gray', 'grey': Info := [5855838,  8,   0.42, 0.11];
+    else
+    begin
+      srl_Warn('OpenBankNPCEx', 'Unknown banker color: '+ Color, warn_AllVersions);
+      Exit;
+    end;
+  end;
+
+  TimeOut := 5000 + Random(1200);
   NPCArray := GetMinimapDots('NPC');
+
   If Length(NPCArray) < 1 then
     Exit;
+
   SortTPAFrom(NPCArray, Point(MMCX, MMCY));
   for I := 0 to High(NPCArray) do
   begin
@@ -1736,39 +1833,69 @@ begin
       Continue;
     with NPCPoint do
       NPCBox := IntToBox(Max(X - 40, MSX1), Max(Y - 40, MSY1), Min(X + 40, MSX2), Min(Y + 40, MSY2));
-    If PixelShift(NPCBox, 200) > 500 then
+
+    If PixelShift(NPCBox, 150) > 500 then
       Continue;
 
     CTS := GetColorToleranceSpeed;
     ColorToleranceSpeed(2);
-    SetColorSpeed2Modifiers(0.13, 1.52);
-    FindColorsTolerance(Colors, 6067652, NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, 13);
+    SetColorSpeed2Modifiers(Info[2], Info[3]);
+    FindColorsTolerance(Colors, Info[0], NPCBox.X1, NPCBox.Y1, NPCBox.X2, NPCBox.Y2, Info[1]);
     SetColorSpeed2Modifiers(0.2, 0.2);
     ColorToleranceSpeed(CTS);
-    ATPA := TPAToATPAEx(Colors, 15, 20);
+
+    TPAtoATPAExWrap(Colors, 15, 25, ATPA);
     SortATPASize(ATPA, True);
 
     for II := 0 to High(ATPA) do
     begin
       MSNPC := MiddleTPA(ATPA[II]);
-      MMouse(MSNPC.X, MSNPC.Y, 3, 3);
-      If WaitUpTextMulti(['ooth', 'anker'], 200) then
+      MMouse(MSNPC.X, MSNPC.Y, RandomRange(-3, 3), RandomRange(-3, 3));
+      If WaitUpTextMulti(['ooth', 'anker', '-to Banker', 'Bank'], 400 + Random(100)) then
       begin
         ClickMouse2(False);
-        If WaitOptionMulti(['Bank B', 'nk B'], 600) then
+        If WaitOptionMulti(['Bank B', 'nk B', 'ank Banker'], 600 + Random(200)) then
           MarkTime(c);
-        Repeat
+        Flag;
+        repeat
           Wait(RandomRange(50, 100));
-        Until (BankScreen) or (PinScreen) or (TimeFromMark(C) > 4500);
+        until (BankScreen) or (PinScreen) or (TimeFromMark(C) > TimeOut);
         if (Players[CurrentPlayer].Pin <> '') then
           InPin(Players[CurrentPlayer].Pin);
         Result := (BankScreen) or (PinScreen);
-        If Result then
+        If (Result) then
           Exit;
       end;
     end;
   end;
 end;
+
+(*
+OpenBankNPC
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function OpenBankNPC: Boolean;
+
+Attempts to open the *blue* NPC banker.
+(used as a wrapper to prevent breaking script)
+
+.. note::
+
+    Author: Ollybest.
+
+Example:
+
+.. code-block:: pascal
+
+  if (OpenBankNPC) then
+    Withdraw(...);
+*)
+function OpenBankNPC: Boolean;
+begin
+  Result := OpenBankNPCEx('blue');
+end; 
 
 (*
 OpenBankChestEdge
@@ -2114,50 +2241,6 @@ begin
     Result := OpenBank(TheBank, False, False);
   end;
   FreeDTM(TheDTM);
-end;
-
-(*
-OpenDepositBox
-~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function OpenDepositBox : Boolean;
-
-Opens the deposit box.
-
-.. note::
-
-    Author: Shuttleu
-    Last Modified: Unknown
-
-Example:
-
-.. code-block:: pascal
-
-  if OpenDepositBox then
-    DepositAll;
-*)
-function OpenDepositBox : Boolean;
-var
-  X, Y, T:integer;
-begin
-  result := false;
-  If(not(LoggedIn)) then exit;
-  begin
-    if FindObjTPA(x, y, 739167, 10, -1, 30, 30, 200, ['deposit']) then
-    begin
-      GetMousePos(X, Y);
-      Mouse(x, y, 0, 0, mouse_left);
-      Result := True;
-      T :=0;
-      repeat
-        Inc(T);
-        Wait(500+random(500));
-      until (DepositScreen) or (T>=30);
-    end else
-    Writeln('Could not find the deposit box');
-  end;
 end;
 
 (*
