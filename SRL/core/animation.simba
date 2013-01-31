@@ -385,3 +385,50 @@ function IsMoving: Boolean;
 begin
   Result := PixelShift(IntToBox(MMCX-30, MMCY-30, MMCX+30, MMCY+30), 500) > 200;
 end;
+
+(*
+WaitNotMoving
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function WaitNotMoving(WaitFlag: Boolean): Boolean;
+
+Waits until you arent moving, WaitFlag boolean is there because if you clicked
+in an area that isnt walkable the flag will not disappear. Includes a timeout
+of 20 seconds for safety.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  if WaitNotMoving(true) then
+    writeln('Our player has stopped moving!');
+
+*)
+function Flag: Boolean; forward;
+function WaitNotMoving(WaitFlag: Boolean): Boolean;
+var
+  T: Integer;
+begin
+  Result := False;
+  if not (LoggedIn) then
+    Exit;
+
+  MarkTime(T);
+  if (WaitFlag) then
+    Flag;
+
+  repeat
+    Wait(RandomRange(50, 100));
+    if not (IsMoving) then
+    begin
+      Result := True;
+      Exit;
+    end;
+  until (TimeFromMark(T) > 20000);
+end;                         
