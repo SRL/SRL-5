@@ -386,6 +386,8 @@ begin
   Result := PixelShift(IntToBox(MMCX-30, MMCY-30, MMCX+30, MMCY+30), 500) > 200;
 end;
 
+function Flag: Boolean; forward;
+
 (*
 WaitNotMoving
 ~~~~~~~~~~~~~
@@ -410,7 +412,6 @@ Example:
     writeln('Our player has stopped moving!');
 
 *)
-function Flag: Boolean; forward;
 function WaitNotMoving(WaitFlag: Boolean): Boolean;
 var
   T: Integer;
