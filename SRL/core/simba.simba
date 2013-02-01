@@ -48,7 +48,7 @@ end;
 
 (*
 tmp_TPAFromLine
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -135,7 +135,7 @@ end;
 
 (*
 tmp_TPAFromLineWrap
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
