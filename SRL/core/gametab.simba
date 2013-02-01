@@ -450,7 +450,7 @@ begin
         MidPoint := IntToPoint(14, 15)
       else
         MidPoint := IntToPoint(15, 14);
-      TPAFromLineWrap(Midpoint.x, MidPoint.y, PointCircle[i].x, PointCircle[i].y, Line) SortTPAFrom(Line, MidPoint);
+      tmp_TPAFromLineWrap(Midpoint.x, MidPoint.y, PointCircle[i].x, PointCircle[i].y, Line) SortTPAFrom(Line, MidPoint);
       InvertTPA(Line);
       if (I = 0) then
         SetLength(Line, 7)

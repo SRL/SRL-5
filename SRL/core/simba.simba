@@ -68,7 +68,7 @@ Example:
 
     TPA := TPAFromLine(10, 10, 30, 20);
 *)
-function TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
+function tmp_TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
 var
   Dx, Dy, CurrentX, CurrentY, Len, TwoDx, TwoDy, Xinc, YInc: Integer;
   TwoDxAccumulatedError, TwoDyAccumulatedError: Integer;
@@ -147,9 +147,9 @@ Wrapper function for TPAFromLine.
 
     Last modified: Jan. 31st, 2013 by euphemism
 *)
-procedure TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
+procedure tmp_TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
 begin
-  Res := TPAFromLine(x1, y1, x2, y2);
+  Res := tmp_TPAFromLine(x1, y1, x2, y2);
 end;
 {$ifdef Simba}
 
