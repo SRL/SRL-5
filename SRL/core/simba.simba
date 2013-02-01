@@ -47,12 +47,12 @@ begin
 end;
 
 (*
-TPAFromLine
+tmp_TPAFromLine
 ~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
+    function tmp_TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
 
 Returns a TPA of the points that make up a line connecting the points (x1, y1)
 and (x2, y2) and most closely follow the slope of that line.
@@ -134,12 +134,12 @@ begin
 end;
 
 (*
-TPAFromLineWrap
+tmp_TPAFromLineWrap
 ~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    procedure TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
+    procedure tmp_TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
 
 Wrapper function for TPAFromLine.
 
