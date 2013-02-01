@@ -146,7 +146,7 @@ end;
 
 (*
 GetColorsBox
-~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -513,7 +513,7 @@ end;
 
 (*
 SRL_GetBlackBackground
-~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -568,7 +568,7 @@ end;
 
 (*
 PercentBlackMM
-~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

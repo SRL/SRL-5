@@ -1,3 +1,11 @@
+(*
+Smart Params
+============
+
+.. contents::
+
+*)
+
 {$DEFINE SRL_SMART}
 {$DEFINE SMART}
 {$loadlib libsmartremote}
@@ -8,9 +16,9 @@ GetSmartParams
 
 .. code-block:: pascal
 
-    Function GetSmartParams: TStringArray;
+  function GetSmartParams: TStringArray;
 
-  Grabs The Correct Parameters For passing to the SmartClient.
+Grabs The Correct Parameters For passing to the SmartClient.
 
 .. note::
 
@@ -22,7 +30,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Function GetSmartParams: TStringArray;
+function GetSmartParams: TStringArray;
 var
   Params: TStringArray;
   Page: String;
@@ -34,14 +42,14 @@ end;
 
 (*
 FixSmartSpeed
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    Procedure FixSmartSpeed;
+  procedure FixSmartSpeed;
 
-  Fixes Smart's Loading Speed.
-  Moves the Mouse & Adjusting the Canvas Refresh rate.
+Fixes Smart's Loading Speed.
+Moves the Mouse & Adjusting the Canvas Refresh rate.
 
 .. note::
 
@@ -52,7 +60,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Procedure FixSmartSpeed;
+procedure FixSmartSpeed;
 var
   T: Integer;
 begin
@@ -79,13 +87,13 @@ end;
 
 (*
 SmartGetClientIDs
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    Function SmartGetClientIDs: TIntegerArray;
+    function SmartGetClientIDs: TIntegerArray;
 
-    Grabs All Client ID's of the current remote.
+Grabs All Client ID's of the current remote.
 
 .. note::
 
@@ -96,7 +104,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Function SmartGetClientIDs: TIntegerArray;
+function SmartGetClientIDs: TIntegerArray;
 var
   I, Count: Integer;
 begin
@@ -109,13 +117,13 @@ end;
 
 (*
 SmartKillClients
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
     procedure SmartKillClients;
 
-    Kills All Smart Clients.
+Kills all Smart clients.
 
 .. note::
 
@@ -141,14 +149,14 @@ end;
 
 (*
 SixHourFix
-~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-    Procedure SixHourFix;
+    procedure SixHourFix;
 
-    Kills The Current Smart Client and Restarts it.
-    Fixes the 6 hour login.
+Kills The Current Smart Client and Restarts it.
+Fixes the 6 hour login.
 
 .. note::
 
@@ -159,9 +167,9 @@ Example:
 .. code-block:: pascal
 
 *)
-Procedure FreeSRL; Forward;
-Procedure SetupSRL; Forward;
-Procedure SixHourFix;
+procedure FreeSRL; Forward;
+procedure SetupSRL; Forward;
+procedure SixHourFix;
 var
   Trash: TVariantArray;
   Refresh: Integer;
@@ -190,13 +198,13 @@ end;
 
 (*
 PairSmart
-~~~~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-    Function PairSmart(ID: Integer): Boolean;
+    function PairSmart(ID: Integer): Boolean;
 
-    Pairs A Client To The Current Controller.
+Pairs A Client To The Current Controller.
 
 .. note::
 
@@ -207,7 +215,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Function PairSmart(ID: Integer): Boolean;
+function PairSmart(ID: Integer): Boolean;
 var
   I, Count: Integer;
   IDs: TIntegerArray;
@@ -228,16 +236,16 @@ end;
 
 (*
 InitSmart
-~~~~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: pascal
 
-    Function InitSmart(ForceNew: Boolean): Integer;
+    function InitSmart(ForceNew: Boolean): Integer;
 
-    Initializes A Smart Remote Client.
-    Terminates the current script upon failure.
-    Terminates all clients of the current remote upon failure.
-    ForceNew Creates a new client.
+Initializes A Smart Remote Client.
+Terminates the current script upon failure.
+Terminates all clients of the current remote upon failure.
+ForceNew Creates a new client.
 
 .. note::
 
@@ -248,7 +256,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Function InitSmart(ForceNew: Boolean): Integer;
+function InitSmart(ForceNew: Boolean): Integer;
 var
   I, Count: Integer;
   IDs: TIntegerArray;
@@ -304,14 +312,14 @@ end;
 
 (*
 SetupSmart
-~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 .. code-block:: pascal
 
-    Procedure SetupSmart(ForceNewClient: Boolean);
+    procedure SetupSmart(ForceNewClient: Boolean);
 
-    Sets Up a new Smart Client and waits until it's on screen.
-    Terminates The current script upon failure.
+Sets Up a new Smart Client and waits until it's on screen.
+Terminates The current script upon failure.
 
 .. note::
 
@@ -323,7 +331,7 @@ Example:
 .. code-block:: pascal
 
 *)
-Procedure SetupSmart(ForceNewClient: Boolean);
+procedure SetupSmart(ForceNewClient: Boolean);
 var
   T: Integer;
 begin

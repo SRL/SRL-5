@@ -1,11 +1,11 @@
 {$DEFINE SMART_GRAPHICS}
 {*
-Paint Smart
-===========
+Smart Grahpics
+==============
 
-The Paint Smart include contains functions that will paint graphics on to the
+The Smart Grahpics include contains functions that will paint graphics on to the
 SMART screen.  Used to make scripts look nicer and sometimes to display
-progress reports.  Also used as a useful debugging tool.
+progress reports.  Also used as a useful debugging tool. This is for Simba 0.99 and above.
 
 *}
 
@@ -180,12 +180,12 @@ begin
       TPA := LoadTextTPA(ToStr(i), SmallChars, h);
       OffsetTPA(TPA, Point(B.X1+1, B.Y1+1));
     end;
-    Points[i] := CombineTPA(FindTPAEdges(TPAFromBox(B)), TPA);
+    CombineTPAWrap(FindTPAEdges(TPAFromBox(B)), TPA, Points[i]);
     MP := MiddleTPA(ATPA[i]);
     TPA := [Point(MP.x-1, MP.y), Point(MP.x+1, MP.y), Point(MP.x, MP.y-1),
             Point(MP.x, MP.y+1), Point(MP.x-2, MP.y), Point(MP.x, MP.y),
             Point(MP.x+2, MP.y), Point(MP.x, MP.y-2), Point(MP.x, MP.y+2)];
-    Points[i] := CombineTPA(Points[i], TPA);
+    CombineTPAWrap(Points[i], TPA, Points[i]);
   end;
 
   SMART_DrawDotsMulti(Clear, Points);
@@ -237,6 +237,7 @@ procedure SMART_DrawBoxes(Clear, Fill: Boolean; TBA: TBoxArray; Color: Integer);
 var
   i, colour, temp: Integer;
   Box: TBox;
+  TPAEdges: TPointArray;
 begin
   if (not SMART_DebugSetup) then
     SMART_SetupDebug;
@@ -273,7 +274,8 @@ begin
       SMART_Canvas.Rectangle(Box, Temp)
     end else
     begin
-      SMART_DrawDotsEx(False, FindTPAEdges(TPAFromBox(Box)), Temp);
+      FindTPAEdgesWrap(TPAFromBox(Box), TPAEdges);
+      SMART_DrawDotsEx(False, TPAEdges, Temp);
     end;
 
   end;
@@ -487,7 +489,7 @@ begin
     begin
       SArr := CopyTPA(TTP);
       OffsetTPA(SArr, Point(1, 1));
-      SArr := ClearTPAFromTPA(SArr, TTP);
+      ClearTPAFromTPAWrap(SArr, TTP, SArr);
       SMART_DrawDotsEx(False, SArr, 65536);
     end;
   end;

@@ -10,7 +10,7 @@ Globals
 
 (*
 SRL_NAVBAR_CONSTANTS
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -69,7 +69,7 @@ var
 { var bmpAdmin, bmpMod, Lamp, BoxMask: Integer;
   Description: Global Bitmaps. Need to be Global because of SCAR Memory leaks. }
 var
-  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge, SRL_NAVBAR_BITMAP: Integer;     //NavBar Added: Brandon.
+  bmpAdmin, bmpMod, bmpFlag, Lamp, BookOfKnowledge, SRL_NAVBAR_BITMAP, SRL_OPTIONS_BITMAP : Integer;     //NavBar Added: Brandon.
 
 { var RoadColor, WaterColor, BankColor: Integer;
   Description: Three variables you will almost always use. :) }
@@ -413,7 +413,7 @@ var
 
 (*
 SRL_HasProc
-~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -471,11 +471,9 @@ begin
        'FC1704D4E401F99F08A84900F2DF12509304E43FC0AF0600CF790' +
        'EC3');
 
-  SRL_NAVBAR_BITMAP := BitmapFromString(7, 9, 'meJxjFzbklbPXTe5ymHMCiGSsw7kE' +
-        'ZMQMYxznn1ZLm2PVt93v8GeXLe/4JLV0Wo9bLHsrG9LDKhkk4ZjLo' +
-        'xnHIahtOO+VxfL3QARkKJYfETXNYhMy5nHsUeh4rjX9DRwBxcWzD7' +
-        'HJRHNqZgJlxbOPKHS9Es86JF7/nDd6N1AQKMUqFQQUF/KfzVf8HII' +
-        '4Y48DZTky7nGIO3Aqx3K4zwGxMx9wBKxjF3fkFlICAOtnRFs=');
+  SRL_NAVBAR_BITMAP := BitmapFromString(14, 8, 'meJyTlFeVkleVRELSihpAhCYoCVYmBZOFKtB0lNJ0lEQSRDZBBiYIUmycKGkYJY0kIoOqAMiWUlATVXcR0wkGIiFFG2TFaEhKxUhCN0RI1UNEwxuoGMhFMwrhHsMooBpJwxAIA6hLBsNqabNYUXVXIJLUCxRWtBRRspO1SAWyxbS8gVIQNRJGEUAkqukDRDLW6dIW6RIGYeL6odKW6aKaQGd4SOgFSBpHAhEA/ekzkg==');
+
+  SRL_OPTIONS_BITMAP := BitmapFromString(67, 19, 'meJy1VjFywzAM80M8aPT/5zymez+RXHXmMQAIUU3Ly+CQEAWQlOwxhJ3nGc/XdYHHWIadP9ZZVWWoPGCTYYUESlW0Q/Xx9f36VdFmqs5GGTM3jd9yYV/IcRxLZJ+nIRPkj9vCAxm4hvFQyZ8Jl2SahP3yrIKdy909/hdHzMOqwwgqeNimM57l7MFYRtQj2b8EmMmXlcwj9wqFkJkhZk+Cwzh5xgAfyA8ATs5azAixkJkkM2chUt1QA5yPYRWVBZlLgPOukEhVVXvcowsYk4GzSSHN0eIb1dBg5vB3N4OPbmmJQsleNzcy7f5QyLjPThyf3Fx4j4z32TaT40dakslX326hHuoGAyFxcKBx+fIZqrM5yhh5AwDG10EWodo9hIScbDkK6vL1lS1Hs8djPFIuBBWD3pVsfP9Ahg9t68PVg1kLdGq8X24dSlsad8HyCxDkGHXR0KqJ/9cgBgBVCctmAH0mfyXQM5cwf3w6x6rp7BuriIcntCCj4Q==');
 
   SRLBitmapsLoaded := True;
   SetBitmapName(bmpMod,'SRL - Mod bitmap');
@@ -483,6 +481,7 @@ begin
   SetBitmapName(bmpFlag, 'SRL - Flag bitmap');
   SetDTMName(Lamp,'SRL - Lamp bitmap');
   SetBitmapName(SRL_NAVBAR_BITMAP, 'SRL - NavBar Bitmap');
+  SetBitmapName(SRL_OPTIONS_BITMAP, 'SRL - Options Bitmap');
 end;
 
 (*
@@ -514,6 +513,7 @@ begin
     FreeDTM(Lamp);
     FreeDTM(BookOfKnowledge);
     FreeBitmap(SRL_NAVBAR_BITMAP);
+    FreeBitmap(SRL_OPTIONS_BITMAP);
     SRLBitmapsLoaded := False;
   end;
 end;
@@ -654,7 +654,7 @@ const
 
 (*
 GetFightBarTPA
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -725,7 +725,7 @@ end;
 
 (*
 FoundBar
-~~~~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 
@@ -735,7 +735,7 @@ FoundBar
 
 .. note::
 
-    by: Brandon, edited by riwu.
+    by: Brandon, edited by [J]ustin.
 
 Example:
 
@@ -750,14 +750,14 @@ begin
   tempCTS:= GetColorToleranceSpeed;
   SetColorToleranceSpeed(1);
 
-  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 482, 20, 489, 29, 10);
+  Result := FindBitmapToleranceIn(SRL_NAVBAR_BITMAP, X, Y, 0, 0, 764, 50, 10);
 
   SetColorToleranceSpeed(tempCTS);
 end;
 
 (*
 SRL_DisableNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -793,7 +793,7 @@ end;
 
 (*
 SRL_EnableNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -820,7 +820,7 @@ end;
 
 (*
 SRL_ResetNavBar
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

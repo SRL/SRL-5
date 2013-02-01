@@ -188,7 +188,7 @@ end;
 
 (*
 ClickContinueEx
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -711,11 +711,27 @@ begin
   end;
 end;
 
-{*******************************************************************************
-function SaveToChatLog: Boolean;
-By: WT-Fakawi / masquerader
-Description: Saves chat to log file
-*******************************************************************************}
+
+(*
+SaveToChatLog
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SaveToChatLog;
+
+Saves chat to log file.
+
+.. note::
+
+    by WT-Fakawi & masquerader
+
+Example:
+
+.. code-block:: pascal
+
+
+*)
 procedure SaveToChatLog;
 begin
   FixChat;

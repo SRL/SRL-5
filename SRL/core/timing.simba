@@ -4,6 +4,8 @@ Timing
 
 The Timing include contains a lot of timing related functions.
 
+.. contents::
+
 *)
 //-----------------------------------------------------------------//
 //--               SRL Resource Library                          --//
@@ -124,7 +126,7 @@ end;
 
 (*
 MarkTime
-~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: pascal
 

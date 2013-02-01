@@ -5,6 +5,8 @@ SRL Debug Log
 
 Routines that write to the SRL log file.
 
+.. contents::
+
 *)
 
 var
@@ -40,10 +42,10 @@ begin
     ForceDirectories(SRL_SavePath);
 
   try
-    if FileExists(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp') then
-      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.bmp')
+    if FileExists(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png') then
+      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + ' ' + TimeRunning + '.png')
     else
-      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.bmp');
+      SaveScreenshot(SRL_SavePath + reason + ' ' + Players[CurrentPlayer].Name + '.png');
 
     WriteLn('Screenshot of: ' + reason + ' ' + TimeRunning);
   except

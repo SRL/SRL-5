@@ -756,6 +756,424 @@ begin
 end;
 
 (*
+AdjustMouseSpeed
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure AdjustMouseSpeed(Amount, MinMS, MaxMS: Integer);
+
+Randomly changes the mousespeed by the amount (+/-) within the min and max
+mousespeed limit.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  AdjustMouseSpeed(3, 10, 20);
+
+*)
+procedure AdjustMouseSpeed(Amount, MinMS, MaxMS: Integer);
+var
+  MS, NewMS: Integer;
+begin
+  MS := MouseSpeed;
+  NewMS := RandomRange(MS - Amount, MS + Amount);
+
+  // setting the mousespeed to the max/min limit if needed
+  if NewMS > MaxMS then
+    NewMS := MaxMS;
+  if NewMS < MinMS then
+    NewMS := MinMS;
+
+  if InRange(NewMS, MinMS, MaxMS) then
+    MouseSpeed := NewMS
+end;
+
+(*
+RandomFKeys
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure RandomFKeys(Return: Boolean)
+
+Randomly changes tabs using fkeys to simulate a human pressing fkeys quickly.
+Will return to the original tab if Return is set to true.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+ RandomFKeys(True);
+
+*)
+procedure RandomFKeys(Return: Boolean);
+var
+  t, r, i: integer;
+  Tabs: TIntegerArray;
+begin
+ if not (LoggedIn) then
+   exit;
+
+ t := GetCurrentTab;
+ r := RandomRange(1, 6);
+ Tabs := [tab_Combat, tab_Inv, tab_Equip, tab_Prayer, tab_Magic];
+ for i := 0 to r do
+   FTab(Tabs[Random(Length(Tabs))]);
+
+ // not all tabs can be f keyed
+ if (Return) then
+   if InIntArray(Tabs, t) then
+     FTab(t)
+   else
+     GameTab(t);
+end;
+
+(*
+RandomTab
+~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure RandomTab;
+
+Switches to a random gametab, more of a 50% chance of switching to a more
+used tab. Will return to the original tab if Return is set to true.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  RandomTab(True);
+
+*)
+procedure RandomTab(Return: Boolean);
+var
+  AllTabs, T: Integer;
+  TIA: TIntegerArray;
+begin
+  if not (LoggedIn) then
+    exit;
+
+  T := GetCurrentTab;
+  // every tab
+  AllTabs := RandomRange(21, 37);
+  // more commanly used tabs
+  TIA := [23, 25, 26, 30, 28];
+
+  if (RBool) then
+    GameTab(AllTabs)
+  else
+    GameTab(TIA[Random(Length(TIA))]);
+
+  if (Return) then
+    GameTab(T);
+end;
+
+(*
+HoverOnlineFriend
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure HoverOnlineFriend;
+
+Hovers a random online friend (if any are online)
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  HoverOnlineFriend;
+
+*)
+procedure HoverOnlineFriend;
+var
+  x, y, i, S, L, clOffline, t: Integer;
+  OnlineSlots: TIntegerArray;
+  Slots: TBoxArray;
+  TPA: TPointArray;
+  B: TBox;
+begin
+  if not (LoggedIn) then
+    Exit;
+
+  // color of offline friend - could change oneday
+  clOffline := 4087005;
+  t := GetCurrentTab;
+  Gametab(Tab_Friends);
+
+  // scrolling back to the top if needed
+  if GetColor(728, 311 - 50) <> 3646433 then
+  begin
+    if FindColorsTolerance(TPA, 3845615, 723, 306-50, 734, 478-50, 6) then
+      B := GetTPABounds(TPA)
+    else  //failsafe incase color oneday changes
+      Exit;
+    DragMouseTBox(B, IntToBox(724, 280-50, 734, 304-50));
+  end;
+
+  //possible slots
+  Slots := Grid(1, 13, 166, 9, 5, 15, Point(633, 305 - 50));
+
+  for i := 0 to High(Slots) do
+    if not FindColor(X, Y, clOffline, Slots[i].X1, Slots[i].Y1, Slots[i].X2, Slots[i].Y2) then
+      begin
+        SetLength(OnlineSlots, Length(OnlineSlots) + 1);
+        OnlineSlots[L] := i;
+        Inc(L);
+      end;
+
+  if Length(OnlineSlots) < 1 then
+    Exit;
+
+  S := OnlineSlots[Random(Length(OnlineSlots))];
+  MMouse(RandomRange(Slots[S].X1, Slots[S].X2),
+         RandomRange(Slots[S].Y1, Slots[S].Y2), 0, 0);
+
+  if (RBool) then
+    if WaitUpText('essage', 200 + Random (100)) then
+    begin
+      ClickMouse2(Mouse_Right);
+      WaitOption('ancel', 400 + Random(100));
+    end;
+  Wait(RandomRange(300, 900));
+  GameTab(t);
+end;
+
+(*
+HoverMovingObject
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure HoverMovingObject;
+
+Splits the screen up into boxes and hovers the one with the most pixel shift in.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  HoverMovingObject;
+
+*)
+procedure HoverMovingObject;
+var
+  TBA: TBoxArray;
+  TIA: TIntegerArray;
+  i, L: Integer;
+  Rows: Integer;
+  ATPA, ATPA2: T2DPointArray;
+  Player, TPA: TPointArray;
+begin
+  if not (LoggedIn) then
+    Exit;
+
+  // if actionbar is open we dont need track it
+  if (IsActionBarOpen) then
+    Rows := 13
+  else
+    Rows := 16;
+
+  TBA := Grid(27, Rows, 19, 20, 19, 20, Point(13, 14));
+  TIA := PixelShiftMulti(TBA, 100 + Random(100));
+  TPAFromBoxWrap(IntToBox(232, 194 - 50, 289, 254 - 50), Player);
+
+  for i := 0 to High(TBA) do
+    if TIA[i] > 5 then
+    begin
+      Inc(L);
+      SetArrayLength(ATPA, L + 1);
+      TPAFromBoxWrap(TBA[i], ATPA[L]);
+    end;
+
+  MergeATPAWrap(ATPA, TPA);
+  ClearTPAFromTPAWrap(TPA, Player, TPA);
+  SplitTPAExWrap(TPA, 1, 1, ATPA2);
+  SortATPASize(ATPA2, True);
+
+  if Length(ATPA2) > 1 then
+  begin
+    MouseTBox(GetTPABounds(ATPA2[0]), Mouse_Move);
+    if (RBool) then
+      if WaitUpTextMulti(['option', 'tion'], 100 + Random(100)) then
+        WaitOptionMulti(['xamine', 'ancel'], 100 + Random(100));
+  end;
+end;
+
+(*
+MMouseOffClient
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure MMouseOffClient(Direction: String);
+
+Moves the mouse off the client in the set direction.
+   - Vaild Directions: 'top', 'bottom', 'left', 'right' or accepts 'random'
+     and 'rand' for a random direction.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  MMouseOffClient('top');
+
+*)
+procedure MMouseOffClient(Direction: String);
+var
+  B: TBoxArray;
+  P: TPoint;
+  i, W, H: Integer;
+begin
+  GetClientDimensions(W, H);
+  SetArrayLength(B, 4);
+  B[0] := IntToBox(-300, -300, W, 0); //top
+  B[1] := IntToBox(0, H, W, H +300); //bottom
+  B[2] := IntToBox(0-300, 0, 0, H); //left
+  B[3] := IntToBox(W, 0, W+300, H); //right
+
+  case Lowercase(Direction) of
+    'top': i := 0;
+    'bottom':  i := 1;
+    'left': i := 2;
+    'right': i := 3;
+    'rand', 'random': i := Random(3);
+    else
+      srl_Warn('MMouseOffClient', 'Invaild direction!', warn_AllVersions);
+  end;
+
+  P := Point(RandomRange(B[i].X1, B[i].X2), RandomRange(B[i].Y1, B[i].Y2));
+  MMouse(P.X, P.Y, 0, 0);
+end;
+
+(*
+SmallRandomMouse
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure SmallRandomMouse;
+
+Randomly moves the mouse in a max radius of 80 of its current postion, has alot
+of gravity and wind so it can simulate a human flicking/spiraling the mouse.
+
+.. note::
+
+    Author: Flight (edit to work with SRL5 by Ollybest)
+
+Example:
+
+.. code-block:: pascal
+
+  SmallRandomMouse;
+
+*)
+procedure SmallRandomMouse;
+var
+  RandSpeed: Extended;
+  x, y, rx, ry, FS, W, H: Integer;
+begin
+  GetClientDimensions(W, H);
+  FS := MouseSpeed;
+  MouseSpeed := RandomRange(7, 10);
+  RandSpeed := (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
+  GetMousePos(x, y);
+
+  rx := RandomRange(x-80, x+80);
+  ry := RandomRange(y-80, y+80);
+
+  //make sure mouse stays on ms
+  if rx < MSX1 then
+    rx := MSX1 + 1;
+  if ry < MSY1 then
+    ry := MSY1 + 1;
+  if rx > W then
+    rx := W - 1;
+  if ry > H then
+    ry := H - 1;
+
+  WindMouse(x, y, rx, ry, 30, 55, (10.0/randSpeed), (12.0/randSpeed), (10.0*randSpeed), (10.0*randSpeed));
+  MouseSpeed := FS;
+end;
+
+(*
+DragRandomInvSlot
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure DragRandomInvSlot;
+
+Moves an item in your invent to another free slot, if your script relys on
+static inv slots its suggested not to use.
+
+.. note::
+
+    Author: Ollybest
+
+Example:
+
+.. code-block:: pascal
+
+  DragRandomInvSlot;
+
+*)
+procedure DragRandomInvSlot;
+var
+  i, FullL, EmptyL: integer;
+  FullSlots, EmptySlots: TIntegerArray;
+begin
+  if (not (LoggedIn)) or (InvFull) or (InvEmpty) then
+    Exit;
+
+  // collecting full and empty inv slots
+  for i := 1 to 28 do
+    if ExistsItem(i) then
+    begin
+      SetLength(FullSlots, Length(FullSlots) + 1);
+      FullSlots[FullL] := i;
+      Inc(FullL);
+    end else
+    begin
+      SetLength(EmptySlots, Length(EmptySlots) + 1);
+      EmptySlots[EmptyL] := i;
+      Inc(EmptyL);
+    end;
+
+ if Length(FullSlots) and Length(EmptySlots) > 0 then
+   DragMouseTBox(InvBox(FullSlots[Random(Length(FullSlots))]),
+                 InvBox(EmptySlots[Random(Length(EmptySlots))]));
+
+end;                                                                       
+
+(*
 LevelUpEx
 
 .. code-block:: pascal
@@ -1084,7 +1502,7 @@ begin
 end;
 (*
 CloseAdWindow
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

@@ -7,6 +7,8 @@ The Stats include contains wrapper functions provided by the SRL Stats API.
 The functions contained are meant for ease of use for implementation into
 scripts.
 
+.. contents::
+
 *)
 
 // behaves as entries in a dict.

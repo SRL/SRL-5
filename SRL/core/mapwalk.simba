@@ -4,6 +4,8 @@ Mapwalk
 
 The Mapwalk include contains all Mapwalking functions
 
+.. contents::
+
 *)
 
 // TODO: Update to Doc style?
@@ -545,7 +547,7 @@ end;
 
 (*
 RoadColorChecker
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
@@ -1154,6 +1156,7 @@ GetMiniMapDotsIn
     function GetMiniMapDotsIn(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
 
 Results the dots specified by WhatDot in x1, y1, x2, y2.
+
 Usage:
 
     - 'npc', 'yellow' = Yellow Dot;
@@ -1227,7 +1230,7 @@ end;
 
 (*
 GetMMDotsOnMS
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. code-block:: pascal
 

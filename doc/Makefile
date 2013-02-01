@@ -1,22 +1,21 @@
-
 .PHONY:    default clean tarball
 
 core =	amount animation antiban autocolor bank bitmaps chat \
-		color flag gametab inventory login mapwalk math mouse \
-		object players timing symbol \
+		color flag gametab globals globalstats inventory \
+		login mapwalk math mouse object players timing symbol \
 		text worldswitcher
 
 skill =	 magic
 
-misc =  paintsmart
+misc =  paintsmart SmartParams online
 
 all:
 	@python docgen.py `echo $(core) | sed -r \
-		's/(\w+)/..\/srl\/core\/\1.simba/g'` > /dev/null
+		's/(\w+)/..\/SRL\/core\/\1.simba/g'` > /dev/null
 	@python docgen.py `echo $(skill) | sed -r \
-		's/(\w+)/..\/srl\/skill\/\1.simba/g'` > /dev/null
+		's/(\w+)/..\/SRL\/skill\/\1.simba/g'` > /dev/null
 	@python docgen.py `echo $(misc) | sed -r \
-		's/(\w+)/..\/srl\/misc\/\1.simba/g'` > /dev/null
+		's/(\w+)/..\/SRL\/misc\/\1.simba/g'` > /dev/null
 	@make -C sphinx/ html
 
 clean:
