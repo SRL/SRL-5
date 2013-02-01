@@ -1459,6 +1459,37 @@ begin
   setColorToleranceSpeed(tmpCTS);
 end;
 
+ (*
+FindSpinTicketObj
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindSpinTicketObj(var x,y : Integer): Boolean;
+
+Find spin ticket object.
+
+.. note::
+
+    Author: Kyle Undefined
+    Last Modified: Feb. 1st 2013  by slushpuppy
+
+
+Example:
+
+.. code-block:: pascal
+
+  FindSpinTicketObj(x,y);
+*)
+function FindSpinTicketObj(var x,y : Integer): Boolean;
+var
+  oneFreeSpin : Integer;
+begin
+  oneFreeSpin := DTMFromString('mrAAAAHic42BgYMhlYmBIBuJyIC4F4hQgLgPiaiAuAeInQDWvgfg+ED8D4vdQDBK/BcS9BloMHXHWYMzLwwMUYULB/EASH2ZCw4xoGAYA/y4OqA==');
+
+  Result := FindDTM(oneFreeSpin, x, y, MIX1, MIY1, MIX2, MIY2);
+  FreeDTM(oneFreeSpin);
+end;
 (*
 FindSpinTicket
 ~~~~~~~~~~~~~~
@@ -1473,6 +1504,7 @@ Finds and exits the annoying Squeal of Fortune pop up.
 
     Author: Kyle Undefined
     Last Modified: Apr. 3rd, 2012 by Coh3n
+                   Feb. 1st 2013  by slushpuppy
 
 Example:
 
@@ -1482,11 +1514,9 @@ Example:
 *)
 function FindSpinTicket(): Boolean;
 var
-  oneFreeSpin, x, y: Integer;
+  x, y: Integer;
 begin
-  oneFreeSpin := DTMFromString('mrAAAAHic42BgYMhlYmBIBuJyIC4F4hQgLgPiaiAuAeInQDWvgfg+ED8D4vdQDBK/BcS9BloMHXHWYMzLwwMUYULB/EASH2ZCw4xoGAYA/y4OqA==');
-
-  if (FindDTM(oneFreeSpin, x, y, MIX1, MIY1, MIX2, MIY2)) then
+  if FindSpinTicketObj(x,y) then
   begin
     Mouse(x, y, 5, 5, mouse_Move);
 
@@ -1497,9 +1527,49 @@ begin
       Result := True;
     end;
   end;
-
-  FreeDTM(oneFreeSpin);
 end;
+
+(*
+FindAndDestroySpinTicket
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function FindAndDestroySpinTicket: Boolean;
+
+Finds and destroys any sof spin tickets.
+
+.. note::
+
+    Author: Kyle Undefined
+    Last Modified: Feb. 1st 2013  by slushpuppy
+
+Example:
+
+.. code-block:: pascal
+
+  FindAndDestroySpinTicket();
+*)
+function FindAndDestroySpinTicket(): Boolean;
+var
+  x, y: Integer;
+begin
+  if FindSpinTicketObj(x,y) then
+  begin
+    Mouse(x, y, 5, 5, mouse_Move);
+
+    if (WaitUptext('laim', 300)) then
+    begin
+      ClickMouse2(mouse_Right);
+      Wait(RandomRange(100, 200));
+      ChooseOption('estroy');
+      Wait(RandomRange(1000, 1400));
+      FindNPCChatTextMulti(['All', 'Yes'], ClickLeft);
+      Result := True;
+    end;
+  end;
+end;
+
 (*
 CloseAdWindow
 ~~~~~~~~~~~~~
