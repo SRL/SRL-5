@@ -24,12 +24,230 @@ const
 
 (*
 
-Action Bar
-----------
+Ability Book and Action Bar
+------------
 
-Action Bar related functions
+Ability Book and Action Bar related functions
 
 *)
+
+(*
+ActiveMainAbilityTab
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function ActiveMainAbilityTab(): Integer;
+
+Returns which of the four main Ability Book tabs is currently active.
+
+.. note::
+
+    by euphemism
+
+*)
+function ActiveMainAbilityTab(): Integer;
+var
+  TabColor: Integer;
+  TabColorArray: TIntegerArray;
+begin
+  SetLength(TabColorArray, 4);
+  TabColorArray := [1996449, 2315049, 7225628, 2370692];
+  TabColor := GetColor(551, 282);
+  for Result := 0 to 3 do
+    if (TabColor = TabColorArray[Result]) then
+      Exit;
+end;
+
+(*
+ActiveSubAbilityTab
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function ActiveSubAbilityTab(): Integer;
+
+Returns which of the sub-tabs beneath the active main tab is currently active.
+
+.. note::
+
+    by euphemism
+
+*)
+function ActiveSubAbilityTab(): Integer;
+var
+  H, S, L: Extended;
+  XVals: TIntegerArray;
+begin
+  SetLength(XVals, 4);
+  XVals := [555, 601, 648, 695];
+  if (ActiveMainAbilityTab = 0) then
+    XVals[1] := 602;
+  for Result := 0 to 3 do
+  begin
+    ColorToHSL(GetColor(XVals[Result], 262), H, S, L);
+    if (L > 10) then
+      Exit;
+  end;
+end;
+
+(*
+SetAbilityBook
+~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+      function SetAbilityBook(Tab: Integer): Boolean;
+
+Takes a sub-tab constant (see globals.simba), and changes the main tab and
+sub-tabs of the Ability Book as necessary to make the target sub-tab
+the active sub-tab. Returns true if successful.
+
+.. note::
+
+    by euphemism
+
+*)
+function SetAbilityBook(Tab: Integer): Boolean;
+var
+  ActiveMain, I, TabCompare, TimeOut, X, Y: Integer;
+  CompareFunc: Function(): Integer;
+  BoxCoords, TabLocations, TabLoop: T2DIntegerArray;
+begin
+  if (not GameTab(TAB_MAGIC)) then
+    Exit;
+  SetLength(TabLocations, 4);
+  TabLocations[0] := [AB_ATTACK, AB_STRENGTH]; //First dimension is main tab, second dimension is sub tab position.
+  TabLocations[1] := [AB_RANGED];
+  TabLocations[2] := [AB_ABILITIES, AB_COMBAT_SPELLS, AB_TELEPORT_SPELLS, AB_SKILLING_SPELLS];
+  TabLocations[3] := [AB_DEFENSE, AB_CONSTITUTION];
+  SetLength(BoxCoords, 2);
+  BoxCoords[0] := [548, 205, 594, 237, 47]; //Main tab size and spacing
+  BoxCoords[1] := [557, 248, 586, 277, 46]; //Sub tab size and spacing
+  for X := 0 to 3 do //Converts tab constant into X Y pair, where X is the main tab, and Y is the sub tab.
+  begin
+    for Y := 0 to High(TabLocations[X]) do
+    begin
+      if (TabLocations[X][Y] = Tab) then
+      begin
+        Result := True;
+        Break;
+      end;
+    end;
+    if (Result) then
+      Break;
+  end;
+  ActiveMain := ActiveMainAbilityTab; //Stores the current active main tab to reduce redundancy.
+  SetLength(TabLoop, 2);
+  TabLoop[0] := [ActiveMain, X]; //Holds the active main tab, and the target main tab.
+  TabLoop[1] := [ActiveSubAbilityTab, Y]; //Holds the active sub tab to 0, and the target sub tab.
+  Result := ((TabLoop[0][0] = TabLoop[0][1]) and (TabLoop[1][0] = TabLoop[1][1]));
+  if (Result) then
+    Exit;
+  Wait(Random(300));
+  for I := 0 to 1 do //This loop sets the main tab and sub tab to to the target tab.
+  begin
+    if (I = 1) then
+      TabLoop[i][0] := ActiveSubAbilityTab; //Updates the stored active sub tab to account for switching the main tab.
+    if (TabLoop[i][0] <> TabLoop[i][1]) then
+    begin
+      MouseBox((BoxCoords[i][0] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][1], (BoxCoords[i][2] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][3], MOUSE_LEFT); //Clicks the target tab.
+      TimeOut := (GetSystemTime + RandomRange(800, 1200)); //Sets timeout fail-safe.
+      if (I = 0) then //Points the CompareFunc function to check either the active main tab or sub tab based on the value of the looping variable.
+        CompareFunc := @ActiveMainAbilityTab
+      else
+        CompareFunc := @ActiveSubAbilityTab;
+      while ((GetSystemTime < TimeOut) and (CompareFunc() <> TabLoop[i][1])) do //Fail-safe and state check for the tab.
+        Wait(16);
+    end;
+    if (I = 0) then //Sets the TabCompare variable to either the active main tab or active sub tab based on the value of the looping variable.
+      TabCompare := ActiveMainAbilityTab
+    else
+      TabCompare := ActiveSubAbilityTab;
+    Result := (TabCompare <> TabLoop[i][1]); //If the tab failed to change to the target tab, function returns false and exit.
+    if (Result) then
+      Exit;
+    if (I = 0) then //Determines whether to wait between setting the main tab and sub tab, or to check the final result.
+      Wait(400 + Random(300))
+    else
+      Result := ((ActiveMainAbilityTab = TabLoop[0][1]) and (ActiveSubAbilityTab = TabLoop[1][1]));
+  end;
+end;
+
+(*
+GetAbilityLocation
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure GetAbilityLocation(AbilityConstant: Integer; out SubTab, PositionUnderTab: Integer);
+
+Returns the sub-tab (Through SubTab of the Ability Book that the Ability
+(AbilityConstant) is under, and then the position of the ability within the
+SubTab (Through PositionUnderTab).
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+    GetAbilityLocation(AB_SURGE, SubTab, PositionUnderTab);
+    //SubTab would contain 3 (AB_ABILITIES), as that is the constant for the
+    //Abilities sub-tab, and PositionUnderTab would contain 7, as that is the
+    //position of the ability within the sub-tab.
+*)
+procedure GetAbilityLocation(AbilityConstant: Integer; out SubTab, PositionUnderTab: Integer);
+var
+  AbilityTabs: TIntegerArray;
+begin
+  AbilityTabs := [AB_ATTACK, AB_STRENGTH, AB_RANGED, AB_ABILITIES, AB_DEFENCE, AB_CONSTITUTION];
+  SubTab := AbilityTabs[(AbilityConstant - 13) div 12];
+  PositionUnderTab := ((AbilityConstant - 12) - (((AbilityConstant - 13) div 12) * 12));
+end;
+
+(*
+AbilitySlotToBox
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AbilitySlotToBox(Slot: Integer): TBox;
+
+Returns a TBox around the specified Ability Book slot.  Currently does not work
+with the standard combat spells tab, as they are aligned to a different grid
+than the rest of the Ability Book.
+
+.. note::
+
+    by euphemism
+    Last modified: Dec. 21st, 2012 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+    SlotBox := AbilitySlotToBox(AB_SURGE);
+    MouseBox(SlotBox.x1, SlotBox.y1, SlotBox.x2, SlotBox.y2, mouse_Left);
+*)
+function AbilitySlotToBox(Slot: Integer): TBox;
+begin
+  if not InRange(Slot, 1, 20) then
+  begin
+    srl_Warn('AbilitySlotToBox', 'Slot must be within 1-20!', warn_AllVersions);
+    Exit;
+  end;
+  with Result do
+  begin
+    X1 := 561 + ((((Slot + 3) mod 4)) * 44);
+    Y1 := 290 + ((((Slot - 1) div 4)) * 36);
+    X2 := X1 + 29;
+    Y2 := Y1 + 29;
+  end;
+end;
 
 (*
 IsActionBarOpen
@@ -88,6 +306,279 @@ begin
 end;
 
 (*
+ActionBarSlotToBox
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ActionBarSlotToBox(Slot: Integer): TBox;
+
+    Returns the TBox (30 x 30) of the action bar at position Slot.
+
+.. note::
+
+    by Slushpuppy
+
+Example:
+
+.. code-block:: pascal
+
+    ActionBarSlotToBox(1);
+
+*)
+function ActionBarSlotToBox(Slot: Integer): TBox;
+begin
+  if InRange(Slot, 1, 12) then
+  begin
+    with Result do
+    begin
+      X1 := 47 + (Slot - 1) * 36;
+      Y1 := 347 - SRL_NAVBAR_INGAME_Y;
+      X2 := X1 + 29;
+      Y2 := 376 - SRL_NAVBAR_INGAME_Y;
+    end;
+  end else
+    srl_Warn('ActionBarSlotToBox', 'Slot must be within 1-12!', warn_AllVersions);
+end;
+
+(*
+ActionBarSlotEmpty
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function ActionBarSlotEmpty(Slot: Integer): Boolean;
+
+Results True if the specified Action Bar slot is empty.
+
+.. note::
+
+    by euphemism
+    Last modified: Dec. 21st, 2012 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+    if (not ActionBarSlotEmpty(4)) then
+      ClearActionBarSlot(4);
+*)
+function ActionBarSlotEmpty(Slot: Integer): Boolean;
+var
+  MidPoint: TPoint;
+begin
+  ToggleActionBar(True);
+  MidPoint := MiddleBox(ActionBarSlotToBox(Slot));
+  Result := (GetColor(MidPoint.x, MidPoint.y) = 59);
+end;
+
+(*
+GetAbilityCooldown
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function GetAbilityCooldown(ActionBarSlotOrAbilityConstant: Integer): Integer;
+
+Returns a number, 0-100 (or -1 in the case that it fails to get the cooldown)
+indicating the percentage complete of the cooldown of the specified ability,
+ActionBarSlotOrAbilityConstant.  Passing 1-12 will check the ability in the
+coordinating Action Bar slot, and passing an ability constant, such as AB_SURGE,
+will open the Ability Book and check there for the ability's cooldown.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+
+    if (GetAbilityCooldown(AB_SURGE) = 100) then
+      WriteLn('Ability is ready to use.');
+
+    while (GetAbilityCooldown(AB_SURGE) < 100) do
+      WriteLn('Ability cooldown is ' + IntToStr(GetAbilityCooldown(AB_SURGE)) + '% complete.');
+*)
+function GetAbilityCooldown(ActionBarSlotOrAbilityConstant: Integer): Integer;
+var
+  ColorFix, ClientBitmap, I, Len, PositionUnderTab, SubTab, SumTotal, x1, y1, x2, y2, W, H: Integer;
+  MidPoint: TPoint;
+  AbilitySlot: TBox;
+  PointCircle, Line, TPA: TPointArray;
+begin
+  Result := - 1;
+  case (ActionBarSlotOrAbilityConstant) of
+    1..12: AbilitySlot := ActionBarSlotToBox(ActionBarSlotOrAbilityConstant);
+    AB_SLICE..AB_SINGLE_WAY_WILDERNESS:
+    begin
+      GetAbilityLocation(ActionBarSlotOrAbilityConstant, SubTab, PositionUnderTab);
+      if (not SetAbilityBook(SubTab)) then
+        Exit;
+      AbilitySlot := AbilitySlotToBox(PositionUnderTab);
+    end;
+  end;
+  try
+    ClientBitmap := BitmapFromClient(AbilitySlot.x1, AbilitySlot.y1, AbilitySlot.x2, AbilitySlot.y2);
+    SetBitmapName(ClientBitmap, 'CooldownBitmap');
+    x1 := 0;
+    y1 := 0;
+    x2 := AbilitySlot.x2 - AbilitySlot.x1;
+    y2 := AbilitySlot.y2 - AbilitySlot.y1;
+    W := x2 + 1;
+    H := y2 + 1;
+    if (InRange(ActionBarSlotOrAbilityConstant, 1, 12)) then
+    begin
+      FindColors(TPA, 3111603, AbilitySlot.x1 + 2, AbilitySlot.y1 + 19, AbilitySlot.x1 + 8, AbilitySlot.y1 + 26);
+      OffsetTPA(TPA, IntToPoint( - AbilitySlot.x1, - AbilitySlot.y1));
+      for I := 0 to High(TPA) do
+        FastSetPixel(ClientBitmap, TPA[i].x, TPA[i].y, 0);
+    end;
+    GetMufasaBitmap(ClientBitmap).Brightness(GetMufasaBitmap(ClientBitmap), 100);
+    GetMufasaBitmap(ClientBitmap).Posterize(GetMufasaBitmap(ClientBitmap), 60);
+    GetMufasaBitmap(ClientBitmap).Contrast(GetMufasaBitmap(ClientBitmap), 30);
+    GetMufasaBitmap(ClientBitmap).Desaturate(GetMufasaBitmap(ClientBitmap));
+    MidPoint := IntToPoint(15, 14);
+    TPAFromCircleWrap(MidPoint.x, MidPoint.y, 14, PointCircle);
+    SortCircleWise(PointCircle, MidPoint.x, MidPoint.y, 359, False, True);
+    Len := Length(PointCircle);
+    for I := 0 to (Len - 1) do
+    begin
+      if (InRange(I, 0, 38)) then
+        MidPoint := IntToPoint(14, 15)
+      else
+        MidPoint := IntToPoint(15, 14);
+      TPAFromLineWrap(Midpoint.x, MidPoint.y, PointCircle[i].x, PointCircle[i].y, Line) SortTPAFrom(Line, MidPoint);
+      InvertTPA(Line);
+      if (I = 0) then
+        SetLength(Line, 7)
+      else
+        SetLength(Line, Length(Line) - 4);
+      SumTotal := 0;
+      SumTotal := SumIntegerArray(FastGetPixels(ClientBitmap, Line));
+      if (SumTotal <> 0) then
+      begin
+        Result := Ceil((Round(FixD(Degrees(ArcTan2(PointCircle[i].x - MidPoint.x - 1, - (PointCircle[i].y - MidPoint.y))))) / 360.0) * 100) + 1;
+        if (Result = 99) then
+        begin
+          ColorFix := GetColor(AbilitySlot.x1 + 14, AbilitySlot.y1 + 2);
+          if ((ColorFix = 6706) or (ColorFix = 1710617)) then
+            Result := 100;
+        end;
+        Break;
+      end
+      else if (I = (Len - 1)) then
+        Result := 0;
+    end;
+  finally
+    FreeBitmap(ClientBitmap);
+  end;
+end;
+
+(*
+UseAbility
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function UseAbility(ActionBarSlotOrAbilityConstant: Integer): Boolean;
+
+If the ability is ready to use, the function will click the ability and return
+true or false depending on if the cooldown of the ability begins.  Passing 1-12
+will use the ability in the coordinating Action Bar slot, and passing an ability
+constant, such as AB_SURGE, will open the Ability Book and use the ability there.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+
+    if (not UseAbility(3)) then
+      WriteLn('Was unable to use ability in Action Bar slot 3.');
+*)
+function UseAbility(ActionBarSlotOrAbilityConstant: Integer): Boolean;
+var
+  PositionUnderTab, SubTab, TimeMarker: Integer;
+  AbilitySlot: TBox;
+begin
+  Result := False;
+  case (ActionBarSlotOrAbilityConstant) of
+    1..12:
+      begin
+        AbilitySlot := ActionBarSlotToBox(ActionBarSlotOrAbilityConstant);
+        if (ActionBarSlotEmpty(ActionBarSlotOrAbilityConstant)) then
+          Exit;
+      end;
+    AB_SLICE..AB_SINGLE_WAY_WILDERNESS:
+      begin
+        GetAbilityLocation(ActionBarSlotOrAbilityConstant, SubTab, PositionUnderTab);
+        if (not SetAbilityBook(SubTab)) then
+          Exit;
+        AbilitySlot := AbilitySlotToBox(PositionUnderTab);
+      end;
+  end;
+  if (not (GetAbilityCoolDown(ActionBarSlotOrAbilityConstant) = 100)) then
+    Exit;
+  MouseTBox(AbilitySlot, mouse_left);
+  TimeMarker := GetSystemTime + RandomRange(800, 1204);
+  repeat
+    Result := (GetAbilityCoolDown(ActionBarSlotOrAbilityConstant) <> 100);
+  until ((Result) or (GetSystemTime > TimeMarker));
+end;
+
+(*
+AbilityInSlot
+~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AbilityInSlot(AbilityConstant, ActionBarSlot: Integer): Boolean;
+
+Opens up the Ability Book where the ability, AbilityConstant, is located, and
+checks to see if the ability is in the specified Action Bar slot, ActionBarSlot.
+This function doesn't really have a use except for within the following functions.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+*)
+function AbilityInSlot(AbilityConstant, ActionBarSlot: Integer): Boolean;
+var
+  bmp, PositionUnderTab, SubTab, X, Y: Integer;
+  Acc: Extended;
+  Colors: TIntegerArray;
+  TPA: TPointArray;
+  AbilitySlot, ActionSlot: TBox;
+
+begin
+  Result := False;
+  GetAbilityLocation(AbilityConstant, SubTab, PositionUnderTab);
+  if (not SetAbilityBook(SubTab)) then
+    Exit;
+  AbilitySlot := AbilitySlotToBox(PositionUnderTab);
+  ActionSlot := ActionBarSlotToBox(ActionBarSlot);
+  TPAFromBoxWrap(IntToBox(AbilitySlot.x1 + 8, AbilitySlot.y1 + 7, AbilitySlot.x2 - 7, AbilitySlot.y2 - 8), TPA);
+  FilterPointsPie(TPA, 0, ((GetAbilityCoolDown(AbilityConstant) * 360) / 100) - 1, 0, 7, AbilitySlot.x1 + 15, AbilitySlot.y1 + 14);
+  GetColorsWrap(TPA, Colors);
+  OffsetTPA(TPA, IntToPoint(- (AbilitySlot.x1 + 8), - (AbilitySlot.y1 + 7)));
+  try
+    Bmp := BitmapFromString(15, 15, '');
+    FastSetPixels(bmp, TPA, Colors);
+    Result := FindDeformedBitmapToleranceIn(Bmp, X, Y, ActionSlot.x1 + 8, ActionSlot.y1 + 7, ActionSlot.x2 - 7, ActionSlot.y2 - 8, 0, 0, False, Acc);
+  finally
+    FreeBitmap(Bmp);
+  end;
+end;
+
+(*
 GetAdrenalinePercent
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -129,42 +620,6 @@ begin
       Result := Floor(100 - ((BarX2 - box.X1)*1.0 / (BarX2-BarX1) * 1.0) * 100);
     end;
    end;
-end;
-
-(*
-ActionBarSlotToBox
-~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function ActionBarSlotToBox(Slot: Integer): TBox;
-
-    Returns the TBox (30 x 30) of the action bar at position Slot.
-
-.. note::
-
-    by Slushpuppy
-
-Example:
-
-.. code-block:: pascal
-
-    ActionBarSlotToBox(1);
-
-*)
-function ActionBarSlotToBox(Slot: Integer): TBox;
-begin
-  if InRange(Slot, 1, 12) then
-  begin
-    with Result do
-    begin
-      X1 := 47 + (Slot - 1) * 36;
-      Y1 := 347 - SRL_NAVBAR_INGAME_Y;
-      X2 := X1 + 29;
-      Y2 := 376 - SRL_NAVBAR_INGAME_Y;
-    end;
-  end else
-    srl_Warn('ActionBarSlotToBox', 'Slot must be within 1-12!', warn_AllVersions);
 end;
 
 (*
@@ -232,37 +687,6 @@ begin
     until Result or (GetSystemTime > T);
   end else
     Result := true;
-end;
-
-(*
-ActionBarSlotEmpty
-~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function ActionBarSlotEmpty(Slot: Integer): Boolean;
-
-Results True if the specified Action Bar slot is empty.
-
-.. note::
-
-    by euphemism
-    Last modified: Dec. 21st, 2012 by euphemism
-
-Example:
-
-.. code-block:: pascal
-
-    if (not ActionBarSlotEmpty(4)) then
-      ClearActionBarSlot(4);
-*)
-function ActionBarSlotEmpty(Slot: Integer): Boolean;
-var
-  MidPoint: TPoint;
-begin
-  ToggleActionBar(True);
-  MidPoint := MiddleBox(ActionBarSlotToBox(Slot));
-  Result := (GetColor(MidPoint.x, MidPoint.y) = 59);
 end;
 
 (*
@@ -504,43 +928,152 @@ begin
 end;
 
 (*
-AbilitySlotToBox
-~~~~~~~~~~~~~~~~
+ClickActionBarSlot
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-    function AbilitySlotToBox(Slot: Integer): TBox;
+    function ClickActionBarSlot(Slot: Integer): Boolean;
 
-Returns a TBox around the specified Ability Book slot.  Currently does not work
-with the standard combat spells tab, as they are aligned to a different grid
-than the rest of the Ability Book.
+Clicks the specified Action Bar slot.  If the specified Action Bar slot is empty
+the function will return false.  Otherwise, it clicks the slot and returns true.
 
 .. note::
 
     by euphemism
-    Last modified: Dec. 21st, 2012 by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+*)
+function ClickActionBarSlot(Slot: Integer): Boolean;
+var
+  SlotBox: TBox;
+begin
+  Result := False;
+  if (ActionBarSlotEmpty(Slot)) then
+    Exit;
+  SlotBox := ActionBarSlotToBox(Slot);
+  MouseTBox(SlotBox, mouse_left);
+  Result := True;
+end;
+
+(*
+AddAbilityToActionBar
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AddAbilityToActionBar(AbilityConstant, ActionBarSlot: Integer): Boolean;
+
+Adds the specified ability, AbilityConstant, from the Ability Book to the
+specified slot, ActionBarSlot, of the Action Bar.  Returns true on success.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
 
 Example:
 
 .. code-block:: pascal
 
-    SlotBox := AbilitySlotToBox(AB_SURGE);
-    MouseBox(SlotBox.x1, SlotBox.y1, SlotBox.x2, SlotBox.y2, mouse_Left);
-*)
-function AbilitySlotToBox(Slot: Integer): TBox;
-begin
-  if not InRange(Slot, 1, 20) then
-  begin
-    srl_Warn('AbilitySlotToBox', 'Slot must be within 1-20!', warn_AllVersions);
-    Exit;
-  end;
 
-  with Result do
-  begin
-    X1 := 561 + ((((Slot + 3) mod 4)) * 44);
-    Y1 := 290 + ((((Slot - 1) div 4)) * 36);
-    X2 := X1 + 29;
-    Y2 := Y1 + 29;
+    if (AddAbilityToActionBar(AB_SURGE, 5)) then
+      WriteLn('Added the Surge ability to Action Bar slot 5.');
+*)
+function AddAbilityToActionBar(AbilityConstant, ActionBarSlot: Integer): Boolean;
+var
+  PositionUnderTab, SubTab, TimeMarker: Integer;
+  AbilitySlot, ActionSlot: TBox;
+begin
+  Result := AbilityInSlot(AbilityConstant, ActionBarSlot);
+  if (Result) then
+    Exit;
+  GetAbilityLocation(AbilityConstant, SubTab, PositionUnderTab);
+  AbilitySlot := AbilitySlotToBox(PositionUnderTab);
+  ActionSlot := ActionBarSlotToBox(ActionBarSlot);
+  DragMouse(AbilitySlot.x1, AbilitySlot.y1, 29, 29, ActionSlot.x1, ActionSlot.y1, 28, 28);
+  TimeMarker := GetSystemTime + RandomRange(802, 1113);
+  repeat
+    Result := AbilityInSlot(AbilityConstant, ActionBarSlot);
+    Wait(12);
+  until ((Result) or (GetSystemTime > TimeMarker));
+  TimeMarker := GetSystemTime + RandomRange(1004, 1516);
+  if (Result) then
+    repeat
+      if (GetColor(ActionSlot.x1 - 2, ActionSlot.y1 - 2) <> 13158600) then
+        Exit;
+    until (GetSystemTime > TimeMarker);
+end;
+
+function ExistsItem(I: Integer): Boolean; forward;
+
+(*
+AddItemToActionBar
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function AddItemToActionBar(InvSlot, ActionBarSlot: Integer): Boolean;
+
+Adds the item (if it exists) in the specified Inventory slot, InvSlot, to the
+specified slot, ActionBarSlot, of the Action Bar.  Returns true on success.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+
+    if (AddItemToActionBar(4, 5)) then
+      WriteLn('Added the item in Inventory slot 4 to Action Bar slot 5.');
+*)
+function AddItemToActionBar(InvSlot, ActionBarSlot: Integer): Boolean;
+var
+  bmp, I, Len, TimeMarker, X, Y: Integer;
+  acc: Extended;
+  InventoryBox, ActionSlot: TBox;
+  KeyBindTPA, TPA: TPointArray;
+begin
+  Result := False;
+  if ((not GameTab(tab_Inv)) or (not ToggleActionBar(True))) then
+    Exit;
+  if (not ExistsItem(InvSlot)) then
+    Exit;
+  InventoryBox := InvBox(InvSlot);
+  InventoryBox.x2 := InventoryBox.x2 - 2;
+  InventoryBox.y2 := InventoryBox.y2 - 2;
+  ActionSlot := ActionBarSlotToBox(ActionBarSlot);
+  try
+    bmp := BitmapFromClient(InventoryBox.x1, InventoryBox.y1, InventoryBox.x2, InventoryBox.y2);
+    TPAFromBoxWrap(IntToBox(InventoryBox.x1 + 2, InventoryBox.y2 - 10, InventoryBox.x1 + 8, InventoryBox.y2 - 3), KeyBindTPA);
+    OffsetTPA(KeyBindTPA, IntToPoint(- InventoryBox.x1, - InventoryBox.y1));
+    Len := Length(KeyBindTPA);
+    for I := 0 to (Len - 1) do
+      FastSetPixel(bmp, KeyBindTPA[i].x, KeyBindTPA[i].y, 0);
+    ColorToleranceSpeed(0);
+    FindColorsTolerance(TPA, 3292227, InventoryBox.x1, InventoryBox.y1, InventoryBox.x2, InventoryBox.y2, 8);
+    OffsetTPA(TPA, IntToPoint(- InventoryBox.x1, - InventoryBox.y1));
+    Len := Length(TPA);
+    for I := 0 to (Len - 1) do
+      FastSetPixel(bmp, TPA[i].x, TPA[i].y, 0);
+    FindDeformedBitmapToleranceIn(bmp, X, Y, ActionSlot.x1, ActionSlot.y1 - 1, ActionSlot.x2, ActionSlot.y2, 35, 0, false, acc);
+    Result := (acc > 0.8);
+    if (Result) then
+      Exit;
+    DragMouse(InventoryBox.x1, InventoryBox.y1, 30, 30, ActionSlot.x1, ActionSlot.y1, 28, 28);
+    TimeMarker := GetSystemTime + RandomRange(802, 1113);
+    repeat
+      if (ExistsItem(InvSlot)) then
+      begin
+        FindDeformedBitmapToleranceIn(bmp, X, Y, ActionSlot.x1, ActionSlot.y1 - 1, ActionSlot.x2, ActionSlot.y2 + 1, 35, 0, False, Acc);
+        Result := (acc > 0.8);
+      end;
+    until ((Result) or (GetSystemTime > TimeMarker));
+  finally
+    FreeBitmap(bmp);
   end;
 end;
 
@@ -2029,158 +2562,6 @@ begin
   for I := 1 to 11 do
     if WearingItem(I) then
       Inc(Result);
-end;
-
-(*
-
-Ability Book
-------------
-
-Ability Book related functions
-
-*)
-
-(*
-ActiveMainAbilityTab
-~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-      function ActiveMainAbilityTab(): Integer;
-
-Returns which of the four main Ability Book tabs is currently active.
-
-.. note::
-
-    by euphemism
-
-*)
-function ActiveMainAbilityTab(): Integer;
-var
-  TabColor: Integer;
-  TabColorArray: TIntegerArray;
-begin
-  SetLength(TabColorArray, 4);
-  TabColorArray := [1996449, 2315049, 7225628, 2370692];
-  TabColor := GetColor(551, 282);
-  for Result := 0 to 3 do
-    if (TabColor = TabColorArray[Result]) then
-      Exit;
-end;
-
-(*
-ActiveSubAbilityTab
-~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-      function ActiveSubAbilityTab(): Integer;
-
-Returns which of the sub-tabs beneath the active main tab is currently active.
-
-.. note::
-
-    by euphemism
-
-*)
-function ActiveSubAbilityTab(): Integer;
-var
-  H, S, L: Extended;
-  XVals: TIntegerArray;
-begin
-  SetLength(XVals, 4);
-  XVals := [555, 601, 648, 695];
-  if (ActiveMainAbilityTab = 0) then
-    XVals[1] := 602;
-  for Result := 0 to 3 do
-  begin
-    ColorToHSL(GetColor(XVals[Result], 262), H, S, L);
-    if (L > 10) then
-      Exit;
-  end;
-end;
-
-(*
-SetAbilityBook
-~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-      function SetAbilityBook(Tab: Integer): Boolean;
-
-Takes a sub-tab constant (see globals.simba), and changes the main tab and
-sub-tabs of the Ability Book as necessary to make the target sub-tab
-the active sub-tab. Returns true if successful.
-
-.. note::
-
-    by euphemism
-
-*)
-function SetAbilityBook(Tab: Integer): Boolean;
-var
-  ActiveMain, I, TabCompare, TimeOut, X, Y: Integer;
-  CompareFunc: Function(): Integer;
-  BoxCoords, TabLocations, TabLoop: T2DIntegerArray;
-begin
-  if (not GameTab(TAB_MAGIC)) then
-    Exit;
-  SetLength(TabLocations, 4);
-  TabLocations[0] := [AB_ATTACK, AB_STRENGTH]; //First dimension is main tab, second dimension is sub tab position.
-  TabLocations[1] := [AB_RANGED];
-  TabLocations[2] := [AB_ABILITIES, AB_COMBAT_SPELLS, AB_TELEPORT_SPELLS, AB_SKILLING_SPELLS];
-  TabLocations[3] := [AB_DEFENSE, AB_CONSTITUTION];
-  SetLength(BoxCoords, 2);
-  BoxCoords[0] := [548, 205, 594, 237, 47]; //Main tab size and spacing
-  BoxCoords[1] := [557, 248, 586, 277, 46]; //Sub tab size and spacing
-  for X := 0 to 3 do //Converts tab constant into X Y pair, where X is the main tab, and Y is the sub tab.
-  begin
-    for Y := 0 to High(TabLocations[X]) do
-    begin
-      if (TabLocations[X][Y] = Tab) then
-      begin
-        Result := True;
-        Break;
-      end;
-    end;
-    if (Result) then
-      Break;
-  end;
-  ActiveMain := ActiveMainAbilityTab; //Stores the current active main tab to reduce redundancy.
-  SetLength(TabLoop, 2);
-  TabLoop[0] := [ActiveMain, X]; //Holds the active main tab, and the target main tab.
-  TabLoop[1] := [ActiveSubAbilityTab, Y]; //Holds the active sub tab to 0, and the target sub tab.
-  Result := ((TabLoop[0][0] = TabLoop[0][1]) and (TabLoop[1][0] = TabLoop[1][1]));
-  if (Result) then
-    Exit;
-  Wait(Random(300));
-  for I := 0 to 1 do //This loop sets the main tab and sub tab to to the target tab.
-  begin
-    if (I = 1) then
-      TabLoop[i][0] := ActiveSubAbilityTab; //Updates the stored active sub tab to account for switching the main tab.
-    if (TabLoop[i][0] <> TabLoop[i][1]) then
-    begin
-      MouseBox((BoxCoords[i][0] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][1], (BoxCoords[i][2] + (BoxCoords[i][4] * TabLoop[i][1])), BoxCoords[i][3], MOUSE_LEFT); //Clicks the target tab.
-      TimeOut := (GetSystemTime + RandomRange(800, 1200)); //Sets timeout fail-safe.
-      if (I = 0) then //Points the CompareFunc function to check either the active main tab or sub tab based on the value of the looping variable.
-        CompareFunc := @ActiveMainAbilityTab
-      else
-        CompareFunc := @ActiveSubAbilityTab;
-      while ((GetSystemTime < TimeOut) and (CompareFunc() <> TabLoop[i][1])) do //Fail-safe and state check for the tab.
-        Wait(16);
-    end;
-    if (I = 0) then //Sets the TabCompare variable to either the active main tab or active sub tab based on the value of the looping variable.
-      TabCompare := ActiveMainAbilityTab
-    else
-      TabCompare := ActiveSubAbilityTab;
-    Result := (TabCompare <> TabLoop[i][1]); //If the tab failed to change to the target tab, function returns false and exit.
-    if (Result) then
-      Exit;
-    if (I = 0) then //Determines whether to wait between setting the main tab and sub tab, or to check the final result.
-      Wait(400 + Random(300))
-    else
-      Result := ((ActiveMainAbilityTab = TabLoop[0][1]) and (ActiveSubAbilityTab = TabLoop[1][1]));
-  end;
 end;
 
 (*
