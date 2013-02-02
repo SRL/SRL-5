@@ -46,6 +46,111 @@ begin
   Result := VarType(v) = varBoolean;
 end;
 
+(*
+tmp_TPAFromLine
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function tmp_TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
+
+Returns a TPA of the points that make up a line connecting the points (x1, y1)
+and (x2, y2) and most closely follow the slope of that line.
+
+.. note::
+
+    by euphemism
+    Last modified: Jan. 31st, 2013 by euphemism
+
+Example:
+
+.. code-block:: pascal
+
+    TPA := TPAFromLine(10, 10, 30, 20);
+*)
+function tmp_TPAFromLine(const x1, y1, x2, y2: Integer): TPointArray;
+var
+  Dx, Dy, CurrentX, CurrentY, Len, TwoDx, TwoDy, Xinc, YInc: Integer;
+  TwoDxAccumulatedError, TwoDyAccumulatedError: Integer;
+begin
+  Len := 0;
+  Dx := (X2 - X1);
+  Dy := (Y2 - Y1);
+  TwoDx := Dx + Dx;
+  TwoDy := Dy + Dy;
+  CurrentX := X1;
+  CurrentY := Y1;
+  Xinc := 1;
+  Yinc := 1;
+  if (Dx < 0) then
+  begin
+    Xinc := - 1;
+    Dx := - Dx;
+    TwoDx := - TwoDx;
+  end;
+  if (Dy < 0) then
+  begin
+    Yinc := - 1;
+    Dy := - Dy;
+    TwoDy := - TwoDy;
+  end;
+  SetLength(Result, 1);
+  Result[0] := Point(X1, Y1);
+  if ((Dx <> 0) or (Dy <> 0)) then
+  begin
+    if (Dy <= Dx) then
+    begin
+      TwoDxAccumulatedError := 0;
+      repeat
+        IncEx(CurrentX, Xinc);
+        IncEx(TwoDxAccumulatedError, TwoDy);
+        if (TwoDxAccumulatedError > Dx) then
+        begin
+          IncEx(CurrentY, Yinc);
+          DecEx(TwoDxAccumulatedError, TwoDx);
+        end;
+        Inc(Len);
+        SetLength(Result, Len + 1);
+        Result[Len] := Point(CurrentX, CurrentY);
+      until (CurrentX = X2);
+    end
+    else
+    begin
+      TwoDyAccumulatedError := 0;
+      repeat
+        IncEx(CurrentY, Yinc);
+        IncEx(TwoDyAccumulatedError, TwoDx);
+        if (TwoDyAccumulatedError > Dy) then
+        begin
+          IncEx(CurrentX, Xinc);
+          DecEx(TwoDyAccumulatedError, TwoDy);
+        end;
+        Inc(Len);
+        SetLength(Result, Len + 1);
+        Result[Len] := Point(CurrentX, CurrentY);
+      until (CurrentY = Y2);
+    end;
+  end
+end;
+
+(*
+tmp_TPAFromLineWrap
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    procedure tmp_TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
+
+Wrapper function for TPAFromLine.
+
+.. note::
+
+    Last modified: Jan. 31st, 2013 by euphemism
+*)
+procedure tmp_TPAFromLineWrap(const x1, y1, x2, y2: Integer; var Res: TPointArray);
+begin
+  Res := tmp_TPAFromLine(x1, y1, x2, y2);
+end;
 {$ifdef Simba}
 
 //{$define SimbaDebug}

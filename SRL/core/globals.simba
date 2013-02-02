@@ -205,80 +205,80 @@ const
   AB_CONSTITUTION          = 8;
 
   //Attack
-  AB_SLICE                 = 0;
-  AB_SLAUGHTER             = 1;
-  AB_OVERPOWER             = 2;
-  AB_HAVOC                 = 3;
-  AB_BACKHAND              = 4;
-  AB_SMASH                 = 5;
-  AB_BARGE                 = 6;
-  AB_FLURRY                = 7;
-  AB_SEVER                 = 8;
-  AB_HURRICANE             = 9;
-  AB_MASSACRE              = 10;
-  AB_METEOR_STRIKE         = 11;
+  AB_SLICE                 = 13;
+  AB_SLAUGHTER             = 14;
+  AB_OVERPOWER             = 15;
+  AB_HAVOC                 = 16;
+  AB_BACKHAND              = 17;
+  AB_SMASH                 = 18;
+  AB_BARGE                 = 19;
+  AB_FLURRY                = 20;
+  AB_SEVER                 = 21;
+  AB_HURRICANE             = 22;
+  AB_MASSACRE              = 23;
+  AB_METEOR_STRIKE         = 24;
 
   //Strength
-  AB_KICK                  = 12;
-  AB_PUNISH                = 13;
-  AB_DISMEMBER             = 14;
-  AB_FURY                  = 15;
-  AB_DESTROY               = 16;
-  AB_QUAKE                 = 17;
-  AB_BERSERK               = 18;
-  AB_CLEAVE                = 19;
-  AB_ASSAULT               = 20;
-  AB_DECIMATE              = 21;
-  AB_PULVERISE             = 22;
-  AB_FRENZY                = 23;
+  AB_KICK                  = 25;
+  AB_PUNISH                = 26;
+  AB_DISMEMBER             = 27;
+  AB_FURY                  = 28;
+  AB_DESTROY               = 29;
+  AB_QUAKE                 = 30;
+  AB_BERSERK               = 31;
+  AB_CLEAVE                = 32;
+  AB_ASSAULT               = 33;
+  AB_DECIMATE              = 34;
+  AB_PULVERISE             = 35;
+  AB_FRENZY                = 36;
 
   //Ranged
-  AB_PIERCING_SHOT         = 24;
-  AB_SNAP_SHOT             = 25;
-  AB_DEADSHOT              = 26;
-  AB_SNIPE                 = 27;
-  AB_BINDING_SHOT          = 28;
-  AB_FRAGMENTATION_SHOT    = 29;
-  AB_ESCAPE                = 30;
-  AB_RAPID_FIRE            = 31;
-  AB_RICOCHET              = 32;
-  AB_BOMBARDMENT           = 33;
-  AB_INCENDIARY_SHOT       = 34;
-  AB_UNLOAD                = 35;
+  AB_PIERCING_SHOT         = 37;
+  AB_SNAP_SHOT             = 38;
+  AB_DEADSHOT              = 39;
+  AB_SNIPE                 = 40;
+  AB_BINDING_SHOT          = 41;
+  AB_FRAGMENTATION_SHOT    = 42;
+  AB_ESCAPE                = 43;
+  AB_RAPID_FIRE            = 44;
+  AB_RICOCHET              = 45;
+  AB_BOMBARDMENT           = 46;
+  AB_INCENDIARY_SHOT       = 47;
+  AB_UNLOAD                = 48;
 
   //Magic
-  AB_WRACK                 = 36;
-  AB_ASPHYXIATE            = 37;
-  AB_OMNIPOWER             = 38;
-  AB_DRAGON_BREATH         = 39;
-  AB_IMPACT                = 40;
-  AB_COMBUST               = 41;
-  AB_SURGE                 = 42;
-  AB_DETONATE              = 43;
-  AB_CHAIN                 = 44;
-  AB_WILD_MAGIC            = 45;
-  AB_METAMORPHOSIS         = 46;
-  AB_TSUNAMI               = 47;
+  AB_WRACK                 = 49;
+  AB_ASPHYXIATE            = 50;
+  AB_OMNIPOWER             = 51;
+  AB_DRAGON_BREATH         = 52;
+  AB_IMPACT                = 53;
+  AB_COMBUST               = 54;
+  AB_SURGE                 = 55;
+  AB_DETONATE              = 56;
+  AB_CHAIN                 = 57;
+  AB_WILD_MAGIC            = 58;
+  AB_METAMORPHOSIS         = 59;
+  AB_TSUNAMI               = 60;
 
   //Defence
-  AB_ANTICIPATION          = 48;
-  AB_BASH                  = 49;
-  AB_REVENGE               = 50;
-  AB_PROVOKE               = 51;
-  AB_IMMORTALITY           = 52;
-  AB_FREEDOM               = 53;
-  AB_REFLECT               = 54;
-  AB_RESONANCE             = 55;
-  AB_REJUVENATE            = 56;
-  AB_DEBILITATE            = 57;
-  AB_PREPARATION           = 58;
-  AB_BARRICADE             = 59;
+  AB_ANTICIPATION          = 61;
+  AB_BASH                  = 62;
+  AB_REVENGE               = 63;
+  AB_PROVOKE               = 64;
+  AB_IMMORTALITY           = 65;
+  AB_FREEDOM               = 66;
+  AB_REFLECT               = 67;
+  AB_RESONANCE             = 68;
+  AB_REJUVENATE            = 69;
+  AB_DEBILITATE            = 70;
+  AB_PREPARATION           = 71;
+  AB_BARRICADE             = 72;
 
   //Constitution
-  AB_REGENERATE            = 60;
-  AB_MOMENTUM              = 61;
-  AB_INCITE                = 62;
-  AB_SINGLE_WAY_WILDERNESS = 63;
+  AB_REGENERATE            = 73;
+  AB_MOMENTUM              = 74;
+  AB_INCITE                = 75;
+  AB_SINGLE_WAY_WILDERNESS = 76;
 
 { const GameTab Constants;
   Description: Constants representing gametab numbers. }
