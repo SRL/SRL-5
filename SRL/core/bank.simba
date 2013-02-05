@@ -1931,7 +1931,7 @@ var
   Info: TVariantArray;
   Chests: TPointArray;
   AChests: T2DPointArray;
-  UpText: TStringArray;
+  UpText, ChooseOp: TStringArray;
   B: TBox;
 begin
   result := false;
@@ -1942,7 +1942,15 @@ begin
     Result := True;
     Exit;
   end;
-  UpText := ['Bank', 'chest', 'nk che'];
+  if Location = SRL_BANK_SP then
+  begin
+    UpText := ['Shantay', 'chest', 'tay che'];
+    ChooseOp := ['Open', 'pen Sh'];
+  end else
+  begin
+    UpText := ['Bank', 'chest', 'nk che'];
+    ChooseOp := ['Use', 'se'];
+  end;
                    {              0          1         2        3     4     5      6       7       8   9     10   }
   case Location of {            Sort X     Sort Y     Color    Tol   Hue   Sat   Count  SplitTPA?  W   H   Compass}
     SRL_BANK_SW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'w'];
@@ -2009,7 +2017,7 @@ begin
         0..7: Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_left);
         8: begin
              Mouse(Chests[i].X, Chests[i].Y, 0, 0, mouse_right);
-             if not WaitOptionMulti(['Use', 'se'], 1000) then Exit;
+             if not WaitOptionMulti(ChooseOp, 1000) then Exit;
         end;
       end;
       FFLag(0);
