@@ -1860,8 +1860,9 @@ begin
         repeat
           Wait(RandomRange(50, 100));
         until (BankScreen) or (PinScreen) or (TimeFromMark(C) > TimeOut);
-        if (Players[CurrentPlayer].Pin <> '') then
-          InPin(Players[CurrentPlayer].Pin);
+        if not (AllPlayersInactive) then
+          if (Players[CurrentPlayer].Pin <> '') then
+            InPin(Players[CurrentPlayer].Pin);     
         Result := (BankScreen) or (PinScreen);
         If (Result) then
           Exit;
