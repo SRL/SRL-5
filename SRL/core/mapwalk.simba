@@ -8,7 +8,21 @@ The Mapwalk include contains all Mapwalking functions
 
 *)
 
-// TODO: Update to Doc style?
+(*
+RoadColors
+~~~~~~~~~~
+
+.. code-block:: pascal
+
+    var RoadColors: TIntegerArray;
+
+Global record containing all roadcolors collected during runtime.
+
+.. note::
+
+    by SRL Dev Team
+*)
+
 {*******************************************************************************
 var RoadColors: TIntegerArray;
 Description: Global record containing all roadcolors collected during runtime.
@@ -16,7 +30,7 @@ Description: Global record containing all roadcolors collected during runtime.
 var
   RoadColors: TIntegerArray;
 
-{*
+(*
 variantDirection
 ~~~~~~~~~~~~~~~~
 
@@ -40,7 +54,7 @@ Example:
     dir := variantToDirection('rand');  // -> in range 0..360
     dir := variantToDirection(50);      // -> 50
 
-*}
+*)
 function variantToDirection(dir: Variant): Extended;
 var
   e: Extended;
@@ -513,10 +527,10 @@ begin
       ', YE: ' + IntToStr(YE), warn_Warning);
     Exit;
   end;
-  
+
   w := xe - xs;
   h := ye - ys;
-  
+
   try
     Bmp := BitmapFromClient(xs,ys,xe,ye);
   except
@@ -802,7 +816,7 @@ function LinearWalk(TheColor: Integer; Direction: Variant; Radius, Xmod, Ymod: I
 var
   TPA: TPointArray;
   I: Integer;
-  
+
 begin
   Result := False;
   if LinearWalkEx(tpa, MMCX, MMCY, TheColor, 0, Direction, Radius) then
@@ -1033,7 +1047,7 @@ begin
    if (RoadColorChecker) then
      srl_Warn('LinearRoadWalk', 'Updated RoadColor through RoadColorChecker: ' +
        IntToStr(RoadColor), warn_Debug);
-       
+
   if LinearWalkEx(tpa, MMCX, MMCY, TheColor, 0, Direction, Radius) then
     for i := 0 to High(tpa) do
       if MFNF(tpa[i].x, tpa[i].y, Xmod, Ymod) then
