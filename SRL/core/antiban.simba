@@ -1057,14 +1057,14 @@ begin
   B[0] := IntToBox(-300, -300, W, 0); //top
   B[1] := IntToBox(0, H, W, H +300); //bottom
   B[2] := IntToBox(0-300, 0, 0, H); //left
-  B[3] := IntToBox(W, 0, W+300, H); //right
+  B[3] := IntToBox(W, 0, W +300, H); //right
 
   case Lowercase(Direction) of
     'top': i := 0;
     'bottom':  i := 1;
     'left': i := 2;
     'right': i := 3;
-    'rand', 'random': i := Random(3);
+    'rand', 'random': i := Random(4);
     else
       srl_Warn('MMouseOffClient', 'Invaild direction!', warn_AllVersions);
   end;
