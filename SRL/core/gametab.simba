@@ -2071,7 +2071,7 @@ Example:
     Value := GetMMLevels( 'hp' ) ;       // Will retrieve your Hit Points
     Value := GetMMLevels( 'pray' ) ;     // Will retrieve your Prayer Points
     Value := GetMMLevels( 'run' ) ;      // Will retrieve your Run energy
-    Value := GetMMLevels( 'summon' ) ;   // Will retrieve your HitPoints
+    Value := GetMMLevels( 'summon' ) ;   // Will retrieve your Summoning Points
 
 *)
 function GetMMLevels(LevelType: string; var ColorSign: string): Integer;
