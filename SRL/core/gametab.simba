@@ -2008,7 +2008,7 @@ IsRunOn
 
 .. code-block:: pascal
 
-    function IsRunning: Boolean;
+    function IsRunOn: Boolean;
 
 Returns True if run button is on.
 
