@@ -484,7 +484,7 @@ Example:
 .. code-block:: pascal
 
 *)
-function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean;
+function GetWorldInfo(WorldIndex: Integer; var WorldRec: TWorld): Boolean;
 var
   xx, yy, x, y, Color: integer;
   Num: String;
@@ -492,15 +492,15 @@ begin
   if (WorldScreen) then
   begin
     Color := SRL_WS_WHITECOLOR;//white
-    if not IsTextInAreaEx(84, 134, 134, 440, X, Y, IntToStr(World) + ' ', 0, StatChars, False, False, 0, 2, Color) then
+    if not IsTextInAreaEx(84, 134, 134, 440, X, Y, IntToStr(WorldIndex) + ' ', 0, StatChars, False, False, 0, 2, Color) then
     begin
       Color := SRL_WS_YELLOWCOLOR;//yellow
-      if IsTextInAreaEx(84, 134, 134, 440, X, Y, IntToStr(World) + ' ', 0, StatChars, False, False, 0, 2, Color) then
+      if IsTextInAreaEx(84, 134, 134, 440, X, Y, IntToStr(WorldIndex) + ' ', 0, StatChars, False, False, 0, 2, Color) then
         WorldRec.Members := true
       else
         Exit;
     end;
-    WorldRec.Number := World;
+    WorldRec.Number := StrToIntDef(Trim(GetTextAtEx(100, y, 0, StatChars, False, False, 0, 2, Color, 5, False, tr_AllChars)), -1);
     Num := LowerCase(Trim(GetTextAtEx(137, y, 0, StatChars, False, False, 0, 2, Color, 5, False, tr_AllChars)));
     if Num = 'full' then
       WorldRec.PlayerNo := -2
@@ -731,53 +731,56 @@ Chooses a world by SettingsNames , ordered by SettingsDescending, Takes into acc
 
 ..note::
 
-    by Rasta Magician
+    by Rasta Magician, core
 
 Example:
 
 .. code-block:: pascal
 
 *)
-function ChooseWorldBy(SettingsNames:TStringArray; SettingsDescending: array of boolean; Members, PVP: boolean): boolean;
+function ChooseWorldBy(SettingsNames: TStringArray; SettingsDescending: array of boolean; Members, PVP: boolean): boolean;
 var
-  TPA: TPointArray;
-  i, C : integer;
+  i: Integer;
+  WRec: TWorld;
 begin
+  Result := false;
   if not WorldScreen then
+  begin
+    wait(1000 + Random(200));
     if not OpenWorldScreen then
       exit;
+  end;
   if length(SettingsNames) <> length(SettingsDescending) then
   begin
     srl_warn('ChooseWorldBy', 'Arrays are not the same length', warn_AllVersions);
-    SelectWorld(RandomWorld(Members, PVP));
+    ChangeWorld(RandomWorld(Members, PVP));
     exit;
   end;
-  for i:= 0 to High(SettingsNames) do
+  if (CountColorTolerance(12378347, 332, 200, 460, 350, 10) >= 145) then
+  begin
+    srl_Warn('ChooseWorldBy', 'World list not available', warn_AllVersions);
+    ChangeWorld(RandomWorld(Members, PVP));
+    exit;
+  end;
+  FindWorld(1);
+  wait(1000 + random(200));
+  for i := 0 to High(SettingsNames) do
   begin
     OrderWorlds(SettingsNames[i], SettingsDescending[i]);
-    wait(1000+random(200));
+    wait(1000 + random(200));
   end;
-  wait(1500+random(500));
-  for i:= 0 to 15 do //16 worlds show up in screen
+  for i := 0 to 14 do //15 worlds show up in screen
   begin
-    FindColorsTolerance(TPA, 16777215, 182, 150+18*i, 206, 159+18*i, 0);
-    C := Length(TPA);
-    if (C = 0)or(C = 66) then  //failed detection or full
-      Continue;
-    if (Members)xor(GetColor(620, 157+18*i) <> 11316396) then
-      Continue;
-    if (PVP)xor(GetColor(589, 156+18*i) <> 1251528) then
-      Continue;
-    MouseBox(79, 148+18*i, 685, 165+18*i, mouse_left);
-    for c := 0 to 4 do
+    GetWorldInfo(i, WRec);
+    if (WRec.Members = Members) then
     begin
-      wait(200);
-      Result := not WorldScreen;
-      if Result then exit;
+      srl_Warn('ChooseWorldBy', 'Selected world ' + IntToStr(WRec.Number), warn_Debug);
+      OrderWorlds('w', true);
+      ChangeWorld(WRec.Number);
+      Result := True;
+      Exit;
     end;
   end;
-  Result := false;
-  writeln('Failed to sort the worlds. Choosing random world. Members: ' +
-           BoolToStr(Members) + '; PVP: ' + BoolToStr(PVP) + ';');
-  SelectWorld(RandomWorld(Members, PVP));
-end;
+  srl_Warn('ChooseWorldBy', 'Failed to sort the worlds. Choosing random world. Members: ' + BoolToStr(Members) + '; PVP: ' + BoolToStr(PVP), warn_AllVersions);
+  ChangeWorld(RandomWorld(Members, PVP));
+end;  
