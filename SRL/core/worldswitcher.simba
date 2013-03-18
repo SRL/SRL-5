@@ -471,7 +471,7 @@ GetWorldInfo
 
 .. code-block:: pascal
 
-    function GetWorldInfo(World: Integer; var WorldRec: TWorld): Boolean;
+    function GetWorldInfo(WorldIndex: Integer; var WorldRec: TWorld): Boolean;
 
 Records World info into TWorld record, also Results true if world was found.
 
