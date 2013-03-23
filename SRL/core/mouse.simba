@@ -106,7 +106,7 @@ MMouse
 
     procedure MMouse(x, y, rx, ry: integer);
 
-Moves the mouse.
+Moves the mouse. rx and ry are total range of the randomness for the mouse. i.e. if rx:=6 then the randomness of the mouse will be from x-3 to x+3.
 
 .. note::
 
@@ -151,8 +151,8 @@ begin
       if randSpeed = 0.0 then
         randSpeed := 0.1;
       getMousePos(cx,cy);
-      nx:= (cx + (f * e)) + random(rx);
-      ny:= (cy + (g * e)) + random(ry);
+      nx:= (cx + (f * e)) + randomrange(-rx/2,rx/2);
+      ny:= (cy + (g * e)) + randomrange(-ry/2,ry/2);
     {End: Modified from MMouse by Benland100}
       if Miss then
       begin
@@ -172,8 +172,8 @@ begin
     randSpeed:= (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
     if randSpeed = 0.0 then
       randSpeed := 0.1;
-    X := x + random(rx);
-    Y := y + random(ry);
+    X := x + random(-rx/2,rx/2);
+    Y := y + random(-ry/2,ry/2);
     WindMouse(cx,cy,x,y,9.0,3.0,10.0/randSpeed,15.0/randSpeed,10.0*randSpeed,10.0*randSpeed);
   {$ENDIF}
 end;
