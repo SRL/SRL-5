@@ -174,8 +174,8 @@ begin
     randSpeed:= (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
     if randSpeed = 0.0 then
       randSpeed := 0.1;
-    X := x + random(-halfRx,halfRx);
-    Y := y + random(-halfRy,halfRy);
+    X := x + RandomRange(-halfRx,halfRx);
+    Y := y + RandomRange(-halfRy,halfRy);
     WindMouse(cx,cy,x,y,9.0,3.0,10.0/randSpeed,15.0/randSpeed,10.0*randSpeed,10.0*randSpeed);
   {$ENDIF}
 end;
