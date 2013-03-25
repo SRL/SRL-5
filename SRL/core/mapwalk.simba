@@ -717,8 +717,20 @@ begin
   Result := False;
   if (not LoggedIn) then Exit;
 
-  SD := variantToDirection(StartRadial);
-  ED := variantToDirection(EndRadial);
+  if not (VariantIsNumber(StartRadial) and VariantIsNumber(EndRadial)) then
+  begin
+    SD := variantToDirection(StartRadial);
+    StartRadial := SD;
+    ED := variantToDirection(EndRadial);
+    EndRadial := ED;
+  end else
+  begin
+    SD := StartRadial;
+    ED := EndRadial;
+  end;
+
+  if SD > ED then SwapE(SD, ED);
+
   if (SD = ED) then
   begin
     srl_Warn('RadialWalkEx', 'StartRadial = EndRadial, using LinearWalkEx.', warn_Warning);
