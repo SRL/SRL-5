@@ -1485,7 +1485,7 @@ function FindSpinTicketObj(var x,y : Integer): Boolean;
 var
   oneFreeSpin : Integer;
 begin
-  oneFreeSpin := DTMFromString('mrAAAAHic42BgYMhlYmBIBuJyIC4F4hQgLgPiaiAuAeInQDWvgfg+ED8D4vdQDBK/BcS9BloMHXHWYMzLwwMUYULB/EASH2ZCw4xoGAYA/y4OqA==');
+  oneFreeSpin := DTMFromString('mrAAAAHic42BgYHjHzMDwFojvQfEDIP4ExL+B+A8Q32ZkYDgPxBeA+D4QP4Hie0B8BYi3RkoCTWHCibmAJD7MSADDAABVYQ/p');
 
   Result := FindDTM(oneFreeSpin, x, y, MIX1, MIY1, MIX2, MIY2);
   FreeDTM(oneFreeSpin);
