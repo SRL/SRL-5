@@ -28,6 +28,7 @@ var
 
 // Comment fix by drizzt:
 // Updated list - 20/05/2012 - [J]ustin
+// Added Slayer Contract - 20/03/2013 - nivek1989
 {*******************************************************************************
 Valid Arguments are:
 - agility                   - gem stall                         - rest, resting spot
@@ -39,20 +40,20 @@ Valid Arguments are:
 - axe shop                  - hunter training                   - short cut
 - bar                       - jewelery                          - silk stall
 - bank                      - kebab shop                        - silver stall
-- candle shop               - lodestone                         - slayer master
-- churn                     - mace shop                         - spice stall
-- clothes shop              - magic shop                        - spinning wheel, spin
-- cookery shop              - makeover mage                     - staff shop
-- cookery, cook             - mill                              - summoning store
-- crafing shop              - minigame                          - summoning obelisk
-- dungeon                   - mining shop, mining site, mine    - sword shop
-- farming shop              - pet shop                          - tanner
-- farming spot              - platebody shop                    - training dummy
-- fishing shop, fish store  - plateskirt shop                   - underground
-- fishing spot, fish        - portal (to player owned houses)   - water source, water
-- food shop                 - pottery, pot                      - weave
-- fur trader                - quest                             - windmill
-- furnace                   - rare trees, tree
+- candle shop               - lodestone                         - slayer contract
+- churn                     - mace shop                         - slayer master
+- clothes shop              - magic shop                        - spice stall
+- cookery shop              - makeover mage                     - spinning wheel, spin
+- cookery, cook             - mill                              - staff shop
+- crafing shop              - minigame                          - summoning store
+- dungeon                   - mining shop, mining site, mine    - summoning obelisk
+- farming shop              - pet shop                          - sword shop
+- farming spot              - platebody shop                    - tanner
+- fishing shop, fish store  - plateskirt shop                   - training dummy
+- fishing spot, fish        - portal (to player owned houses)   - underground
+- food shop                 - pottery, pot                      - water source, water
+- fur trader                - quest                             - weave
+- furnace                   - rare trees, tree                  - windmill
 
 *******************************************************************************}
 
@@ -128,6 +129,7 @@ Const     //Symbol Constants, may be changed to integers in SRL6
   Symbol_ShortCut = 'short cut';
   Symbol_SilkStall = 'silk stall';
   Symbol_SilverStall = 'silver stall';
+  Symbol_SlayerContract = 'slayer contract';
   Symbol_SlayerMaster = 'slayer master';
   Symbol_SpiceStall = 'spice stall';
   Symbol_SpinningWheel = 'spinning wheel';
@@ -649,6 +651,13 @@ begin
           '84ECF22EDB3F9D53B89525CADF7F4E1BB864B77FB411B359C351D' +
           'E019F8C655C');
         Result := 7666933;
+      end;
+    Symbol_SlayerContract:
+      begin
+        SymbolBitmap := BitmapFromString(8, 8, 'meJw7cOCAna0dEFlZfUBGWAUh4kBS' +
+        'TnUKEMEFgWxkxRApCAkRZ2RgACK4AiAbWRwiBWGgWQrXheweZF0AZ' +
+        'Mk/Hw==');
+        Result := 3816176;
       end;
     Symbol_Herbalist:
       begin
