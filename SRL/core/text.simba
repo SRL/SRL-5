@@ -31,7 +31,7 @@ const
 { type TOptions
   Descripts: Choose option record.  }
 Type
-  TOptions = Record
+  TOptions = record
     Str: string;
     Bounds, BigBox: TBox;
   end;
@@ -410,7 +410,7 @@ Example:
 *)
 function GetUpText: string;
 begin
-  Result := rs_GetUpText
+  Result := rs_GetUpText;
 end;
 
 (*
