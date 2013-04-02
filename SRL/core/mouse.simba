@@ -119,7 +119,7 @@ Example:
 *)
 procedure MMouse(x, y, rx, ry: integer);
 var
-  cx, cy, halfRx, halfRy : integer;
+  cx, cy : integer;
   randSpeed: Extended;
   {$IFDEF UseLaptopMouse}
     seg, e, f, g, nx, ny, hypo: Integer;
@@ -128,8 +128,6 @@ var
   {$ENDIF}
 begin
   GetMousePos(cx, cy);
-  halfRx := rx / 2;
-  halfRy := ry / 2;
   {$IFDEF UseLaptopMouse}
     miss := (Random(LMouse_MissChance) = 0);
     e:= 0;
@@ -153,8 +151,8 @@ begin
       if randSpeed = 0.0 then
         randSpeed := 0.1;
       getMousePos(cx,cy);
-      nx:= (cx + (f * e)) + randomrange(-halfRx,halfRx);
-      ny:= (cy + (g * e)) + randomrange(-halfRy,halfRy);
+      nx:= (cx + (f * e)) + random(rx);
+      ny:= (cy + (g * e)) + random(ry);
     {End: Modified from MMouse by Benland100}
       if Miss then
       begin
@@ -174,8 +172,8 @@ begin
     randSpeed:= (random(MouseSpeed) / 2.0 + MouseSpeed) / 10.0;
     if randSpeed = 0.0 then
       randSpeed := 0.1;
-    X := x + RandomRange(-halfRx,halfRx);
-    Y := y + RandomRange(-halfRy,halfRy);
+    X := x + random(rx);
+    Y := y + random(ry);
     WindMouse(cx,cy,x,y,9.0,3.0,10.0/randSpeed,15.0/randSpeed,10.0*randSpeed,10.0*randSpeed);
   {$ENDIF}
 end;
