@@ -443,6 +443,7 @@ begin;
     result := max(result,data[i]);
 end;
 
+{$IFNDEF PS_ADDONTERMINATE}
 function AddOnTerminate(const proc : string) : boolean;
 var
   OldProcs : TVariantArray;
@@ -477,6 +478,7 @@ begin
     end;
   SetScriptProp(SP_OnTerminate,NewProcs);
 end;
+{$ENDIF}
 
 function Readln(Question : string ) : string;
 begin
