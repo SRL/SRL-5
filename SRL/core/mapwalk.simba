@@ -1421,7 +1421,7 @@ Example:
 *)
 function LodestoneScreen(): Boolean;
 begin
-  Result := CountColor(12378347, 172, 26, 345, 42) > 500;
+  Result := CountColor(12378347, 172, 26, 345, 42) > 200;  
 end;
 
 (*
