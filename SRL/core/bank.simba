@@ -1954,7 +1954,7 @@ begin
                    {              0          1         2        3     4     5      6       7       8   9     10   }
   case Location of {            Sort X     Sort Y     Color    Tol   Hue   Sat   Count  SplitTPA?  W   H   Compass}
     SRL_BANK_SW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'w'];
-    SRL_BANK_CW :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
+    SRL_BANK_CW :      Info := [MSCX     , MSCY,      5003625,  14,   0.07, 0.33,  50,   True ,   10, 10,   'n'];
     SRL_BANK_B  :      Info := [MSCX     , MSCY,      10198185, 21,   0.08, 0.25,  50,   True ,   10, 10,   'n'];
     SRL_BANK_GG :      Info := [MSCX     , MSCY,      5921630,  9 ,   0.47, 0.08,  50,   True ,   10, 10,   'n'];
     SRL_BANK_SP :      Info := [MSCX     , MSCY,      6715270,  4 ,   0.19, 0.29,  50,   True ,   10, 10,   'n'];
